@@ -23,6 +23,8 @@ jobs:
 
       - name: Install dependencies
         run: |
+          mkdir ${{github.workspace}}/boost
+          mkdir ${{github.workspace}}/boost/boost
           cd scripts/windows
           ./install.bat
           cd ../..
