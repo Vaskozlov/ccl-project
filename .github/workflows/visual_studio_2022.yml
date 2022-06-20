@@ -49,8 +49,7 @@ jobs:
         working-directory: ${{github.workspace}}/build
         shell: bash
         run: |
-          ls D:/a/cerberus-project/cerberus-project/boost/boost
-          ls D:/a/cerberus-project/cerberus-project/boost/boost/boost
+          ls D:/a/cerberus-project/cerberus-project/boost/boost/boost/boost
           cmake -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake \
           -DBoost_INCLUDE_DIR=D:/a/cerberus-project/cerberus-project/boost/boost/boost/include \
           -DBoost_LIBRARY_DIRS=D:/a/cerberus-project/cerberus-project/boost/boost/boost/lib \
