@@ -1,0 +1,42 @@
+name: VS2022
+
+on:
+  pull_request:
+    branches: [ main ]
+    paths: [ '**.c', '**.cpp', '**.h', '**.hpp' ]
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: windows-2022
+        config_type: [ Release ]
+        platform_type: [ x64 ]
+    name: VS2022 (${{ matrix.config_type }} ${{ matrix.config.os }} ${{ matrix.platform_type }})
+    runs-on: ${{ matrix.config.os }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 50
+      - name: Install dependencies
+        run: |
+          choco.exe install -y cmake
+          cd scripts/windows
+          ./install.bat
+          cd ../..
+      - name: Install boost
+        uses: MarkusJx/install-boost@v1.0.1
+        id: install-boost
+        with:
+          boost_version: 1.79.0
+          boost_install_dir: C:\boost
+      - name: Add MSBuild to PATH
+        uses: microsoft/setup-msbuild@v1.0.2
+      - name: Build
+        run: MSBuild.exe build/ALL_BUILD.vcxproj /property:Configuration=${{ matrix.config_type }} /property:Platform=${{ matrix.platform_type }}
+      - name: Tests
+        run: |
+          cd build
+          C:\"Program Files"\CMake\bin\ctest.exe --rerun-failed --output-on-failure
+          cd ..

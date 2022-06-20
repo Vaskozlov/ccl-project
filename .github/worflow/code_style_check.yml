@@ -1,0 +1,17 @@
+name: Code style check
+
+on:
+  pull_request:
+    branches: [ main ]
+    paths: [ '**.c', '**.cpp', '**.h', '**.hpp' ]
+
+jobs:
+  check:
+    name: Code style check
+    runs-on: [ self-hosted, linux ]
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 50
+      - name: Run clang-format-diff
+        run: bash ./scripts/tools/check_code_format.sh
