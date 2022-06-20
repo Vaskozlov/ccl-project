@@ -11,16 +11,16 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - name: Linux AMD64 GCC
+          - name: Linux amd64 GCC
             os: [ self-hosted, linux, X64 ]
             cmake_params: ''
-          - name: Linux ARM64 gcc
+          - name: Linux arm64 gcc
             os: [ self-hosted, linux, ARM64 ]
             cmake_params: ''
-          - name: Linux AMD64 CLANG
+          - name: Linux amd64 clang
             os: [ self-hosted, linux, X64 ]
             cmake_params: '-DCMAKE_C_COMPILER=/usr/bin/clang -DCMAKE_CXX_COMPILER=/usr/bin/clang++'
-          - name: Linux ARM64 CLANG
+          - name: Linux arm64 clang
             os: [ self-hosted, linux, ARM64 ]
             cmake_params: '-DCMAKE_C_COMPILER=/usr/bin/clang -DCMAKE_CXX_COMPILER=/usr/bin/clang++'
     name: CMake (${{ matrix.config.name }})
