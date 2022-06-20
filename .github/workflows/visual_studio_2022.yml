@@ -49,6 +49,7 @@ jobs:
         run: |
           cmake -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake \
           -DBOOST_ROOT=D:/a/cerberus-project/cerberus-project/boost/boost \
+          -DCMAKE_LIBRARY_PATH=D:/a/cerberus-project/cerberus-project/boost/boost/include \
           -DBoost_INCLUDE_DIR=D:/a/cerberus-project/cerberus-project/boost/boost/include \
           -DBoost_LIBRARY_DIRS=D:/a/cerberus-project/cerberus-project/boost/boost/lib \
           -DUSE_DYNAMIC_LIBRARY=OFF -DCMAKE_BUILD_TYPE=Release -DUSE_SANITIZERS=OFF \
