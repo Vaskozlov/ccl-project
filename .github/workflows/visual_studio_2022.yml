@@ -23,8 +23,6 @@ jobs:
 
       - name: Install dependencies
         run: |
-          mkdir ${{github.workspace}}/boost
-          mkdir ${{github.workspace}}/boost/boost
           cd scripts/windows
           ./install.bat
           cd ../..
@@ -33,7 +31,7 @@ jobs:
         uses: actions/cache@v2
         id: cache-boost
         with:
-          path: ${{github.workspace}}/boost/boost
+          path: ${{github.workspace}}
           key: boost-1.79.0
 
       - name: Install boost
@@ -41,7 +39,7 @@ jobs:
         uses: MarkusJx/install-boost@v2.3.0
         with:
           boost_version: 1.79.0
-          boost_install_dir: ${{github.workspace}}/boost/boost
+          boost_install_dir: ${{github.workspace}}
           platform_version: 2022
           toolset: msvc
 
@@ -49,7 +47,7 @@ jobs:
         working-directory: ${{github.workspace}}/build
         shell: bash
         run: |
-          ls D:/a/cerberus-project/cerberus-project/boost/boost/boost/boost
+          ls D:/a/cerberus-project/cerberus-project/boost/boost
           cmake -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake \
           -DBoost_INCLUDE_DIR=D:/a/cerberus-project/cerberus-project/boost/boost/boost/include \
           -DBoost_LIBRARY_DIRS=D:/a/cerberus-project/cerberus-project/boost/boost/boost/lib \
