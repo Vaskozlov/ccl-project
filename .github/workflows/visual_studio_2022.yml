@@ -31,7 +31,7 @@ jobs:
         uses: actions/cache@v2
         id: cache-boost
         with:
-          path: ${{github.workspace}}
+          path: ${{github.workspace}}/boost/boost
           key: boost-1.79.0
 
       - name: Install boost
