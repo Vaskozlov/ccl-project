@@ -48,7 +48,7 @@ jobs:
         shell: bash
         run: |
           cmake -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake \
-          -DBoost_INCLUDE_DIR=D:/a/cerberus-project/cerberus-project/boost/boost/boost \
+          -DBoost_INCLUDE_DIR=D:/a/cerberus-project/cerberus-project/boost/boost/include \
           -DBoost_LIBRARY_DIRS=D:/a/cerberus-project/cerberus-project/boost/boost/lib \
           -DCMAKE_INCLUDE_PATH=D:/a/cerberus-project/cerberus-project/boost/boost/include \
           -DCMAKE_LIBRARY_PATH=D:/a/cerberus-project/cerberus-project/boost/boost/lib \
