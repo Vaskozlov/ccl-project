@@ -17,13 +17,16 @@ jobs:
             os: [ self-hosted, linux, ARM64 ]
     name: CMake (${{ matrix.config.name }})
     runs-on: ${{ matrix.config.os }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+
       - name: Build
         run: |
-          cmake -G Ninja -B build -DCMAKE_BUILD_TYPE=Release -STRICT_COMPILATION=ON -DUSE_LIBCPP=OFF
+          cmake -G Ninja -B build -DCMAKE_BUILD_TYPE=Release -DSTRICT_COMPILATION=ON -DUSE_LIBCPP=OFF
           cmake --build build
+
       - name: Test
         run: |
           cd build
