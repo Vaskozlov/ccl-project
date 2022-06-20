@@ -13,8 +13,16 @@ jobs:
         config:
           - name: Linux AMD64 GCC
             os: [ self-hosted, linux, X64 ]
+            cmake_params: ''
           - name: Linux ARM64 gcc
             os: [ self-hosted, linux, ARM64 ]
+            cmake_params: ''
+          - name: Linux AMD64 CLANG
+            os: [ self-hosted, linux, X64 ]
+            cmake_params: '-DCMAKE_C_COMPILER=/usr/bin/clang -DCMAKE_CXX_COMPILER=/usr/bin/clang++'
+          - name: Linux ARM64 CLANG
+            os: [ self-hosted, linux, ARM64 ]
+            cmake_params: '-DCMAKE_C_COMPILER=/usr/bin/clang -DCMAKE_CXX_COMPILER=/usr/bin/clang++'
     name: CMake (${{ matrix.config.name }})
     runs-on: ${{ matrix.config.os }}
 
@@ -24,7 +32,7 @@ jobs:
 
       - name: Build
         run: |
-          cmake -G Ninja -B build -DCMAKE_BUILD_TYPE=Release -DSTRICT_COMPILATION=ON -DUSE_LIBCPP=OFF
+          cmake ${{ matrix.config.cmake_params }} -G Ninja -B build -DCMAKE_BUILD_TYPE=Release -DSTRICT_COMPILATION=ON -DUSE_LIBCPP=OFF
           cmake --build build
 
       - name: Test
