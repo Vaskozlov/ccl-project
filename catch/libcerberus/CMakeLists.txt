@@ -14,4 +14,9 @@ target_link_libraries(
         fmt::fmt
 )
 
+target_link_libraries(
+        libcerberus_catch
+        ${Boost_LIBRARIES}
+)
+
 add_test(LIBCERBERUS_TEST libcerberus_catch)
