@@ -48,11 +48,11 @@ jobs:
         working-directory: ${{github.workspace}}/build
         shell: bash
         run: |
-          ls D:\\a\\cerberus-project\\boost\\boost
           cmake -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake \
           -DBoost_INCLUDE_DIR=D:\\a\\cerberus-project\\boost\\boost \
           -DUSE_DYNAMIC_LIBRARY=ON -DCMAKE_BUILD_TYPE=Release -DUSE_SANITIZERS=OFF \
           -DCMAKE_PREFIX_PATH=D:\\a\\cerberus-project\\boost\\boost \
+          -DBOOST_ROOT=D:\\a\\cerberus-project\\boost \
           -G 'Visual Studio 17 2022' -A x64 -S ..
         env:
           BOOST_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}
