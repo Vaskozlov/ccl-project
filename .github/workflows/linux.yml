@@ -14,15 +14,19 @@ jobs:
           - name: Linux amd64 GCC
             os: [ self-hosted, linux, X64 ]
             cmake_params: ''
+            build-path: ${{github.workspace}}/${{ github.head_ref }}/linux-gcc-amd64
           - name: Linux arm64 gcc
             os: [ self-hosted, linux, ARM64 ]
             cmake_params: ''
+            build-path: ${{github.workspace}}/${{ github.head_ref }}/linux-gcc-arm64
           - name: Linux amd64 clang
             os: [ self-hosted, linux, X64 ]
             cmake_params: '-DCMAKE_C_COMPILER=/usr/bin/clang -DCMAKE_CXX_COMPILER=/usr/bin/clang++'
+            build-path: ${{github.workspace}}/${{ github.head_ref }}/linux-clang-amd64
           - name: Linux arm64 clang
             os: [ self-hosted, linux, ARM64 ]
             cmake_params: '-DCMAKE_C_COMPILER=/usr/bin/clang -DCMAKE_CXX_COMPILER=/usr/bin/clang++'
+            build-path: ${{github.workspace}}/${{ github.head_ref }}/linux-clang-arm64
     name: CMake (${{ matrix.config.name }})
     runs-on: ${{ matrix.config.os }}
 
@@ -30,10 +34,24 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: Cache build
+        uses: actions/cache@v3
+        id: cache-build
+        with:
+          path: ${{ matrix.config.build-path }}
+          key: ${{ matrix.config.os }}
+
+      - name: Create boost dir
+        if: steps.cache-build.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p ${{ matrix.config.build-path }}
+
       - name: Build
         run: |
-          cmake ${{ matrix.config.cmake_params }} -G Ninja -B build -DCMAKE_BUILD_TYPE=Release -DSTRICT_COMPILATION=ON -DUSE_LIBCPP=OFF
-          cmake --build build
+          cmake ${{ matrix.config.cmake_params }} -G Ninja -B ${{ matrix.config.build-path }} \
+            -DCMAKE_BUILD_TYPE=Release -DSTRICT_COMPILATION=ON -DUSE_LIBCPP=OFF
+          
+          cmake --build ${{ matrix.config.build-path }}
 
       - name: Test
         run: |
