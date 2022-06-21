@@ -49,17 +49,18 @@ jobs:
           path: ${{ matrix.config.build-path }}
           key: ${{ matrix.config.key }}
 
-      - name: Create cache dir
+      - name: Create build dir
         if: steps.cache-build.outputs.cache-hit != 'true'
         run: |
-          mkdir -p ${{ matrix.config.build-path }}
+          mkdir -p ${{github.workspace}}/${{ github.head_ref }}/${{ matrix.config.key }}
 
       - name: Build
         run: |
-          cmake ${{ matrix.config.cmake_params }} -G Ninja -B ${{ matrix.config.build-path }} \
+          cmake ${{ matrix.config.cmake_params }} -G Ninja \
+            -B ${{github.workspace}}/${{ github.head_ref }}/${{ matrix.config.key }} \
             -DCMAKE_BUILD_TYPE=Release -DSTRICT_COMPILATION=ON -DUSE_LIBCPP=OFF
           
-          cmake --build ${{ matrix.config.build-path }}
+          cmake --build ${{github.workspace}}/${{ github.head_ref }}/${{ matrix.config.key }}
 
       - name: Test
         run: |
