@@ -13,9 +13,11 @@ jobs:
         config:
           - name: Windows amd64 MSVC
             os: windows-2022
+            platform: 2022
             config_type: Release
             platform_type: x64
             boost-version: 1.79.0
+            boost-path: D:/a/cerberus-project/cerberus-project/boost-1.79.0
 
     name: VS2022 (${{ matrix.config.config_type }} ${{ matrix.config.os }} ${{ matrix.config.platform_type }})
     runs-on: ${{ matrix.config.os }}
@@ -29,12 +31,12 @@ jobs:
         uses: actions/cache@v3
         id: cache-boost
         with:
-          path: D:/a/cerberus-project
+          path: D:/a/cerberus-project/cerberus-project
           key: boost-${{ matrix.config.boost-version }}
 
       - name: Install dependencies
         run: |
-          mkdir D:/a/cerberus-project/boost-${{ matrix.config.boost-version }}
+          mkdir ${{ matrix.config.boost-path }}
           cd scripts/windows
           ./install.bat
           cd ../..
@@ -43,9 +45,9 @@ jobs:
         if: steps.cache-boost.outputs.cache-hit != 'true'
         uses: MarkusJx/install-boost@v2.3.0
         with:
-          boost_version: 1.79.0
-          boost_install_dir: D:/a/cerberus-project/boost-${{ matrix.config.boost-version }}
-          platform_version: 2022
+          boost_version: ${{ matrix.config.boost-version }}
+          boost_install_dir: ${{ matrix.config.boost-path }}
+          platform_version: ${{ matrix.config.platform }}
           toolset: msvc
           link: shared
 
@@ -54,7 +56,7 @@ jobs:
         shell: bash
         run: |
           cmake -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake \
-          -DBoost_INCLUDE_DIR=D:/a/cerberus-project/boost-${{ matrix.config.boost-version }}/boost/boost/include \
+          -DBoost_INCLUDE_DIR=${{ matrix.config.boost-path }}/boost/boost/include \
           -DUSE_DYNAMIC_LIBRARY=ON -DCMAKE_BUILD_TYPE=Release -DUSE_SANITIZERS=OFF \
           -LH -G 'Visual Studio 17 2022' -A x64 -S ..
         env:
