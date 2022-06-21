@@ -31,7 +31,7 @@ jobs:
         uses: actions/cache@v3
         id: cache-boost
         with:
-          path: D:/a/cerberus-project/cerberus-project
+          path: D:/a/cerberus-project/cerberus-project/boost-${{ matrix.config.boost-version }}
           key: boost-${{ matrix.config.boost-version }}
 
       - name: Install dependencies
