@@ -36,7 +36,6 @@ jobs:
 
       - name: Install dependencies
         run: |
-          if not exist ${{ matrix.config.boost-path }} mkdir ${{ matrix.config.boost-path }}
           cd scripts/windows
           ./install.bat
           cd ../..
