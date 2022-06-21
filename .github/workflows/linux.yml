@@ -60,6 +60,6 @@ jobs:
 
       - name: Test
         run: |
-          cd build
+          cd ${{github.workspace}}/${{ github.head_ref }}/${{ matrix.config.key }}
           ctest
           cd ..
