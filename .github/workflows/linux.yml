@@ -10,7 +10,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        build-path: ${{github.workspace}}/${{ github.head_ref }}
+        build-path: [ ${{github.workspace}}/${ { github.head_ref } } ]
 
         config:
           - name: Linux amd64 GCC
@@ -54,8 +54,8 @@ jobs:
 
       - name: Build
         run: |
-            cmake ${{ matrix.config.cmake_params }} -G Ninja -B ${{ matrix.build-path }}/${{ matrix.config.key }} \
-            -DCMAKE_BUILD_TYPE=Release -DSTRICT_COMPILATION=ON -DUSE_LIBCPP=OFF
+          cmake ${{ matrix.config.cmake_params }} -G Ninja -B ${{ matrix.build-path }}/${{ matrix.config.key }} \
+          -DCMAKE_BUILD_TYPE=Release -DSTRICT_COMPILATION=ON -DUSE_LIBCPP=OFF
           
           cmake --build ${{ matrix.build-path }}/${{ matrix.config.key }}
 
