@@ -34,6 +34,11 @@ jobs:
           path: D:/a/cerberus-project/cerberus-project/boost-${{ matrix.config.boost-version }}
           key: boost-${{ matrix.config.boost-version }}
 
+      - name: Create boost dir
+        if: steps.cache-boost.outputs.cache-hit != 'true'
+        run: |
+          mkdir D:/a/cerberus-project/cerberus-project/boost-${{ matrix.config.boost-version }}
+
       - name: Install dependencies
         run: |
           cd scripts/windows
