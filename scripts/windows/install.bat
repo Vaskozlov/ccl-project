@@ -9,7 +9,6 @@ set CMAKE_TOOLCHAIN_FILE=C:\vcpkg\scripts\buildsystems\vcpkg.cmake
 set cmake_dir=C:\\\"Program Files\"\CMake\bin
 
 powershell -Command "C:\vcpkg\vcpkg install fmt:x64-windows"
-powershell -Command "C:\vcpkg\vcpkg install boost:x64-windows-static"
 
 cd ..\..\..
 
