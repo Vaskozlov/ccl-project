@@ -47,7 +47,7 @@ jobs:
         working-directory: ${{github.workspace}}/build
         shell: bash
         run: |
-          D:/a/cerberus-project/cerberus-project/boost
+          ls D:/a/cerberus-project/cerberus-project/boost
           echo "\n\n\n"
           ls D:/a/cerberus-project/cerberus-project/boost/boost
           cmake -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake \
