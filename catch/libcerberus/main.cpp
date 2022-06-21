@@ -3,8 +3,8 @@
 
 auto main() -> int
 {
-    boost::container::small_vector<int, 16>{};
+    [[maybe_unused]] boost::container::small_vector<int, 4> _{};
     fmt::print("Hello, World!\n");
-    
+
     return 0;
 }
