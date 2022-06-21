@@ -11,7 +11,7 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - name: Windows amd64 MSVC
+          - name: Windows-2022 AMD64 MSVC
             os: windows-2022
             platform: 2022
             config_type: Release
