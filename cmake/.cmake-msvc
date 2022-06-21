@@ -9,4 +9,4 @@ if (USE_SANITIZERS)
     add_compile_options(/fsanitize=address)
 endif ()
 
-include(${Boost_INCLUDE_DIR})
+include_directories(${Boost_INCLUDE_DIR})
