@@ -42,24 +42,24 @@ jobs:
         uses: actions/cache@v3
         id: cache-build
         with:
-          path: ${{github.workspace}}/${{ github.head_ref }}/${{ matrix.config.key }}
+          path: ${{github.workspace}}/${{github.actor}}-${{ github.head_ref }}/${{ matrix.config.key }}
           key: ${{ matrix.config.key }}
 
       - name: Create build dir
         if: steps.cache-build.outputs.cache-hit != 'true'
         run: |
-          mkdir ${{github.workspace}}/${{ github.head_ref }}/${{ matrix.config.key }}
+          mkdir ${{github.workspace}}/${{github.actor}}-${{ github.head_ref }}/${{ matrix.config.key }}
 
       - name: Build
         run: |
           cmake ${{ matrix.config.cmake_params }} -G Ninja \
-            -B ${{github.workspace}}/${{ github.head_ref }}/${{ matrix.config.key }} \
+            -B ${{github.workspace}}/${{github.actor}}-${{ github.head_ref }}/${{ matrix.config.key }} \
             -DCMAKE_BUILD_TYPE=Release -DSTRICT_COMPILATION=ON -DUSE_LIBCPP=OFF
           
-          cmake --build ${{github.workspace}}/${{ github.head_ref }}/${{ matrix.config.key }}
+          cmake --build ${{github.workspace}}/${{github.actor}}-${{ github.head_ref }}/${{ matrix.config.key }}
 
       - name: Test
         run: |
-          cd ${{github.workspace}}/${{ github.head_ref }}/${{ matrix.config.key }}
+          cd ${{github.workspace}}/${{github.actor}}-${{ github.head_ref }}/${{ matrix.config.key }}
           ctest
           cd ..
