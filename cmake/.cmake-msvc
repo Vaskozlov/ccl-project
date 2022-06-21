@@ -8,3 +8,6 @@ endif ()
 if (USE_SANITIZERS)
     add_compile_options(/fsanitize=address)
 endif ()
+
+message(STATUS "boost include dir: ${Boost_INCLUDE}")
+message(STATUS "boost include dir: ${Boost_INCLUDE_DIR}")
