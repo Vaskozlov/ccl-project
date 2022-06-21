@@ -15,25 +15,21 @@ jobs:
             key: linux-gcc-amd64
             os: [ self-hosted, linux, X64 ]
             cmake_params: ''
-            build-path: ${{github.workspace}}/${{ github.head_ref }}/linux-gcc-amd64
 
           - name: Linux arm64 gcc
             key: linux-gcc-arm64
             os: [ self-hosted, linux, ARM64 ]
             cmake_params: ''
-            build-path: ${{github.workspace}}/${{ github.head_ref }}/linux-gcc-arm64
 
           - name: Linux amd64 clang
             key: linux-clang-arm64
             os: [ self-hosted, linux, X64 ]
             cmake_params: '-DCMAKE_C_COMPILER=/usr/bin/clang -DCMAKE_CXX_COMPILER=/usr/bin/clang++'
-            build-path: /linux-clang-amd64
 
           - name: Linux arm64 clang
             key: linux-clang-arm64
             os: [ self-hosted, linux, ARM64 ]
             cmake_params: '-DCMAKE_C_COMPILER=/usr/bin/clang -DCMAKE_CXX_COMPILER=/usr/bin/clang++'
-            build-path: ${{github.workspace}}/${{ github.head_ref }}/linux-clang-arm64
 
     name: CMake (${{ matrix.config.name }})
     runs-on: ${{ matrix.config.os }}
@@ -46,7 +42,7 @@ jobs:
         uses: actions/cache@v3
         id: cache-build
         with:
-          path: ${{ matrix.config.build-path }}
+          path: ${{github.workspace}}/${{ github.head_ref }}/${{ matrix.config.key }}
           key: ${{ matrix.config.key }}
 
       - name: Create build dir
