@@ -1,0 +1,12 @@
+set(CMAKE_CXX_STANDARD 23)
+add_compile_options(/W4 /Zc:__cplusplus)
+
+if (STRICT_COMPILATION)
+    add_compile_options(/WX)
+endif ()
+
+if (USE_SANITIZERS)
+    add_compile_options(/fsanitize=address)
+endif ()
+
+include_directories(${Boost_INCLUDE_DIR})

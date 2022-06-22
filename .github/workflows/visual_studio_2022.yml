@@ -1,0 +1,91 @@
+name: VS2022
+
+on:
+  pull_request:
+    branches: [ main ]
+    paths: [ '**.c', '**.cpp', '**.h', '**.hpp' ]
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - name: Windows-2022 AMD64 MSVC
+            os: windows-2022
+            platform: 2022
+            config_type: Release
+            platform_type: x64
+            boost-version: 1.79.0
+            key: windows-2022-x64
+            boost-path: D:/a/cerberus-project/cerberus-project/boost-1.79.0
+
+    name: VS2022 (${{ matrix.config.config_type }} ${{ matrix.config.os }} ${{ matrix.config.platform_type }})
+    runs-on: ${{ matrix.config.os }}
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 50
+
+      - name: Cache build
+        uses: actions/cache@v3
+        id: cache-build
+        with:
+          path: ${{github.workspace}}/${{github.actor}}-${{ github.head_ref }}/${{ matrix.config.key }}
+          key: ${{ matrix.config.key }}
+
+      - name: Cache boost
+        uses: actions/cache@v3
+        id: cache-boost
+        with:
+          path: D:/a/cerberus-project/cerberus-project/boost-${{ matrix.config.boost-version }}
+          key: boost-${{ matrix.config.boost-version }}
+
+      - name: Create build dir
+        if: steps.cache-build.outputs.cache-hit != 'true'
+        run: |
+          mkdir ${{github.workspace}}/${{github.actor}}-${{ github.head_ref }}/${{ matrix.config.key }}
+
+      - name: Create boost dir
+        if: steps.cache-boost.outputs.cache-hit != 'true'
+        run: |
+          mkdir D:/a/cerberus-project/cerberus-project/boost-${{ matrix.config.boost-version }}
+
+      - name: Install dependencies
+        run: |
+          cd scripts/windows
+          ./install.bat
+          cd ../..
+
+      - name: Install boost
+        if: steps.cache-boost.outputs.cache-hit != 'true'
+        uses: MarkusJx/install-boost@v2.3.0
+        with:
+          boost_version: ${{ matrix.config.boost-version }}
+          boost_install_dir: ${{ matrix.config.boost-path }}
+          platform_version: ${{ matrix.config.platform }}
+          toolset: msvc
+          link: shared
+
+      - name: Configure CMake
+        working-directory: ${{github.workspace}}/${{github.actor}}-${{ github.head_ref }}/${{ matrix.config.key }}
+        shell: bash
+        run: |
+          ls ${{ matrix.config.boost-path }}
+          cmake -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake \
+          -DBoost_INCLUDE_DIR=${{ matrix.config.boost-path }}/boost/boost/include \
+          -DUSE_DYNAMIC_LIBRARY=ON -DCMAKE_BUILD_TYPE=Release -DUSE_SANITIZERS=OFF \
+          -LH -G 'Visual Studio 17 2022' -A x64 -S ../..
+        env:
+          BOOST_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}
+
+      - name: Build
+        working-directory: ${{github.workspace}}/${{github.actor}}-${{ github.head_ref }}/${{ matrix.config.key }}
+        shell: bash
+        run: cmake --build .
+
+      - name: Tests
+        working-directory: ${{github.workspace}}/${{github.actor}}-${{ github.head_ref }}/${{ matrix.config.key }}
+        shell: bash
+        run: ctest

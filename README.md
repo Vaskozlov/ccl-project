@@ -1,2 +1,0 @@
-# cerberus-project
-Cerberus project
