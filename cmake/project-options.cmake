@@ -1,0 +1,11 @@
+option(USE_SANITIZERS "Use sanitizers" OFF)
+option(DYNAMIC_LINKING "Compile dynamic linking version" ON)
+option(USE_LIBCPP "Use libc++ when compiling with clang" OFF)
+option(STRICT_COMPILATION "Enable -Werror strict compilation" OFF)
+
+message(STATUS "CC " ${CMAKE_C_COMPILER})
+message(STATUS "CXX " ${CMAKE_CXX_COMPILER})
+message(STATUS "Use libcpp? " ${USE_LIBCPP})
+message(STATUS "Use sanitizers? " ${USE_SANITIZERS})
+message(STATUS "Strict compilation? " ${STRICT_COMPILATION})
+message(STATUS "Dynamic linking version? " ${DYNAMIC_LINKING})

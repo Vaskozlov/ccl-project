@@ -1,0 +1,65 @@
+name: Linux
+
+on:
+  pull_request:
+    branches: [ main ]
+    paths: [ '**.c', '**.cpp', '**.h', '**.hpp' ]
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - name: Linux amd64 GCC
+            key: linux-gcc-amd64
+            os: [ self-hosted, linux, X64 ]
+            cmake_params: ''
+
+          - name: Linux arm64 gcc
+            key: linux-gcc-arm64
+            os: [ self-hosted, linux, ARM64 ]
+            cmake_params: ''
+
+          - name: Linux amd64 clang
+            key: linux-clang-arm64
+            os: [ self-hosted, linux, X64 ]
+            cmake_params: '-DCMAKE_C_COMPILER=/usr/bin/clang -DCMAKE_CXX_COMPILER=/usr/bin/clang++'
+
+          - name: Linux arm64 clang
+            key: linux-clang-arm64
+            os: [ self-hosted, linux, ARM64 ]
+            cmake_params: '-DCMAKE_C_COMPILER=/usr/bin/clang -DCMAKE_CXX_COMPILER=/usr/bin/clang++'
+
+    name: CMake (${{ matrix.config.name }})
+    runs-on: ${{ matrix.config.os }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Cache build
+        uses: actions/cache@v3
+        id: cache-build
+        with:
+          path: ${{github.workspace}}/${{github.actor}}-${{ github.head_ref }}/${{ matrix.config.key }}
+          key: ${{github.actor}}-${{ github.head_ref }}-${{ matrix.config.key }}
+
+      - name: Create build dir
+        if: steps.cache-build.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p ${{github.workspace}}/${{github.actor}}-${{ github.head_ref }}/${{ matrix.config.key }}
+
+      - name: Build
+        run: |
+          cmake ${{ matrix.config.cmake_params }} -G Ninja \
+            -B ${{github.workspace}}/${{github.actor}}-${{ github.head_ref }}/${{ matrix.config.key }} \
+            -DCMAKE_BUILD_TYPE=Release -DSTRICT_COMPILATION=ON -DUSE_LIBCPP=OFF
+          
+          cmake --build ${{github.workspace}}/${{github.actor}}-${{ github.head_ref }}/${{ matrix.config.key }}
+
+      - name: Test
+        run: |
+          cd ${{github.workspace}}/${{github.actor}}-${{ github.head_ref }}/${{ matrix.config.key }}
+          ctest
+          cd ..

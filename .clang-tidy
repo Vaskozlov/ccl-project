@@ -1,0 +1,19 @@
+---
+Checks: "*,
+        -abseil-*,
+        -altera-*,
+        -android-*,
+        -fuchsia-*,
+        -google-*,
+        -llvm*,
+        -zircon-*,
+        -hicpp-no-assembler,
+        -hicpp-signed-bitwise,
+        -readability-identifier-length,
+        -bugprone-easily-swappable-parameters,
+        -cppcoreguidelines-non-private-member-variables-in-classes,
+        -misc-non-private-member-variables-in-classes,
+"
+WarningsAsErrors: ''
+HeaderFilterRegex: ''
+FormatStyle: none
