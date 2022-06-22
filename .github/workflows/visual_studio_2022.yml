@@ -33,7 +33,7 @@ jobs:
         id: cache-build
         with:
           path: ${{github.workspace}}/${{github.actor}}-${{ github.head_ref }}/${{ matrix.config.key }}
-          key: ${{ matrix.config.key }}
+          key: ${{github.actor}}-${{ github.head_ref }}-${{ matrix.config.key }}
 
       - name: Cache boost
         uses: actions/cache@v3
