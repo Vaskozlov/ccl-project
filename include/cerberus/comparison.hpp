@@ -6,7 +6,7 @@
 
 namespace cerb
 {
-    template<typename T>
+    template<std::equality_comparable T>
     CERBLIB_DECL auto safeEqual(T const &lhs, T const &rhs) -> bool
     {
         if constexpr (std::floating_point<T>) {
@@ -16,7 +16,7 @@ namespace cerb
         }
     }
 
-    template<typename T>
+    template<std::equality_comparable T>
     CERBLIB_DECL auto safeNotEqual(T const &lhs, T const &rhs) -> bool
     {
         if constexpr (std::floating_point<T>) {

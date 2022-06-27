@@ -34,7 +34,7 @@ namespace cerb
         constexpr auto operator==(Pair const &other) const
             -> bool requires(Comparison == PairComparison::DEFAULT)
         {
-            return first == other.first && second == other.second;
+            return safeEqual(first, other.first) && safeEqual(second, other.second);
         }
 
         template<Pairable Pair>
