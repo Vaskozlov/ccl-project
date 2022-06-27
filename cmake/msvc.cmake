@@ -1,4 +1,3 @@
-set(CMAKE_CXX_STANDARD 23)
 add_compile_options(/W4 /Zc:__cplusplus)
 
 if (STRICT_COMPILATION)
