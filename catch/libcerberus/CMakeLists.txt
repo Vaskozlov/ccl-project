@@ -1,28 +1,22 @@
 file(
         GLOB_RECURSE
-        LIBCERBERUS_CATCH
+        LIBCERBERUS_CATCH_OBJS
         "catch/libcerberus/*.cpp"
 )
 
-foreach (file ${LIBCERBERUS_CATCH})
+add_executable(
+        libcerberus_catch
+        ${LIBCERBERUS_CATCH_OBJS}
+)
 
-    get_filename_component(filename ${file} NAME_WLE)
-    add_executable(
-            ${filename}
-            ${file}
-    )
+target_link_libraries(
+        libcerberus_catch
+        fmt::fmt
+)
 
-    target_link_libraries(
-            ${filename}
-            fmt::fmt
-    )
+target_link_libraries(
+        libcerberus_catch
+        ${Boost_LIBRARIES}
+)
 
-    target_link_libraries(
-            ${filename}
-            ${Boost_LIBRARIES}
-    )
-
-
-    add_test(${filename}-test ${filename})
-endforeach ()
-
+add_test(LIBCERBERUS_TEST libcerberus_catch)
