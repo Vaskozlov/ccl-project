@@ -1,4 +1,4 @@
-add_compile_options(-Wfloat-equal)
+add_compile_options(-Wfloat-equal -Wmove)
 
 if (USE_LIBCPP)
     add_compile_options(-stdlib=libc++ -lc++abi)
