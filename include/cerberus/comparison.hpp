@@ -1,8 +1,8 @@
 #ifndef CERBERUS_PROJECT_COMPARISON_HPP
 #define CERBERUS_PROJECT_COMPARISON_HPP
 
-#include <cmath>
 #include <cerberus/cerberus.hpp>
+#include <cmath>
 
 namespace cerb
 {

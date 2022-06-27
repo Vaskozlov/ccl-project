@@ -11,7 +11,7 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - name: Linux amd64 GCC
+          - name: Linux amd64 gcc
             key: linux-gcc-amd64
             os: [ self-hosted, linux, X64 ]
             cmake_params: ''
