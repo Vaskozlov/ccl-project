@@ -6,6 +6,10 @@
 #include <string>
 #include <string_view>
 
+#if !defined(__PRETTY_FUNCTION__) && defined(_MSC_VER)
+#define __PRETTY_FUNCTION__ __FUNCSIG__
+#endif
+
 #define CREATE_DEBUG_LOCATION cerb::debug::Location(__FILE__, __PRETTY_FUNCTION__, __LINE__)
 
 namespace cerb::debug
