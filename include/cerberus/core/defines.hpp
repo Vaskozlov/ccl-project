@@ -32,6 +32,6 @@
 #    define CERBLIB_TRIVIAL_ABI [[clang::trivial_abi]]
 #else
 #    define CERBLIB_TRIVIAL_ABI
-#endif /* CERBLIB_TRIVIAL_ABI*/
+#endif /* CERBLIB_TRIVIAL_ABI */
 
 #endif /* CERBERUS_PROJECT_DEFINES_HPP */

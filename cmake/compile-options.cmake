@@ -1,3 +1,5 @@
+set(CMAKE_CXX_STANDARD 23)
+
 if (MSVC)
     include(cmake/msvc.cmake)
 elseif (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
