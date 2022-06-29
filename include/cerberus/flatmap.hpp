@@ -131,7 +131,7 @@ namespace cerb
 
         constexpr Flatmap(std::initializer_list<value_type> const &initial_data)
         {
-            for (value_type const &value : initial_data) {
+            for (auto &value : initial_data) {
                 insert(value);
             }
         }

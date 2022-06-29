@@ -7,7 +7,7 @@ using TypedBitset = cerb::TypedBitset<cerb::u32>;
 
 DEBUG_SCOPE
 {
-    TypedBitset bitset{};
+    auto bitset = TypedBitset{};
     bitset.set(1, 10, true);
 
     ASSERT_FALSE(bitset.at(0));

@@ -1,8 +1,8 @@
 #ifndef CERBERUS_PROJECT_CERBERUS_HPP
 #define CERBERUS_PROJECT_CERBERUS_HPP
 
-#if !defined(__cplusplus) || (__cplusplus < 202002L)
-#    error cerberus requires at least C++20
+#if !defined(__cplusplus) || !(__cplusplus > 202002L)
+#    error cerberus requires at least C++2b
 #endif /* minimum requirements */
 
 #include <cerberus/core/concepts.hpp>

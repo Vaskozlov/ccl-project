@@ -11,7 +11,7 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - name: Windows-2022 AMD64 MSVC
+          - name: Windows-2022 amd64 MSVC
             os: windows-2022
             platform: 2022
             config_type: Release
@@ -72,7 +72,6 @@ jobs:
         working-directory: ${{github.workspace}}/${{github.actor}}-${{ github.head_ref }}/${{ matrix.config.key }}
         shell: bash
         run: |
-          ls ${{ matrix.config.boost-path }}
           cmake -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake \
           -DBoost_INCLUDE_DIR=${{ matrix.config.boost-path }}/boost/boost/include \
           -DUSE_DYNAMIC_LIBRARY=ON -DCMAKE_BUILD_TYPE=Release -DUSE_SANITIZERS=OFF \
