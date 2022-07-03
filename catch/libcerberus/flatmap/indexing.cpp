@@ -16,7 +16,7 @@ DEBUG_SCOPE
     static_assert(flatmap[20] == 30);
     static_assert(flatmap[30] == 40);
 
-    ERROR_EXPECTED(UNUSED_DECL flatmap.at(40), std::out_of_range, "key not found");
+    ERROR_EXPECTED(UNUSED_DECL flatmap.at(40), cerb::KeyNotFound, "key not found");
 
     return {};
 };

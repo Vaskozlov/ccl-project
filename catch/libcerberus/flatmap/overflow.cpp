@@ -12,7 +12,7 @@ DEBUG_SCOPE
 
     static_assert(flatmap.capacity() == 10);
 
-    ERROR_EXPECTED(flatmap.insert(110, 120), std::out_of_range, "flatmap is full");
+    ERROR_EXPECTED(flatmap.insert(110, 120), cerb::OutOfRange, "flatmap is full");
 
     return {};
 };
