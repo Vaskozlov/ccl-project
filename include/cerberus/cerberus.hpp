@@ -7,6 +7,7 @@
 
 #include <cerberus/core/concepts.hpp>
 #include <cerberus/core/defines.hpp>
+#include <cerberus/core/exception.hpp>
 #include <cerberus/core/int_types.hpp>
 #include <cerberus/core/logical_operations.hpp>
 

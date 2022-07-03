@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <array>
+#include <cerberus/cerberus.hpp>
 #include <initializer_list>
 #include <utility>
 
@@ -59,17 +60,17 @@ namespace cerb
             return storage.cbegin() + occupied;
         }
 
-        constexpr auto insert(Key const &key, Value &&value) -> value_type &
+        constexpr auto insert(const Key &key, Value &&value) -> value_type &
         {
             return emplace(key, std::move(value));
         }
 
-        constexpr auto insert(Key const &key, Value const &value) -> value_type &
+        constexpr auto insert(const Key &key, const Value &value) -> value_type &
         {
             return emplace(key, value);
         }
 
-        constexpr auto insert(value_type const &value) -> value_type &
+        constexpr auto insert(const value_type &value) -> value_type &
         {
             return emplace(value);
         }
@@ -83,53 +84,53 @@ namespace cerb
         constexpr auto emplace(Ts &&...args) -> value_type &
         {
             if (occupied == Size) {
-                throw std::out_of_range("flatmap is full");
+                throw OutOfRange("flatmap is full");
             }
 
             storage[occupied] = value_type(std::forward<Ts>(args)...);
             return storage[occupied++];
         }
 
-        CERBLIB_DECL auto at(Key const &key) -> Value &
+        CERBLIB_DECL auto at(const Key &key) -> Value &
         {
             return staticAt(*this, key);
         }
 
-        CERBLIB_DECL auto at(Key const &key) const -> Value const &
+        CERBLIB_DECL auto at(const Key &key) const -> const Value &
         {
             return staticAt(*this, key);
         }
 
-        CERBLIB_DECL auto operator[](Key const &key) -> Value &
+        CERBLIB_DECL auto operator[](const Key &key) -> Value &
         {
             return at(key);
         }
 
-        CERBLIB_DECL auto operator[](Key const &key) const -> Value const &
+        CERBLIB_DECL auto operator[](const Key &key) const -> const Value &
         {
             return at(key);
         }
 
-        CERBLIB_DECL auto contains(Key const &key) const -> bool
+        CERBLIB_DECL auto contains(const Key &key) const -> bool
         {
             return find(key) != end();
         }
 
-        CERBLIB_DECL auto find(Key const &key) -> iterator
+        CERBLIB_DECL auto find(const Key &key) -> iterator
         {
             return std::ranges::find_if(
-                *this, [key](value_type const &value) { return value.first == key; });
+                *this, [key](const value_type &value) { return value.first == key; });
         }
 
-        CERBLIB_DECL auto find(Key const &key) const -> const_iterator
+        CERBLIB_DECL auto find(const Key &key) const -> const_iterator
         {
             return std::ranges::find_if(
-                *this, [key](value_type const &value) { return value.first == key; });
+                *this, [key](const value_type &value) { return value.first == key; });
         }
 
         Flatmap() = default;
 
-        constexpr Flatmap(std::initializer_list<value_type> const &initial_data)
+        constexpr Flatmap(const std::initializer_list<value_type> &initial_data)
         {
             for (auto &value : initial_data) {
                 insert(value);
@@ -138,13 +139,13 @@ namespace cerb
 
     private:
         template<typename Self>
-        CERBLIB_DECL static auto staticAt(Self &self, Key const &key)
-            -> std::conditional_t<std::is_const_v<Self>, Value const &, Value &>
+        CERBLIB_DECL static auto staticAt(Self &self, const Key &key)
+            -> std::conditional_t<std::is_const_v<Self>, const Value &, Value &>
         {
             auto elem = self.find(key);
 
             if (elem == self.end()) {
-                throw std::out_of_range("key not found");
+                throw KeyNotFound("key not found");
             }
 
             return elem->second;

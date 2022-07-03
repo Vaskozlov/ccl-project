@@ -7,7 +7,7 @@
 namespace cerb
 {
     template<std::equality_comparable T>
-    CERBLIB_DECL auto safeEqual(T const &lhs, T const &rhs) -> bool
+    CERBLIB_DECL auto safeEqual(const T &lhs, const T &rhs) -> bool
     {
         if constexpr (std::floating_point<T>) {
             return std::abs(lhs - rhs) <= std::numeric_limits<T>::epsilon();
@@ -17,7 +17,7 @@ namespace cerb
     }
 
     template<std::equality_comparable T>
-    CERBLIB_DECL auto safeNotEqual(T const &lhs, T const &rhs) -> bool
+    CERBLIB_DECL auto safeNotEqual(const T &lhs, const T &rhs) -> bool
     {
         if constexpr (std::floating_point<T>) {
             return std::abs(lhs - rhs) > std::numeric_limits<T>::epsilon();

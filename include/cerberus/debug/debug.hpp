@@ -52,7 +52,7 @@ namespace cerb::debug
     }
 
     template<typename T, typename U>
-    constexpr auto assertEqual(T const &lhs, U const &rhs, Location location) -> void
+    constexpr auto assertEqual(const T &lhs, const U &rhs, Location location) -> void
     {
         if (!safeEqual<T>(lhs, rhs)) {
             throw std::runtime_error(
@@ -61,7 +61,7 @@ namespace cerb::debug
     }
 
     template<typename T, typename U>
-    constexpr auto assertNotEqual(T const &lhs, U const &rhs, Location location) -> void
+    constexpr auto assertNotEqual(const T &lhs, const U &rhs, Location location) -> void
     {
         if (safeNotEqual<T>(lhs, rhs)) {
             throw std::runtime_error(
