@@ -6,16 +6,16 @@ using namespace std::string_view_literals;
 
 // NOLINTBEGIN
 
+STATIC_VARIABLE auto InputString = "Hello, \t\nWorld!"sv;
+STATIC_VARIABLE auto ExpectedString = "Hello,World!"sv;
+
 DEBUG_SCOPE
 {
-    STATIC_VARIABLE auto input_string = "Hello, \t\nWorld!"sv;
-    STATIC_VARIABLE auto expected_string = "Hello,World!"sv;
+    auto text_iterator = BasicTextIterator<char>{ InputString };
 
-    auto text_iterator = BasicTextIterator<char>{ input_string };
-
-    for (auto &chr : expected_string) {
+    for (auto &chr : ExpectedString) {
         ASSERT_EQ(chr, text_iterator.nextCleanChar());
-        ASSERT_EQ(chr, text_iterator.getCurrent());
+        ASSERT_EQ(chr, text_iterator.getCurrentChar());
     }
 
     return {};

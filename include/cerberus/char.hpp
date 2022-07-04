@@ -23,7 +23,7 @@ namespace cerb
     template<CharacterLiteral CharT>
     CERBLIB_DECL auto isLayout(CharT chr) -> bool
     {
-        return land(chr > 0, chr <= 32);
+        return land(chr > 0, chr <= ' ');
     }
 
     template<CharacterLiteral CharT>

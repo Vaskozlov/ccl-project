@@ -9,9 +9,6 @@ DEBUG_SCOPE
 {
     STATIC_VARIABLE auto flatmap = Flatmap{ { 10, 20 }, { 20, 30 }, { 30, 40 } };
 
-    static_assert(flatmap.size() == 3);
-    static_assert(flatmap.capacity() == 10);
-
     static_assert(flatmap[10] == 20);
     static_assert(flatmap[20] == 30);
     static_assert(flatmap[30] == 40);

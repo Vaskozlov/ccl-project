@@ -10,18 +10,18 @@ namespace cerb::text
     class BasicTextIterator
     {
     public:
-        CERBLIB_DECL auto getText() const -> const std::basic_string_view<CharT> &
-        {
-            return text;
-        }
-
-        CERBLIB_DECL auto getCurrent() const -> CharT
+        CERBLIB_DECL auto getCurrentChar() const -> CharT
         {
             if (not initialized) {
                 return 0;
             }
 
             return text[offset];
+        }
+
+        CERBLIB_DECL auto getText() const -> const std::basic_string_view<CharT> &
+        {
+            return text;
         }
 
         constexpr auto nextRawChar() -> CharT
@@ -44,7 +44,7 @@ namespace cerb::text
                 // empty loop
             }
 
-            return getCurrent();
+            return getCurrentChar();
         }
 
         CERBLIB_DECL auto futureRawChar(size_t offset_from_current_state) const -> CharT
@@ -55,7 +55,7 @@ namespace cerb::text
                 forked.nextRawChar();
             }
 
-            return forked.getCurrent();
+            return forked.getCurrentChar();
         }
 
         CERBLIB_DECL auto futureCleanChar(size_t offset_from_current_state) const -> CharT
@@ -66,7 +66,7 @@ namespace cerb::text
                 forked.nextCleanChar();
             }
 
-            return forked.getCurrent();
+            return forked.getCurrentChar();
         }
 
         BasicTextIterator() = default;

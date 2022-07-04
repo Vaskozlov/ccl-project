@@ -2,7 +2,7 @@
 #define CERBERUS_PROJECT_CONCEPTS_HPP
 
 #include <concepts>
-#include <execution>
+#include <exception>
 
 namespace cerb
 {
