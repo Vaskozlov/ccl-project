@@ -8,7 +8,7 @@ using namespace std::string_view_literals;
 template<cerb::TemplateString String>
 constexpr auto templateStringTest() -> void
 {
-    static constexpr auto input_string = "Hello, World!"sv;
+    constexpr auto input_string = "Hello, World!"sv;
 
     static_assert(!String.empty());
 
