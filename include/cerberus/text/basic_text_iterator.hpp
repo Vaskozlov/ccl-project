@@ -10,9 +10,14 @@ namespace cerb::text
     class BasicTextIterator
     {
     public:
+        CERBLIB_DECL auto getOffset() const -> size_t
+        {
+            return offset;
+        }
+
         CERBLIB_DECL auto getCurrentChar() const -> CharT
         {
-            if (not initialized) {
+            if (lor(not initialized, offset >= text.size())) {
                 return 0;
             }
 
@@ -26,7 +31,8 @@ namespace cerb::text
 
         constexpr auto nextRawChar() -> CharT
         {
-            if (offset >= text.size()) {
+            if (offset + 1 >= text.size()) {
+                ++offset;
                 return 0;
             }
 
@@ -73,7 +79,7 @@ namespace cerb::text
 
         constexpr explicit BasicTextIterator(
             std::basic_string_view<CharT> text_, size_t offset_ = 0)
-          : text(text_), offset(offset_)
+          : text{ text_ }, offset{ offset_ }
         {}
 
     private:
