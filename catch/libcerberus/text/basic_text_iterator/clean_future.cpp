@@ -11,7 +11,7 @@ DEBUG_SCOPE
     constexpr auto input_string = "Hello, \t\nWorld!"sv;
     constexpr auto expected_string = "Hello,World!"sv;
 
-    auto index = 1ZU;
+    size_t index = 1;
     auto text_iterator = BasicTextIterator<char>{ input_string };
 
     for (auto &chr : expected_string) {
