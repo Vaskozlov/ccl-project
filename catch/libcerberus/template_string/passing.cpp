@@ -8,15 +8,15 @@ using namespace std::string_view_literals;
 template<cerb::TemplateString String>
 constexpr auto templateStringTest() -> void
 {
-    static constexpr std::string_view InputString = "Hello, World!"sv;
+    static constexpr auto input_string = "Hello, World!"sv;
 
     static_assert(!String.empty());
 
     STATIC_ASSERT_EQ(String.size(), 13UL);
-    ASSERT_EQ(String.strView(), InputString);
+    ASSERT_EQ(String.strView(), input_string);
 
-    ASSERT_TRUE(std::ranges::equal(String, InputString));
-    ASSERT_TRUE(std::equal(String.begin(), String.end(), InputString.begin()));
+    ASSERT_TRUE(std::ranges::equal(String, input_string));
+    ASSERT_TRUE(std::equal(String.begin(), String.end(), input_string.begin()));
 }
 
 DEBUG_SCOPE
