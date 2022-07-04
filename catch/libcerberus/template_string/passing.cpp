@@ -6,13 +6,10 @@ using namespace std::string_view_literals;
 // NOLINTBEGIN
 
 template<cerb::TemplateString String>
-constexpr auto templateStringTest() -> void
+constexpr auto templateStringTest(std::string_view input_string) -> void
 {
-    constexpr auto input_string = "Hello, World!"sv;
-
-    static_assert(!String.empty());
-
-    STATIC_ASSERT_EQ(String.size(), 13UL);
+    ASSERT_EQ(String.empty(), input_string.empty());
+    ASSERT_EQ(String.size(), input_string.size());
     ASSERT_EQ(String.strView(), input_string);
 
     ASSERT_TRUE(std::ranges::equal(String, input_string));
@@ -21,7 +18,8 @@ constexpr auto templateStringTest() -> void
 
 DEBUG_SCOPE
 {
-    templateStringTest<"Hello, World!">();
+    templateStringTest<"">("");
+    templateStringTest<"Hello, World!">("Hello, World!");
     return {};
 }
 

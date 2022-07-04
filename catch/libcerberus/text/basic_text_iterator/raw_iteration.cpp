@@ -8,7 +8,7 @@ using namespace std::string_view_literals;
 
 DEBUG_SCOPE
 {
-    constexpr auto input_string = "Hello, World!"sv;
+    STATIC_VARIABLE auto input_string = "Hello, World!"sv;
 
     auto text_iterator = BasicTextIterator<char>{ input_string };
 
