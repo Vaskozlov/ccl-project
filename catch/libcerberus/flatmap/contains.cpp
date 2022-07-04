@@ -19,6 +19,8 @@ DEBUG_SCOPE
 
     static_assert(!flatmap.contains(0));
     static_assert(!flatmap.contains(40));
+
+    return {};
 }
 
 // NOLINTEND
