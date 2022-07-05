@@ -34,7 +34,7 @@ namespace cerb::debug
 
         [[nodiscard]] auto toStr() const -> std::string
         {
-            return fmt::format(
+            return ::fmt::format(
                 "file: {}, function: {}, line: {}", getFilename(), getFunction(), getLine());
         }
 

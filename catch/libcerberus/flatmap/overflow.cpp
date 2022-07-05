@@ -14,6 +14,6 @@ DEBUG_SCOPE
     ERROR_EXPECTED(flatmap.insert(110, 120), cerb::OutOfRange, "flatmap is full");
 
     return {};
-};
+}
 
 // NOLINTEND

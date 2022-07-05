@@ -13,7 +13,7 @@ namespace cerb::fmt::core
     public:
         CERBLIB_DECL auto get() const -> size_t
         {
-            return counter;
+            return arguments_counter;
         }
 
         ArgumentsCounter() = default;
@@ -39,10 +39,10 @@ namespace cerb::fmt::core
         constexpr auto processState() -> void
         {
             if (bracket::isOpened(text_iterator)) {
-                ++opened;
-                ++counter;
+                ++opened_brackets_counter;
+                ++arguments_counter;
             } else if (bracket::isClosed(text_iterator)) {
-                --opened;
+                --opened_brackets_counter;
             } else if (bracket::needToSkip(text_iterator)) {
                 text_iterator.nextRawChar();
             }
@@ -50,12 +50,12 @@ namespace cerb::fmt::core
 
         CERBLIB_DECL auto isUnbalancedBraces() const -> bool
         {
-            return opened != 0;
+            return opened_brackets_counter != 0;
         }
 
         text::BasicTextIterator<CharT> text_iterator{};
-        size_t counter{};
-        size_t opened{};
+        size_t arguments_counter{};
+        size_t opened_brackets_counter{};
     };
 
     template<CharacterLiteral CharT>

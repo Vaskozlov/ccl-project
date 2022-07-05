@@ -3,7 +3,7 @@
 
 #include <cerberus/text/basic_text_iterator.hpp>
 
-namespace cerb::fmt::bracket
+namespace cerb::fmt::core::bracket
 {
     template<CharacterLiteral CharT>
     CERBLIB_DECL auto isOpened(const text::BasicTextIterator<CharT> &text_iterator) -> bool
@@ -25,6 +25,6 @@ namespace cerb::fmt::bracket
         return (chr == '{' && text_iterator.futureRawChar(1) == '{') ||
                (chr == '}' && text_iterator.futureRawChar(1) == '}');
     }
-}// namespace cerb::fmt::bracket
+}// namespace cerb::fmt::core::bracket
 
 #endif /* CERBERUS_PROJECT_BRACKET_OPS_HPP */
