@@ -9,42 +9,55 @@ namespace cerb::text
     template<CharacterLiteral CharT>
     class BasicTextIterator
     {
+    private:
+        using const_iterator = typename std::basic_string_view<CharT>::const_iterator;
+
     public:
-        CERBLIB_DECL auto getOffset() const -> size_t
+        CERBLIB_DECL auto getCarriage() const -> const_iterator
         {
-            return offset;
+            return carriage;
+        }
+
+        CERBLIB_DECL auto getRemainingText() const -> std::basic_string_view<CharT>
+        {
+            return { carriage, end };
         }
 
         CERBLIB_DECL auto getCurrentChar() const -> CharT
         {
-            if (lor(not initialized, offset >= text.size())) {
+            if (lor(not initialized, carriage == end)) {
                 return 0;
             }
 
-            return text[offset];
+            return *carriage;
         }
 
-        CERBLIB_DECL auto getText() const -> const std::basic_string_view<CharT> &
+        virtual constexpr auto nextRawChar() -> CharT
         {
-            return text;
+            return basicNextRawChar();
         }
 
-        constexpr auto nextRawChar() -> CharT
+        virtual constexpr auto nextCleanChar() -> CharT
         {
-            if (offset + 1 >= text.size()) {
-                offset = text.size();
+            return basicNextCleanChar();
+        }
+
+        constexpr auto basicNextRawChar() -> CharT
+        {
+            if (carriage == end) {
                 return 0;
             }
 
             if (not initialized) {
                 initialized = true;
-                return text[0];
+                return *carriage;
             }
 
-            return text[++offset];
+            ++carriage;
+            return *carriage;
         }
 
-        constexpr auto nextCleanChar() -> CharT
+        constexpr auto basicNextCleanChar() -> CharT
         {
             while (isLayout(nextRawChar())) {
                 // empty loop
@@ -75,16 +88,22 @@ namespace cerb::text
             return forked.getCurrentChar();
         }
 
-        BasicTextIterator() = default;
+        auto operator=(const BasicTextIterator &) -> BasicTextIterator & = default;
+        auto operator=(BasicTextIterator &&) noexcept -> BasicTextIterator & = default;
 
-        constexpr explicit BasicTextIterator(
-            std::basic_string_view<CharT> text_, size_t offset_ = 0)
-          : text{ text_ }, offset{ offset_ }
+        BasicTextIterator() = default;
+        BasicTextIterator(const BasicTextIterator &) = default;
+        BasicTextIterator(BasicTextIterator &&) noexcept = default;
+
+        constexpr explicit BasicTextIterator(const std::basic_string_view<CharT> &text_)
+          : carriage{ text_.begin() }, end{ text_.end() }
         {}
 
+        virtual ~BasicTextIterator() = default;
+
     private:
-        std::basic_string_view<CharT> text{};
-        size_t offset{};
+        const_iterator carriage{};
+        const_iterator end{};
         bool initialized{};
     };
 }// namespace cerb::text

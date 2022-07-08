@@ -14,7 +14,9 @@ namespace cerb::fmt::core
     private:
         using CharT = decltype(String.zeroChar());
         using value_type = std::basic_string_view<CharT>;
-        using iterator = typename std::basic_string_view<CharT>::iterator;
+        using iterator = typename value_type::iterator;
+        using const_iterator = typename value_type::const_iterator;
+
         static constexpr size_t blocks_num = core::countArgs(String.strView()) + 1;
 
     public:
@@ -54,7 +56,7 @@ namespace cerb::fmt::core
                 processState();
             }
 
-            constructBlock(text.begin() + offset, text.end());
+            constructBlock(block_begin, text.end());
         }
 
         constexpr auto processState() -> void
@@ -62,15 +64,15 @@ namespace cerb::fmt::core
             if (bracket::isOpened(text_iterator)) {
                 fillBlock();
             } else if (bracket::isClosed(text_iterator)) {
-                offset = text_iterator.getOffset() + 1;
+                block_begin = text_iterator.getRemainingText().begin() + 1;
             }
         }
 
         constexpr auto fillBlock() -> void
         {
-            auto new_offset = text_iterator.getOffset();
-            constructBlock(text.begin() + offset, text.begin() + new_offset);
-            offset = new_offset;
+            auto new_begin = text_iterator.getRemainingText().begin();
+            constructBlock(block_begin, new_begin);
+            block_begin = new_begin;
         }
 
         constexpr auto constructBlock(iterator begin, iterator end) -> void
@@ -81,7 +83,7 @@ namespace cerb::fmt::core
         storage_t blocks{};
         std::basic_string_view<CharT> text{ String.strView() };
         text::BasicTextIterator<CharT> text_iterator{ text };
-        size_t offset{ text_iterator.getOffset() };
+        const_iterator block_begin{ text_iterator.getCarriage() };
         size_t current_block{};
     };
 

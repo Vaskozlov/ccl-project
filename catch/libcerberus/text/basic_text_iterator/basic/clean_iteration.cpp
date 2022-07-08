@@ -14,7 +14,7 @@ DEBUG_SCOPE
 {
     auto text_iterator = BasicTextIterator{ InputString };
 
-    for (auto &chr : ExpectedString) {
+    for (const auto &chr : ExpectedString) {
         ASSERT_EQ(chr, text_iterator.nextCleanChar());
         ASSERT_EQ(chr, text_iterator.getCurrentChar());
     }
