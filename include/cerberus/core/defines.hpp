@@ -34,4 +34,10 @@
 #    define CERBLIB_TRIVIAL_ABI
 #endif /* CERBLIB_TRIVIAL_ABI */
 
+#define CERBLIB_HAS_CONSTEXPR_STRING                                                               \
+    __cpp_lib_constexpr_string >= 201907L && (!__clang__ || __clang_major__ >= 15)
+
+#define CERBLIB_HAS_CONSTEXPR_VECTOR                                                               \
+    __cpp_lib_constexpr_vector >= 201907L && (!__clang__ || __clang_major__ >= 15)
+
 #endif /* CERBERUS_PROJECT_DEFINES_HPP */

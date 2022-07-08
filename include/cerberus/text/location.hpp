@@ -48,7 +48,7 @@ namespace cerb::text
         constexpr explicit Location(
             std::basic_string_view<CharT> filename_, size_t line_ = 1, size_t column_ = 1,
             size_t offset_ = 0)
-          : filename(filename_), line(line_), column(column_), offset(offset_)
+          : filename{ filename_ }, line{ line_ }, column{ column_ }, offset{ offset_ }
         {}
 
     private:

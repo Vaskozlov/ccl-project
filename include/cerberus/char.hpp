@@ -15,6 +15,11 @@ namespace cerb
                                  { 'E', 14 }, { 'F', 15 } };
 
     template<CharacterLiteral CharT>
+    constexpr auto IntToHexadecimalChars =
+        std::array<CharT, 16>{ '0', '1', '2', '3', '4', '5', '6', '7',
+                               '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+
+    template<CharacterLiteral CharT>
     CERBLIB_DECL auto isEoF(CharT chr) -> bool
     {
         return chr == 0;
@@ -23,7 +28,7 @@ namespace cerb
     template<CharacterLiteral CharT>
     CERBLIB_DECL auto isLayout(CharT chr) -> bool
     {
-        return land(chr > 0, chr <= 32);
+        return land(chr > 0, chr <= ' ');
     }
 
     template<CharacterLiteral CharT>

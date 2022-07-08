@@ -9,9 +9,18 @@ namespace cerb
     template<size_t N, CharacterLiteral CharT>
     struct TemplateString
     {
+        using value_type = CharT;
         using storage_t = std::array<CharT, N>;
         using const_iterator = typename storage_t::const_iterator;
         using const_reverse_iterator = typename storage_t::const_reverse_iterator;
+
+        /**
+         * @brief Returns CharT to get type via decltype()
+         */
+        CERBLIB_DECL static auto zeroChar() -> CharT
+        {
+            return 0;
+        }
 
         CERBLIB_DECL auto begin() const -> const_iterator
         {
@@ -79,7 +88,7 @@ namespace cerb
         }
 
         CERBLIB_DECL auto operator<=>(TemplateString const &other) const
-            -> std::strong_ordering = default;
+            -> std::weak_ordering = default;
 
         // NOLINTNEXTLINE
         consteval TemplateString(const CharT (&str)[N])
