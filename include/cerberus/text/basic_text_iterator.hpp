@@ -32,7 +32,7 @@ namespace cerb::text
         constexpr auto nextRawChar() -> CharT
         {
             if (offset + 1 >= text.size()) {
-                ++offset;
+                offset = text.size();
                 return 0;
             }
 

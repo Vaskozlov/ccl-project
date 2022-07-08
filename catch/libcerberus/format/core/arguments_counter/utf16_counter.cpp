@@ -1,12 +1,11 @@
 #include <cerberus/debug/debug.hpp>
 #include <cerberus/format/core/arguments_counter.hpp>
 
-// NOLINTBEGIN
-
 using namespace cerb::integral_literals;
 
 using ArgumentsCounter = cerb::fmt::core::ArgumentsCounter<char16_t>;
 
+// NOLINTNEXTLINE
 DEBUG_SCOPE
 {
     STATIC_VARIABLE auto splitter = ArgumentsCounter{ u"" };
@@ -14,6 +13,7 @@ DEBUG_SCOPE
     return {};
 }
 
+// NOLINTNEXTLINE
 DEBUG_SCOPE
 {
     STATIC_VARIABLE auto splitter = ArgumentsCounter{ u"Hello!{}" };
@@ -21,6 +21,7 @@ DEBUG_SCOPE
     return {};
 }
 
+// NOLINTNEXTLINE
 DEBUG_SCOPE
 {
     STATIC_VARIABLE auto splitter = ArgumentsCounter{ u"Hello {}, { }!" };
@@ -28,11 +29,10 @@ DEBUG_SCOPE
     return {};
 }
 
+// NOLINTNEXTLINE
 DEBUG_SCOPE
 {
     STATIC_VARIABLE auto splitter = ArgumentsCounter{ u"Hello {}{{, {}}}!" };
     STATIC_ASSERT_EQ(splitter.get(), 2_ZU);
     return {};
 }
-
-// NOLINTEND

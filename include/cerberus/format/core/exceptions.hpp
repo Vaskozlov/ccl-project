@@ -5,7 +5,8 @@
 
 namespace cerb::fmt
 {
-    CERBLIB_EXCEPTION(StringSplitterException, CerberusException);
-}
+    CERBLIB_EXCEPTION(BasicFormattingException, CerberusException);
+    CERBLIB_EXCEPTION(StringSplitterException, BasicFormattingException);
+}// namespace cerb::fmt
 
 #endif /* CERBERUS_PROJECT_EXCEPTIONS_HPP */

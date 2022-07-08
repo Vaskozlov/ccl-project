@@ -19,6 +19,30 @@
 #define STATIC_ASSERT_EQ(lhs, rhs) static_assert(cerb::safeEqual(lhs, rhs))
 #define STATIC_ASSERT_NOT_EQ(lhs, rhs) static_assert(cerb::safeNotEqual(lhs, rhs))
 
+#ifdef CERBLIB_HAS_CONSTEXPR_VECTOR
+#    define VECTOR_ASSERT_TRUE(value) static_assert(value)
+#    define VECTOR_ASSERT_FALSE(value) static_assert(!value)
+#    define VECTOR_ASSERT_EQ(lhs, rhs) STATIC_ASSERT_EQ(lhs, rhs)
+#    define VECTOR_ASSERT_NOT_EQ(lhs, rhs) STATIC_ASSERT_NOT_EQ(lhs, rhs)
+#else
+#    define VECTOR_ASSERT_TRUE(value) ASSERT_TRUE(value)
+#    define VECTOR_ASSERT_FALSE(value) ASSERT_FALSE(!value)
+#    define VECTOR_ASSERT_EQ(lhs, rhs) ASSERT_EQ(lhs, rhs)
+#    define VECTOR_ASSERT_NOT_EQ(lhs, rhs) ASSERT_NOT_EQ(lhs, rhs)
+#endif
+
+#ifdef CERBLIB_HAS_CONSTEXPR_STRING
+#    define STRING_ASSERT_TRUE(value) static_assert(value)
+#    define STRING_ASSERT_FALSE(value) static_assert(!value)
+#    define STRING_ASSERT_EQ(lhs, rhs) STATIC_ASSERT_EQ(lhs, rhs)
+#    define STRING_ASSERT_NOT_EQ(lhs, rhs) STATIC_ASSERT_NOT_EQ(lhs, rhs)
+#else
+#    define STRING_ASSERT_TRUE(value) ASSERT_TRUE(value)
+#    define STRING_ASSERT_FALSE(value) ASSERT_FALSE(!value)
+#    define STRING_ASSERT_EQ(lhs, rhs) ASSERT_EQ(lhs, rhs)
+#    define STRING_ASSERT_NOT_EQ(lhs, rhs) ASSERT_NOT_EQ(lhs, rhs)
+#endif
+
 #define ERROR_EXPECTED(expression_with_error, error_type, error_message)                           \
     try {                                                                                          \
         expression_with_error;                                                                     \
