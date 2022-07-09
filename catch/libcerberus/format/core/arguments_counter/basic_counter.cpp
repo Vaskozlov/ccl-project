@@ -2,37 +2,36 @@
 #include <cerberus/format/core/arguments_counter.hpp>
 
 using namespace cerb::integral_literals;
-
 using ArgumentsCounter = cerb::fmt::core::ArgumentsCounter<char>;
 
-// NOLINTNEXTLINE
-DEBUG_SCOPE
+CONSTEXPR_TEST
 {
-    STATIC_VARIABLE auto splitter = ArgumentsCounter{ "" };
-    STATIC_ASSERT_EQ(splitter.get(), 0_ZU);
+    auto splitter = ArgumentsCounter{ "" };
+    ASSERT_EQ(splitter.get(), 0_ZU);
     return {};
 }
+();
 
-// NOLINTNEXTLINE
-DEBUG_SCOPE
+CONSTEXPR_TEST
 {
-    STATIC_VARIABLE auto splitter = ArgumentsCounter{ "Hello!{}" };
-    STATIC_ASSERT_EQ(splitter.get(), 1_ZU);
+    auto splitter = ArgumentsCounter{ "Hello!{}" };
+    ASSERT_EQ(splitter.get(), 1_ZU);
     return {};
 }
+();
 
-// NOLINTNEXTLINE
-DEBUG_SCOPE
+CONSTEXPR_TEST
 {
-    STATIC_VARIABLE auto splitter = ArgumentsCounter{ "Hello {}, { }!" };
-    STATIC_ASSERT_EQ(splitter.get(), 2_ZU);
+    auto splitter = ArgumentsCounter{ "Hello {}, { }!" };
+    ASSERT_EQ(splitter.get(), 2_ZU);
     return {};
 }
+();
 
-// NOLINTNEXTLINE
-DEBUG_SCOPE
+CONSTEXPR_TEST
 {
-    STATIC_VARIABLE auto splitter = ArgumentsCounter{ "Hello {}{{, {}}}!" };
-    STATIC_ASSERT_EQ(splitter.get(), 2_ZU);
+    auto splitter = ArgumentsCounter{ "Hello {}{{, {}}}!" };
+    ASSERT_EQ(splitter.get(), 2_ZU);
     return {};
 }
+();

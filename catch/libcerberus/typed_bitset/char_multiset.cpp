@@ -5,7 +5,7 @@ using TypedBitset = cerb::TypedBitset<char>;
 
 // NOLINTBEGIN
 
-DEBUG_SCOPE
+RUNTIME_TEST
 {
     auto bitset = TypedBitset{};
 
@@ -20,5 +20,6 @@ DEBUG_SCOPE
 
     return {};
 }
+();
 
 // NOLINTEND

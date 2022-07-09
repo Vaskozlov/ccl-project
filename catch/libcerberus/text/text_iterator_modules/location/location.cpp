@@ -3,9 +3,7 @@
 
 using Location = cerb::text::Location<>;
 
-// NOLINTBEGIN
-
-DEBUG_SCOPE
+CONSTEXPR_TEST
 {
     Location location{ "none" };
 
@@ -25,5 +23,4 @@ DEBUG_SCOPE
 
     return {};
 }
-
-// NOLINTEND
+();

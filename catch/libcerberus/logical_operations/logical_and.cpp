@@ -3,8 +3,6 @@
 
 using namespace cerb;
 
-// NOLINTBEGIN
-
 STATIC_ASSERT_EQ(land(true), true);
 STATIC_ASSERT_EQ(land(false), false);
 
@@ -15,4 +13,3 @@ STATIC_ASSERT_EQ(land(true, true, true), true);
 STATIC_ASSERT_EQ(land(true, true, false), false);
 STATIC_ASSERT_EQ(land(false, false, false), false);
 
-// NOLINTEND

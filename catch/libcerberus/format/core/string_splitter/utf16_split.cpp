@@ -4,28 +4,28 @@
 using namespace cerb::fmt::core;
 using namespace std::string_view_literals;
 
-// NOLINTNEXTLINE
-DEBUG_SCOPE
+CONSTEXPR_TEST
 {
-    STATIC_VARIABLE auto blocks = splitString<u"">();
-    STATIC_ASSERT_EQ(blocks[0], u""sv);
+    auto blocks = splitString<u"">();
+    ASSERT_EQ(blocks[0], u""sv);
     return {};
 }
+();
 
-// NOLINTNEXTLINE
-DEBUG_SCOPE
+CONSTEXPR_TEST
 {
-    STATIC_VARIABLE auto blocks = splitString<u"Hello!">();
-    STATIC_ASSERT_EQ(blocks[0], u"Hello!"sv);
+    auto blocks = splitString<u"Hello!">();
+    ASSERT_EQ(blocks[0], u"Hello!"sv);
     return {};
 }
+();
 
-// NOLINTNEXTLINE
-DEBUG_SCOPE
+CONSTEXPR_TEST
 {
-    STATIC_VARIABLE auto blocks = splitString<u"Hello {}, {}!">();
-    STATIC_ASSERT_EQ(blocks[0], u"Hello "sv);
-    STATIC_ASSERT_EQ(blocks[1], u", "sv);
-    STATIC_ASSERT_EQ(blocks[2], u"!"sv);
+    auto blocks = splitString<u"Hello {}, {}!">();
+    ASSERT_EQ(blocks[0], u"Hello "sv);
+    ASSERT_EQ(blocks[1], u", "sv);
+    ASSERT_EQ(blocks[2], u"!"sv);
     return {};
 }
+();

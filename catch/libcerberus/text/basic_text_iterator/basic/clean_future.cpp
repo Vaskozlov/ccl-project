@@ -1,27 +1,20 @@
 #include <cerberus/debug/debug.hpp>
 #include <cerberus/text/basic_text_iterator.hpp>
 
-// NOLINTBEGIN
-
 using namespace cerb::integral_literals;
 using namespace std::string_view_literals;
-
 using BasicTextIterator = cerb::text::BasicTextIterator<char>;
 
-STATIC_VARIABLE auto InputString = "Hello, \t\nWorld!"sv;
-STATIC_VARIABLE auto ExpectedString = "Hello,World!"sv;
-
-DEBUG_SCOPE
+CONSTEXPR_TEST
 {
     auto index = 1_ZU;
-    auto text_iterator = BasicTextIterator{ InputString };
+    auto text_iterator = BasicTextIterator{ "Hello, \t\nWorld!"sv };
 
-    for (auto &chr : ExpectedString) {
+    for (const auto &chr : "Hello,World!"sv) {
         ASSERT_EQ(chr, text_iterator.futureCleanChar(index));
         ++index;
     }
 
     return {};
 }
-
-// NOLINTEND
+();

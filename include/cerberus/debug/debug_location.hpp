@@ -10,7 +10,10 @@
 #    define __PRETTY_FUNCTION__ __FUNCSIG__
 #endif
 
-#define CREATE_DEBUG_LOCATION cerb::debug::Location(__FILE__, __PRETTY_FUNCTION__, __LINE__)
+#define CREATE_DEBUG_LOCATION                                                                      \
+    cerb::debug::Location(                                                                         \
+        static_cast<const char *>(__FILE__), static_cast<const char *>(__PRETTY_FUNCTION__),       \
+        __LINE__)
 
 namespace cerb::debug
 {
