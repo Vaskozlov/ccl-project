@@ -40,7 +40,7 @@ namespace cerb::text
             auto length = text.find('\n');
 
             length = length == text.npos ? text.size() : length;
-            line = { line_begin, length };
+            line = { line_begin, line_begin + length };
         }
 
         std::basic_string_view<CharT> line{};
