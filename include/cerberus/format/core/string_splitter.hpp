@@ -52,6 +52,8 @@ namespace cerb::fmt::core
 
         constexpr auto fill() -> void
         {
+            auto text = String.strView();
+
             while (text_iterator.nextRawChar() != 0) {
                 processState();
             }
@@ -81,8 +83,7 @@ namespace cerb::fmt::core
         }
 
         storage_t blocks{};
-        std::basic_string_view<CharT> text{ String.strView() };
-        text::BasicTextIterator<CharT> text_iterator{ text };
+        text::BasicTextIterator<CharT> text_iterator{ String.strView() };
         const_iterator block_begin{ text_iterator.getCarriage() };
         size_t current_block{};
     };

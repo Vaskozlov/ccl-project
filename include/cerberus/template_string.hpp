@@ -87,7 +87,7 @@ namespace cerb
             return string[index];
         }
 
-        CERBLIB_DECL auto operator<=>(TemplateString const &other) const
+        CERBLIB_DECL auto operator<=>(const TemplateString &other) const
             -> std::weak_ordering = default;
 
         // NOLINTNEXTLINE

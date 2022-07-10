@@ -4,7 +4,7 @@
 using namespace std::string_view_literals;
 
 template<cerb::TemplateString String>
-constexpr auto testTemplateString(std::string_view input) -> bool
+constexpr static auto testTemplateString(auto input) -> bool
 {
     auto test_string = input;
 
@@ -18,5 +18,8 @@ constexpr auto testTemplateString(std::string_view input) -> bool
     return true;
 }
 
-static_assert(testTemplateString<"">(""));
-static_assert(testTemplateString<"Hello, World!">("Hello, World!"));
+static_assert(testTemplateString<"">(""sv));
+static_assert(testTemplateString<"Hello, World!">("Hello, World!"sv));
+
+static_assert(testTemplateString<u"">(u""sv));
+static_assert(testTemplateString<u"Hello, World!">(u"Hello, World!"sv));

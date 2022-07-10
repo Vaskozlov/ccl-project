@@ -12,7 +12,7 @@ namespace cerb
     {
     private:
         static constexpr bool is_small_bitset = sizeof(T) == sizeof(u8);
-        static constexpr size_t small_bitset_size = 1L << (sizeof(T) * 8);
+        static constexpr size_t small_bitset_size = 1UL << (sizeof(T) * 8);
 
         using storage_t = std::conditional_t<
             is_small_bitset, std::bitset<small_bitset_size>, boost::dynamic_bitset<>>;
@@ -62,7 +62,9 @@ namespace cerb
 
         TypedBitset() = default;
 
-        explicit TypedBitset(size_t size) requires(not is_small_bitset) : storage(size)
+        explicit TypedBitset(size_t size)
+            requires(not is_small_bitset)
+        : storage(size)
         {}
 
     private:
@@ -81,7 +83,7 @@ namespace cerb
         {
             if (size >= storage.size()) {
                 if constexpr (is_small_bitset) {
-                    throw std::logic_error("unable to resize small bitset");
+                    throw LogicError("unable to resize small bitset");
                 } else {
                     storage.resize(size);
                 }

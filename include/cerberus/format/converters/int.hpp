@@ -27,7 +27,7 @@ namespace cerb::fmt
             constexpr IntegralConverter(
                 std::basic_string<CharT> &formatting_string_,
                 Int number_,
-                u16 notation_)
+                u16 notation_ = Notation::DECIMAL)
               : formatting_string{ formatting_string_ }, number{ number_ }, notation{ notation_ }
             {
                 if (land(notation > Notation::HEXADECIMAL, notation < Notation::BINARY)) {
@@ -87,7 +87,7 @@ namespace cerb::fmt
     template<std::integral Int, CharacterLiteral CharT>
     constexpr auto convert(std::basic_string<CharT> &formatting_string, Int value) -> void
     {
-        private_::IntegralConverter<Int, CharT>{ formatting_string, value, Notation::DECIMAL };
+        private_::IntegralConverter<Int, CharT>{ formatting_string, value };
     }
 }// namespace cerb::fmt
 

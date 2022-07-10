@@ -83,7 +83,7 @@ namespace cerb
         template<typename... Ts>
         constexpr auto emplace(Ts &&...args) -> value_type &
         {
-            if (occupied == Size) {
+            if (occupied == capacity()) {
                 throw OutOfRange("flatmap is full");
             }
 

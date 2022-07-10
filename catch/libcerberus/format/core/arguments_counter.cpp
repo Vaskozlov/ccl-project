@@ -1,9 +1,9 @@
-#include <cerberus/format/core/arguments_counter.hpp>
+#include "cerberus/format/core/arguments_counter.hpp"
 
 using namespace cerb::fmt::core;
 using namespace std::string_view_literals;
 
-constexpr auto argumentsCounterTest(auto string, size_t n) -> bool
+constexpr static auto argumentsCounterTest(auto string, size_t n) -> bool
 {
     auto counter = ArgumentsCounter{ string };
     return counter.get() == n;

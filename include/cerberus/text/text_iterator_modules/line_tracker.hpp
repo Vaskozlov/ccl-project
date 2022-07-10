@@ -39,10 +39,7 @@ namespace cerb::text
             auto line_begin = text.begin();
             auto length = text.find('\n');
 
-            if (length == text.npos) {
-                length = text.size();
-            }
-
+            length = length == text.npos ? text.size() : length;
             line = { line_begin, length };
         }
 
