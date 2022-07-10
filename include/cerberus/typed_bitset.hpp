@@ -12,7 +12,7 @@ namespace cerb
     {
     private:
         static constexpr bool is_small_bitset = sizeof(T) == sizeof(u8);
-        static constexpr size_t small_bitset_size = 1UL << (sizeof(T) * 8);
+        static constexpr size_t small_bitset_size = 256;
 
         using storage_t = std::conditional_t<
             is_small_bitset, std::bitset<small_bitset_size>, boost::dynamic_bitset<>>;
