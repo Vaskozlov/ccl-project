@@ -6,8 +6,8 @@ using namespace cerb::integral_literals;
 using namespace std::string_view_literals;
 
 template<cerb::CharacterLiteral CharT>
-    requires(std::is_same_v<char, CharT>)
 constexpr auto getExpectedLines() -> std::array<std::string_view, 5>// NOLINT
+requires(std::is_same_v<char, CharT>)
 {
     return { "Hello, World!", "It's a ", "Test!",
              "Of line "
@@ -16,8 +16,8 @@ constexpr auto getExpectedLines() -> std::array<std::string_view, 5>// NOLINT
 }
 
 template<cerb::CharacterLiteral CharT>
-    requires(std::is_same_v<char16_t, CharT>)
 constexpr auto getExpectedLines() -> std::array<std::u16string_view, 5>// NOLINT
+requires(std::is_same_v<char16_t, CharT>)
 {
     return { u"Hello, World!", u"It's a ", u"Test!",
              u"Of line "

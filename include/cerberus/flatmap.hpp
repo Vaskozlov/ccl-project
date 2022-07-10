@@ -25,7 +25,7 @@ namespace cerb
             return occupied;
         }
 
-        [[nodiscard]] consteval static auto capacity() -> size_t
+        CERBLIB_DECL static auto capacity() -> size_t
         {
             return Size;
         }
