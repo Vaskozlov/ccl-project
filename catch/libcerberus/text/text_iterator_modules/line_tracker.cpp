@@ -8,7 +8,7 @@ using namespace std::string_view_literals;
 
 template<cerb::CharacterLiteral CharT>
 constexpr auto getExpectedLines() -> std::array<std::string_view, 5>// NOLINT
-requires(std::is_same_v<char, CharT>)
+    requires(std::is_same_v<char, CharT>)
 {
     return { "Hello, World!", "It's a ", "Test!",
              "Of line "
@@ -18,7 +18,7 @@ requires(std::is_same_v<char, CharT>)
 
 template<cerb::CharacterLiteral CharT>
 constexpr auto getExpectedLines() -> std::array<std::u16string_view, 5>// NOLINT
-requires(std::is_same_v<char16_t, CharT>)
+    requires(std::is_same_v<char16_t, CharT>)
 {
     return { u"Hello, World!", u"It's a ", u"Test!",
              u"Of line "
@@ -50,5 +50,11 @@ constexpr auto testLineTracker(std::basic_string_view<CharT> input) -> bool
     return true;
 }
 
-static_assert(testLineTracker("Hello, World!\nIt's a \nTest!\nOf line tracker\n"sv));
-static_assert(testLineTracker(u"Hello, World!\nIt's a \nTest!\nOf line tracker\n"sv));
+STRING_TEST
+{
+    assertTrue(testLineTracker("Hello, World!\nIt's a \nTest!\nOf line tracker\n"sv));
+    assertTrue(testLineTracker(u"Hello, World!\nIt's a \nTest!\nOf line tracker\n"sv));
+
+    return {};
+}
+();
