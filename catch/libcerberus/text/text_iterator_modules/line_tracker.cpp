@@ -2,6 +2,7 @@
 #include <cerberus/text/text_iterator_modules/line_tracker.hpp>
 
 using namespace cerb::text;
+using namespace cerb::debug;
 using namespace cerb::integral_literals;
 using namespace std::string_view_literals;
 
@@ -39,12 +40,12 @@ constexpr auto testLineTracker(std::basic_string_view<CharT> input) -> bool
         line_tracker.next();
 
         if (chr == '\n') {
-            ASSERT_EQ(expected_lines.at(current_line), line_tracker.get());
+            assertEqual(expected_lines.at(current_line), line_tracker.get());
             ++current_line;
         }
     } while (text_iterator.getCurrentChar() != 0);
 
-    ASSERT_EQ(expected_lines.at(current_line), line_tracker.get());
+    assertEqual(expected_lines.at(current_line), line_tracker.get());
 
     return true;
 }

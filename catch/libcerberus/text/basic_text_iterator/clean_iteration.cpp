@@ -2,6 +2,7 @@
 #include <cerberus/text/basic_text_iterator.hpp>
 
 using namespace cerb::text;
+using namespace cerb::debug;
 using namespace std::string_view_literals;
 
 constexpr auto testCleanIteration(auto input, auto expected) -> bool
@@ -9,8 +10,8 @@ constexpr auto testCleanIteration(auto input, auto expected) -> bool
     auto text_iterator = BasicTextIterator{ input };
 
     for (const auto &chr : expected) {
-        ASSERT_EQ(chr, text_iterator.nextCleanChar());
-        ASSERT_EQ(chr, text_iterator.getCurrentChar());
+        assertEqual(chr, text_iterator.nextCleanChar());
+        assertEqual(chr, text_iterator.getCurrentChar());
     }
 
     return true;

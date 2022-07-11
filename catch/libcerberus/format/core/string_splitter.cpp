@@ -1,6 +1,7 @@
 #include <cerberus/debug/debug.hpp>
 #include <cerberus/format/core/string_splitter.hpp>
 
+using namespace cerb::debug;
 using namespace cerb::fmt::core;
 using namespace cerb::integral_literals;
 using namespace std::string_view_literals;
@@ -13,7 +14,7 @@ constexpr auto testSplitter(const std::initializer_list<std::basic_string_view<C
     auto split_string = splitString<String>();
 
     for (const auto &block : blocks) {
-        ASSERT_EQ(block, split_string[index]);
+        assertEqual(block, split_string[index]);
         ++index;
     }
 
