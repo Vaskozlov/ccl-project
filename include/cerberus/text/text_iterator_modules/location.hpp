@@ -2,7 +2,7 @@
 #define CERBERUS_PROJECT_LOCATION_HPP
 
 #include <cerberus/cerberus.hpp>
-#include <string_view>
+#include <cerberus/string_view.hpp>
 
 namespace cerb::text
 {
@@ -20,7 +20,7 @@ namespace cerb::text
             return column;
         }
 
-        CERBLIB_DECL auto getFilename() const -> const std::basic_string_view<CharT> &
+        CERBLIB_DECL auto getFilename() const -> const BasicStringView<CharT> &
         {
             return filename;
         }
@@ -37,7 +37,7 @@ namespace cerb::text
         Location() = default;
 
         constexpr explicit Location(
-            std::basic_string_view<CharT> filename_, size_t line_ = 1, size_t column_ = 1)
+            BasicStringView<CharT> filename_, size_t line_ = 1, size_t column_ = 1)
           : filename{ filename_ }, line{ line_ }, column{ column_ }
         {}
 
@@ -53,7 +53,7 @@ namespace cerb::text
             ++line;
         }
 
-        std::basic_string_view<CharT> filename{};
+        BasicStringView<CharT> filename{};
         size_t line{ 1 };
         size_t column{ 1 };
     };

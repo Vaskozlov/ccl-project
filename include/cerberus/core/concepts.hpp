@@ -21,6 +21,9 @@ namespace cerb
         std::is_same_v<T, char16_t> || std::is_same_v<T, char32_t> || std::is_same_v<T, wchar_t>;
 
     template<typename T>
+    concept CharacterArray = std::is_pointer_v<T> || std::is_array_v<T>;
+
+    template<typename T>
     concept Pairable = requires(T pair)
     {
         pair.first;

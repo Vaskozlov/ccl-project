@@ -23,12 +23,12 @@ namespace cerb::text
             return location.getColumn();
         }
 
-        CERBLIB_DECL auto getFilename() const -> const std::string_view &
+        CERBLIB_DECL auto getFilename() const -> const string_view &
         {
             return location.getFilename();
         }
 
-        CERBLIB_DECL auto getWorkingLine() const -> const std::basic_string_view<CharT> &
+        CERBLIB_DECL auto getWorkingLine() const -> const BasicStringView<CharT> &
         {
             return line_tracker.get();
         }
@@ -50,8 +50,7 @@ namespace cerb::text
             return Base::getCurrentChar();
         }
 
-        constexpr explicit TextIterator(
-            std::basic_string_view<CharT> input, std::string_view filename = "")
+        constexpr explicit TextIterator(BasicStringView<CharT> input, string_view filename = {})
           : Base{ input }, location{ filename }
         {}
 

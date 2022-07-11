@@ -4,6 +4,7 @@
 using namespace cerb::debug;
 using namespace cerb::fmt::core;
 using namespace std::string_view_literals;
+using namespace cerb::string_view_literals;
 
 constexpr static auto argumentsCounterTest(auto string, size_t n) -> bool
 {
@@ -12,15 +13,15 @@ constexpr static auto argumentsCounterTest(auto string, size_t n) -> bool
 }
 
 STRING_TEST{
-    assertTrue(argumentsCounterTest(""sv, 0));
-    assertTrue(argumentsCounterTest("Hello!{}"sv, 1));
-    assertTrue(argumentsCounterTest("Hello {}, { }!"sv, 2));
-    assertTrue(argumentsCounterTest("Hello {}{{, {}}}!"sv, 2));
+    assertTrue(argumentsCounterTest(""_sv, 0));
+    assertTrue(argumentsCounterTest("Hello!{}"_sv, 1));
+    assertTrue(argumentsCounterTest("Hello {}, { }!"_sv, 2));
+    assertTrue(argumentsCounterTest("Hello {}{{, {}}}!_"_sv, 2));
 
-    assertTrue(argumentsCounterTest(u""sv, 0));
-    assertTrue(argumentsCounterTest(u"Hello!{}"sv, 1));
-    assertTrue(argumentsCounterTest(u"Hello {}, { }!"sv, 2));
-    assertTrue(argumentsCounterTest(u"Hello {}{{, {}}}!"sv, 2));
+    assertTrue(argumentsCounterTest(u""_sv, 0));
+    assertTrue(argumentsCounterTest(u"Hello!{}"_sv, 1));
+    assertTrue(argumentsCounterTest(u"Hello {}, { }!"_sv, 2));
+    assertTrue(argumentsCounterTest(u"Hello {}{{, {}}}!"_sv, 2));
 
     return {};
 }();

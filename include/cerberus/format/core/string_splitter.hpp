@@ -13,7 +13,7 @@ namespace cerb::fmt::core
     {
     private:
         using CharT = decltype(String.zeroChar());
-        using value_type = std::basic_string_view<CharT>;
+        using value_type = BasicStringView<CharT>;
         using iterator = typename value_type::iterator;
         using const_iterator = typename value_type::const_iterator;
 

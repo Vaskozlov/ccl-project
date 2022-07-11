@@ -5,6 +5,7 @@ using namespace cerb::text;
 using namespace cerb::debug;
 using namespace cerb::integral_literals;
 using namespace std::string_view_literals;
+using namespace cerb::string_view_literals;
 
 constexpr auto testCleanFuture(auto input, auto expected) -> bool
 {
@@ -19,5 +20,5 @@ constexpr auto testCleanFuture(auto input, auto expected) -> bool
     return true;
 }
 
-static_assert(testCleanFuture("Hello, \t\nWorld!"sv, "Hello,World!"sv));
-static_assert(testCleanFuture(u"Hello, \t\nWorld!"sv, u"Hello,World!"sv));
+static_assert(testCleanFuture("Hello, \t\nWorld!"_sv, "Hello,World!"_sv));
+static_assert(testCleanFuture(u"Hello, \t\nWorld!"_sv, u"Hello,World!"_sv));

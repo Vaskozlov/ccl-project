@@ -4,10 +4,10 @@
 using namespace cerb::text;
 using namespace cerb::debug;
 using namespace cerb::integral_literals;
-using namespace std::string_view_literals;
+using namespace cerb::string_view_literals;
 
 template<cerb::CharacterLiteral CharT>
-constexpr auto getExpectedLines() -> std::array<std::string_view, 5>// NOLINT
+constexpr auto getExpectedLines() -> std::array<cerb::string_view, 5>// NOLINT
     requires(std::is_same_v<char, CharT>)
 {
     return { "Hello, World!", "It's a ", "Test!",
@@ -17,7 +17,7 @@ constexpr auto getExpectedLines() -> std::array<std::string_view, 5>// NOLINT
 }
 
 template<cerb::CharacterLiteral CharT>
-constexpr auto getExpectedLines() -> std::array<std::u16string_view, 5>// NOLINT
+constexpr auto getExpectedLines() -> std::array<cerb::u16string_view, 5>// NOLINT
     requires(std::is_same_v<char16_t, CharT>)
 {
     return { u"Hello, World!", u"It's a ", u"Test!",
@@ -27,7 +27,7 @@ constexpr auto getExpectedLines() -> std::array<std::u16string_view, 5>// NOLINT
 }
 
 template<cerb::CharacterLiteral CharT>
-constexpr auto testLineTracker(std::basic_string_view<CharT> input) -> bool
+constexpr auto testLineTracker(cerb::BasicStringView<CharT> input) -> bool
 {
     auto current_line = 0_ZU;
     auto text_iterator = BasicTextIterator{ input };
@@ -52,8 +52,8 @@ constexpr auto testLineTracker(std::basic_string_view<CharT> input) -> bool
 
 STRING_TEST
 {
-    assertTrue(testLineTracker("Hello, World!\nIt's a \nTest!\nOf line tracker\n"sv));
-    assertTrue(testLineTracker(u"Hello, World!\nIt's a \nTest!\nOf line tracker\n"sv));
+    assertTrue(testLineTracker("Hello, World!\nIt's a \nTest!\nOf line tracker\n"_sv));
+    assertTrue(testLineTracker(u"Hello, World!\nIt's a \nTest!\nOf line tracker\n"_sv));
 
     return {};
 }

@@ -9,7 +9,7 @@ namespace cerb::text
     class LineTracker
     {
     public:
-        CERBLIB_DECL auto get() const -> const std::basic_string_view<CharT> &
+        CERBLIB_DECL auto get() const -> const BasicStringView<CharT> &
         {
             return line;
         }
@@ -40,10 +40,10 @@ namespace cerb::text
             auto length = text.find('\n');
 
             length = length == text.npos ? text.size() : length;
-            line = { line_begin, line_begin + length };
+            line = { line_begin, length };
         }
 
-        std::basic_string_view<CharT> line{};
+        BasicStringView<CharT> line{};
         BasicTextIterator<CharT> &basic_iterator;
         bool new_line_passed{ false };
     };

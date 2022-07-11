@@ -4,6 +4,7 @@
 using namespace cerb::text;
 using namespace cerb::debug;
 using namespace std::string_view_literals;
+using namespace cerb::string_view_literals;
 
 constexpr auto testRawIteration(auto input, auto expected) -> bool
 {
@@ -17,5 +18,5 @@ constexpr auto testRawIteration(auto input, auto expected) -> bool
     return true;
 }
 
-static_assert(testRawIteration("Hello, \t\nWorld!"sv, "Hello, \t\nWorld!"sv));
-static_assert(testRawIteration(u"Hello, \t\nWorld!"sv, u"Hello, \t\nWorld!"sv));
+static_assert(testRawIteration("Hello, \t\nWorld!"_sv, "Hello, \t\nWorld!"_sv));
+static_assert(testRawIteration(u"Hello, \t\nWorld!"_sv, u"Hello, \t\nWorld!"_sv));

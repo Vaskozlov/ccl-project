@@ -2,7 +2,7 @@
 #include <cerberus/template_string.hpp>
 
 using namespace cerb::debug;
-using namespace std::string_view_literals;
+using namespace cerb::string_view_literals;
 
 template<cerb::TemplateString String>
 constexpr static auto testTemplateString(auto input) -> bool
@@ -19,8 +19,8 @@ constexpr static auto testTemplateString(auto input) -> bool
     return true;
 }
 
-static_assert(testTemplateString<"">(""sv));
-static_assert(testTemplateString<"Hello, World!">("Hello, World!"sv));
+static_assert(testTemplateString<"">(""_sv));
+static_assert(testTemplateString<"Hello, World!">("Hello, World!"_sv));
 
-static_assert(testTemplateString<u"">(u""sv));
-static_assert(testTemplateString<u"Hello, World!">(u"Hello, World!"sv));
+static_assert(testTemplateString<u"">(u""_sv));
+static_assert(testTemplateString<u"Hello, World!">(u"Hello, World!"_sv));

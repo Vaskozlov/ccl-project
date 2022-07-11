@@ -4,11 +4,11 @@
 using namespace cerb::text;
 using namespace cerb::debug;
 using namespace cerb::integral_literals;
-using namespace std::string_view_literals;
+using namespace cerb::string_view_literals;
 
 STRING_TEST
 {
-    auto text_iterator = TextIterator{ ""sv };
+    auto text_iterator = TextIterator{ ""_sv };
 
     assertEqual(text_iterator.getLine(), 1_ZU);
     assertEqual(text_iterator.getColumn(), 1_ZU);
@@ -29,7 +29,7 @@ STRING_TEST
 
 STRING_TEST
 {
-    auto text_iterator = TextIterator{ "Hi\nWorld!"sv };
+    auto text_iterator = TextIterator{ "Hi\nWorld!"_sv };
 
     assertEqual(text_iterator.getLine(), 1_ZU);
     assertEqual(text_iterator.getColumn(), 1_ZU);
