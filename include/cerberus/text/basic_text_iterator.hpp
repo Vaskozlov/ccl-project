@@ -25,7 +25,7 @@ namespace cerb::text
 
         CERBLIB_DECL auto getCurrentChar() const -> CharT
         {
-            if (lor(not initialized, carriage == end)) {
+            if (lor(not initialized, carriage >= end)) {
                 return 0;
             }
 
@@ -44,13 +44,18 @@ namespace cerb::text
 
         constexpr auto basicNextRawChar() -> CharT
         {
-            if (carriage == end) {
-                return 0;
-            }
-
             if (not initialized) {
+                if (carriage == end) {
+                    return 0;
+                }
+
                 initialized = true;
                 return *carriage;
+            }
+
+            if (carriage + 1 >= end) {
+                carriage = end;
+                return 0;
             }
 
             ++carriage;
