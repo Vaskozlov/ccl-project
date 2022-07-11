@@ -15,7 +15,7 @@
 #define STATIC_ASSERT_EQ(lhs, rhs) static_assert(cerb::safeEqual(lhs, rhs))
 #define STATIC_ASSERT_NOT_EQ(lhs, rhs) static_assert(cerb::safeNotEqual(lhs, rhs))
 
-#ifdef CERBLIB_HAS_CONSTEXPR_VECTOR
+#if defined(CERBLIB_HAS_CONSTEXPR_VECTOR) && !defined(_MSC_VER)
 #    define VECTOR_TEST CONSTEXPR_TEST
 #    define VECTOR_ASSERT_TRUE(value) static_assert(value)
 #    define VECTOR_ASSERT_FALSE(value) static_assert(!(value))
@@ -29,7 +29,7 @@
 #    define VECTOR_ASSERT_NOT_EQ(lhs, rhs) asserNotEqual(lhs, rhs)
 #endif
 
-#ifdef CERBLIB_HAS_CONSTEXPR_STRING
+#if defined(CERBLIB_HAS_CONSTEXPR_STRING) && !defined(_MSC_VER)
 #    define STRING_TEST CONSTEXPR_TEST
 #    define STRING_ASSERT_TRUE(value) static_assert(value)
 #    define STRING_ASSERT_FALSE(value) static_assert(!(value))

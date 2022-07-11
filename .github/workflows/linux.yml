@@ -21,15 +21,11 @@ jobs:
             os: [ self-hosted, linux, ARM64 ]
             cmake_params: ''
 
-          - name: Linux amd64 clang
-            key: linux-clang15-arm64
-            os: [ self-hosted, linux, X64 ]
-            cmake_params: '-DCMAKE_C_COMPILER=/usr/local/bin/clang -DCMAKE_CXX_COMPILER=/usr/local/bin/clang++'
-
           - name: Linux arm64 clang
-            key: linux-clang15-arm64
+            key: linux-clang-trunk-arm64
             os: [ self-hosted, linux, ARM64 ]
-            cmake_params: '-DCMAKE_C_COMPILER=/usr/local/bin/clang -DCMAKE_CXX_COMPILER=/usr/local/bin/clang++'
+            cmake_params: '-DCMAKE_C_COMPILER=/home/ubuntu/llvm-build/bin/clang
+            -DCMAKE_CXX_COMPILER=/home/ubuntu/llvm-build/bin/clang++'
 
     name: CMake (${{ matrix.config.name }})
     runs-on: ${{ matrix.config.os }}
