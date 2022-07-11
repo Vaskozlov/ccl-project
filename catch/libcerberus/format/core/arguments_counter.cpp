@@ -12,7 +12,7 @@ constexpr static auto argumentsCounterTest(auto string, size_t n) -> bool
     return counter.get() == n;
 }
 
-STRING_TEST{
+CONSTEXPR_TEST{
     assertTrue(argumentsCounterTest(""_sv, 0));
     assertTrue(argumentsCounterTest("Hello!{}"_sv, 1));
     assertTrue(argumentsCounterTest("Hello {}, { }!"_sv, 2));

@@ -3,7 +3,6 @@
 
 using namespace cerb::text;
 using namespace cerb::debug;
-using namespace std::string_view_literals;
 using namespace cerb::string_view_literals;
 
 constexpr auto testRawIteration(auto input, auto expected) -> bool
