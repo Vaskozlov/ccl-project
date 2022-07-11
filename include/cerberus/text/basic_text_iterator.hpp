@@ -18,7 +18,7 @@ namespace cerb::text
             return carriage;
         }
 
-        CERBLIB_DECL auto getRemainingText() const -> std::basic_string_view<CharT>
+        CERBLIB_DECL auto getRemaining() const -> std::basic_string_view<CharT>
         {
             return { carriage, end };
         }
@@ -66,22 +66,22 @@ namespace cerb::text
             return getCurrentChar();
         }
 
-        CERBLIB_DECL auto futureRawChar(size_t offset_from_current_state) const -> CharT
+        CERBLIB_DECL auto futureRawChar(size_t times) const -> CharT
         {
             auto forked = *this;
 
-            for (size_t i = 0; i != offset_from_current_state; ++i) {
+            for (size_t i = 0; i != times; ++i) {
                 forked.nextRawChar();
             }
 
             return forked.getCurrentChar();
         }
 
-        CERBLIB_DECL auto futureCleanChar(size_t offset_from_current_state) const -> CharT
+        CERBLIB_DECL auto futureCleanChar(size_t times) const -> CharT
         {
             auto forked = *this;
 
-            for (size_t i = 0; i != offset_from_current_state; ++i) {
+            for (size_t i = 0; i != times; ++i) {
                 forked.nextCleanChar();
             }
 
@@ -99,7 +99,7 @@ namespace cerb::text
           : carriage{ text_.begin() }, end{ text_.end() }
         {}
 
-        virtual ~BasicTextIterator() = default;
+        constexpr virtual ~BasicTextIterator() = default;
 
     private:
         const_iterator carriage{};

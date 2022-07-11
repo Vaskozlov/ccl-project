@@ -3,8 +3,8 @@
 
 #include <cerberus/comparison.hpp>
 #include <cerberus/core/defines.hpp>
-#include <cerberus/debug/debug_location.hpp>
 #include <fmt/format.h>
+#include <source_location>
 
 #define STATIC_VARIABLE [[maybe_unused]] static constexpr
 #define UNUSED_DECL [[maybe_unused]] auto CERBLIB_UNIQUE_IDENT =
@@ -12,10 +12,10 @@
 #define RUNTIME_TEST [[maybe_unused]] static bool CERBLIB_UNIQUE_IDENT = []() -> bool
 #define CONSTEXPR_TEST STATIC_VARIABLE bool CERBLIB_UNIQUE_IDENT = []() -> bool
 
-#define ASSERT_TRUE(value) cerb::debug::assertTrue(value, CREATE_DEBUG_LOCATION)
-#define ASSERT_FALSE(value) cerb::debug::assertFalse(value, CREATE_DEBUG_LOCATION)
-#define ASSERT_EQ(lhs, rhs) cerb::debug::assertEqual(lhs, rhs, CREATE_DEBUG_LOCATION)
-#define ASSERT_NOT_EQ(lhs, rhs) cerb::debug::assertNotEqual(lhs, rhs, CREATE_DEBUG_LOCATION)
+#define ASSERT_TRUE(value) cerb::debug::assertTrue(value)
+#define ASSERT_FALSE(value) cerb::debug::assertFalse(value)
+#define ASSERT_EQ(lhs, rhs) cerb::debug::assertEqual(lhs, rhs)
+#define ASSERT_NOT_EQ(lhs, rhs) cerb::debug::assertNotEqual(lhs, rhs)
 
 #define STATIC_ASSERT_EQ(lhs, rhs) static_assert(cerb::safeEqual(lhs, rhs))
 #define STATIC_ASSERT_NOT_EQ(lhs, rhs) static_assert(cerb::safeNotEqual(lhs, rhs))
@@ -61,44 +61,59 @@ namespace cerb::debug
     template<typename T>
     concept Printable = std::is_constructible_v<fmt::formatter<T>>;
 
-    constexpr auto assertTrue(bool value, Location location) -> void
+    [[nodiscard]] inline auto convertLocation(std::source_location location) -> std::string
+    {
+        return ::fmt::format(
+            "file: {}, function: {}, line: {}", location.file_name(), location.function_name(),
+            location.line());
+    }
+
+    constexpr auto
+        assertTrue(bool value, std::source_location location = std::source_location::current())
+            -> void
     {
         if (!value) {
             throw std::runtime_error(
-                ::fmt::format("Expected true, got false in {}", location.toStr()));
+                ::fmt::format("Expected true, got false in {}", convertLocation(location)));
         }
     }
 
-    constexpr auto assertFalse(bool value, Location location) -> void
+    constexpr auto
+        assertFalse(bool value, std::source_location location = std::source_location::current())
+            -> void
     {
         if (value) {
             throw std::runtime_error(
-                ::fmt::format("Expected false, got true in {}", location.toStr()));
+                ::fmt::format("Expected false, got true in {}", convertLocation(location)));
         }
     }
 
     template<typename T, typename U>
-    constexpr auto assertEqual(const T &lhs, const U &rhs, Location location) -> void
+    constexpr auto assertEqual(
+        const T &lhs, const U &rhs, std::source_location location = std::source_location::current())
+        -> void
     {
         if (safeNotEqual<T>(lhs, rhs)) {
             if constexpr (Printable<T>) {
-                throw std::runtime_error(
-                    ::fmt::format("Expected {}, got {} in {}", lhs, rhs, location.toStr()));
+                throw std::runtime_error(::fmt::format(
+                    "Expected {}, got {} in {}", rhs, lhs, convertLocation(location)));
             } else {
-                throw std::runtime_error(::fmt::format("Error in {}", location.toStr()));
+                throw std::runtime_error(::fmt::format("Error in {}", convertLocation(location)));
             }
         }
     }
 
     template<typename T, typename U>
-    constexpr auto assertNotEqual(const T &lhs, const U &rhs, Location location) -> void
+    constexpr auto assertNotEqual(
+        const T &lhs, const U &rhs, std::source_location location = std::source_location::current())
+        -> void
     {
         if (safeEqual<T>(lhs, rhs)) {
             if constexpr (Printable<T>) {
                 throw std::runtime_error(::fmt::format(
-                    "Expected {} is not equal to {} in {}", lhs, rhs, location.toStr()));
+                    "Expected {} is not equal to {} in {}", lhs, rhs, convertLocation(location)));
             } else {
-                throw std::runtime_error(::fmt::format("Error in {}", location.toStr()));
+                throw std::runtime_error(::fmt::format("Error in {}", convertLocation(location)));
             }
         }
     }

@@ -66,13 +66,13 @@ namespace cerb::fmt::core
             if (bracket::isOpened(text_iterator)) {
                 fillBlock();
             } else if (bracket::isClosed(text_iterator)) {
-                block_begin = text_iterator.getRemainingText().begin() + 1;
+                block_begin = text_iterator.getRemaining().begin() + 1;
             }
         }
 
         constexpr auto fillBlock() -> void
         {
-            auto new_begin = text_iterator.getRemainingText().begin();
+            auto new_begin = text_iterator.getRemaining().begin();
             constructBlock(block_begin, new_begin);
             block_begin = new_begin;
         }

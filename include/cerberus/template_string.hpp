@@ -2,6 +2,7 @@
 #define CERBERUS_PROJECT_TEMPLATE_STRING_HPP
 
 #include <algorithm>
+#include <array>
 #include <cerberus/cerberus.hpp>
 
 namespace cerb

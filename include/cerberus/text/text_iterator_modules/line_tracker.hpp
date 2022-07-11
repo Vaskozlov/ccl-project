@@ -35,7 +35,7 @@ namespace cerb::text
     private:
         constexpr auto updateLine() -> void
         {
-            auto text = basic_iterator.getRemainingText();
+            auto text = basic_iterator.getRemaining();
             auto line_begin = text.begin();
             auto length = text.find('\n');
 

@@ -24,12 +24,12 @@ jobs:
           - name: Linux amd64 clang
             key: linux-clang-arm64
             os: [ self-hosted, linux, X64 ]
-            cmake_params: '-DCMAKE_C_COMPILER=/usr/bin/clang -DCMAKE_CXX_COMPILER=/usr/bin/clang++'
+            cmake_params: '-DCMAKE_C_COMPILER=/usr/local/bin/clang -DCMAKE_CXX_COMPILER=/usr/local/bin/clang++'
 
           - name: Linux arm64 clang
             key: linux-clang-arm64
             os: [ self-hosted, linux, ARM64 ]
-            cmake_params: '-DCMAKE_C_COMPILER=/usr/bin/clang -DCMAKE_CXX_COMPILER=/usr/bin/clang++'
+            cmake_params: '-DCMAKE_C_COMPILER=/usr/local/bin/clang -DCMAKE_CXX_COMPILER=/usr/local/bin/clang++'
 
     name: CMake (${{ matrix.config.name }})
     runs-on: ${{ matrix.config.os }}
