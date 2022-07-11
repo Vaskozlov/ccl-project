@@ -54,7 +54,6 @@ STRING_TEST
 {
     assertTrue(testLineTracker("Hello, World!\nIt's a \nTest!\nOf line tracker\n"_sv));
     assertTrue(testLineTracker(u"Hello, World!\nIt's a \nTest!\nOf line tracker\n"_sv));
-
     return {};
 }
 ();

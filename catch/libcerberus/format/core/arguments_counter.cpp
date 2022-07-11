@@ -3,7 +3,6 @@
 
 using namespace cerb::debug;
 using namespace cerb::fmt::core;
-using namespace std::string_view_literals;
 using namespace cerb::string_view_literals;
 
 constexpr static auto argumentsCounterTest(auto string, size_t n) -> bool

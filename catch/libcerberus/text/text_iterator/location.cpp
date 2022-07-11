@@ -11,17 +11,17 @@ STRING_TEST
     auto text_iterator = TextIterator{ ""_sv };
 
     assertEqual(text_iterator.getLine(), 1_ZU);
-    assertEqual(text_iterator.getColumn(), 1_ZU);
+    assertEqual(text_iterator.getColumn(), 0_ZU);
 
     text_iterator.nextRawChar();
 
     assertEqual(text_iterator.getLine(), 1_ZU);
-    assertEqual(text_iterator.getColumn(), 1_ZU);
+    assertEqual(text_iterator.getColumn(), 0_ZU);
 
     text_iterator.nextRawChar();
 
     assertEqual(text_iterator.getLine(), 1_ZU);
-    assertEqual(text_iterator.getColumn(), 1_ZU);
+    assertEqual(text_iterator.getColumn(), 0_ZU);
 
     return {};
 }
@@ -32,17 +32,17 @@ STRING_TEST
     auto text_iterator = TextIterator{ "Hi\nWorld!"_sv };
 
     assertEqual(text_iterator.getLine(), 1_ZU);
+    assertEqual(text_iterator.getColumn(), 0_ZU);
+
+    text_iterator.nextRawChar();
+
+    assertEqual(text_iterator.getLine(), 1_ZU);
     assertEqual(text_iterator.getColumn(), 1_ZU);
 
     text_iterator.nextRawChar();
 
     assertEqual(text_iterator.getLine(), 1_ZU);
     assertEqual(text_iterator.getColumn(), 2_ZU);
-
-    text_iterator.nextRawChar();
-
-    assertEqual(text_iterator.getLine(), 1_ZU);
-    assertEqual(text_iterator.getColumn(), 3_ZU);
 
     text_iterator.nextRawChar();
 

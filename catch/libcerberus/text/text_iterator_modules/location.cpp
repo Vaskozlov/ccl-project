@@ -9,13 +9,13 @@ CONSTEXPR_TEST
     Location location{ "none" };
 
     assertEqual(location.getLine(), 1U);
-    assertEqual(location.getColumn(), 1U);
+    assertEqual(location.getColumn(), 0U);
     assertEqual(location.getFilename(), "none");
 
     location.next('a');
 
     assertEqual(location.getLine(), 1U);
-    assertEqual(location.getColumn(), 2U);
+    assertEqual(location.getColumn(), 1U);
 
     location.next('\n');
 

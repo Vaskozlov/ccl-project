@@ -4,10 +4,10 @@
 using namespace cerb::debug;
 using namespace cerb::fmt::core;
 using namespace cerb::integral_literals;
-using namespace std::string_view_literals;
+using namespace cerb::string_view_literals;
 
 template<cerb::TemplateString String, cerb::CharacterLiteral CharT>
-constexpr auto testSplitter(const std::initializer_list<std::basic_string_view<CharT>> &blocks)
+constexpr auto testSplitter(const std::initializer_list<cerb::BasicStringView<CharT>> &blocks)
     -> bool
 {
     auto index = 0_ZU;
@@ -21,10 +21,10 @@ constexpr auto testSplitter(const std::initializer_list<std::basic_string_view<C
     return true;
 }
 
-static_assert(testSplitter<"">({ ""sv }));
-static_assert(testSplitter<"Hello!">({ "Hello!"sv }));
-static_assert(testSplitter<"Hello {}, {}!">({ "Hello "sv, ", "sv, "!"sv }));
+static_assert(testSplitter<"">({ ""_sv }));
+static_assert(testSplitter<"Hello!">({ "Hello!"_sv }));
+static_assert(testSplitter<"Hello {}, {}!">({ "Hello "_sv, ", "_sv, "!"_sv }));
 
-static_assert(testSplitter<u"">({ u""sv }));
-static_assert(testSplitter<u"Hello!">({ u"Hello!"sv }));
-static_assert(testSplitter<u"Hello {}, {}!">({ u"Hello "sv, u", "sv, u"!"sv }));
+static_assert(testSplitter<u"">({ u""_sv }));
+static_assert(testSplitter<u"Hello!">({ u"Hello!"_sv }));
+static_assert(testSplitter<u"Hello {}, {}!">({ u"Hello "_sv, u", "_sv, u"!"_sv }));

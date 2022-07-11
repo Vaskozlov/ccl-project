@@ -5,7 +5,8 @@ using namespace cerb::fmt;
 using namespace cerb::debug;
 using namespace std::string_literals;
 
-// NOLINTNEXTLINE
+// NOLINTBEGIN
+
 STRING_TEST
 {
     assertEqual(format<"{}">(0), "0"s);
@@ -14,7 +15,6 @@ STRING_TEST
 }
 ();
 
-// NOLINTNEXTLINE
 STRING_TEST
 {
     assertEqual(format<"Hello, {} World!">(-10), "Hello, -10 World!"s);
@@ -22,3 +22,5 @@ STRING_TEST
     return {};
 }
 ();
+
+// NOLINTEND

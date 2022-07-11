@@ -37,7 +37,7 @@ namespace cerb::text
         Location() = default;
 
         constexpr explicit Location(
-            BasicStringView<CharT> filename_, size_t line_ = 1, size_t column_ = 1)
+            BasicStringView<CharT> filename_, size_t line_ = 1, size_t column_ = 0)
           : filename{ filename_ }, line{ line_ }, column{ column_ }
         {}
 
@@ -55,7 +55,7 @@ namespace cerb::text
 
         BasicStringView<CharT> filename{};
         size_t line{ 1 };
-        size_t column{ 1 };
+        size_t column{ 0 };
     };
 }// namespace cerb::text
 
