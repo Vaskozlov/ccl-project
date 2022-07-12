@@ -7,12 +7,15 @@
 namespace cerb::text
 {
     template<CharacterLiteral CharT>
+    class TextIterator;
+
+    template<CharacterLiteral CharT>
     class CommentSkipper
     {
     public:
         using StrView = BasicStringView<CharT>;
 
-        constexpr auto skip(BasicTextIterator<CharT> &text_iterator_) -> bool
+        constexpr auto skip(TextIterator<CharT> &text_iterator_) -> bool
         {
             text_iterator = &text_iterator_;
 
@@ -75,7 +78,7 @@ namespace cerb::text
         StrView single_line{};
         StrView multiline_begin{};
         StrView multiline_end{};
-        BasicTextIterator<CharT> *text_iterator{ nullptr };
+        TextIterator<CharT> *text_iterator{ nullptr };
     };
 }// namespace cerb::text
 
