@@ -103,6 +103,14 @@ namespace cerb
             return reverse_iterator{ begin() };
         }
 
+        CERBLIB_DECL auto substr(size_t first, size_t len) const -> BasicStringView
+        {
+            auto last = first + len;
+            first = first > size() ? size() : first;
+            last = last > size() ? size() : last;
+            return { begin() + first, begin() + last };
+        }
+
         CERBLIB_DECL auto find(CharT chr, size_t offset = 0) const -> size_t
         {
             if (offset >= length) {
