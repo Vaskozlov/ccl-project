@@ -25,11 +25,6 @@ namespace cerb
             return message.data();
         }
 
-        [[nodiscard]] auto getMessage() const noexcept -> const std::string_view &
-        {
-            return message;
-        }
-
         CerberusException() = default;
 
         explicit CerberusException(std::string_view exception_message) : message(exception_message)

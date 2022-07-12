@@ -37,7 +37,6 @@ CONSTEXPR_TEST
 }
 ();
 
-
 CONSTEXPR_TEST
 {
     auto std_string = "Hello, World!"sv;

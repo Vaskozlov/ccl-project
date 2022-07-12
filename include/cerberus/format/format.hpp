@@ -2,6 +2,7 @@
 #define CERBERUS_PROJECT_FORMAT_HPP
 
 #include <cerberus/format/converters/int.hpp>
+#include <cerberus/format/converters/location.hpp>
 #include <cerberus/format/converters/string.hpp>
 #include <cerberus/format/core/string_splitter.hpp>
 #include <cerberus/template_string.hpp>
@@ -16,7 +17,7 @@ namespace cerb::fmt
         using CharT = decltype(String.zeroChar());
 
     public:
-        CERBLIB_DECL auto get() -> std::string &
+        CERBLIB_DECL auto get() -> std::basic_string<CharT> &
         {
             return formatted_string;
         }
@@ -60,7 +61,7 @@ namespace cerb::fmt
         constexpr auto append(const BasicStringView<CharT> &str) -> void
         {
             if CERBLIB_RUNTIME_BRANCH {// G++-12 doesn't allow to append string at compile time
-                formatted_string.append(str);
+                formatted_string.append(str.begin(), str.end());
             } else {
                 for (auto &chr : str) {
                     formatted_string.push_back(chr);
@@ -74,9 +75,16 @@ namespace cerb::fmt
     };
 
     template<TemplateString String, typename... Args>
-    CERBLIB_DECL auto format(Args &&...args) -> std::string
+    CERBLIB_DECL auto format(Args &&...args) -> std::basic_string<decltype(String.zeroChar())>
     {
         auto formatter = Formatter<String>{ std::forward<Args>(args)... };
+        return formatter.get();
+    }
+
+    template<CharacterLiteral To, TemplateString String, typename... Args>
+    CERBLIB_DECL auto format(Args &&...args) -> std::basic_string<To>
+    {
+        auto formatter = Formatter<String.template convert<To>()>{ std::forward<Args>(args)... };
         return formatter.get();
     }
 }// namespace cerb::fmt

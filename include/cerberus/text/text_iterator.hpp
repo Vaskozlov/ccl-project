@@ -14,6 +14,11 @@ namespace cerb::text
         using Base = BasicTextIterator<CharT>;
 
     public:
+        CERBLIB_DECL auto getLocation() const -> const Location<> &
+        {
+            return location;
+        }
+
         CERBLIB_DECL auto getLine() const -> size_t
         {
             return location.getLine();

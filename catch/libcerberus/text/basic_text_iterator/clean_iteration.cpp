@@ -5,8 +5,15 @@ using namespace cerb::text;
 using namespace cerb::debug;
 using namespace cerb::string_view_literals;
 
-constexpr auto testCleanIteration(auto input, auto expected) -> bool
+template<cerb::CharacterLiteral CharT>
+constexpr auto testCleanIteration() -> bool
 {
+    auto casted_in = cerb::strCast<CharT>("Hello, \t\nWorld!");
+    auto input = cerb::BasicStringView{ casted_in.data(), casted_in.size() };
+
+    auto casted_ex = cerb::strCast<CharT>("Hello,World!");
+    auto expected = cerb::BasicStringView{ casted_ex.data(), casted_ex.size() };
+
     auto text_iterator = BasicTextIterator{ input };
 
     for (const auto &chr : expected) {
@@ -17,5 +24,5 @@ constexpr auto testCleanIteration(auto input, auto expected) -> bool
     return true;
 }
 
-static_assert(testCleanIteration("Hello, \t\nWorld!"_sv, "Hello,World!"_sv));
-static_assert(testCleanIteration(u"Hello, \t\nWorld!"_sv, u"Hello,World!"_sv));
+static_assert(testCleanIteration<char>());
+static_assert(testCleanIteration<char16_t>());

@@ -136,7 +136,7 @@ namespace cerb::text
           : carriage{ text_.begin() }, end{ text_.end() }
         {}
 
-        constexpr virtual ~BasicTextIterator() = default;
+        virtual ~BasicTextIterator() = default;
 
     private:
         iterator carriage{};

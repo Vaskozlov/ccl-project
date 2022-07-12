@@ -140,10 +140,15 @@ namespace cerb
         CERBLIB_DECL auto at(size_t index) const -> CharT
         {
             if (index >= length) {
-                throw OutOfRange("unable to access BasicStringView at given index");
+                throw OutOfRange("index out of range");
             }
 
             return string[index];
+        }
+
+        CERBLIB_DECL explicit operator std::basic_string_view<CharT>() const
+        {
+            return std::basic_string_view{ string, length };
         }
 
         CERBLIB_DECL auto operator==(const CharT *other) const -> bool
