@@ -2,49 +2,67 @@
 #define CERBERUS_PROJECT_BASIC_TEXT_ITERATOR_HPP
 
 #include <cerberus/char.hpp>
-#include <string_view>
+#include <cerberus/string_view.hpp>
 
 namespace cerb::text
 {
     template<CharacterLiteral CharT>
     class BasicTextIterator
     {
+    private:
+        using iterator = typename BasicStringView<CharT>::iterator;
+
     public:
-        CERBLIB_DECL auto getOffset() const -> size_t
+        CERBLIB_DECL auto getCarriage() const -> iterator
         {
-            return offset;
+            return carriage;
+        }
+
+        CERBLIB_DECL auto getRemaining() const -> BasicStringView<CharT>
+        {
+            return { carriage, end };
         }
 
         CERBLIB_DECL auto getCurrentChar() const -> CharT
         {
-            if (lor(not initialized, offset >= text.size())) {
+            if (lor(not initialized, carriage >= end)) {
                 return 0;
             }
 
-            return text[offset];
+            return *carriage;
         }
 
-        CERBLIB_DECL auto getText() const -> const std::basic_string_view<CharT> &
+        virtual constexpr auto nextRawChar() -> CharT
         {
-            return text;
+            return basicNextRawChar();
         }
 
-        constexpr auto nextRawChar() -> CharT
+        virtual constexpr auto nextCleanChar() -> CharT
         {
-            if (offset + 1 >= text.size()) {
-                offset = text.size();
-                return 0;
-            }
+            return basicNextCleanChar();
+        }
 
+        constexpr auto basicNextRawChar() -> CharT
+        {
             if (not initialized) {
+                if (carriage == end) {
+                    return 0;
+                }
+
                 initialized = true;
-                return text[0];
+                return *carriage;
             }
 
-            return text[++offset];
+            if (carriage + 1 >= end) {
+                carriage = end;
+                return 0;
+            }
+
+            ++carriage;
+            return *carriage;
         }
 
-        constexpr auto nextCleanChar() -> CharT
+        constexpr auto basicNextCleanChar() -> CharT
         {
             while (isLayout(nextRawChar())) {
                 // empty loop
@@ -53,38 +71,44 @@ namespace cerb::text
             return getCurrentChar();
         }
 
-        CERBLIB_DECL auto futureRawChar(size_t offset_from_current_state) const -> CharT
+        CERBLIB_DECL auto futureRawChar(size_t times) const -> CharT
         {
             auto forked = *this;
 
-            for (size_t i = 0; i != offset_from_current_state; ++i) {
+            for (size_t i = 0; i != times; ++i) {
                 forked.nextRawChar();
             }
 
             return forked.getCurrentChar();
         }
 
-        CERBLIB_DECL auto futureCleanChar(size_t offset_from_current_state) const -> CharT
+        CERBLIB_DECL auto futureCleanChar(size_t times) const -> CharT
         {
             auto forked = *this;
 
-            for (size_t i = 0; i != offset_from_current_state; ++i) {
+            for (size_t i = 0; i != times; ++i) {
                 forked.nextCleanChar();
             }
 
             return forked.getCurrentChar();
         }
 
-        BasicTextIterator() = default;
+        auto operator=(const BasicTextIterator &) -> BasicTextIterator & = default;
+        auto operator=(BasicTextIterator &&) noexcept -> BasicTextIterator & = default;
 
-        constexpr explicit BasicTextIterator(
-            std::basic_string_view<CharT> text_, size_t offset_ = 0)
-          : text{ text_ }, offset{ offset_ }
+        BasicTextIterator() = default;
+        BasicTextIterator(const BasicTextIterator &) = default;
+        BasicTextIterator(BasicTextIterator &&) noexcept = default;
+
+        constexpr explicit BasicTextIterator(const BasicStringView<CharT> &text_)
+          : carriage{ text_.begin() }, end{ text_.end() }
         {}
 
+        constexpr virtual ~BasicTextIterator() = default;
+
     private:
-        std::basic_string_view<CharT> text{};
-        size_t offset{};
+        iterator carriage{};
+        iterator end{};
         bool initialized{};
     };
 }// namespace cerb::text

@@ -5,7 +5,7 @@
 
 using Flatmap = cerb::Flatmap<int, int, 10>;
 
-DEBUG_SCOPE
+RUNTIME_TEST
 {
     STATIC_VARIABLE auto flatmap = Flatmap{ { 10, 20 }, { 20, 30 }, { 30, 40 } };
 
@@ -16,5 +16,6 @@ DEBUG_SCOPE
     ERROR_EXPECTED(UNUSED_DECL flatmap.at(40), cerb::KeyNotFound, "key not found");
     return {};
 }
+();
 
 // NOLINTEND

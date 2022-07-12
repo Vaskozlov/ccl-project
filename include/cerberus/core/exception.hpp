@@ -13,7 +13,7 @@
                                                                                                    \
         explicit name(std::string_view exception_message) : base_exception(exception_message)      \
         {}                                                                                         \
-    };
+    }
 
 namespace cerb
 {
@@ -41,6 +41,7 @@ namespace cerb
 
     CERBLIB_EXCEPTION(KeyNotFound, CerberusException);
     CERBLIB_EXCEPTION(OutOfRange, CerberusException);
+    CERBLIB_EXCEPTION(LogicError, CerberusException);
 }// namespace cerb
 
 #endif /* CERBERUS_PROJECT_EXCEPTION_HPP */

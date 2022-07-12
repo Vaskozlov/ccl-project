@@ -18,7 +18,7 @@ namespace cerb::fmt::core
 
         ArgumentsCounter() = default;
 
-        constexpr explicit ArgumentsCounter(const std::basic_string_view<CharT> &text)
+        constexpr explicit ArgumentsCounter(const BasicStringView<CharT> &text)
           : text_iterator{ text }
         {
             count();
@@ -59,7 +59,7 @@ namespace cerb::fmt::core
     };
 
     template<CharacterLiteral CharT>
-    constexpr auto countArgs(const std::basic_string_view<CharT> &text) -> size_t
+    constexpr auto countArgs(const BasicStringView<CharT> &text) -> size_t
     {
         return ArgumentsCounter{ text }.get();
     }

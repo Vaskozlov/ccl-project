@@ -2,6 +2,8 @@
 #define CERBERUS_PROJECT_TEMPLATE_STRING_HPP
 
 #include <algorithm>
+#include <array>
+#include <cerberus/string_view.hpp>
 #include <cerberus/cerberus.hpp>
 
 namespace cerb
@@ -72,7 +74,7 @@ namespace cerb
             return size() == 0;
         }
 
-        CERBLIB_DECL auto strView() const -> std::basic_string_view<CharT>
+        CERBLIB_DECL auto strView() const -> BasicStringView<CharT>
         {
             return { string.data(), size() };
         }
@@ -87,7 +89,7 @@ namespace cerb
             return string[index];
         }
 
-        CERBLIB_DECL auto operator<=>(TemplateString const &other) const
+        CERBLIB_DECL auto operator<=>(const TemplateString &other) const
             -> std::weak_ordering = default;
 
         // NOLINTNEXTLINE

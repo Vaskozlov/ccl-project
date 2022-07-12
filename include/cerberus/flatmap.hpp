@@ -25,7 +25,7 @@ namespace cerb
             return occupied;
         }
 
-        [[nodiscard]] consteval static auto capacity() -> size_t
+        CERBLIB_DECL static auto capacity() -> size_t
         {
             return Size;
         }
@@ -83,7 +83,7 @@ namespace cerb
         template<typename... Ts>
         constexpr auto emplace(Ts &&...args) -> value_type &
         {
-            if (occupied == Size) {
+            if (occupied == capacity()) {
                 throw OutOfRange("flatmap is full");
             }
 

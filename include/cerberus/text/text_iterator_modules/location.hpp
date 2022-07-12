@@ -2,7 +2,7 @@
 #define CERBERUS_PROJECT_LOCATION_HPP
 
 #include <cerberus/cerberus.hpp>
-#include <string_view>
+#include <cerberus/string_view.hpp>
 
 namespace cerb::text
 {
@@ -20,42 +20,42 @@ namespace cerb::text
             return column;
         }
 
-        CERBLIB_DECL auto getOffset() const -> size_t
-        {
-            return offset;
-        }
-
-        CERBLIB_DECL auto getFilename() const -> const std::basic_string_view<CharT> &
+        CERBLIB_DECL auto getFilename() const -> const BasicStringView<CharT> &
         {
             return filename;
         }
 
+        constexpr auto next(CharT chr) -> void
+        {
+            if (chr == '\n') {
+                nextLine();
+            } else if (chr != 0) {
+                nextChar();
+            }
+        }
+
+        Location() = default;
+
+        constexpr explicit Location(
+            BasicStringView<CharT> filename_, size_t line_ = 1, size_t column_ = 0)
+          : filename{ filename_ }, line{ line_ }, column{ column_ }
+        {}
+
+    private:
         constexpr auto nextChar() -> void
         {
             ++column;
-            ++offset;
         }
 
         constexpr auto nextLine() -> void
         {
             column = 1;
             ++line;
-            ++offset;
         }
 
-        Location() = default;
-
-        constexpr explicit Location(
-            std::basic_string_view<CharT> filename_, size_t line_ = 1, size_t column_ = 1,
-            size_t offset_ = 0)
-          : filename{ filename_ }, line{ line_ }, column{ column_ }, offset{ offset_ }
-        {}
-
-    private:
-        std::basic_string_view<CharT> filename{};
+        BasicStringView<CharT> filename{};
         size_t line{ 1 };
-        size_t column{ 1 };
-        size_t offset{ 0 };
+        size_t column{ 0 };
     };
 }// namespace cerb::text
 
