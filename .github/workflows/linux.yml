@@ -22,9 +22,9 @@ jobs:
             cmake_params: ''
 
           - name: Linux arm64 clang
-            key: linux-clang-trunk-arm64
+            key: linux-local-clang-trunk-arm64
             os: [ self-hosted, linux, ARM64 ]
-            cmake_params: '-DCMAKE_CXX_COMPILER=/home/ubuntu/llvm-build/bin/clang++'
+            cmake_params: '-DCMAKE_CXX_COMPILER=/home/cerberus-project_2/llvm-build/bin/clang++'
 
     name: CMake (${{ matrix.config.name }})
     runs-on: ${{ matrix.config.os }}
