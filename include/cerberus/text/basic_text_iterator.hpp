@@ -23,6 +23,17 @@ namespace cerb::text
             return { carriage, end };
         }
 
+        CERBLIB_DECL auto getRemainingFuture(size_t times) const -> BasicStringView<CharT>
+        {
+            auto fork = *this;
+
+            for (size_t i = 0; i != times; ++i) {
+                fork.nextRawChar();
+            }
+
+            return fork.getRemaining();
+        }
+
         CERBLIB_DECL auto getCurrentChar() const -> CharT
         {
             if (lor(not initialized, carriage >= end)) {
@@ -30,6 +41,27 @@ namespace cerb::text
             }
 
             return *carriage;
+        }
+
+        constexpr auto rawSkip(size_t n) -> void
+        {
+            for (size_t i = 0; i != n; ++i) {
+                nextRawChar();
+            }
+        }
+
+        constexpr auto cleanSkip(size_t n) -> void
+        {
+            for (size_t i = 0; i != n; ++i) {
+                nextCleanChar();
+            }
+        }
+
+        constexpr auto moveToCleanChar() -> void
+        {
+            while (isLayout(futureRawChar(1))) {
+                nextRawChar();
+            }
         }
 
         virtual constexpr auto nextRawChar() -> CharT
