@@ -66,9 +66,7 @@ namespace cerb
 
         TypedBitset() = default;
 
-        explicit TypedBitset(size_t size)
-            requires(not is_small_bitset)
-        : storage(size)
+        explicit TypedBitset(size_t size) requires(not is_small_bitset) : storage(size)
         {}
 
     private:
