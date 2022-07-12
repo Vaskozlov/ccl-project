@@ -2,8 +2,8 @@
 #define CERBERUS_PROJECT_TYPED_BITSET_HPP
 
 #include <bitset>
-#include <boost/dynamic_bitset.hpp>
 #include <cerberus/cerberus.hpp>
+#include <vector>
 
 namespace cerb
 {
@@ -14,8 +14,8 @@ namespace cerb
         static constexpr bool is_small_bitset = sizeof(T) == sizeof(u8);
         static constexpr size_t small_bitset_size = 256;
 
-        using storage_t = std::conditional_t<
-            is_small_bitset, std::bitset<small_bitset_size>, boost::dynamic_bitset<>>;
+        using storage_t =
+            std::conditional_t<is_small_bitset, std::bitset<small_bitset_size>, std::vector<bool>>;
 
     public:
         CERBLIB_DECL auto capacity() const -> size_t
@@ -32,7 +32,11 @@ namespace cerb
             auto index = toIndex(position);
             resize(index + 1);
 
-            storage.set(index, value);
+            if constexpr (is_small_bitset) {
+                storage.set(index, value);
+            } else {
+                storage[index] = value;
+            }
         }
 
         constexpr auto set(T from, T to, bool value) -> void
@@ -52,7 +56,7 @@ namespace cerb
                 return false;
             }
 
-            return storage.test(index);
+            return storage[index];
         }
 
         CERBLIB_DECL auto operator[](T position) const -> bool
@@ -62,18 +66,20 @@ namespace cerb
 
         TypedBitset() = default;
 
-        explicit TypedBitset(size_t size) requires(not is_small_bitset) : storage(size)
+        explicit TypedBitset(size_t size)
+            requires(not is_small_bitset)
+        : storage(size)
         {}
 
     private:
         constexpr auto multiset(size_t begin_index, size_t end_index, bool value) -> void
         {
-            if constexpr (is_small_bitset) {
-                for (size_t i = begin_index; i <= end_index; ++i) {
+            for (size_t i = begin_index; i <= end_index; ++i) {
+                if constexpr (is_small_bitset) {
                     storage.set(i, value);
+                } else {
+                    storage[i] = value;
                 }
-            } else {
-                storage.set(begin_index, end_index, value);
             }
         }
 
