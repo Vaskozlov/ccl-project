@@ -2,6 +2,7 @@
 #define CERBERUS_PROJECT_COMMENT_SKIPPER_HPP
 
 #include <cerberus/text/basic_text_iterator.hpp>
+#include <cerberus/text/text_iterator_modules/exception.hpp>
 
 namespace cerb::text
 {
@@ -60,8 +61,12 @@ namespace cerb::text
         {
             text_iterator->rawSkip(multiline_begin.size());
 
-            while (not isComment(multiline_end)) {
+            while (not isComment(multiline_end) && text_iterator->getCurrentChar() != 0) {
                 text_iterator->nextRawChar();
+            }
+
+            if (text_iterator->getCurrentChar() == 0) {
+                throw BasicTextIteratorException("unterminated comment");
             }
 
             text_iterator->rawSkip(multiline_end.size());

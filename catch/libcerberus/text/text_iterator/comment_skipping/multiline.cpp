@@ -7,6 +7,20 @@ using namespace cerb::integral_literals;
 using namespace cerb::string_view_literals;
 
 // NOLINTNEXTLINE
+RUNTIME_TEST
+{
+    auto text_iterator = TextIterator<char>{ "/*"_sv, { "//", "/*", "*/" } };
+
+    ERROR_EXPECTED(
+        text_iterator.skipComments(), cerb::BasicTextIteratorException,
+        "unterminated "
+        "comment");
+
+    return {};
+}
+();
+
+// NOLINTNEXTLINE
 STRING_TEST
 {
     auto text_iterator = TextIterator<char>{ "/**/Hi!"_sv, { "//", "/*", "*/" } };
