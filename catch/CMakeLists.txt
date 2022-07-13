@@ -19,7 +19,6 @@ target_precompile_headers(
         <vector> <string>
         <algorithm> <array>
         <fmt/format.h>
-        <boost/dynamic_bitset.hpp>
         <boost/container/small_vector.hpp>
 )
 

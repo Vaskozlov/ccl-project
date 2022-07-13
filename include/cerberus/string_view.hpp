@@ -103,6 +103,14 @@ namespace cerb
             return reverse_iterator{ begin() };
         }
 
+        CERBLIB_DECL auto substr(size_t first, size_t len) const -> BasicStringView
+        {
+            auto last = first + len;
+            first = first > size() ? size() : first;
+            last = last > size() ? size() : last;
+            return { begin() + first, begin() + last };
+        }
+
         CERBLIB_DECL auto find(CharT chr, size_t offset = 0) const -> size_t
         {
             if (offset >= length) {
@@ -132,10 +140,15 @@ namespace cerb
         CERBLIB_DECL auto at(size_t index) const -> CharT
         {
             if (index >= length) {
-                throw OutOfRange("unable to access BasicStringView at given index");
+                throw OutOfRange("index out of range");
             }
 
             return string[index];
+        }
+
+        CERBLIB_DECL explicit operator std::basic_string_view<CharT>() const
+        {
+            return std::basic_string_view{ string, length };
         }
 
         CERBLIB_DECL auto operator==(const CharT *other) const -> bool

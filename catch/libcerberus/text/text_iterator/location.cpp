@@ -6,6 +6,7 @@ using namespace cerb::debug;
 using namespace cerb::integral_literals;
 using namespace cerb::string_view_literals;
 
+// NOLINTNEXTLINE
 STRING_TEST
 {
     auto text_iterator = TextIterator{ ""_sv };
@@ -27,6 +28,7 @@ STRING_TEST
 }
 ();
 
+// NOLINTNEXTLINE
 STRING_TEST
 {
     auto text_iterator = TextIterator{ "Hi\nWorld!"_sv };

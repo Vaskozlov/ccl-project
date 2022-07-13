@@ -1,6 +1,7 @@
 #ifndef CERBERUS_PROJECT_STRING_HPP
 #define CERBERUS_PROJECT_STRING_HPP
 
+#include <cerberus/string_view.hpp>
 #include <string>
 #include <string_view>
 
@@ -27,6 +28,18 @@ namespace cerb::fmt
     }// namespace private_
 
     template<CharacterLiteral CharT1, CharacterLiteral CharT2>
+    constexpr auto convert(
+        std::basic_string<CharT1> &formatting_string,
+        const std::basic_string_view<CharT2> &string) -> void
+    {
+        if constexpr (std::is_same_v<CharT1, CharT2>) {
+            formatting_string.append(string);
+        } else {
+            private_::convertDifferentStrings(formatting_string, string);
+        }
+    }
+
+    template<CharacterLiteral CharT1, CharacterLiteral CharT2>
     constexpr auto convert(std::basic_string<CharT1> &formatting_string, const CharT2 *string)
         -> void
     {
@@ -42,24 +55,14 @@ namespace cerb::fmt
         std::basic_string<CharT1> &formatting_string,
         const std::basic_string<CharT2> &string) -> void
     {
-        if constexpr (std::is_same_v<CharT1, CharT2>) {
-            formatting_string.append(string);
-        } else {
-            convert(
-                formatting_string, std::basic_string_view<CharT2>{ string.c_str(), string.size() });
-        }
+        convert(formatting_string, std::basic_string_view<CharT2>{ string.c_str(), string.size() });
     }
 
     template<CharacterLiteral CharT1, CharacterLiteral CharT2>
-    constexpr auto convert(
-        std::basic_string<CharT1> &formatting_string,
-        const std::basic_string_view<CharT2> &string) -> void
+    constexpr auto
+        convert(std::basic_string<CharT1> &formatting_string, const BasicStringView<CharT2> &string)
     {
-        if constexpr (std::is_same_v<CharT1, CharT2>) {
-            formatting_string.append(string);
-        } else {
-            private_::convertDifferentStrings(formatting_string, string);
-        }
+        convert(formatting_string, static_cast<std::basic_string_view<CharT2>>(string));
     }
 }// namespace cerb::fmt
 

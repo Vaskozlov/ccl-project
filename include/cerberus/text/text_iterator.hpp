@@ -2,6 +2,7 @@
 #define CERBERUS_PROJECT_TEXT_ITERATOR_HPP
 
 #include <cerberus/text/basic_text_iterator.hpp>
+#include <cerberus/text/text_iterator_modules/comment_skipper.hpp>
 #include <cerberus/text/text_iterator_modules/line_tracker.hpp>
 #include <cerberus/text/text_iterator_modules/location.hpp>
 
@@ -13,6 +14,11 @@ namespace cerb::text
         using Base = BasicTextIterator<CharT>;
 
     public:
+        CERBLIB_DECL auto getLocation() const -> const Location<> &
+        {
+            return location;
+        }
+
         CERBLIB_DECL auto getLine() const -> size_t
         {
             return location.getLine();
@@ -41,23 +47,30 @@ namespace cerb::text
             return chr;
         }
 
-        constexpr auto nextCleanChar() -> CharT override
+        constexpr auto skipComments() -> void
         {
-            while (isLayout(nextRawChar())) {
-                // empty loop
-            }
-
-            return Base::getCurrentChar();
+            do {
+                Base::moveToCleanChar();
+            } while (comment_skipper.skip(*this));
         }
 
-        constexpr explicit TextIterator(BasicStringView<CharT> input, string_view filename = {})
-          : Base{ input }, location{ filename }
+        auto operator=(const TextIterator &) -> TextIterator & = default;
+        auto operator=(TextIterator &&) noexcept -> TextIterator & = default;
+
+        TextIterator(const TextIterator &) = default;
+        TextIterator(TextIterator &&) noexcept = default;
+
+        constexpr explicit TextIterator(
+            BasicStringView<CharT> input, CommentSkipper<CharT> comment_skipper_ = {},
+            string_view filename = {})
+          : Base{ input }, comment_skipper(comment_skipper_), location{ filename }
         {}
 
         ~TextIterator() = default;
 
     private:
         LineTracker<CharT> line_tracker{ *this };
+        CommentSkipper<CharT> comment_skipper{};
         Location<char> location{};
     };
 }// namespace cerb::text

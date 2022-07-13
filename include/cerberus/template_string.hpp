@@ -3,8 +3,8 @@
 
 #include <algorithm>
 #include <array>
-#include <cerberus/string_view.hpp>
 #include <cerberus/cerberus.hpp>
+#include <cerberus/string_view.hpp>
 
 namespace cerb
 {
@@ -92,11 +92,21 @@ namespace cerb
         CERBLIB_DECL auto operator<=>(const TemplateString &other) const
             -> std::weak_ordering = default;
 
+        template<CharacterLiteral To>
+        consteval auto convert() const -> TemplateString<N, To>
+        {
+            return TemplateString<N, To>{ strCast<To>(string) };
+        }
+
         // NOLINTNEXTLINE
         consteval TemplateString(const CharT (&str)[N])
         {
             std::copy_n(str, N, string.begin());
         }
+
+        // NOLINTNEXTLINE
+        consteval TemplateString(const std::array<CharT, N> &str) : string(str)
+        {}
 
         storage_t string{};
     };
