@@ -34,7 +34,7 @@ STRING_TEST
 ();
 
 // NOLINTNEXTLINE
-CONSTEXPR_TEST
+STRING_TEST
 {
     auto text_iterator = TextIterator<char>{ "/*1521\n\n151t*/\nHi!"_sv, { "//", "/*", "*/" } };
     text_iterator.skipComments();
@@ -47,7 +47,7 @@ CONSTEXPR_TEST
 ();
 
 // NOLINTNEXTLINE
-CONSTEXPR_TEST
+STRING_TEST
 {
     auto text_iterator =
         TextIterator<char>{ "/*1521\n\n151t*/\n/* */ Hi!"_sv, { "//", "/*", "*/" } };
