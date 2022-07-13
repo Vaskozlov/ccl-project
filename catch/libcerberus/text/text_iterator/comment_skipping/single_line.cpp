@@ -3,16 +3,14 @@
 
 using namespace cerb::text;
 using namespace cerb::debug;
-using namespace cerb::integral_literals;
-using namespace cerb::string_view_literals;
 
 // NOLINTNEXTLINE
 STRING_TEST
 {
-    auto text_iterator = TextIterator<char>{ "//\nHi!"_sv, { "//", "/*", "*/" } };
+    auto text_iterator = TextIterator<char>{ "//\nHi!", { "//", "/*", "*/" } };
     text_iterator.skipComments();
 
-    assertEqual(text_iterator.getRemaining(), "\nHi!"_sv);
+    assertEqual(text_iterator.getRemaining(), "\nHi!");
     assertEqual(text_iterator.nextRawChar(), 'H');
 
     return {};
@@ -22,11 +20,11 @@ STRING_TEST
 // NOLINTNEXTLINE
 STRING_TEST
 {
-    auto text_iterator = TextIterator<char>{ "Hi! //"_sv, { "//", "/*", "*/" } };
+    auto text_iterator = TextIterator<char>{ "Hi! //", { "//", "/*", "*/" } };
     text_iterator.rawSkip(3);
     text_iterator.skipComments();
 
-    assertEqual(text_iterator.getRemaining(), ""_sv);
+    assertEqual(text_iterator.getRemaining(), "");
     assertEqual(text_iterator.nextRawChar(), '\0');
 
     return {};
@@ -36,11 +34,11 @@ STRING_TEST
 // NOLINTNEXTLINE
 STRING_TEST
 {
-    auto text_iterator = TextIterator<char>{ "Hi! //\nHello!"_sv, { "//", "/*", "*/" } };
+    auto text_iterator = TextIterator<char>{ "Hi! //\nHello!", { "//", "/*", "*/" } };
     text_iterator.rawSkip(3);
     text_iterator.skipComments();
 
-    assertEqual(text_iterator.getRemaining(), "\nHello!"_sv);
+    assertEqual(text_iterator.getRemaining(), "\nHello!");
     assertEqual(text_iterator.nextRawChar(), 'H');
 
     return {};
@@ -50,11 +48,11 @@ STRING_TEST
 // NOLINTNEXTLINE
 STRING_TEST
 {
-    auto text_iterator = TextIterator<char>{ "Hi! //\n //\nHello!"_sv, { "//", "/*", "*/" } };
+    auto text_iterator = TextIterator<char>{ "Hi! //\n //\nHello!", { "//", "/*", "*/" } };
     text_iterator.rawSkip(3);
     text_iterator.skipComments();
 
-    assertEqual(text_iterator.getRemaining(), "\nHello!"_sv);
+    assertEqual(text_iterator.getRemaining(), "\nHello!");
     assertEqual(text_iterator.nextRawChar(), 'H');
 
     return {};

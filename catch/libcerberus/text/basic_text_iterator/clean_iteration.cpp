@@ -17,8 +17,8 @@ constexpr auto testCleanIteration() -> bool
     auto text_iterator = BasicTextIterator{ input };
 
     for (const auto &chr : expected) {
-        assertEqual(chr, text_iterator.nextCleanChar());
-        assertEqual(chr, text_iterator.getCurrentChar());
+        assertEqual(text_iterator.nextCleanChar(), chr);
+        assertEqual(text_iterator.getCurrentChar(), chr);
     }
 
     return true;

@@ -19,7 +19,7 @@ constexpr auto testCleanFuture() -> bool
     auto text_iterator = BasicTextIterator{ input };
 
     for (const auto &chr : expected) {
-        assertEqual(chr, text_iterator.futureCleanChar(index));
+        assertEqual(text_iterator.futureCleanChar(index), chr);
         ++index;
     }
 

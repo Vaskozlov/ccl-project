@@ -3,16 +3,14 @@
 
 using namespace cerb::text;
 using namespace cerb::debug;
-using namespace cerb::integral_literals;
-using namespace cerb::string_view_literals;
 
 // NOLINTNEXTLINE
 RUNTIME_TEST
 {
-    auto text_iterator = TextIterator<char>{ "/*"_sv, { "//", "/*", "*/" } };
+    auto text_iterator = TextIterator<char>{ "/*", { "//", "/*", "*/" } };
 
     ERROR_EXPECTED(
-        text_iterator.skipComments(), cerb::BasicTextIteratorException,
+        text_iterator.skipComments(), BasicTextIteratorException,
         "unterminated "
         "comment");
 
@@ -23,10 +21,10 @@ RUNTIME_TEST
 // NOLINTNEXTLINE
 STRING_TEST
 {
-    auto text_iterator = TextIterator<char>{ "/**/Hi!"_sv, { "//", "/*", "*/" } };
+    auto text_iterator = TextIterator<char>{ "/**/Hi!", { "//", "/*", "*/" } };
     text_iterator.skipComments();
 
-    assertEqual(text_iterator.getRemaining(), "/Hi!"_sv);
+    assertEqual(text_iterator.getRemaining(), "/Hi!");
     assertEqual(text_iterator.nextRawChar(), 'H');
 
     return {};
@@ -36,10 +34,10 @@ STRING_TEST
 // NOLINTNEXTLINE
 STRING_TEST
 {
-    auto text_iterator = TextIterator<char>{ "/*1521\n\n151t*/\nHi!"_sv, { "//", "/*", "*/" } };
+    auto text_iterator = TextIterator<char>{ "/*1521\n\n151t*/\nHi!", { "//", "/*", "*/" } };
     text_iterator.skipComments();
 
-    assertEqual(text_iterator.getRemaining(), "\nHi!"_sv);
+    assertEqual(text_iterator.getRemaining(), "\nHi!");
     assertEqual(text_iterator.nextRawChar(), 'H');
 
     return {};
@@ -49,11 +47,10 @@ STRING_TEST
 // NOLINTNEXTLINE
 STRING_TEST
 {
-    auto text_iterator =
-        TextIterator<char>{ "/*1521\n\n151t*/\n/* */ Hi!"_sv, { "//", "/*", "*/" } };
+    auto text_iterator = TextIterator<char>{ "/*1521\n\n151t*/\n/* */ Hi!", { "//", "/*", "*/" } };
     text_iterator.skipComments();
 
-    assertEqual(text_iterator.getRemaining(), " Hi!"_sv);
+    assertEqual(text_iterator.getRemaining(), " Hi!");
     assertEqual(text_iterator.nextRawChar(), 'H');
 
     return {};

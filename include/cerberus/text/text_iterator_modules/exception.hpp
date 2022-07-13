@@ -5,7 +5,7 @@
 #include <cerberus/format/format.hpp>
 #include <string>
 
-namespace cerb
+namespace cerb::text
 {
     CERBLIB_EXCEPTION(BasicTextIteratorException, CerberusException);
 
@@ -33,14 +33,16 @@ namespace cerb
         }
 
         constexpr TextIteratorException(const TextIterator<CharT> &text_iterator, StrView message_)
+          : message(fmt::format<CharT, "Error occurred at: {}, message: {}\n{}\n">(
+                text_iterator.getLocation(), message_, text_iterator.getWorkingLine()))
         {
-            message.append(fmt::format<CharT, "Error message: {}. Occurred at: {}">(
-                message_, text_iterator.getLocation()));
+            message.resize(message.size() + text_iterator.getColumn(), ' ');
+            message.push_back('^');
         }
 
     private:
         std::basic_string<CharT> message{};
     };
-}// namespace cerb
+}// namespace cerb::text
 
 #endif /* CERBERUS_PROJECT_TIM_EXCEPTION_HPP */
