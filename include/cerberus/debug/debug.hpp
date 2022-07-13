@@ -6,41 +6,20 @@
 #include <fmt/format.h>
 #include <source_location>
 
-#define STATIC_VARIABLE [[maybe_unused]] static constexpr
 #define UNUSED_DECL [[maybe_unused]] auto CERBLIB_UNIQUE_IDENT =
-
 #define RUNTIME_TEST [[maybe_unused]] static bool CERBLIB_UNIQUE_IDENT = []() -> bool
-#define CONSTEXPR_TEST STATIC_VARIABLE bool CERBLIB_UNIQUE_IDENT = []() -> bool
-
-#define STATIC_ASSERT_EQ(lhs, rhs) static_assert(cerb::safeEqual(lhs, rhs))
-#define STATIC_ASSERT_NOT_EQ(lhs, rhs) static_assert(cerb::safeNotEqual(lhs, rhs))
+#define CONSTEXPR_TEST [[maybe_unused]] constexpr static bool CERBLIB_UNIQUE_IDENT = []() -> bool
 
 #if defined(CERBLIB_HAS_CONSTEXPR_VECTOR) && !defined(_MSC_VER)
 #    define VECTOR_TEST CONSTEXPR_TEST
-#    define VECTOR_ASSERT_TRUE(value) static_assert(value)
-#    define VECTOR_ASSERT_FALSE(value) static_assert(!(value))
-#    define VECTOR_ASSERT_EQUAL(lhs, rhs) STATIC_ASSERT_EQ(lhs, rhs)
-#    define VECTOR_ASSERT_NOT_EQ(lhs, rhs) STATIC_ASSERT_NOT_EQ(lhs, rhs)
 #else
 #    define VECTOR_TEST RUNTIME_TEST
-#    define VECTOR_ASSERT_TRUE(value) assertTrue(value)
-#    define VECTOR_ASSERT_FALSE(value) asserFalse(!(value))
-#    define VECTOR_ASSERT_EQUAL(lhs, rhs) assertEqual(lhs, rhs)
-#    define VECTOR_ASSERT_NOT_EQ(lhs, rhs) asserNotEqual(lhs, rhs)
 #endif
 
 #if defined(CERBLIB_HAS_CONSTEXPR_STRING) && !defined(_MSC_VER)
 #    define STRING_TEST CONSTEXPR_TEST
-#    define STRING_ASSERT_TRUE(value) static_assert(value)
-#    define STRING_ASSERT_FALSE(value) static_assert(!(value))
-#    define STRING_ASSERT_EQUAL(lhs, rhs) STATIC_ASSERT_EQ(lhs, rhs)
-#    define STRING_ASSERT_NOT_EQ(lhs, rhs) STATIC_ASSERT_NOT_EQ(lhs, rhs)
 #else
 #    define STRING_TEST RUNTIME_TEST
-#    define STRING_ASSERT_TRUE(value) assertTrue(value)
-#    define STRING_ASSERT_FALSE(value) asserFalse(!(value))
-#    define STRING_ASSERT_EQUAL(lhs, rhs) assertEqual(lhs, rhs)
-#    define STRING_ASSERT_NOT_EQ(lhs, rhs) asserNotEqual(lhs, rhs)
 #endif
 
 #define ERROR_EXPECTED(expression_with_error, error_type, error_message)                           \
@@ -59,7 +38,7 @@ namespace cerb::debug
     [[nodiscard]] inline auto convertLocation(std::source_location location) -> std::string
     {
         return ::fmt::format(
-            "file: {}, function: {}, line: {}", location.file_name(), location.function_name(),
+            "{}, function: {}, line: {}", location.file_name(), location.function_name(),
             location.line());
     }
 
@@ -88,7 +67,7 @@ namespace cerb::debug
         const T &lhs, const U &rhs, std::source_location location = std::source_location::current())
         -> void
     {
-        if (safeNotEqual<T>(lhs, rhs)) {
+        if (safeNotEqual(lhs, rhs)) {
             if constexpr (Printable<T>) {
                 throw std::runtime_error(::fmt::format(
                     "Expected {}, got {} in {}", rhs, lhs, convertLocation(location)));
@@ -103,7 +82,7 @@ namespace cerb::debug
         const T &lhs, const U &rhs, std::source_location location = std::source_location::current())
         -> void
     {
-        if (safeEqual<T>(lhs, rhs)) {
+        if (safeEqual(lhs, rhs)) {
             if constexpr (Printable<T>) {
                 throw std::runtime_error(::fmt::format(
                     "Expected {} is not equal to {} in {}", lhs, rhs, convertLocation(location)));

@@ -18,7 +18,7 @@ namespace cerb::fmt
         std::basic_string<CharT1> &formatting_string,
         const text::Location<CharT2> &location)
     {
-        auto formatted_string = fmt::format<CharT1, "filename: {}, line: {}, column: {}">(
+        auto formatted_string = fmt::format<CharT1, "{}, line: {}, column: {}">(
             location.getFilename(), location.getLine(), location.getColumn());
 
         convert(formatting_string, formatted_string);

@@ -9,9 +9,9 @@ using namespace std::string_view_literals;
 // NOLINTNEXTLINE
 STRING_TEST
 {
-    assertEqual(format<"{}">("Hello, "s), "Hello, "s);
-    assertEqual(format<"{}">("World!"s), "World!"s);
-    assertEqual(format<"{}, {}!">("Hello"s, "World"s), "Hello, World!"s);
+    assertEqual(format<"{}">("Hello, "s), "Hello, ");
+    assertEqual(format<"{}">("World!"s), "World!");
+    assertEqual(format<"{}, {}!">("Hello"s, "World"), "Hello, World!");
     return {};
 }
 ();
@@ -19,9 +19,9 @@ STRING_TEST
 // NOLINTNEXTLINE
 STRING_TEST
 {
-    assertEqual(format<"{}">("Hello, "sv), "Hello, "s);
-    assertEqual(format<"{}">("World!"sv), "World!"s);
-    assertEqual(format<"{}, {}!">("Hello"sv, "World"sv), "Hello, World!"s);
+    assertEqual(format<"{}">("Hello, "sv), "Hello, ");
+    assertEqual(format<"{}">("World!"sv), "World!");
+    assertEqual(format<"{}, {}!">("Hello"sv, "World"), "Hello, World!");
     return {};
 }
 ();

@@ -10,7 +10,7 @@ CONSTEXPR_TEST
     auto std_string = "Hello, World!"sv;
     auto cerb_string = "Hello, World!"_sv;
 
-    assertTrue(cerb_string == std_string);
+    assertEqual(cerb_string, std_string);
     return {};
 }
 ();

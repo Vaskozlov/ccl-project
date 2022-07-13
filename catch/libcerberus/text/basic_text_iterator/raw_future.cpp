@@ -19,7 +19,7 @@ constexpr auto testRawFuture() -> bool
     auto text_iterator = BasicTextIterator{ input };
 
     for (const auto &chr : expected) {
-        assertEqual(chr, text_iterator.futureRawChar(index));
+        assertEqual(text_iterator.futureRawChar(index), chr);
         ++index;
     }
 

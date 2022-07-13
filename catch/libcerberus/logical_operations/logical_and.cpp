@@ -3,12 +3,12 @@
 
 using namespace cerb;
 
-STATIC_ASSERT_EQ(land(true), true);
-STATIC_ASSERT_EQ(land(false), false);
+static_assert(land(true) == true);
+static_assert(land(false) == false);
 
-STATIC_ASSERT_EQ(land(true, true), true);
-STATIC_ASSERT_EQ(land(true, false), false);
+static_assert(land(true, true) == true);
+static_assert(land(true, false) == false);
 
-STATIC_ASSERT_EQ(land(true, true, true), true);
-STATIC_ASSERT_EQ(land(true, true, false), false);
-STATIC_ASSERT_EQ(land(false, false, false), false);
+static_assert(land(true, true, true) == true);
+static_assert(land(true, true, false) == false);
+static_assert(land(false, false, false) == false);

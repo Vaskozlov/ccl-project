@@ -16,7 +16,7 @@ namespace cerb::fmt::core
             return arguments_counter;
         }
 
-        ArgumentsCounter() = default;
+        constexpr ArgumentsCounter() = default;
 
         constexpr explicit ArgumentsCounter(const BasicStringView<CharT> &text)
           : text_iterator{ text }

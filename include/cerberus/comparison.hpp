@@ -6,21 +6,21 @@
 
 namespace cerb
 {
-    template<std::equality_comparable T>
-    CERBLIB_DECL auto safeEqual(const T &lhs, const T &rhs) -> bool
+    template<typename T, typename U>
+    CERBLIB_DECL auto safeEqual(const T &lhs, const U &rhs) -> bool
     {
         if constexpr (std::floating_point<T>) {
-            return std::abs(lhs - rhs) <= std::numeric_limits<T>::epsilon();
+            return std::abs(lhs - static_cast<T>(rhs)) <= std::numeric_limits<T>::epsilon();
         } else {
             return lhs == rhs;
         }
     }
 
-    template<std::equality_comparable T>
-    CERBLIB_DECL auto safeNotEqual(const T &lhs, const T &rhs) -> bool
+    template<typename T, typename U>
+    CERBLIB_DECL auto safeNotEqual(const T &lhs, const U &rhs) -> bool
     {
         if constexpr (std::floating_point<T>) {
-            return std::abs(lhs - rhs) > std::numeric_limits<T>::epsilon();
+            return std::abs(lhs - static_cast<T>(rhs)) > std::numeric_limits<T>::epsilon();
         } else {
             return lhs != rhs;
         }
