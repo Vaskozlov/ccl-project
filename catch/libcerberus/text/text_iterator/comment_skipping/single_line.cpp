@@ -8,7 +8,7 @@ using namespace cerb::debug;
 STRING_TEST
 {
     auto text_iterator = TextIterator<char>{ "//\nHi!", { "//", "/*", "*/" } };
-    text_iterator.skipComments();
+    text_iterator.skipCommentsAndLayout();
 
     assertEqual(text_iterator.getRemaining(), "\nHi!");
     assertEqual(text_iterator.nextRawChar(), 'H');
@@ -22,7 +22,7 @@ STRING_TEST
 {
     auto text_iterator = TextIterator<char>{ "Hi! //", { "//", "/*", "*/" } };
     text_iterator.rawSkip(3);
-    text_iterator.skipComments();
+    text_iterator.skipCommentsAndLayout();
 
     assertEqual(text_iterator.getRemaining(), "");
     assertEqual(text_iterator.nextRawChar(), '\0');
@@ -36,7 +36,7 @@ STRING_TEST
 {
     auto text_iterator = TextIterator<char>{ "Hi! //\nHello!", { "//", "/*", "*/" } };
     text_iterator.rawSkip(3);
-    text_iterator.skipComments();
+    text_iterator.skipCommentsAndLayout();
 
     assertEqual(text_iterator.getRemaining(), "\nHello!");
     assertEqual(text_iterator.nextRawChar(), 'H');
@@ -50,7 +50,7 @@ STRING_TEST
 {
     auto text_iterator = TextIterator<char>{ "Hi! //\n //\nHello!", { "//", "/*", "*/" } };
     text_iterator.rawSkip(3);
-    text_iterator.skipComments();
+    text_iterator.skipCommentsAndLayout();
 
     assertEqual(text_iterator.getRemaining(), "\nHello!");
     assertEqual(text_iterator.nextRawChar(), 'H');

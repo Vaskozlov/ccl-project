@@ -47,7 +47,7 @@ namespace cerb::text
             return chr;
         }
 
-        constexpr auto skipComments() -> void
+        constexpr auto skipCommentsAndLayout() -> void
         {
             do {
                 Base::moveToCleanChar();
@@ -63,7 +63,7 @@ namespace cerb::text
         constexpr explicit TextIterator(
             BasicStringView<CharT> input, CommentSkipper<CharT> comment_skipper_ = {},
             string_view filename = {})
-          : Base{ input }, comment_skipper(comment_skipper_), location{ filename }
+          : Base{ input }, comment_skipper{ comment_skipper_ }, location{ filename }
         {}
 
         ~TextIterator() = default;

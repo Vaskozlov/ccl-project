@@ -1,4 +1,4 @@
-#include <cerberus/core/logical_operations.hpp>
+#include <cerberus/core/logical_ops.hpp>
 #include <cerberus/debug/debug.hpp>
 
 using namespace cerb;

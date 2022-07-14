@@ -23,7 +23,8 @@ namespace cerb
             return private_::arrayLength<>(str);
         } else {
             if CERBLIB_RUNTIME_BRANCH {
-                auto terminator = std::find(str, str + std::numeric_limits<u32>::max(), 0);
+                constexpr auto searching_limit = std::numeric_limits<u32>::max();
+                auto terminator = std::find(str, str + searching_limit, 0);
                 return static_cast<size_t>(std::distance(str, terminator));
             }
 
@@ -180,6 +181,11 @@ namespace cerb
         }
 
         BasicStringView() = default;
+
+        template<size_t N>
+        constexpr explicit BasicStringView(const std::array<CharT, N> &array_)
+          : string{ array_.data() }, length{ array_.size() }
+        {}
 
         constexpr BasicStringView(pointer string_, size_t length_)
           : string{ string_ }, length{ length_ }

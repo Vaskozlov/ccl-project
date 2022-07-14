@@ -6,21 +6,45 @@
 
 namespace cerb
 {
-    template<typename T, typename U>
-    CERBLIB_DECL auto safeEqual(const T &lhs, const U &rhs) -> bool
+    template<typename T1, typename T2>
+    CERBLIB_DECL auto safeEqual(const T1 &lhs, const T2 &rhs) -> bool
     {
-        if constexpr (std::floating_point<T>) {
-            return std::abs(lhs - static_cast<T>(rhs)) <= std::numeric_limits<T>::epsilon();
+        constexpr auto rhs_is_floating_point =
+            not std::is_floating_point_v<T1> and std::is_floating_point_v<T2>;
+
+        constexpr auto rhs_is_bigger_floating_point = std::is_floating_point_v<T1> &&
+                                                      std::is_floating_point_v<T2> &&
+                                                      (sizeof(T2) > sizeof(T1));
+
+        constexpr auto need_to_swap_arguments =
+            rhs_is_floating_point || rhs_is_bigger_floating_point;
+
+        if constexpr (need_to_swap_arguments) {
+            return safeEqual(rhs, lhs);
+        } else if constexpr (std::floating_point<T1>) {
+            return std::abs(lhs - static_cast<T1>(rhs)) <= std::numeric_limits<T1>::epsilon();
         } else {
             return lhs == rhs;
         }
     }
 
-    template<typename T, typename U>
-    CERBLIB_DECL auto safeNotEqual(const T &lhs, const U &rhs) -> bool
+    template<typename T1, typename T2>
+    CERBLIB_DECL auto safeNotEqual(const T1 &lhs, const T2 &rhs) -> bool
     {
-        if constexpr (std::floating_point<T>) {
-            return std::abs(lhs - static_cast<T>(rhs)) > std::numeric_limits<T>::epsilon();
+        constexpr auto rhs_is_floating_point =
+            not std::is_floating_point_v<T1> and std::is_floating_point_v<T2>;
+
+        constexpr auto rhs_is_bigger_floating_point = std::is_floating_point_v<T1> &&
+                                                      std::is_floating_point_v<T2> &&
+                                                      (sizeof(T2) > sizeof(T1));
+
+        constexpr auto need_to_swap_arguments =
+            rhs_is_floating_point || rhs_is_bigger_floating_point;
+
+        if constexpr (need_to_swap_arguments) {
+            return safeNotEqual(rhs, lhs);
+        } else if constexpr (std::floating_point<T1>) {
+            return std::abs(lhs - static_cast<T1>(rhs)) > std::numeric_limits<T1>::epsilon();
         } else {
             return lhs != rhs;
         }

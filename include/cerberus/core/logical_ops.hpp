@@ -1,5 +1,5 @@
-#ifndef CERBERUS_PROJECT_LOGICAL_OPERATIONS_HPP
-#define CERBERUS_PROJECT_LOGICAL_OPERATIONS_HPP
+#ifndef CERBERUS_PROJECT_LOGICAL_OPS_HPP
+#define CERBERUS_PROJECT_LOGICAL_OPS_HPP
 
 #include <cerberus/core/concepts.hpp>
 #include <cerberus/core/defines.hpp>
@@ -20,4 +20,4 @@ namespace cerb
     }
 }// namespace cerb
 
-#endif /* CERBERUS_PROJECT_LOGICAL_OPERATIONS_HPP */
+#endif /* CERBERUS_PROJECT_LOGICAL_OPS_HPP */
