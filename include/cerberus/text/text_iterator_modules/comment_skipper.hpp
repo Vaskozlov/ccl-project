@@ -61,11 +61,11 @@ namespace cerb::text
         {
             text_iterator->rawSkip(multiline_begin.size());
 
-            while (not isComment(multiline_end) && text_iterator->getCurrentChar() != 0) {
+            while (not isComment(multiline_end) && not isEoF(text_iterator->getCurrentChar())) {
                 text_iterator->nextRawChar();
             }
 
-            if (text_iterator->getCurrentChar() == 0) {
+            if (isEoF(text_iterator->getCurrentChar())) {
                 throw BasicTextIteratorException("unterminated comment");
             }
 

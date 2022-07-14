@@ -11,7 +11,7 @@
                                                                                                    \
         name() = default;                                                                          \
                                                                                                    \
-        explicit name(std::string_view exception_message) : base_exception(exception_message)      \
+        explicit name(std::string_view message_) : base_exception(message_)                        \
         {}                                                                                         \
     }
 
@@ -27,16 +27,16 @@ namespace cerb
 
         CerberusException() = default;
 
-        explicit CerberusException(std::string_view exception_message) : message(exception_message)
+        explicit CerberusException(std::string_view message_) : message(message_)
         {}
 
     private:
         std::string_view message{};
     };
 
-    CERBLIB_EXCEPTION(KeyNotFound, CerberusException);
-    CERBLIB_EXCEPTION(OutOfRange, CerberusException);
     CERBLIB_EXCEPTION(LogicError, CerberusException);
+    CERBLIB_EXCEPTION(OutOfRange, CerberusException);
+    CERBLIB_EXCEPTION(KeyNotFound, CerberusException);
 }// namespace cerb
 
 #endif /* CERBERUS_PROJECT_EXCEPTION_HPP */

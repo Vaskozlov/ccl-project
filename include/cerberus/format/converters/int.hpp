@@ -76,9 +76,9 @@ namespace cerb::fmt
 
             constexpr static size_t maximum_digits = std::numeric_limits<Int>::digits10 + 1;
 
-            std::array<CharT, maximum_digits> conversion_buffer{};
             std::basic_string<CharT> &formatting_string;
             size_t buffer_index{ maximum_digits };
+            std::array<CharT, maximum_digits> conversion_buffer{};
             Int number;
             u16 notation;
         };

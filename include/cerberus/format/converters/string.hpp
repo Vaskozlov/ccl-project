@@ -55,7 +55,11 @@ namespace cerb::fmt
         std::basic_string<CharT1> &formatting_string,
         const std::basic_string<CharT2> &string) -> void
     {
-        convert(formatting_string, std::basic_string_view<CharT2>{ string.c_str(), string.size() });
+        if constexpr (std::is_same_v<CharT1, CharT2>) {
+            formatting_string.append(string);
+        } else {
+            convert(formatting_string, std::basic_string_view{ string.c_str(), string.size() });
+        }
     }
 
     template<CharacterLiteral CharT1, CharacterLiteral CharT2>

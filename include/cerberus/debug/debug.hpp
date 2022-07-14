@@ -6,7 +6,7 @@
 #include <fmt/format.h>
 #include <source_location>
 
-#define UNUSED_DECL [[maybe_unused]] auto CERBLIB_UNIQUE_IDENT =
+#define UNUSED_DECL [[maybe_unused]] const auto CERBLIB_UNIQUE_IDENT =
 #define RUNTIME_TEST [[maybe_unused]] static bool CERBLIB_UNIQUE_IDENT = []() -> bool
 #define CONSTEXPR_TEST [[maybe_unused]] constexpr static bool CERBLIB_UNIQUE_IDENT = []() -> bool
 

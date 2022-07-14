@@ -10,6 +10,6 @@
 #include <cerberus/core/defines.hpp>
 #include <cerberus/core/exception.hpp>
 #include <cerberus/core/int_types.hpp>
-#include <cerberus/core/logical_operations.hpp>
+#include <cerberus/core/logical_ops.hpp>
 
 #endif /* CERBERUS_PROJECT_CERBERUS_HPP */

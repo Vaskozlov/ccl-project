@@ -84,8 +84,7 @@ namespace cerb::fmt
     template<CharacterLiteral To, TemplateString String, typename... Args>
     CERBLIB_DECL auto format(Args &&...args) -> std::basic_string<To>
     {
-        auto formatter = Formatter<String.template convert<To>()>{ std::forward<Args>(args)... };
-        return formatter.get();
+        return format<String.template convert<To>(), Args...>(std::forward<Args>(args)...);
     }
 }// namespace cerb::fmt
 

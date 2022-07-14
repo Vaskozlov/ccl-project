@@ -22,13 +22,13 @@ namespace cerb
     template<CharacterLiteral CharT>
     CERBLIB_DECL auto isEoF(CharT chr) -> bool
     {
-        return chr == 0;
+        return chr == static_cast<CharT>(0);
     }
 
     template<CharacterLiteral CharT>
     CERBLIB_DECL auto isLayout(CharT chr) -> bool
     {
-        return land(chr > 0, chr <= ' ');
+        return land(chr > static_cast<CharT>(0), chr <= ' ');
     }
 
     template<CharacterLiteral CharT>

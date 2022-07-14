@@ -99,13 +99,11 @@ namespace cerb
         }
 
         // NOLINTNEXTLINE
-        consteval TemplateString(const CharT (&str)[N])
-        {
-            std::copy_n(str, N, string.begin());
-        }
+        consteval TemplateString(const CharT (&str)[N]) : string{ std::to_array(str) }
+        {}
 
         // NOLINTNEXTLINE
-        consteval TemplateString(const std::array<CharT, N> &str) : string(str)
+        consteval TemplateString(const std::array<CharT, N> &str) : string{ str }
         {}
 
         storage_t string{};

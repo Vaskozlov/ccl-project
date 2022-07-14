@@ -32,15 +32,21 @@ namespace cerb::text
             }
         }
 
-        constexpr TextIteratorException(const TextIterator<CharT> &text_iterator, StrView message_)
-          : message(fmt::format<CharT, "Error occurred at: {}, message: {}\n{}\n">(
-                text_iterator.getLocation(), message_, text_iterator.getWorkingLine()))
+        constexpr TextIteratorException(const TextIterator<CharT> &text_iterator_, StrView message_)
+          : message{ fmt::format<CharT, "Error occurred at: {}, message: {}\n{}\n">(
+                text_iterator_.getLocation(), message_, text_iterator_.getWorkingLine()) }
         {
-            message.resize(message.size() + text_iterator.getColumn(), ' ');
-            message.push_back('^');
+            addArrowToError(text_iterator_);
         }
 
     private:
+        constexpr auto addArrowToError(const TextIterator<CharT> &text_iterator) -> void
+        {
+            auto new_message_size = message.size() + text_iterator.getColumn();
+            message.resize(new_message_size, ' ');
+            message.push_back('^');
+        }
+
         std::basic_string<CharT> message{};
     };
 }// namespace cerb::text
