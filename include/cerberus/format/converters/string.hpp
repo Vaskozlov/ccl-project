@@ -10,7 +10,7 @@ namespace cerb::fmt
     namespace private_
     {
         template<CharacterLiteral CharT1, CharacterLiteral CharT2>
-        constexpr auto convertDifferentStrings(
+        constexpr auto dumpDifferentStrings(
             std::basic_string<CharT2> &formatting_string,
             const std::basic_string_view<CharT1> &string) -> void
         {
@@ -28,45 +28,44 @@ namespace cerb::fmt
     }// namespace private_
 
     template<CharacterLiteral CharT1, CharacterLiteral CharT2>
-    constexpr auto convert(
+    constexpr auto dump(
         std::basic_string<CharT1> &formatting_string,
         const std::basic_string_view<CharT2> &string) -> void
     {
         if constexpr (std::is_same_v<CharT1, CharT2>) {
             formatting_string.append(string);
         } else {
-            private_::convertDifferentStrings(formatting_string, string);
+            private_::dumpDifferentStrings(formatting_string, string);
         }
     }
 
     template<CharacterLiteral CharT1, CharacterLiteral CharT2>
-    constexpr auto convert(std::basic_string<CharT1> &formatting_string, const CharT2 *string)
-        -> void
+    constexpr auto dump(std::basic_string<CharT1> &formatting_string, const CharT2 *string) -> void
     {
         if constexpr (std::is_same_v<CharT1, CharT2>) {
             formatting_string.append(string);
         } else {
-            convert(formatting_string, std::basic_string_view<CharT2>{ string });
-        }
-    }
-
-    template<CharacterLiteral CharT1, CharacterLiteral CharT2>
-    constexpr auto convert(
-        std::basic_string<CharT1> &formatting_string,
-        const std::basic_string<CharT2> &string) -> void
-    {
-        if constexpr (std::is_same_v<CharT1, CharT2>) {
-            formatting_string.append(string);
-        } else {
-            convert(formatting_string, std::basic_string_view{ string.c_str(), string.size() });
+            dump(formatting_string, std::basic_string_view<CharT2>{ string });
         }
     }
 
     template<CharacterLiteral CharT1, CharacterLiteral CharT2>
     constexpr auto
-        convert(std::basic_string<CharT1> &formatting_string, const BasicStringView<CharT2> &string)
+        dump(std::basic_string<CharT1> &formatting_string, const std::basic_string<CharT2> &string)
+            -> void
     {
-        convert(formatting_string, static_cast<std::basic_string_view<CharT2>>(string));
+        if constexpr (std::is_same_v<CharT1, CharT2>) {
+            formatting_string.append(string);
+        } else {
+            dump(formatting_string, std::basic_string_view{ string.c_str(), string.size() });
+        }
+    }
+
+    template<CharacterLiteral CharT1, CharacterLiteral CharT2>
+    constexpr auto
+        dump(std::basic_string<CharT1> &formatting_string, const BasicStringView<CharT2> &string)
+    {
+        dump(formatting_string, static_cast<std::basic_string_view<CharT2>>(string));
     }
 }// namespace cerb::fmt
 

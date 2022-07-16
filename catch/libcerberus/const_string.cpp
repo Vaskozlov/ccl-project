@@ -1,11 +1,11 @@
+#include <cerberus/const_string.hpp>
 #include <cerberus/debug/debug.hpp>
-#include <cerberus/template_string.hpp>
 
 using namespace cerb::debug;
 using namespace cerb::string_view_literals;
 
-template<cerb::TemplateString String>
-constexpr static auto testTemplateString(auto input) -> bool
+template<cerb::ConstString String>
+constexpr static auto testConstString(auto input) -> bool
 {
     auto test_string = input;
 
@@ -19,8 +19,8 @@ constexpr static auto testTemplateString(auto input) -> bool
     return true;
 }
 
-static_assert(testTemplateString<"">(""_sv));
-static_assert(testTemplateString<"Hello, World!">("Hello, World!"_sv));
+static_assert(testConstString<"">(""_sv));
+static_assert(testConstString<"Hello, World!">("Hello, World!"_sv));
 
-static_assert(testTemplateString<u"">(u""_sv));
-static_assert(testTemplateString<u"Hello, World!">(u"Hello, World!"_sv));
+static_assert(testConstString<u"">(u""_sv));
+static_assert(testConstString<u"Hello, World!">(u"Hello, World!"_sv));
