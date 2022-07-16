@@ -17,12 +17,12 @@ namespace cerb::fmt::core
         using iterator = typename value_type::iterator;
         using const_iterator = typename value_type::const_iterator;
 
-        static constexpr size_t blocks_num = core::countArgs(String.strView()) + 1;
+        static constexpr size_t blocks_num = countArgs(String.strView()) + 1;
 
     public:
         using storage_t = std::array<value_type, blocks_num>;
 
-        CERBLIB_DECL auto get() const -> const std::array<value_type, blocks_num> &
+        CERBLIB_DECL auto get() const -> const storage_t &
         {
             return blocks;
         }
@@ -66,13 +66,13 @@ namespace cerb::fmt::core
             if (bracket::isOpened(text_iterator)) {
                 fillBlock();
             } else if (bracket::isClosed(text_iterator)) {
-                block_begin = text_iterator.getRemaining().begin() + 1;
+                block_begin = text_iterator.getCarriage() + 1;
             }
         }
 
         constexpr auto fillBlock() -> void
         {
-            auto new_begin = text_iterator.getRemaining().begin();
+            auto new_begin = text_iterator.getCarriage();
             constructBlock(block_begin, new_begin);
             block_begin = new_begin;
         }

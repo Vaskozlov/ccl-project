@@ -33,7 +33,7 @@ namespace cerb::fmt
         template<size_t Index>
         constexpr auto addBlock() -> void
         {
-            if constexpr (not isEmptyBlock<Index>()) {
+            if constexpr (isNotEmptyBlock<Index>()) {
                 append(string_blocks[Index]);
             }
         }
@@ -41,7 +41,7 @@ namespace cerb::fmt
         template<size_t Index, typename Arg, typename... Args>
         constexpr auto addBlock(Arg &&value, Args &&...values) -> void
         {
-            if constexpr (not isEmptyBlock<Index>()) {
+            if constexpr (isNotEmptyBlock<Index>()) {
                 append(string_blocks[Index]);
             }
 
@@ -53,9 +53,9 @@ namespace cerb::fmt
         }
 
         template<size_t Index>
-        CERBLIB_DECL static auto isEmptyBlock() -> bool
+        CERBLIB_DECL static auto isNotEmptyBlock() -> bool
         {
-            return string_blocks[Index].empty();
+            return not string_blocks[Index].empty();
         }
 
         constexpr auto append(const BasicStringView<CharT> &str) -> void
