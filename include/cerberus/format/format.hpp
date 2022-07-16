@@ -1,16 +1,16 @@
 #ifndef CERBERUS_PROJECT_FORMAT_HPP
 #define CERBERUS_PROJECT_FORMAT_HPP
 
+#include <cerberus/const_string.hpp>
 #include <cerberus/format/converters/int.hpp>
 #include <cerberus/format/converters/location.hpp>
 #include <cerberus/format/converters/string.hpp>
 #include <cerberus/format/core/string_splitter.hpp>
-#include <cerberus/template_string.hpp>
 #include <string>
 
 namespace cerb::fmt
 {
-    template<TemplateString String>
+    template<ConstString String>
     class Formatter
     {
     private:
@@ -45,7 +45,7 @@ namespace cerb::fmt
                 append(string_blocks[Index]);
             }
 
-            convert(formatted_string, value);
+            dump(formatted_string, value);
 
             if constexpr (Index + 1 != string_blocks.size()) {
                 addBlock<Index + 1>(std::forward<Args>(values)...);
@@ -74,14 +74,14 @@ namespace cerb::fmt
         std::basic_string<CharT> formatted_string{};
     };
 
-    template<TemplateString String, typename... Args>
+    template<ConstString String, typename... Args>
     CERBLIB_DECL auto format(Args &&...args) -> std::basic_string<decltype(String.zeroChar())>
     {
         auto formatter = Formatter<String>{ std::forward<Args>(args)... };
         return formatter.get();
     }
 
-    template<CharacterLiteral To, TemplateString String, typename... Args>
+    template<CharacterLiteral To, ConstString String, typename... Args>
     CERBLIB_DECL auto format(Args &&...args) -> std::basic_string<To>
     {
         return format<String.template convert<To>(), Args...>(std::forward<Args>(args)...);

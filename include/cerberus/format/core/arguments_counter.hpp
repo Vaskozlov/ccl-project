@@ -1,9 +1,9 @@
 #ifndef CERBERUS_PROJECT_ARGUMENTS_COUNTER_HPP
 #define CERBERUS_PROJECT_ARGUMENTS_COUNTER_HPP
 
+#include <cerberus/const_string.hpp>
 #include <cerberus/format/core/bracket_ops.hpp>
 #include <cerberus/format/core/exceptions.hpp>
-#include <cerberus/template_string.hpp>
 
 namespace cerb::fmt::core
 {

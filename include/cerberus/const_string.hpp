@@ -1,5 +1,5 @@
-#ifndef CERBERUS_PROJECT_TEMPLATE_STRING_HPP
-#define CERBERUS_PROJECT_TEMPLATE_STRING_HPP
+#ifndef CERBERUS_PROJECT_CONST_STRING_HPP
+#define CERBERUS_PROJECT_CONST_STRING_HPP
 
 #include <algorithm>
 #include <array>
@@ -9,7 +9,7 @@
 namespace cerb
 {
     template<size_t N, CharacterLiteral CharT>
-    struct TemplateString
+    struct ConstString
     {
         using value_type = CharT;
         using storage_t = std::array<CharT, N>;
@@ -89,25 +89,25 @@ namespace cerb
             return string[index];
         }
 
-        CERBLIB_DECL auto operator<=>(const TemplateString &other) const
+        CERBLIB_DECL auto operator<=>(const ConstString &other) const
             -> std::weak_ordering = default;
 
         template<CharacterLiteral To>
-        consteval auto convert() const -> TemplateString<N, To>
+        consteval auto convert() const -> ConstString<N, To>
         {
-            return TemplateString<N, To>{ strCast<To>(string) };
+            return ConstString<N, To>{ strCast<To>(string) };
         }
 
         // NOLINTNEXTLINE
-        consteval TemplateString(const CharT (&str)[N]) : string{ std::to_array(str) }
+        consteval ConstString(const CharT (&str)[N]) : string{ std::to_array(str) }
         {}
 
         // NOLINTNEXTLINE
-        consteval TemplateString(const std::array<CharT, N> &str) : string{ str }
+        consteval ConstString(const std::array<CharT, N> &str) : string{ str }
         {}
 
         storage_t string{};
     };
 }// namespace cerb
 
-#endif /* CERBERUS_PROJECT_TEMPLATE_STRING_HPP */
+#endif /* CERBERUS_PROJECT_CONST_STRING_HPP */

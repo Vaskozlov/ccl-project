@@ -8,7 +8,7 @@
 
 namespace cerb::fmt::core
 {
-    template<TemplateString String>
+    template<ConstString String>
     class StringSplitter
     {
     private:
@@ -88,7 +88,7 @@ namespace cerb::fmt::core
         size_t current_block{};
     };
 
-    template<TemplateString String>
+    template<ConstString String>
     CERBLIB_DECL auto splitString() -> typename StringSplitter<String>::storage_t
     {
         auto splitter = StringSplitter<String>{};

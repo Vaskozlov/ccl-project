@@ -1,14 +1,14 @@
 #include <cerberus/debug/debug.hpp>
 #include <cerberus/format/core/string_splitter.hpp>
 
+using namespace cerb;
 using namespace cerb::debug;
 using namespace cerb::fmt::core;
 using namespace cerb::integral_literals;
 using namespace cerb::string_view_literals;
 
-template<cerb::TemplateString String, cerb::CharacterLiteral CharT>
-constexpr auto testSplitter(const std::initializer_list<cerb::BasicStringView<CharT>> &blocks)
-    -> bool
+template<ConstString String, CharacterLiteral CharT>
+constexpr auto testSplitter(const std::initializer_list<BasicStringView<CharT>> &blocks) -> bool
 {
     auto index = 0_ZU;
     auto split_string = splitString<String>();

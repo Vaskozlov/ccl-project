@@ -85,7 +85,7 @@ namespace cerb::fmt
     }// namespace private_
 
     template<std::integral Int, CharacterLiteral CharT>
-    constexpr auto convert(std::basic_string<CharT> &formatting_string, Int value) -> void
+    constexpr auto dump(std::basic_string<CharT> &formatting_string, Int value) -> void
     {
         private_::IntegralConverter<Int, CharT>{ formatting_string, value };
     }
