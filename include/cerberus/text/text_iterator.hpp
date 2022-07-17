@@ -2,6 +2,7 @@
 #define CERBERUS_PROJECT_TEXT_ITERATOR_HPP
 
 #include <cerberus/text/basic_text_iterator.hpp>
+#include <cerberus/text/location.hpp>
 #include <cerberus/text/text_iterator_modules/comment_skipper.hpp>
 #include <cerberus/text/text_iterator_modules/line_tracker.hpp>
 #include <cerberus/text/text_iterator_modules/location.hpp>

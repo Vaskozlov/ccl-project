@@ -3,7 +3,7 @@
 
 #include <cerberus/const_string.hpp>
 #include <cerberus/format/converters/string.hpp>
-#include <cerberus/text/text_iterator_modules/location.hpp>
+#include <cerberus/text/location.hpp>
 
 namespace cerb::fmt
 {
