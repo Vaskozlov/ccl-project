@@ -4,8 +4,8 @@
 #include <cerberus/text/basic_text_iterator.hpp>
 #include <cerberus/text/location.hpp>
 #include <cerberus/text/text_iterator_modules/comment_skipper.hpp>
+#include <cerberus/text/text_iterator_modules/escaping_symbol.hpp>
 #include <cerberus/text/text_iterator_modules/line_tracker.hpp>
-#include <cerberus/text/text_iterator_modules/location.hpp>
 
 namespace cerb::text
 {
@@ -13,6 +13,7 @@ namespace cerb::text
     class TextIterator : public BasicTextIterator<CharT>
     {
         using Base = BasicTextIterator<CharT>;
+        using extra_symbols_t = std::initializer_list<std::pair<CharT, CharT>>;
 
     public:
         CERBLIB_DECL auto getLocation() const -> const Location<> &
@@ -38,6 +39,19 @@ namespace cerb::text
         CERBLIB_DECL auto getWorkingLine() const -> const BasicStringView<CharT> &
         {
             return line_tracker.get();
+        }
+
+        constexpr auto nextRawCharWithEscapingSymbols(const extra_symbols_t &extra_symbols = {})
+            -> CharT
+        {
+            auto chr = nextRawChar();
+
+            if (chr == '\\') {
+                auto escaping_symbol = module::EscapingSymbolizer{ *this, extra_symbols };
+                return escaping_symbol.match();
+            }
+
+            return chr;
         }
 
         constexpr auto nextRawChar() -> CharT override
