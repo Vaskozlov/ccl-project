@@ -61,7 +61,7 @@ namespace cerb::text
         TextIterator(TextIterator &&) noexcept = default;
 
         constexpr explicit TextIterator(
-            BasicStringView<CharT> input, CommentSkipper<CharT> comment_skipper_ = {},
+            BasicStringView<CharT> input, module::CommentSkipper<CharT> comment_skipper_ = {},
             string_view filename = {})
           : Base{ input }, comment_skipper{ comment_skipper_ }, location{ filename }
         {}
@@ -69,8 +69,8 @@ namespace cerb::text
         ~TextIterator() = default;
 
     private:
-        LineTracker<CharT> line_tracker{ *this };
-        CommentSkipper<CharT> comment_skipper{};
+        module::LineTracker<CharT> line_tracker{ *this };
+        module::CommentSkipper<CharT> comment_skipper{};
         Location<char> location{};
     };
 }// namespace cerb::text

@@ -4,6 +4,7 @@
 using namespace cerb;
 using namespace cerb::text;
 using namespace cerb::debug;
+using namespace cerb::text::module;
 using namespace cerb::integral_literals;
 using namespace cerb::string_view_literals;
 

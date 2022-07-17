@@ -4,7 +4,7 @@
 #include <cerberus/text/basic_text_iterator.hpp>
 #include <cerberus/text/text_iterator_modules/exception.hpp>
 
-namespace cerb::text
+namespace cerb::text::module
 {
     template<CharacterLiteral CharT>
     class CommentSkipper
