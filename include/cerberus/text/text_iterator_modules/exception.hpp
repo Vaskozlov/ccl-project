@@ -32,9 +32,14 @@ namespace cerb::text
             }
         }
 
-        constexpr TextIteratorException(const TextIterator<CharT> &text_iterator_, StrView message_)
+        template<CharacterLiteral MessageT>
+        constexpr TextIteratorException(
+            const TextIterator<CharT> &text_iterator_,
+            const MessageT *message_)
           : message{ fmt::format<CharT, "Error occurred at: {}, message: {}\n{}\n">(
-                text_iterator_.getLocation(), message_, text_iterator_.getWorkingLine()) }
+                text_iterator_.getLocation(),
+                message_,
+                text_iterator_.getWorkingLine()) }
         {
             addArrowToError(text_iterator_);
         }

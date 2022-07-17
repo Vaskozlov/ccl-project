@@ -12,7 +12,7 @@ using namespace cerb::string_view_literals;
 RUNTIME_TEST
 {
     auto text_iterator = TextIterator{ "Hello, World!\nIt's a test string!"_sv, {}, "builtin"_sv };
-    auto exception = TextIteratorException{ text_iterator, "some message"_sv };
+    auto exception = TextIteratorException{ text_iterator, "some message" };
 
     assertEqual(
         exception.getMessage(),

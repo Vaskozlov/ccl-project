@@ -11,8 +11,10 @@
                                                                                                    \
         name() = default;                                                                          \
                                                                                                    \
-        explicit name(std::string_view message_) : base_exception(message_)                        \
-        {}                                                                                         \
+        template<typename... Ts>                                                                   \
+        explicit name(Ts &&...args) : base_exception{ std::forward<Ts>(args)... }                  \
+        {                                                                                          \
+        }                                                                                          \
     }
 
 namespace cerb
