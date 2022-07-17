@@ -7,6 +7,8 @@ using namespace integral_literals;
 template<CharacterLiteral CharT>
 static constexpr auto HCTI = HexadecimalCharsToInt<CharT>;
 
+// NOLINTBEGIN
+
 static_assert(HCTI<char>.at('0') == 0_U16);
 static_assert(HCTI<char>.at('1') == 1_U16);
 static_assert(HCTI<char>.at('2') == 2_U16);
@@ -56,3 +58,5 @@ static_assert(HCTI<char16_t>.at(u'c') == 12_U16);
 static_assert(HCTI<char16_t>.at(u'd') == 13_U16);
 static_assert(HCTI<char16_t>.at(u'e') == 14_U16);
 static_assert(HCTI<char16_t>.at(u'f') == 15_U16);
+
+// NOLINTEND

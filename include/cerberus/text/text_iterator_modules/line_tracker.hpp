@@ -3,7 +3,7 @@
 
 #include <cerberus/text/basic_text_iterator.hpp>
 
-namespace cerb::text
+namespace cerb::text::module
 {
     template<CharacterLiteral CharT>
     class LineTracker
