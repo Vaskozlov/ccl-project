@@ -11,8 +11,9 @@ RUNTIME_TEST
 
     ERROR_EXPECTED(
         text_iterator.skipCommentsAndLayout(), BasicTextIteratorException,
-        "Error occurred at: , line: 1, column: 2, message: unterminated multiline comment\n/*\n  "
-        "^");
+        "Error occurred at: , line: 1, column: 2, message: unterminated multiline comment\n"
+        "/*\n"
+        " ^");
 
     return {};
 }

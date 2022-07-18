@@ -41,13 +41,14 @@ namespace cerb::text
             return line_tracker.get();
         }
 
-        constexpr auto nextRawCharWithEscapingSymbols(const extra_symbols_t &extra_symbols = {})
-            -> CharT
+        [[nodiscard("You won't be allowed to get this char from getCurrentChar")]] constexpr auto
+            nextRawCharWithEscapingSymbols(const extra_symbols_t &extra_symbols = {}) -> CharT
         {
             auto chr = nextRawChar();
 
             if (chr == '\\') {
-                auto escaping_symbol = module::EscapingSymbolizer{ *this, extra_symbols };
+                // MAYBE: EscapingSymbolizer should be a member of TextIterator.
+                auto escaping_symbol = module::EscapingSymbolizer<CharT>{ *this, extra_symbols };
                 return escaping_symbol.match();
             }
 

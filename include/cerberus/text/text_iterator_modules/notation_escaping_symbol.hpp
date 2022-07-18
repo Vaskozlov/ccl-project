@@ -3,11 +3,8 @@
 
 #include <cerberus/text/text_iterator_modules/exception.hpp>
 
-namespace cerb::text
+namespace cerb::text::module
 {
-    template<CharacterLiteral CharT>
-    class TextIterator;
-
     template<CharacterLiteral CharT>
     CERBLIB_EXCEPTION(NotationEscapingSymbolizerException, TextIteratorException<CharT>);
 
@@ -54,8 +51,8 @@ namespace cerb::text
 
                 checkCharacterOverflow();
 
-                result <<= notation_power;
-                result += HexadecimalCharsToInt<CharT>.at(chr);
+                result = static_cast<CharT>(result << notation_power);
+                result += static_cast<CharT>(HexadecimalCharsToInt<CharT>.at(chr));
             }
         }
 
@@ -78,9 +75,9 @@ namespace cerb::text
         {
             constexpr auto size_in_bits = sizeof(CharT) * 8;
 
-            if ((result >> (size_in_bits - notation_power)) > 0) {
-                throw NotationEscapingSymbolizerException{ text_iterator,
-                                                           "character literal overflow" };
+            if ((result >> (size_in_bits - notation_power)) != 0) {
+                throw NotationEscapingSymbolizerException<CharT>{ text_iterator,
+                                                                  "character literal overflow" };
             }
         }
 
@@ -98,6 +95,6 @@ namespace cerb::text
             NotationEscapingSymbolizer{ text_iterator, max_times, notation_power };
         return notation_escape_symbolizer.get();
     }
-}// namespace cerb::text
+}// namespace cerb::text::module
 
 #endif /* CERBERUS_PROJECT_NOTATION_ESCAPING_SYMBOL_HPP */

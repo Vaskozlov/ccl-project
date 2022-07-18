@@ -47,7 +47,8 @@ namespace cerb::text
     private:
         constexpr auto addArrowToError(const TextIterator<CharT> &text_iterator) -> void
         {
-            auto new_message_size = message.size() + text_iterator.getColumn();
+            auto column_pos = text_iterator.getColumn();
+            auto new_message_size = message.size() + (column_pos > 0 ? column_pos - 1 : 0);
             message.resize(new_message_size, ' ');
             message.push_back('^');
         }

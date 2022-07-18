@@ -6,9 +6,6 @@
 namespace cerb::text::module
 {
     template<CharacterLiteral CharT>
-    class TextIterator;
-
-    template<CharacterLiteral CharT>
     class EscapingSymbolizer
     {
         using text_iterator_t = TextIterator<CharT>;
@@ -66,7 +63,7 @@ namespace cerb::text::module
         EscapingSymbolizer(const EscapingSymbolizer &) = delete;
 
         constexpr EscapingSymbolizer(
-            text_iterator_t text_iterator_,
+            text_iterator_t &text_iterator_,
             const extra_symbols_t &extra_symbols_)
           : text_iterator(text_iterator_), extra_symbols(extra_symbols_)
         {}
@@ -76,9 +73,10 @@ namespace cerb::text::module
     private:
         constexpr auto tryExtraSymbolsMatch(CharT chr) -> CharT
         {
-            auto it = std::find_if(extra_symbols.begin(), extra_symbols.end(), [chr](auto elem) {
-                return elem.first == chr;
-            });
+            auto it =
+                std::ranges::find_if(extra_symbols.begin(), extra_symbols.end(), [chr](auto elem) {
+                    return elem.first == chr;
+                });
 
             if (it == extra_symbols.end()) {
                 throw TextIteratorException{ text_iterator, "unable to match any escaping symbol" };

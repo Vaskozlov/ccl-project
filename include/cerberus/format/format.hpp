@@ -61,7 +61,7 @@ namespace cerb::fmt
         constexpr auto append(const BasicStringView<CharT> &str) -> void
         {
             if CERBLIB_RUNTIME_BRANCH {// G++-12 doesn't allow to append string at compile time
-                formatted_string.append(str.begin(), str.end());
+                formatted_string.append(static_cast<std::basic_string_view<CharT>>(str));
             } else {
                 for (auto &chr : str) {
                     formatted_string.push_back(chr);

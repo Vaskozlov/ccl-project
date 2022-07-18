@@ -2,7 +2,7 @@
 #include <cerberus/text/location.hpp>
 
 using namespace cerb::debug;
-using Location = cerb::text::Location<>;
+using Location = cerb::text::Location<char>;
 
 CONSTEXPR_TEST
 {
