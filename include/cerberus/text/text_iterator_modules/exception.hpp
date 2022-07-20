@@ -17,9 +17,24 @@ namespace cerb::text
     class TextIteratorException : public BasicTextIteratorException
     {
     public:
+        CERBLIB_DECL auto getLine() const -> size_t
+        {
+            return location.getLine();
+        }
+
+        CERBLIB_DECL auto getColumn() const -> size_t
+        {
+            return location.getColumn();
+        }
+
         CERBLIB_DECL auto getLocation() const -> const Location<char> &
         {
             return location;
+        }
+
+        CERBLIB_DECL auto getWorkingLine() const -> const StrView<CharT> &
+        {
+            return working_line;
         }
 
         CERBLIB_DECL auto getMessage() const -> StrView<CharT>
@@ -50,7 +65,7 @@ namespace cerb::text
         constexpr TextIteratorException(
             const TextIterator<CharT> &text_iterator_, StrView<MessageT> message_,
             StrView<MessageT> suggestion_ = {})
-          : location{ text_iterator_.getLocation() }, line{ text_iterator_.getWorkingLine() }
+          : location(text_iterator_.getLocation()), working_line(text_iterator_.getWorkingLine())
         {
             fmt::dump(message, message_);
             fmt::dump(suggestion, suggestion_);
@@ -71,15 +86,15 @@ namespace cerb::text
         constexpr TextIteratorException(
             const TextIterator<CharT> &text_iterator_, const MessageT *message_,
             const MessageT *suggestion_ = nullptr)
-          : TextIteratorException{ text_iterator_, StrView<MessageT>{ message_ },
-                                   StrView<MessageT>{ suggestion_ } }
+          : TextIteratorException(
+                text_iterator_, StrView<MessageT>{ message_ }, StrView<MessageT>{ suggestion_ })
         {}
 
     private:
         constexpr auto createFullMessage() -> void
         {
             full_message = fmt::format<CharT, "Error occurred at: {}. Error message: {}\n{}\n">(
-                location, message, line);
+                location, message, working_line);
 
             addArrowToError();
             addSuggestion();
@@ -111,11 +126,9 @@ namespace cerb::text
         Location<char> location{};
         Str<CharT> message{};
         Str<CharT> suggestion{};
-        StrView<CharT> line{};
+        StrView<CharT> working_line{};
         Str<CharT> full_message{};
         Str<char> char_full_message{};
-        bool is_full_message_created{ false };
-        bool is_char_full_message_created{ false };
     };
 }// namespace cerb::text
 

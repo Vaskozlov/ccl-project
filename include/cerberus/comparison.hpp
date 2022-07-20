@@ -10,11 +10,10 @@ namespace cerb
     CERBLIB_DECL auto safeEqual(const T1 &lhs, const T2 &rhs) -> bool
     {
         constexpr auto rhs_is_floating_point =
-            not std::is_floating_point_v<T1> and std::is_floating_point_v<T2>;
+            not std::floating_point<T1> and std::floating_point<T2>;
 
-        constexpr auto rhs_is_bigger_floating_point = std::is_floating_point_v<T1> &&
-                                                      std::is_floating_point_v<T2> &&
-                                                      (sizeof(T2) > sizeof(T1));
+        constexpr auto rhs_is_bigger_floating_point =
+            std::floating_point<T1> && std::floating_point<T2> && (sizeof(T2) > sizeof(T1));
 
         constexpr auto need_to_swap_arguments =
             rhs_is_floating_point || rhs_is_bigger_floating_point;
@@ -32,11 +31,10 @@ namespace cerb
     CERBLIB_DECL auto safeNotEqual(const T1 &lhs, const T2 &rhs) -> bool
     {
         constexpr auto rhs_is_floating_point =
-            not std::is_floating_point_v<T1> and std::is_floating_point_v<T2>;
+            not std::floating_point<T1> and std::floating_point<T2>;
 
-        constexpr auto rhs_is_bigger_floating_point = std::is_floating_point_v<T1> &&
-                                                      std::is_floating_point_v<T2> &&
-                                                      (sizeof(T2) > sizeof(T1));
+        constexpr auto rhs_is_bigger_floating_point =
+            std::floating_point<T1> && std::floating_point<T2> && (sizeof(T2) > sizeof(T1));
 
         constexpr auto need_to_swap_arguments =
             rhs_is_floating_point || rhs_is_bigger_floating_point;

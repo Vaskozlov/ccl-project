@@ -14,7 +14,6 @@ namespace cerb::text::module
     public:
         using extra_symbols_t = std::vector<std::pair<CharT, CharT>>;
 
-    public:
         constexpr auto match(text_iterator_t &text_iterator_) -> CharT
         {
             text_iterator = &text_iterator_;
@@ -55,7 +54,7 @@ namespace cerb::text::module
                 return calculateNotationEscapeSymbol(*text_iterator, 4, 4, true);
 
             default:
-                return tryExtraSymbolsMatch(chr);
+                return searchInExtraSymbols(chr);
             }
         }
 
@@ -77,18 +76,16 @@ namespace cerb::text::module
         EscapingSymbolizer(const EscapingSymbolizer &) = delete;
 
         constexpr explicit EscapingSymbolizer(const extra_symbols_t &extra_symbols_)
-          : extra_symbols{ extra_symbols_ }
+          : extra_symbols(extra_symbols_)
         {}
 
         ~EscapingSymbolizer() = default;
 
     private:
-        constexpr auto tryExtraSymbolsMatch(CharT chr) -> CharT
+        constexpr auto searchInExtraSymbols(CharT chr) -> CharT
         {
             auto it =
-                std::ranges::find_if(extra_symbols.begin(), extra_symbols.end(), [chr](auto elem) {
-                    return elem.first == chr;
-                });
+                std::ranges::find_if(extra_symbols, [chr](auto elem) { return elem.first == chr; });
 
             if (it == extra_symbols.end()) {
                 throwMatchException();
@@ -99,9 +96,10 @@ namespace cerb::text::module
 
         constexpr auto throwMatchException() -> void
         {
-            auto exception = TextIteratorException{ *text_iterator,
-                                                    "unable to "
-                                                    "match any escaping symbol" };
+            auto exception = TextIteratorException(
+                *text_iterator,
+                "unable to "
+                "match any escaping symbol");
 
             text_iterator->throwException(std::move(exception));
         }

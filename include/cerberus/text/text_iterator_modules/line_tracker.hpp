@@ -29,7 +29,7 @@ namespace cerb::text::module
         }
 
         constexpr explicit LineTracker(BasicTextIterator<CharT> &basic_iterator_)
-          : basic_iterator{ &basic_iterator_ }
+          : basic_iterator(&basic_iterator_)
         {
             updateLine();
         }

@@ -70,7 +70,7 @@ namespace cerb::text
             return basicNextRawChar();
         }
 
-        virtual constexpr auto nextCleanChar() -> CharT
+        constexpr auto nextCleanChar() -> CharT
         {
             return basicNextCleanChar();
         }
@@ -134,7 +134,7 @@ namespace cerb::text
         BasicTextIterator(BasicTextIterator &&) noexcept = default;
 
         constexpr explicit BasicTextIterator(StrView<CharT> text_)
-          : carriage{ text_.begin() }, end{ text_.end() }
+          : carriage(text_.begin()), end(text_.end())
         {}
 
         virtual ~BasicTextIterator() = default;

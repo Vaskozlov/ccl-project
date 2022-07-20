@@ -47,7 +47,7 @@ namespace cerb::text
             return line_tracker.get();
         }
 
-        [[nodiscard("You will not be allowed to get this char from getCurrentChar")]]//
+        [[nodiscard("You will not be allowed to get this char from getCurrentChar")]]// new line
         constexpr auto
             nextRawCharWithEscapingSymbols(const ExtraSymbols &extra_symbols = {})
                 -> std::pair<bool, CharT>
@@ -101,9 +101,8 @@ namespace cerb::text
             ExceptionAccumulator *exceptions_ = nullptr,
             CommentSkipper comment_skipper_ = {},
             string_view filename = {})
-          : Base{ input }, comment_skipper{ comment_skipper_ }, location{ filename }, exceptions{
-                exceptions_
-            }
+          : Base(input), comment_skipper(comment_skipper_), location(filename),
+            exceptions(exceptions_)
         {}
 
         ~TextIterator() = default;

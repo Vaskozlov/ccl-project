@@ -42,9 +42,9 @@ namespace cerb::text::module
     private:
         constexpr auto calculateResult() -> void
         {
-            u16 i = 0;
+            u16 chars_count = 0;
 
-            for (; i != max_times; ++i) {
+            for (; chars_count != max_times; ++chars_count) {
                 auto chr = text_iterator.nextRawChar();
 
                 if (lor(isEoF(chr), isOutOfNotation(chr))) {
@@ -57,7 +57,7 @@ namespace cerb::text::module
                 result += static_cast<CharT>(HexadecimalCharsToInt<CharT>.at(chr));
             }
 
-            checkAllCharsUsage(i);
+            checkAllCharsUsage(chars_count);
         }
 
         constexpr auto checkNotation() const -> void
@@ -65,7 +65,7 @@ namespace cerb::text::module
             constexpr auto max_notation_power = 4;
 
             if (lor(notation_power == 0, notation_power > max_notation_power)) {
-                throw LogicError{ "notation power must be between 1 and 4" };
+                throw LogicError("notation power must be between 1 and 4");
             }
         }
 
@@ -80,11 +80,15 @@ namespace cerb::text::module
             constexpr auto size_in_bits = sizeof(CharT) * 8;
 
             if ((result >> (size_in_bits - notation_power)) != 0) {
-                auto exception =
-                    NotationEscapingSymbolizerException<CharT>{ text_iterator,
-                                                                "character literal overflow" };
-                text_iterator.throwException(std::move(exception));
+                throwCharacterOverflow();
             }
+        }
+
+        constexpr auto throwCharacterOverflow() const -> void
+        {
+            auto exception = NotationEscapingSymbolizerException<CharT>(
+                text_iterator, "character literal overflow");
+            text_iterator.throwException(std::move(exception));
         }
 
         constexpr auto checkAllCharsUsage(u16 chars_count) const -> void
@@ -111,12 +115,13 @@ namespace cerb::text::module
         {
             auto suggestion_message = static_cast<Str<CharT>>(text_iterator.getWorkingLine());
 
-            insertExtraZeros(chars_count, suggestion_message);
+            insertExtraZerosToNotEnoughMessage(chars_count, suggestion_message);
 
             return suggestion_message;
         }
 
-        constexpr auto insertExtraZeros(u16 chars_count, Str<CharT> &message) const -> void
+        constexpr auto
+            insertExtraZerosToNotEnoughMessage(u16 chars_count, Str<CharT> &message) const -> void
         {
             auto column = text_iterator.getColumn();
             message.insert(column - chars_count, max_times - chars_count, '0');

@@ -48,9 +48,8 @@ namespace cerb::text
                 multiline_end(multiline_end_)
             {
                 if (land(not multiline_begin.empty(), multiline_end.empty())) {
-                    throw LogicError{
-                        "multiline comment end can't be empty, when it's begin is not"
-                    };
+                    throw LogicError(
+                        "multiline comment end can't be empty, when it's begin is not");
                 }
             }
 
@@ -66,8 +65,7 @@ namespace cerb::text
                 text_iterator->rawSkip(single_line.size());
 
                 for (CharT chr = text_iterator->nextRawChar(); land(chr != 0, chr != '\n');
-                     chr = text_iterator->nextRawChar()) {
-                    // empty loop
+                     chr = text_iterator->nextRawChar()) {// empty loop
                 }
             }
 
@@ -77,7 +75,7 @@ namespace cerb::text
 
                 text_iterator->rawSkip(multiline_begin.size());
 
-                while (not isComment(multiline_end) && not isEoF(text_iterator->getCurrentChar())) {
+                while (not isEoF(text_iterator->getCurrentChar()) && not isComment(multiline_end)) {
                     text_iterator->nextRawChar();
                 }
 
@@ -97,9 +95,10 @@ namespace cerb::text
                 throwUnterminatedCommentError(const TextIterator<CharT> *comment_begin) const
                 -> void
             {
-                auto exception = CommentSkipperException<CharT>{ *comment_begin,
-                                                                 "unterminated multiline "
-                                                                 "comment" };
+                auto exception = CommentSkipperException<CharT>(
+                    *comment_begin,
+                    "unterminated multiline "
+                    "comment");
 
                 text_iterator->throwException(std::move(exception));
             }
