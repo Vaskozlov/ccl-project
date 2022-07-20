@@ -13,7 +13,9 @@ STRING_TEST
     auto expected_text = "Test \n\tWstring!"_sv;
 
     for (auto chr : expected_text) {
-        assertEqual(text_iterator.nextRawCharWithEscapingSymbols({ { 'w', 'W' } }), chr);
+        auto [is_escaping_symbol, returned_char] =
+            text_iterator.nextRawCharWithEscapingSymbols({ { 'w', 'W' } });
+        assertEqual(returned_char, chr);
     }
 
     return {};
@@ -27,7 +29,8 @@ RUNTIME_TEST
 
     ERROR_EXPECTED(
         UNUSED_DECL text_iterator.nextRawCharWithEscapingSymbols(), TextIteratorException<char>,
-        "Error occurred at: , line: 1, column: 2, message: unable to match any escaping symbol\n"
+        "Error occurred at: , line: 1, column: 2. Error message: unable to match any escaping "
+        "symbol\n"
         "\\w\n"
         " ^");
 

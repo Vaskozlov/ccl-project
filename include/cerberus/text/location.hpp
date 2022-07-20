@@ -3,6 +3,7 @@
 
 #include <cerberus/cerberus.hpp>
 #include <cerberus/string_view.hpp>
+#include <cerberus/text/typedefs.hpp>
 
 namespace cerb::text
 {
@@ -20,7 +21,7 @@ namespace cerb::text
             return column;
         }
 
-        CERBLIB_DECL auto getFilename() const -> const BasicStringView<CharT> &
+        CERBLIB_DECL auto getFilename() const -> const StrView<CharT> &
         {
             return filename;
         }
@@ -36,8 +37,7 @@ namespace cerb::text
 
         Location() = default;
 
-        constexpr explicit Location(
-            BasicStringView<CharT> filename_, size_t line_ = 1, size_t column_ = 0)
+        constexpr explicit Location(StrView<CharT> filename_, size_t line_ = 1, size_t column_ = 0)
           : filename{ filename_ }, line{ line_ }, column{ column_ }
         {}
 
@@ -53,7 +53,7 @@ namespace cerb::text
             ++line;
         }
 
-        BasicStringView<CharT> filename{};
+        StrView<CharT> filename{};
         size_t line{ 1 };
         size_t column{ 0 };
     };

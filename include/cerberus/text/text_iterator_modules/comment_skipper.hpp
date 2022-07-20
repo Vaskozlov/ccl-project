@@ -18,8 +18,6 @@ namespace cerb::text
         class CommentSkipper
         {
         public:
-            using StrView = BasicStringView<CharT>;
-
             constexpr auto skip(TextIterator<CharT> &text_iterator_) -> bool
             {
                 text_iterator = &text_iterator_;
@@ -34,15 +32,18 @@ namespace cerb::text
                     return true;
                 }
 
-                return {};
+                return false;
             }
 
             CommentSkipper() = default;
 
             constexpr CommentSkipper(
-                StrView single_line_,
-                StrView multiline_begin_,
-                StrView multiline_end_)
+                StrView<CharT>
+                    single_line_,
+                StrView<CharT>
+                    multiline_begin_,
+                StrView<CharT>
+                    multiline_end_)
               : single_line(single_line_), multiline_begin(multiline_begin_),
                 multiline_end(multiline_end_)
             {
@@ -54,7 +55,7 @@ namespace cerb::text
             }
 
         private:
-            CERBLIB_DECL auto isComment(const StrView &comment) const -> bool
+            CERBLIB_DECL auto isComment(const StrView<CharT> &comment) const -> bool
             {
                 auto text = text_iterator->getRemainingFuture(1);
                 return not comment.empty() && (text.substr(0, comment.size()) == comment);
@@ -64,9 +65,8 @@ namespace cerb::text
             {
                 text_iterator->rawSkip(single_line.size());
 
-                CharT chr = text_iterator->nextRawChar();
-
-                for (; land(chr != 0, chr != '\n'); chr = text_iterator->nextRawChar()) {
+                for (CharT chr = text_iterator->nextRawChar(); land(chr != 0, chr != '\n');
+                     chr = text_iterator->nextRawChar()) {
                     // empty loop
                 }
             }
@@ -89,14 +89,24 @@ namespace cerb::text
                 -> void
             {
                 if (isEoF(text_iterator->getCurrentChar())) {
-                    throw CommentSkipperException<CharT>(
-                        *comment_begin, "unterminated multiline comment");
+                    throwUnterminatedCommentError(comment_begin);
                 }
             }
 
-            StrView single_line{};
-            StrView multiline_begin{};
-            StrView multiline_end{};
+            constexpr auto
+                throwUnterminatedCommentError(const TextIterator<CharT> *comment_begin) const
+                -> void
+            {
+                auto exception = CommentSkipperException<CharT>{ *comment_begin,
+                                                                 "unterminated multiline "
+                                                                 "comment" };
+
+                text_iterator->throwException(std::move(exception));
+            }
+
+            StrView<CharT> single_line{};
+            StrView<CharT> multiline_begin{};
+            StrView<CharT> multiline_end{};
             TextIterator<CharT> *text_iterator{ nullptr };
         };
     }// namespace module

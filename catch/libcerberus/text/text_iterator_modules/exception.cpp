@@ -11,12 +11,13 @@ using namespace cerb::string_view_literals;
 // NOLINTNEXTLINE
 RUNTIME_TEST
 {
-    auto text_iterator = TextIterator{ "Hello, World!\nIt's a test string!"_sv, {}, "builtin"_sv };
-    auto exception = TextIteratorException{ text_iterator, "some message" };
+    auto text_iterator =
+        TextIterator{ "Hello, World!\nIt's a test string!"_sv, {}, {}, "builtin"_sv };
+    auto exception = TextIteratorException{ text_iterator, "some message"_sv };
 
     assertEqual(
-        exception.getMessage(),
-        "Error occurred at: builtin, line: 1, column: 0, message: some message\n"
+        exception.getFullMessage(),
+        "Error occurred at: builtin, line: 1, column: 0. Error message: some message\n"
         "Hello, World!\n"
         "^");
 

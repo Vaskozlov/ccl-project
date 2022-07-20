@@ -16,7 +16,7 @@ namespace cerb
         }
 
         template<CharacterLiteral CharT>
-        constexpr auto rawStringLength(const CharT &str) -> size_t
+        constexpr auto rawStringLength(const CharT *str) -> size_t
         {
             if (str == nullptr) {
                 return 0;

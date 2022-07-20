@@ -1,6 +1,7 @@
 #ifndef CERBERUS_PROJECT_TEXT_ITERATOR_HPP
 #define CERBERUS_PROJECT_TEXT_ITERATOR_HPP
 
+#include <cerberus/analysis/exception.hpp>
 #include <cerberus/text/basic_text_iterator.hpp>
 #include <cerberus/text/location.hpp>
 #include <cerberus/text/text_iterator_modules/comment_skipper.hpp>
@@ -12,8 +13,13 @@ namespace cerb::text
     template<CharacterLiteral CharT>
     class TextIterator : public BasicTextIterator<CharT>
     {
+    private:
         using Base = BasicTextIterator<CharT>;
-        using extra_symbols_t = std::initializer_list<std::pair<CharT, CharT>>;
+        using CommentSkipper = module::CommentSkipper<CharT>;
+        using LineTracker = module::LineTracker<CharT>;
+        using EscapingSymbolizer = module::EscapingSymbolizer<CharT>;
+        using ExtraSymbols = typename EscapingSymbolizer::extra_symbols_t;
+        using ExceptionAccumulator = analysis::ExceptionAccumulator<TextIteratorException<CharT>>;
 
     public:
         CERBLIB_DECL auto getLocation() const -> const Location<> &
@@ -31,35 +37,36 @@ namespace cerb::text
             return location.getColumn();
         }
 
-        CERBLIB_DECL auto getFilename() const -> const string_view &
+        CERBLIB_DECL auto getFilename() const -> const StrView<char> &
         {
             return location.getFilename();
         }
 
-        CERBLIB_DECL auto getWorkingLine() const -> const BasicStringView<CharT> &
+        CERBLIB_DECL auto getWorkingLine() const -> const StrView<CharT> &
         {
             return line_tracker.get();
         }
 
-        [[nodiscard("You won't be allowed to get this char from getCurrentChar")]] constexpr auto
-            nextRawCharWithEscapingSymbols(const extra_symbols_t &extra_symbols = {}) -> CharT
+        [[nodiscard("You will not be allowed to get this char from getCurrentChar")]]//
+        constexpr auto
+            nextRawCharWithEscapingSymbols(const ExtraSymbols &extra_symbols = {})
+                -> std::pair<bool, CharT>
         {
             auto chr = nextRawChar();
 
             if (chr == '\\') {
-                // MAYBE: EscapingSymbolizer should be a member of TextIterator.
-                auto escaping_symbol = module::EscapingSymbolizer<CharT>{ *this, extra_symbols };
-                return escaping_symbol.match();
+                escaping_symbolizer.setExtraSymbols(extra_symbols);
+                return { true, escaping_symbolizer.match(*this) };
             }
 
-            return chr;
+            return { false, chr };
         }
 
         constexpr auto nextRawChar() -> CharT override
         {
             auto chr = Base::basicNextRawChar();
             location.next(chr);
-            line_tracker.next();
+            line_tracker.next(*this);
             return chr;
         }
 
@@ -70,6 +77,18 @@ namespace cerb::text
             } while (comment_skipper.skip(*this));
         }
 
+        template<Exception T>
+        constexpr auto throwException(T &&exception) -> void
+        {
+            analysis::addError(exceptions, std::forward<T>(exception));
+        }
+
+        template<Exception T>
+        constexpr auto throwException(const T &exception) -> void
+        {
+            analysis::addError(exceptions, exception);
+        }
+
         auto operator=(const TextIterator &) -> TextIterator & = default;
         auto operator=(TextIterator &&) noexcept -> TextIterator & = default;
 
@@ -77,17 +96,24 @@ namespace cerb::text
         TextIterator(TextIterator &&) noexcept = default;
 
         constexpr explicit TextIterator(
-            BasicStringView<CharT> input, module::CommentSkipper<CharT> comment_skipper_ = {},
+            StrView<CharT>
+                input,
+            ExceptionAccumulator *exceptions_ = nullptr,
+            CommentSkipper comment_skipper_ = {},
             string_view filename = {})
-          : Base{ input }, comment_skipper{ comment_skipper_ }, location{ filename }
+          : Base{ input }, comment_skipper{ comment_skipper_ }, location{ filename }, exceptions{
+                exceptions_
+            }
         {}
 
         ~TextIterator() = default;
 
     private:
-        module::LineTracker<CharT> line_tracker{ *this };
-        module::CommentSkipper<CharT> comment_skipper{};
+        LineTracker line_tracker{ *this };
+        CommentSkipper comment_skipper{};
+        EscapingSymbolizer escaping_symbolizer{ {} };
         Location<char> location{};
+        ExceptionAccumulator *exceptions{ nullptr };
     };
 }// namespace cerb::text
 

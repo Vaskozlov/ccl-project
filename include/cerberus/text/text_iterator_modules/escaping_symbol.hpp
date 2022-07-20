@@ -8,13 +8,17 @@ namespace cerb::text::module
     template<CharacterLiteral CharT>
     class EscapingSymbolizer
     {
+    private:
         using text_iterator_t = TextIterator<CharT>;
-        using extra_symbols_t = std::initializer_list<std::pair<CharT, CharT>>;
 
     public:
-        constexpr auto match() -> CharT
+        using extra_symbols_t = std::vector<std::pair<CharT, CharT>>;
+
+    public:
+        constexpr auto match(text_iterator_t &text_iterator_) -> CharT
         {
-            auto chr = text_iterator.nextRawChar();
+            text_iterator = &text_iterator_;
+            auto chr = text_iterator->nextRawChar();
 
             switch (chr) {
             case '\\':
@@ -42,17 +46,27 @@ namespace cerb::text::module
                 return '\b';
 
             case '0':
-                return calculateNotationEscapeSymbol(text_iterator, 2, 3);
+                return calculateNotationEscapeSymbol(*text_iterator, 2, 3, false);
 
             case 'x':
-                return calculateNotationEscapeSymbol(text_iterator, 2, 4);
+                return calculateNotationEscapeSymbol(*text_iterator, 2, 4, true);
 
             case 'u':
-                return calculateNotationEscapeSymbol(text_iterator, 4, 4);
+                return calculateNotationEscapeSymbol(*text_iterator, 4, 4, true);
 
             default:
                 return tryExtraSymbolsMatch(chr);
             }
+        }
+
+        constexpr auto setExtraSymbols(extra_symbols_t &&extra_symbols_) -> void
+        {
+            extra_symbols = std::move(extra_symbols_);
+        }
+
+        constexpr auto setExtraSymbols(const extra_symbols_t &extra_symbols_) -> void
+        {
+            extra_symbols = extra_symbols_;
         }
 
         auto operator=(EscapingSymbolizer &&) -> void = delete;
@@ -62,10 +76,8 @@ namespace cerb::text::module
         EscapingSymbolizer(EscapingSymbolizer &&) = delete;
         EscapingSymbolizer(const EscapingSymbolizer &) = delete;
 
-        constexpr EscapingSymbolizer(
-            text_iterator_t &text_iterator_,
-            const extra_symbols_t &extra_symbols_)
-          : text_iterator(text_iterator_), extra_symbols(extra_symbols_)
+        constexpr explicit EscapingSymbolizer(const extra_symbols_t &extra_symbols_)
+          : extra_symbols{ extra_symbols_ }
         {}
 
         ~EscapingSymbolizer() = default;
@@ -79,14 +91,23 @@ namespace cerb::text::module
                 });
 
             if (it == extra_symbols.end()) {
-                throw TextIteratorException{ text_iterator, "unable to match any escaping symbol" };
+                throwMatchException();
             }
 
             return it->second;
         }
 
-        text_iterator_t &text_iterator;
-        const extra_symbols_t &extra_symbols;
+        constexpr auto throwMatchException() -> void
+        {
+            auto exception = TextIteratorException{ *text_iterator,
+                                                    "unable to "
+                                                    "match any escaping symbol" };
+
+            text_iterator->throwException(std::move(exception));
+        }
+
+        text_iterator_t *text_iterator{ nullptr };
+        extra_symbols_t extra_symbols;
     };
 }// namespace cerb::text::module
 
