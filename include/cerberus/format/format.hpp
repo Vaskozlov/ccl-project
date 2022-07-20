@@ -2,10 +2,10 @@
 #define CERBERUS_PROJECT_FORMAT_HPP
 
 #include <cerberus/const_string.hpp>
-#include <cerberus/format/converters/int.hpp>
-#include <cerberus/format/converters/location.hpp>
-#include <cerberus/format/converters/string.hpp>
 #include <cerberus/format/core/string_splitter.hpp>
+#include <cerberus/format/dumpers/int.hpp>
+#include <cerberus/format/dumpers/location.hpp>
+#include <cerberus/format/dumpers/string.hpp>
 #include <string>
 
 namespace cerb::fmt

@@ -7,6 +7,8 @@
 
 namespace cerb::analysis
 {
+    CERBLIB_EXCEPTION(ExceptionAccumulatorOverflow, CerberusException);
+
     template<Exception T>
     class ExceptionAccumulator
     {
@@ -45,6 +47,11 @@ namespace cerb::analysis
         constexpr auto addError(const U &exception) -> void
         {
             static_assert(std::is_base_of_v<T, U>);
+
+            if (errors.size() >= max_errors) {
+                throw ExceptionAccumulatorOverflow{ "Too many errors" };
+            }
+
             errors.emplace_back(std::make_unique<U>(exception));
         }
 
@@ -52,6 +59,11 @@ namespace cerb::analysis
         constexpr auto addError(U &&exception) -> void
         {
             static_assert(std::is_base_of_v<T, U>);
+
+            if (errors.size() >= max_errors) {
+                throw ExceptionAccumulatorOverflow{ "Too many errors" };
+            }
+
             errors.emplace_back(std::make_unique<U>(exception));
         }
 
@@ -72,6 +84,8 @@ namespace cerb::analysis
         ExceptionAccumulator() = default;
 
     private:
+        constexpr static size_t max_errors = 100;
+
         std::vector<std::unique_ptr<T>> errors{};
         std::vector<std::unique_ptr<T>> warnings{};
     };
