@@ -26,6 +26,8 @@ namespace cerb::fmt
         constexpr explicit Formatter(Args &&...args)
         {
             static_assert(sizeof...(Args) == string_blocks.size() - 1, "Wrong number of arguments");
+
+            formatted_string.reserve(approximate_length);
             addBlock<0>(std::forward<Args>(args)...);
         }
 
@@ -69,7 +71,20 @@ namespace cerb::fmt
             }
         }
 
+        constexpr static auto countApproximateLength() -> unsigned long
+        {
+            constexpr auto string_size = std::accumulate(
+                string_blocks.begin(), string_blocks.end(), 0UL,
+                [](auto acc, auto &block) { return acc + block.size(); });
+
+            constexpr auto argument_count = string_blocks.size() - 1;
+            constexpr auto arguments_approximate_length = argument_count * 8;
+
+            return string_size + arguments_approximate_length;
+        }
+
         constexpr static auto string_blocks = core::splitString<String>();
+        constexpr static auto approximate_length = countApproximateLength();
 
         std::basic_string<CharT> formatted_string{};
     };
