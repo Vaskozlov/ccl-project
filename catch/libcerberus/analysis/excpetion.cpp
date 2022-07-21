@@ -6,15 +6,16 @@ using namespace cerb::debug;
 using namespace cerb::analysis;
 using namespace cerb::integral_literals;
 
-VECTOR_TEST
+RUNTIME_TEST
 {
     auto accumulator = ExceptionAccumulator<CerberusException>{};
 
-    accumulator.addError(CerberusException("CerberusException"));
-    accumulator.addWarning(LogicError("Logic error"));
+    addError(&accumulator, CerberusException("CerberusException"));
+    addWarning(&accumulator, LogicError("Logic error"));
 
     assertEqual(accumulator.getErrors().size(), 1_ZU);
     assertEqual(accumulator.getWarnings().size(), 1_ZU);
 
     return {};
-};
+}
+();

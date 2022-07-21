@@ -5,16 +5,32 @@
 
 namespace cerb::text::module
 {
-    template<CharacterLiteral CharT>
+    template<CharacterLiteral TextT, CharacterLiteral EscapingT = TextT>
     class EscapingSymbolizer
     {
     private:
-        using text_iterator_t = TextIterator<CharT>;
+        using text_iterator_t = TextIterator<TextT, EscapingT>;
 
     public:
-        using extra_symbols_t = std::vector<std::pair<CharT, CharT>>;
+        using extra_symbols_t = std::vector<std::pair<TextT, EscapingT>>;
 
-        constexpr auto match(text_iterator_t &text_iterator_) -> CharT
+        constexpr auto getExtraSymbols() const -> const extra_symbols_t &
+        {
+            return extra_symbols;
+        }
+
+        constexpr auto setExtraSymbols(extra_symbols_t &&extra_symbols_) -> void
+        {
+            extra_symbols = std::move(extra_symbols_);
+        }
+
+        constexpr auto setExtraSymbols(const extra_symbols_t &extra_symbols_) -> void
+        {
+            extra_symbols = extra_symbols_;
+        }
+
+
+        constexpr auto match(text_iterator_t &text_iterator_) -> EscapingT
         {
             text_iterator = &text_iterator_;
             auto chr = text_iterator->nextRawChar();
@@ -53,19 +69,12 @@ namespace cerb::text::module
             case 'u':
                 return calculateNotationEscapeSymbol(*text_iterator, 4, 4, true);
 
+            case 'U':
+                return calculateNotationEscapeSymbol(*text_iterator, 8, 4, true);
+
             default:
                 return searchInExtraSymbols(chr);
             }
-        }
-
-        constexpr auto setExtraSymbols(extra_symbols_t &&extra_symbols_) -> void
-        {
-            extra_symbols = std::move(extra_symbols_);
-        }
-
-        constexpr auto setExtraSymbols(const extra_symbols_t &extra_symbols_) -> void
-        {
-            extra_symbols = extra_symbols_;
         }
 
         auto operator=(EscapingSymbolizer &&) -> void = delete;
@@ -82,7 +91,7 @@ namespace cerb::text::module
         ~EscapingSymbolizer() = default;
 
     private:
-        constexpr auto searchInExtraSymbols(CharT chr) -> CharT
+        constexpr auto searchInExtraSymbols(TextT chr) -> EscapingT
         {
             auto it =
                 std::ranges::find_if(extra_symbols, [chr](auto elem) { return elem.first == chr; });

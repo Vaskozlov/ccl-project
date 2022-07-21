@@ -10,16 +10,16 @@
 
 namespace cerb::text
 {
-    template<CharacterLiteral CharT>
-    class TextIterator : public BasicTextIterator<CharT>
+    template<CharacterLiteral TextT, CharacterLiteral EscapingT>
+    class TextIterator : public BasicTextIterator<TextT>
     {
     private:
-        using Base = BasicTextIterator<CharT>;
-        using CommentSkipper = module::CommentSkipper<CharT>;
-        using LineTracker = module::LineTracker<CharT>;
-        using EscapingSymbolizer = module::EscapingSymbolizer<CharT>;
+        using Base = BasicTextIterator<TextT>;
+        using CommentSkipper = module::CommentSkipper<TextT>;
+        using LineTracker = module::LineTracker<TextT>;
+        using EscapingSymbolizer = module::EscapingSymbolizer<TextT, EscapingT>;
         using ExtraSymbols = typename EscapingSymbolizer::extra_symbols_t;
-        using ExceptionAccumulator = analysis::ExceptionAccumulator<TextIteratorException<CharT>>;
+        using ExceptionAccumulator = analysis::ExceptionAccumulator<TextIteratorException<TextT>>;
 
     public:
         CERBLIB_DECL auto getLocation() const -> const Location<> &
@@ -42,7 +42,7 @@ namespace cerb::text
             return location.getFilename();
         }
 
-        CERBLIB_DECL auto getWorkingLine() const -> const StrView<CharT> &
+        CERBLIB_DECL auto getWorkingLine() const -> const StrView<TextT> &
         {
             return line_tracker.get();
         }
@@ -50,7 +50,7 @@ namespace cerb::text
         [[nodiscard("You will not be allowed to get this char from getCurrentChar")]]// new line
         constexpr auto
             nextRawCharWithEscapingSymbols(const ExtraSymbols &extra_symbols = {})
-                -> std::pair<bool, CharT>
+                -> std::pair<bool, EscapingT>
         {
             auto chr = nextRawChar();
 
@@ -62,7 +62,7 @@ namespace cerb::text
             return { false, chr };
         }
 
-        constexpr auto nextRawChar() -> CharT override
+        constexpr auto nextRawChar() -> TextT override
         {
             auto chr = Base::basicNextRawChar();
             location.next(chr);
@@ -80,13 +80,7 @@ namespace cerb::text
         template<Exception T>
         constexpr auto throwException(T &&exception) -> void
         {
-            analysis::addError(exceptions, std::forward<T>(exception));
-        }
-
-        template<Exception T>
-        constexpr auto throwException(const T &exception) -> void
-        {
-            analysis::addError(exceptions, exception);
+            addError(exceptions, std::forward<T>(exception));
         }
 
         auto operator=(const TextIterator &) -> TextIterator & = default;
@@ -96,7 +90,7 @@ namespace cerb::text
         TextIterator(TextIterator &&) noexcept = default;
 
         constexpr explicit TextIterator(
-            StrView<CharT>
+            StrView<TextT>
                 input,
             ExceptionAccumulator *exceptions_ = nullptr,
             CommentSkipper comment_skipper_ = {},

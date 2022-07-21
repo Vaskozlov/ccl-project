@@ -26,7 +26,7 @@ namespace cerb::text
             return filename;
         }
 
-        constexpr auto next(CharT chr) -> void
+        constexpr auto next(CharacterLiteral auto chr) -> void
         {
             if (chr == '\n') {
                 nextLine();

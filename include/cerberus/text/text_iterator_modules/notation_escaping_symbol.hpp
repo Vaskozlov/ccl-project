@@ -8,14 +8,14 @@ namespace cerb::text::module
     template<CharacterLiteral CharT>
     CERBLIB_EXCEPTION(NotationEscapingSymbolizerException, TextIteratorException<CharT>);
 
-    template<CharacterLiteral CharT>
+    template<CharacterLiteral TextT, CharacterLiteral EscapingT>
     class NotationEscapingSymbolizer
     {
     private:
-        using text_iterator_t = TextIterator<CharT>;
+        using text_iterator_t = TextIterator<TextT, EscapingT>;
 
     public:
-        constexpr auto get() const -> CharT
+        constexpr auto get() const -> EscapingT
         {
             return result;
         }
@@ -53,8 +53,8 @@ namespace cerb::text::module
 
                 checkCharacterOverflow();
 
-                result = static_cast<CharT>(result << notation_power);
-                result += static_cast<CharT>(HexadecimalCharsToInt<CharT>.at(chr));
+                result = static_cast<EscapingT>(result << notation_power);
+                result += static_cast<EscapingT>(HexadecimalCharsToInt<TextT>.at(chr));
             }
 
             checkAllCharsUsage(chars_count);
@@ -69,15 +69,15 @@ namespace cerb::text::module
             }
         }
 
-        constexpr auto isOutOfNotation(CharT chr) const -> bool
+        constexpr auto isOutOfNotation(TextT chr) const -> bool
         {
-            return not HexadecimalCharsToInt<CharT>.contains(chr) ||
-                   HexadecimalCharsToInt<CharT>.at(chr) >= (1U << notation_power);
+            return not HexadecimalCharsToInt<TextT>.contains(chr) ||
+                   HexadecimalCharsToInt<TextT>.at(chr) >= (1U << notation_power);
         }
 
         constexpr auto checkCharacterOverflow() const -> void
         {
-            constexpr auto size_in_bits = sizeof(CharT) * 8;
+            constexpr auto size_in_bits = sizeof(EscapingT) * 8;
 
             if ((result >> (size_in_bits - notation_power)) != 0) {
                 throwCharacterOverflow();
@@ -86,7 +86,7 @@ namespace cerb::text::module
 
         constexpr auto throwCharacterOverflow() const -> void
         {
-            auto exception = NotationEscapingSymbolizerException<CharT>(
+            auto exception = NotationEscapingSymbolizerException<TextT>(
                 text_iterator, "character literal overflow");
             text_iterator.throwException(std::move(exception));
         }
@@ -101,19 +101,19 @@ namespace cerb::text::module
         constexpr auto throwNotEnoughCharsException(u16 chars_count) const -> void
         {
             auto exception_message =
-                fmt::format<CharT, "expected {} characters, but only {} of them were provided">(
+                fmt::format<TextT, "expected {} characters, but only {} of them were provided">(
                     max_times, chars_count);
 
-            auto exception = NotationEscapingSymbolizerException<CharT>{
+            auto exception = NotationEscapingSymbolizerException<TextT>{
                 text_iterator, exception_message, createSuggestionNotEnoughChars(chars_count)
             };
 
             text_iterator.throwException(std::move(exception));
         }
 
-        constexpr auto createSuggestionNotEnoughChars(u16 chars_count) const -> Str<CharT>
+        constexpr auto createSuggestionNotEnoughChars(u16 chars_count) const -> Str<TextT>
         {
-            auto suggestion_message = static_cast<Str<CharT>>(text_iterator.getWorkingLine());
+            auto suggestion_message = static_cast<Str<TextT>>(text_iterator.getWorkingLine());
 
             insertExtraZerosToNotEnoughMessage(chars_count, suggestion_message);
 
@@ -121,26 +121,30 @@ namespace cerb::text::module
         }
 
         constexpr auto
-            insertExtraZerosToNotEnoughMessage(u16 chars_count, Str<CharT> &message) const -> void
+            insertExtraZerosToNotEnoughMessage(u16 chars_count, Str<TextT> &message) const -> void
         {
             auto column = text_iterator.getColumn();
-            message.insert(column - chars_count, max_times - chars_count, '0');
+            auto insertion_size = static_cast<size_t>(max_times - chars_count);
+            auto insertion_position = column - chars_count;
+
+            message.insert(insertion_position, insertion_size, '0');
         }
 
         text_iterator_t &text_iterator;
         u16 max_times;
         u16 notation_power;
-        CharT result{};
+        EscapingT result{};
         bool need_all_chars;
     };
 
-    template<CharacterLiteral CharT>
+    template<CharacterLiteral TextT, CharacterLiteral EscapingT>
     constexpr auto calculateNotationEscapeSymbol(
-        TextIterator<CharT> &text_iterator, u16 max_times, u16 notation_power, bool need_all_chars)
-        -> CharT
+        TextIterator<TextT, EscapingT> &text_iterator, u16 max_times, u16 notation_power,
+        bool need_all_chars) -> EscapingT
     {
         auto notation_escape_symbolizer =
-            NotationEscapingSymbolizer{ text_iterator, max_times, notation_power, need_all_chars };
+            NotationEscapingSymbolizer<TextT, EscapingT>{ text_iterator, max_times, notation_power,
+                                                          need_all_chars };
         return notation_escape_symbolizer.get();
     }
 }// namespace cerb::text::module

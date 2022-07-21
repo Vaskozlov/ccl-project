@@ -9,13 +9,12 @@ using namespace cerb::string_view_literals;
 // NOLINTNEXTLINE
 STRING_TEST
 {
-    auto text_iterator = TextIterator<char>{ R"(Test \n\t\wstring!)" };
-    auto expected_text = "Test \n\tWstring!"_sv;
+    auto text_iterator = TextIterator<char, char16_t>{ R"(Test \n\t\wstring!)" };
+    auto expected_text = u"Test \n\tWstring!"_sv;
 
-    for (auto chr : expected_text) {
-        auto [is_escaping_symbol, returned_char] =
-            text_iterator.nextRawCharWithEscapingSymbols({ { 'w', 'W' } });
-        assertEqual(returned_char, chr);
+    for (auto expected_chr : expected_text) {
+        auto [is_escaping, chr] = text_iterator.nextRawCharWithEscapingSymbols({ { 'w', u'W' } });
+        assertEqual(chr, expected_chr);
     }
 
     return {};

@@ -44,100 +44,55 @@ namespace cerb::analysis
         }
 
         template<Exception U>
-        constexpr auto addError(const U &exception) -> void
+        constexpr friend auto addError(ExceptionAccumulator *accumulator, U &&exception) -> void
         {
-            static_assert(std::is_base_of_v<T, U>);
-
-            if (errors.size() >= max_errors) {
-                throw ExceptionAccumulatorOverflow{ "Too many errors" };
-            }
-
-            errors.emplace_back(std::make_unique<U>(exception));
+            basicAddError(accumulator, std::forward<U>(exception));
         }
 
         template<Exception U>
-        constexpr auto addError(U &&exception) -> void
+        constexpr friend auto addWarning(ExceptionAccumulator *accumulator, U &&exception) -> void
         {
-            static_assert(std::is_base_of_v<T, U>);
-
-            if (errors.size() >= max_errors) {
-                throw ExceptionAccumulatorOverflow{ "Too many errors" };
-            }
-
-            errors.emplace_back(std::make_unique<U>(exception));
-        }
-
-        template<Exception U>
-        constexpr auto addWarning(const U &exception) -> void
-        {
-            static_assert(std::is_base_of_v<T, U>);
-            warnings.emplace_back(std::make_unique<U>(exception));
-        }
-
-        template<Exception U>
-        constexpr auto addWarning(U &&exception) -> void
-        {
-            static_assert(std::is_base_of_v<T, U>);
-            warnings.emplace_back(std::make_unique<U>(exception));
+            basicAddWarning(accumulator, std::forward<U>(exception));
         }
 
         ExceptionAccumulator() = default;
 
+        constexpr explicit ExceptionAccumulator(size_t max_errors_) : max_errors(max_errors_)
+        {}
+
     private:
-        constexpr static size_t max_errors = 100;
+        template<Exception U>
+        constexpr friend auto basicAddError(ExceptionAccumulator *accumulator, U &&exception)
+            -> void
+        {
+            static_assert(std::is_base_of_v<T, U>);
+
+            if (accumulator == nullptr) {
+                throw exception;
+            }
+
+            accumulator->errors.emplace_back(std::make_unique<U>(std::forward<U>(exception)));
+        }
+
+
+        template<Exception U>
+        constexpr friend auto basicAddWarning(ExceptionAccumulator *accumulator, U &&exception)
+            -> void
+        {
+            static_assert(std::is_base_of_v<T, U>);
+
+            if (accumulator == nullptr) {
+                ::fmt::print("{}\n", exception.what());
+                return;
+            }
+
+            accumulator->warnings.emplace_back(std::make_unique<U>(std::forward<U>(exception)));
+        }
 
         std::vector<std::unique_ptr<T>> errors{};
         std::vector<std::unique_ptr<T>> warnings{};
+        size_t max_errors{ 100 };// NOLINT
     };
-
-    template<Exception T, Exception BaseException>
-    constexpr auto
-        addError(ExceptionAccumulator<BaseException> *exception_accumulator, T &&exception) -> void
-    {
-        if (exception_accumulator == nullptr) {
-            throw exception;
-        }
-
-        exception_accumulator->addError(std::forward<T>(exception));
-    }
-
-    template<Exception T, Exception BaseException>
-    constexpr auto
-        addError(ExceptionAccumulator<BaseException> *exception_accumulator, const T &exception)
-            -> void
-    {
-        if (exception_accumulator == nullptr) {
-            throw exception;
-        }
-
-        exception_accumulator->addError(exception);
-    }
-
-    template<Exception T, Exception BaseException>
-    constexpr auto
-        addWarning(ExceptionAccumulator<BaseException> *exception_accumulator, T &&exception)
-            -> void
-    {
-        if (exception_accumulator == nullptr) {
-            ::fmt::print("{}\n", exception.what());
-            return;
-        }
-
-        exception_accumulator->addWarning(std::forward<T>(exception));
-    }
-
-    template<Exception T, Exception BaseException>
-    constexpr auto
-        addWarning(ExceptionAccumulator<BaseException> *exception_accumulator, const T &exception)
-            -> void
-    {
-        if (exception_accumulator == nullptr) {
-            ::fmt::print("{}\n", exception.what());
-            return;
-        }
-
-        exception_accumulator->addWarning(exception);
-    }
 }// namespace cerb::analysis
 
 #endif /* CERBERUS_PROJECT_ANALYSIS_EXCEPTION_HPP */

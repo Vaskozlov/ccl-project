@@ -10,7 +10,7 @@ namespace cerb::text
 {
     CERBLIB_EXCEPTION(BasicTextIteratorException, CerberusException);
 
-    template<CharacterLiteral CharT>
+    template<CharacterLiteral TextT, CharacterLiteral EscapingT = TextT>
     class TextIterator;
 
     template<CharacterLiteral CharT>
@@ -52,6 +52,11 @@ namespace cerb::text
             return suggestion;
         }
 
+        CERBLIB_DECL auto hasSuggestion() const -> bool
+        {
+            return not suggestion.empty();
+        }
+
         [[nodiscard]] auto what() const noexcept -> const char * override
         {
             if constexpr (std::is_same_v<char, CharT>) {
@@ -61,9 +66,9 @@ namespace cerb::text
             }
         }
 
-        template<CharacterLiteral MessageT>
+        template<CharacterLiteral MessageT, CharacterLiteral EscapingT>
         constexpr TextIteratorException(
-            const TextIterator<CharT> &text_iterator_, StrView<MessageT> message_,
+            const TextIterator<CharT, EscapingT> &text_iterator_, StrView<MessageT> message_,
             StrView<MessageT> suggestion_ = {})
           : location(text_iterator_.getLocation()), working_line(text_iterator_.getWorkingLine())
         {
@@ -74,17 +79,17 @@ namespace cerb::text
             createCharFullMessage();
         }
 
-        template<CharacterLiteral MessageT>
+        template<CharacterLiteral MessageT, CharacterLiteral EscapingT>
         constexpr TextIteratorException(
-            const TextIterator<CharT> &text_iterator_, const Str<MessageT> &message_,
+            const TextIterator<CharT, EscapingT> &text_iterator_, const Str<MessageT> &message_,
             const Str<MessageT> &suggestion_ = {})
           : TextIteratorException{ text_iterator_, StrView<MessageT>{ message_ },
                                    StrView<MessageT>{ suggestion_ } }
         {}
 
-        template<CharacterLiteral MessageT>
+        template<CharacterLiteral MessageT, CharacterLiteral EscapingT>
         constexpr TextIteratorException(
-            const TextIterator<CharT> &text_iterator_, const MessageT *message_,
+            const TextIterator<CharT, EscapingT> &text_iterator_, const MessageT *message_,
             const MessageT *suggestion_ = nullptr)
           : TextIteratorException(
                 text_iterator_, StrView<MessageT>{ message_ }, StrView<MessageT>{ suggestion_ })
@@ -119,7 +124,7 @@ namespace cerb::text
         constexpr auto addSuggestion() -> void
         {
             if (not suggestion.empty()) {
-                full_message.append(fmt::format<"\nSuggest using: {}">(suggestion));
+                full_message.append(fmt::format<CharT, "\nSuggest using: {}">(suggestion));
             }
         }
 
