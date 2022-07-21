@@ -7,7 +7,7 @@ using namespace cerb::debug;
 // NOLINTNEXTLINE
 STRING_TEST
 {
-    auto text_iterator = TextIterator<char>{ "//\nHi!", { "//", "/*", "*/" } };
+    auto text_iterator = TextIterator<char>{ "//\nHi!", nullptr, { "//", "/*", "*/" } };
     text_iterator.skipCommentsAndLayout();
 
     assertEqual(text_iterator.getRemaining(), "\nHi!");
@@ -20,7 +20,7 @@ STRING_TEST
 // NOLINTNEXTLINE
 STRING_TEST
 {
-    auto text_iterator = TextIterator<char>{ "Hi! //", { "//", "/*", "*/" } };
+    auto text_iterator = TextIterator<char>{ "Hi! //", nullptr, { "//", "/*", "*/" } };
     text_iterator.rawSkip(3);
     text_iterator.skipCommentsAndLayout();
 
@@ -34,7 +34,7 @@ STRING_TEST
 // NOLINTNEXTLINE
 STRING_TEST
 {
-    auto text_iterator = TextIterator<char>{ "Hi! //\nHello!", { "//", "/*", "*/" } };
+    auto text_iterator = TextIterator<char>{ "Hi! //\nHello!", nullptr, { "//", "/*", "*/" } };
     text_iterator.rawSkip(3);
     text_iterator.skipCommentsAndLayout();
 
@@ -48,7 +48,7 @@ STRING_TEST
 // NOLINTNEXTLINE
 STRING_TEST
 {
-    auto text_iterator = TextIterator<char>{ "Hi! //\n //\nHello!", { "//", "/*", "*/" } };
+    auto text_iterator = TextIterator<char>{ "Hi! //\n //\nHello!", nullptr, { "//", "/*", "*/" } };
     text_iterator.rawSkip(3);
     text_iterator.skipCommentsAndLayout();
 

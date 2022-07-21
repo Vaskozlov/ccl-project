@@ -14,6 +14,19 @@ namespace cerb
         {
             return Length - 1;
         }
+
+        template<CharacterLiteral CharT>
+        constexpr auto rawStringLength(const CharT *str) -> size_t
+        {
+            if (str == nullptr) {
+                return 0;
+            }
+
+            constexpr auto searching_limit = std::numeric_limits<u32>::max();
+            auto terminator = std::find(str, str + searching_limit, 0);
+
+            return static_cast<size_t>(std::distance(str, terminator));
+        }
     }// namespace private_
 
     template<CharacterArray T>
@@ -23,9 +36,7 @@ namespace cerb
             return private_::arrayLength<>(str);
         } else {
             if CERBLIB_RUNTIME_BRANCH {
-                constexpr auto searching_limit = std::numeric_limits<u32>::max();
-                auto terminator = std::find(str, str + searching_limit, 0);
-                return static_cast<size_t>(std::distance(str, terminator));
+                return private_::rawStringLength(str);
             }
 
             return std::basic_string_view{ str }.size();
@@ -147,9 +158,14 @@ namespace cerb
             return string[index];
         }
 
+        CERBLIB_DECL explicit operator std::basic_string<CharT>() const
+        {
+            return { string, length };
+        }
+
         CERBLIB_DECL explicit operator std::basic_string_view<CharT>() const
         {
-            return std::basic_string_view{ string, length };
+            return { string, length };
         }
 
         CERBLIB_DECL auto operator==(const CharT *other) const -> bool
@@ -200,7 +216,8 @@ namespace cerb
           : string{ str }, length{ strlen(str) }
         {}
 
-        constexpr explicit BasicStringView(const StringType<CharT> auto &str)
+        // NOLINTNEXTLINE
+        constexpr BasicStringView(const StringType<CharT> auto &str)
           : string{ std::data(str) }, length{ std::size(str) }
         {}
 

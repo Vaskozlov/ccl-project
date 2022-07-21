@@ -7,12 +7,13 @@
 namespace cerb::text::module
 {
     template<CharacterLiteral CharT>
+    CERBLIB_EXCEPTION(CommentSkipperException, TextIteratorException<CharT>);
+
+    template<CharacterLiteral CharT>
     class CommentSkipper
     {
     public:
-        using StrView = BasicStringView<CharT>;
-
-        constexpr auto skip(BasicTextIterator<CharT> &text_iterator_) -> bool
+        constexpr auto skip(TextIterator<CharT> &text_iterator_) -> bool
         {
             text_iterator = &text_iterator_;
 
@@ -26,21 +27,28 @@ namespace cerb::text::module
                 return true;
             }
 
-            return {};
+            return false;
         }
 
         CommentSkipper() = default;
 
         constexpr CommentSkipper(
-            StrView single_line_,
-            StrView multiline_begin_,
-            StrView multiline_end_)
+            StrView<CharT>
+                single_line_,
+            StrView<CharT>
+                multiline_begin_,
+            StrView<CharT>
+                multiline_end_)
           : single_line(single_line_), multiline_begin(multiline_begin_),
             multiline_end(multiline_end_)
-        {}
+        {
+            if (land(not multiline_begin.empty(), multiline_end.empty())) {
+                throw LogicError("multiline comment end can't be empty, when it's begin is not");
+            }
+        }
 
     private:
-        CERBLIB_DECL auto isComment(const StrView &comment) const -> bool
+        CERBLIB_DECL auto isComment(const StrView<CharT> &comment) const -> bool
         {
             auto text = text_iterator->getRemainingFuture(1);
             return not comment.empty() && (text.substr(0, comment.size()) == comment);
@@ -52,31 +60,47 @@ namespace cerb::text::module
 
             CharT chr = text_iterator->nextRawChar();
 
-            for (; land(chr != 0, chr != '\n'); chr = text_iterator->nextRawChar()) {
-                // empty loop
+            while (land(chr != 0, chr != '\n')) {
+                chr = text_iterator->nextRawChar();
             }
         }
 
         constexpr auto skipMultiline() -> void
         {
+            const auto *comment_begin = text_iterator;
+
             text_iterator->rawSkip(multiline_begin.size());
 
-            while (not isComment(multiline_end) && not isEoF(text_iterator->getCurrentChar())) {
+            while (not isEoF(text_iterator->getCurrentChar()) && not isComment(multiline_end)) {
                 text_iterator->nextRawChar();
             }
 
-            if (isEoF(text_iterator->getCurrentChar())) {
-                throw BasicTextIteratorException("unterminated comment");
-            }
-
+            checkCommentTermination(comment_begin);
             text_iterator->rawSkip(multiline_end.size());
         }
 
-        StrView single_line{};
-        StrView multiline_begin{};
-        StrView multiline_end{};
-        BasicTextIterator<CharT> *text_iterator{ nullptr };
+        constexpr auto checkCommentTermination(const TextIterator<CharT> *comment_begin) const
+            -> void
+        {
+            if (isEoF(text_iterator->getCurrentChar())) {
+                throwUnterminatedCommentError(comment_begin);
+            }
+        }
+
+        constexpr auto throwUnterminatedCommentError(const TextIterator<CharT> *comment_begin) const
+            -> void
+        {
+            auto exception =
+                CommentSkipperException<CharT>(*comment_begin, "unterminated multiline comment");
+
+            text_iterator->throwException(std::move(exception));
+        }
+
+        StrView<CharT> single_line{};
+        StrView<CharT> multiline_begin{};
+        StrView<CharT> multiline_end{};
+        TextIterator<CharT> *text_iterator{ nullptr };
     };
-}// namespace cerb::text
+}// namespace cerb::text::module
 
 #endif /* CERBERUS_PROJECT_COMMENT_SKIPPER_HPP */

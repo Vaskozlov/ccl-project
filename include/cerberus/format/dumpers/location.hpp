@@ -2,8 +2,8 @@
 #define CERBERUS_PROJECT_FMT_LOCATION_HPP
 
 #include <cerberus/const_string.hpp>
-#include <cerberus/format/converters/string.hpp>
-#include <cerberus/text/text_iterator_modules/location.hpp>
+#include <cerberus/format/dumpers/string.hpp>
+#include <cerberus/text/location.hpp>
 
 namespace cerb::fmt
 {

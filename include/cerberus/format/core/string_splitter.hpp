@@ -27,15 +27,15 @@ namespace cerb::fmt::core
             return blocks;
         }
 
-        auto operator=(StringSplitter &&) -> StringSplitter & = delete;
-        auto operator=(const StringSplitter &) -> StringSplitter & = delete;
+        auto operator=(StringSplitter &&) -> void = delete;
+        auto operator=(const StringSplitter &) -> void = delete;
 
         constexpr StringSplitter()
         {
             fill();
 
             if (not isEveryBlockFilled()) {
-                throw StringSplitterException{ "Not every block of formatter has been filled" };
+                throw StringSplitterException("Not every block of formatter has been filled");
             }
         }
 

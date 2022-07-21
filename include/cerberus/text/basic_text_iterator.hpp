@@ -3,6 +3,7 @@
 
 #include <cerberus/char.hpp>
 #include <cerberus/string_view.hpp>
+#include <cerberus/text/typedefs.hpp>
 
 namespace cerb::text
 {
@@ -10,7 +11,7 @@ namespace cerb::text
     class BasicTextIterator
     {
     private:
-        using iterator = typename BasicStringView<CharT>::iterator;
+        using iterator = typename StrView<CharT>::iterator;
 
     public:
         CERBLIB_DECL auto getCarriage() const -> iterator
@@ -18,12 +19,12 @@ namespace cerb::text
             return carriage;
         }
 
-        CERBLIB_DECL auto getRemaining() const -> BasicStringView<CharT>
+        CERBLIB_DECL auto getRemaining() const -> StrView<CharT>
         {
             return { carriage, end };
         }
 
-        CERBLIB_DECL auto getRemainingFuture(size_t times) const -> BasicStringView<CharT>
+        CERBLIB_DECL auto getRemainingFuture(size_t times) const -> StrView<CharT>
         {
             auto fork = *this;
 
@@ -69,7 +70,7 @@ namespace cerb::text
             return basicNextRawChar();
         }
 
-        virtual constexpr auto nextCleanChar() -> CharT
+        constexpr auto nextCleanChar() -> CharT
         {
             return basicNextCleanChar();
         }
@@ -132,8 +133,8 @@ namespace cerb::text
         BasicTextIterator(const BasicTextIterator &) = default;
         BasicTextIterator(BasicTextIterator &&) noexcept = default;
 
-        constexpr explicit BasicTextIterator(const BasicStringView<CharT> &text_)
-          : carriage{ text_.begin() }, end{ text_.end() }
+        constexpr explicit BasicTextIterator(StrView<CharT> text_)
+          : carriage(text_.begin()), end(text_.end())
         {}
 
         virtual ~BasicTextIterator() = default;

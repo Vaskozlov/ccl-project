@@ -23,7 +23,7 @@ STRING_TEST
 
     do {
         auto chr = text_iterator.nextRawChar();
-        line_tracker.next();
+        line_tracker.next(text_iterator);
 
         if (chr == '\n') {
             assertEqual(ExpectedLines.at(current_line), line_tracker.get());

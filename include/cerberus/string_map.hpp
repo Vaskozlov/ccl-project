@@ -29,19 +29,19 @@ namespace cerb
             Str repr{};
         };
 
-        constexpr auto addString(Str &&string, Value value) -> void
+        auto addString(Str &&string, Value value) -> void
         {
             mapStringToLevels(string);
             map.emplace(std::move(string), value);
         }
 
-        constexpr auto addString(const Str &string, Value value) -> void
+        auto addString(const Str &string, Value value) -> void
         {
             mapStringToLevels(string);
             map.emplace(string, value);
         }
 
-        CERBLIB_DECL auto matches(const Str &string) const -> Result
+        [[nodiscard]] auto matches(const Str &string) const -> Result
         {
             auto matching_str = getMatchingPart(string);
 
@@ -54,7 +54,7 @@ namespace cerb
 
         StringMap() = default;
 
-        constexpr StringMap(const std::initializer_list<std::pair<Str, Value>> &initial_data)
+        StringMap(const std::initializer_list<std::pair<Str, Value>> &initial_data)
         {
             for (auto &[string, value] : initial_data) {
                 addString(string, value);
@@ -62,7 +62,7 @@ namespace cerb
         }
 
     private:
-        CERBLIB_DECL auto getMatchingPart(const Str &string) const -> Str
+        [[nodiscard]] auto getMatchingPart(const Str &string) const -> Str
         {
             auto index = static_cast<size_t>(0);
             auto matching_str = std::basic_string<CharT>{};
@@ -81,12 +81,12 @@ namespace cerb
             return matching_str;
         }
 
-        CERBLIB_DECL auto reachable(const Str &string, size_t level) const -> bool
+        [[nodiscard]] auto reachable(const Str &string, size_t level) const -> bool
         {
             return land(level != string.size(), level != char_levels.size());
         }
 
-        constexpr auto mapStringToLevels(const Str &string) -> void
+        auto mapStringToLevels(const Str &string) -> void
         {
             auto level = static_cast<size_t>(0);
             resizeLevels(string.size());
@@ -96,7 +96,7 @@ namespace cerb
             }
         }
 
-        constexpr auto resizeLevels(size_t new_size) -> void
+        auto resizeLevels(size_t new_size) -> void
         {
             if (char_levels.size() < new_size) {
                 char_levels.resize(new_size);

@@ -17,7 +17,7 @@ namespace cerb
         using const_reverse_iterator = typename storage_t::const_reverse_iterator;
 
         /**
-         * @brief Returns CharT to get type via decltype()
+         * @brief Returns TextT to get type via decltype()
          */
         CERBLIB_DECL static auto zeroChar() -> CharT
         {
