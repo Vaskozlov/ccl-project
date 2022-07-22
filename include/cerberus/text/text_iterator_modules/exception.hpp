@@ -1,7 +1,6 @@
 #ifndef CERBERUS_PROJECT_TIM_EXCEPTION_HPP
 #define CERBERUS_PROJECT_TIM_EXCEPTION_HPP
 
-#include <cerberus/analysis/exception.hpp>
 #include <cerberus/cerberus.hpp>
 #include <cerberus/format/format.hpp>
 #include <string>

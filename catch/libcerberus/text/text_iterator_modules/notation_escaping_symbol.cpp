@@ -17,8 +17,15 @@ RUNTIME_TEST
             auto [is_escaping, chr] = text_iterator.nextRawCharWithEscapingSymbols();
             assertEqual(chr, expected_chr);
         }
+        assertTrue(false);
     } catch (const TextIteratorException<char> &error) {
-        fmt::print("{}\n", error.getFullMessage());
+        assertEqual(
+            error.getFullMessage(),
+            "Error occurred at: , line: 1, column: 13. Error message: expected 4 characters, but "
+            "only 3 of them were provided\n"
+            "\\077\\xFF\\u041\n"
+            "            ^\n"
+            "Suggest using: \\077\\xFF\\u0041");
     }
 
     return {};
