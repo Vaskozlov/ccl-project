@@ -1,4 +1,4 @@
-#include <cerberus/analysis/exception.hpp>
+#include <cerberus/analysis/exception_accumulator.hpp>
 #include <cerberus/debug/debug.hpp>
 
 using namespace cerb;
