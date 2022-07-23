@@ -29,11 +29,13 @@ namespace cerb::text::module
             extra_symbols = extra_symbols_;
         }
 
-
-        constexpr auto match(text_iterator_t &text_iterator_) -> EscapingT
+        CERBLIB_DECL auto match() -> EscapingT
         {
-            text_iterator = &text_iterator_;
-            auto chr = text_iterator->nextRawChar();
+            if (text_iterator.getCurrentChar() != '\\') {
+                throw LogicError("called EscapingSymbolizer::match() without preceding '\\'");
+            }
+
+            auto chr = text_iterator.nextRawChar();
 
             switch (chr) {
             case '\\':
@@ -61,16 +63,16 @@ namespace cerb::text::module
                 return '\b';
 
             case '0':
-                return calculateNotationEscapeSymbol(*text_iterator, 2, 3, false);
+                return calculateNotationEscapeSymbol(text_iterator, 2, 3, false);
 
             case 'x':
-                return calculateNotationEscapeSymbol(*text_iterator, 2, 4, true);
+                return calculateNotationEscapeSymbol(text_iterator, 2, 4, true);
 
             case 'u':
-                return calculateNotationEscapeSymbol(*text_iterator, 4, 4, true);
+                return calculateNotationEscapeSymbol(text_iterator, 4, 4, true);
 
             case 'U':
-                return calculateNotationEscapeSymbol(*text_iterator, 8, 4, true);
+                return calculateNotationEscapeSymbol(text_iterator, 8, 4, true);// NOLINT
 
             default:
                 return searchInExtraSymbols(chr);
@@ -84,8 +86,10 @@ namespace cerb::text::module
         EscapingSymbolizer(EscapingSymbolizer &&) = delete;
         EscapingSymbolizer(const EscapingSymbolizer &) = delete;
 
-        constexpr explicit EscapingSymbolizer(const extra_symbols_t &extra_symbols_)
-          : extra_symbols(extra_symbols_)
+        constexpr explicit EscapingSymbolizer(
+            text_iterator_t &text_iterator_,
+            const extra_symbols_t &extra_symbols_)
+          : text_iterator(text_iterator_), extra_symbols(extra_symbols_)
         {}
 
         ~EscapingSymbolizer() = default;
@@ -106,16 +110,25 @@ namespace cerb::text::module
         constexpr auto throwMatchException() -> void
         {
             auto exception = TextIteratorException(
-                *text_iterator,
+                text_iterator,
                 "unable to "
                 "match any escaping symbol");
 
-            text_iterator->throwException(std::move(exception));
+            text_iterator.throwException(std::move(exception));
         }
 
-        text_iterator_t *text_iterator{ nullptr };
+        text_iterator_t &text_iterator;
         extra_symbols_t extra_symbols;
     };
+
+    template<CharacterLiteral TextT, CharacterLiteral EscapingT>
+    CERBLIB_DECL auto doEscapeSymbolizing(
+        TextIterator<TextT, EscapingT> &text_iterator,
+        const std::vector<std::pair<TextT, EscapingT>> &extra_symbols_) -> EscapingT
+    {
+        auto symbolizer = EscapingSymbolizer<TextT, EscapingT>{ text_iterator, extra_symbols_ };
+        return symbolizer.match();
+    }
 }// namespace cerb::text::module
 
 #endif /* CERBERUS_PROJECT_ESCAPING_SYMBOL_HPP */

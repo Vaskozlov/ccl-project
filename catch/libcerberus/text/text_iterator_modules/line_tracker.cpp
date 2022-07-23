@@ -8,28 +8,26 @@ using namespace cerb::text::module;
 using namespace cerb::integral_literals;
 using namespace cerb::string_view_literals;
 
-constexpr static auto Input = "Hello, World!\nIt's a \nTest!\nOf line tracker\n"_sv;
+constexpr static auto Input = "Hello, World!\nIt's a \nTest!\nOf line tracker\n "_sv;
 
 constexpr static auto ExpectedLines = std::array{ "Hello, World!", "It's a ", "Test!",
                                                   "Of line "
                                                   "tracker",
-                                                  "" };
-
-STRING_TEST
+                                                  " " };
+// NOLINTNEXTLINE
+RUNTIME_TEST
 {
     auto current_line = 0_ZU;
-    auto text_iterator = BasicTextIterator{ Input };
-    auto line_tracker = LineTracker{ text_iterator };
+    auto line_tracker = LineTracker{ Input };
 
-    do {
-        auto chr = text_iterator.nextRawChar();
-        line_tracker.next(text_iterator);
+    for (auto chr : Input) {
+        line_tracker.next(chr);
 
         if (chr == '\n') {
             assertEqual(ExpectedLines.at(current_line), line_tracker.get());
             ++current_line;
         }
-    } while (text_iterator.getCurrentChar() != 0);
+    };
 
     assertEqual(ExpectedLines.at(current_line), line_tracker.get());
     return {};
