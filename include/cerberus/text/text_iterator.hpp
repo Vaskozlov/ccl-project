@@ -2,11 +2,11 @@
 #define CERBERUS_PROJECT_TEXT_ITERATOR_HPP
 
 #include <cerberus/analysis/exception_accumulator.hpp>
-#include <cerberus/text/basic_text_iterator.hpp>
 #include <cerberus/text/location.hpp>
 #include <cerberus/text/text_iterator_modules/comment_skipper.hpp>
 #include <cerberus/text/text_iterator_modules/escaping_symbol.hpp>
 #include <cerberus/text/text_iterator_modules/line_tracker.hpp>
+#include <cerberus/text/text_iterator_modules/ts_tracker.hpp>
 
 namespace cerb::text
 {
@@ -15,10 +15,12 @@ namespace cerb::text
     {
     private:
         using Base = BasicTextIterator<TextT>;
+        using CommentTokens = module::CommentTokens<TextT>;
         using CommentSkipper = module::CommentSkipper<TextT>;
         using LineTracker = module::LineTracker<TextT>;
         using EscapingSymbolizer = module::EscapingSymbolizer<TextT, EscapingT>;
         using ExtraSymbols = typename EscapingSymbolizer::extra_symbols_t;
+        using TsTracker = module::TsTracker<TextT>;
         using ExceptionAccumulator = analysis::ExceptionAccumulator<TextIteratorException<TextT>>;
 
     public:
@@ -47,6 +49,11 @@ namespace cerb::text
             return line_tracker.get();
         }
 
+        CERBLIB_DECL auto getTabsAndSpaces() const -> const Str<TextT> &
+        {
+            return ts_tracker.get();
+        }
+
         [[nodiscard("You will not be allowed to get this char from getCurrentChar")]]// new line
         constexpr auto
             nextRawCharWithEscapingSymbols(const ExtraSymbols &extra_symbols = {})
@@ -55,8 +62,7 @@ namespace cerb::text
             auto chr = nextRawChar();
 
             if (chr == '\\') {
-                escaping_symbolizer.setExtraSymbols(extra_symbols);
-                return { true, escaping_symbolizer.match(*this) };
+                return { true, module::doEscapeSymbolizing(*this, extra_symbols) };
             }
 
             return { false, chr };
@@ -65,16 +71,17 @@ namespace cerb::text
         constexpr auto nextRawChar() -> TextT override
         {
             auto chr = Base::basicNextRawChar();
-            location.next(chr);
-            line_tracker.next(*this);
+            updateModules(chr);
             return chr;
         }
 
         constexpr auto skipCommentsAndLayout() -> void
         {
+            auto comment_skipper = CommentSkipper{ *this, comment_tokens };
+
             do {
                 Base::moveToCleanChar();
-            } while (comment_skipper.skip(*this));
+            } while (comment_skipper.skip());
         }
 
         template<Exception T>
@@ -93,19 +100,26 @@ namespace cerb::text
             StrView<TextT>
                 input,
             ExceptionAccumulator *exceptions_ = nullptr,
-            CommentSkipper comment_skipper_ = {},
+            CommentTokens comment_tokens_ = {},
             string_view filename = {})
-          : Base(input), comment_skipper(comment_skipper_), location(filename),
+          : Base(input), comment_tokens(comment_tokens_), location(filename),
             exceptions(exceptions_)
         {}
 
         ~TextIterator() = default;
 
     private:
-        LineTracker line_tracker{ *this };
-        CommentSkipper comment_skipper{};
-        EscapingSymbolizer escaping_symbolizer{ {} };
+        constexpr auto updateModules(TextT chr) -> void
+        {
+            location.next(chr);
+            line_tracker.next(chr);
+            ts_tracker.next(chr);
+        }
+
+        LineTracker line_tracker{ Base::getRemaining() };
+        CommentTokens comment_tokens{};
         Location<char> location{};
+        TsTracker ts_tracker{};
         ExceptionAccumulator *exceptions{ nullptr };
     };
 }// namespace cerb::text

@@ -15,6 +15,9 @@ CONSTEXPR_TEST
     assertEqual(cerb_string.find('!'), std_string.find('!'));
     assertEqual(cerb_string.find('A'), std_string.find('A'));
 
+    assertEqual(cerb_string.find('l', 6), std_string.find('l', 6));
+    assertEqual(cerb_string.find('l', cerb_string.begin() + 6), std_string.find('l', 6));
+
     return {};
 }
 ();

@@ -14,39 +14,33 @@ namespace cerb::text::module
             return line;
         }
 
-        constexpr auto next(BasicTextIterator<CharT> &basic_iterator_) -> void
+        constexpr auto next(CharT chr) -> void
         {
-            basic_iterator = &basic_iterator_;
-
             if (new_line_passed) {
                 updateLine();
                 new_line_passed = false;
             }
 
-            if (basic_iterator->getCurrentChar() == '\n') {
+            if (chr == '\n') {
                 new_line_passed = true;
             }
         }
 
-        constexpr explicit LineTracker(BasicTextIterator<CharT> &basic_iterator_)
-          : basic_iterator(&basic_iterator_)
-        {
-            updateLine();
-        }
+        constexpr explicit LineTracker(StrView<CharT> text_)
+          : text{ text_ }, line{ text.begin(), std::min(text.size(), text.find('\n')) }
+        {}
 
     private:
         constexpr auto updateLine() -> void
         {
-            auto text = basic_iterator->getRemaining();
-            auto line_begin = text.begin();
-            auto length = text.find('\n');
+            auto new_line_begin = std::min(text.end(), line.end() + 1);
+            auto end_offset = std::min(text.size(), text.find('\n', new_line_begin));
 
-            length = length == text.npos ? text.size() : length;
-            line = { line_begin, length };
+            line = { new_line_begin, text.begin() + end_offset };
         }
 
+        StrView<CharT> text{};
         StrView<CharT> line{};
-        BasicTextIterator<CharT> *basic_iterator{ nullptr };
         bool new_line_passed{ false };
     };
 }// namespace cerb::text::module

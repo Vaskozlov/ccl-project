@@ -10,13 +10,15 @@
 #define RUNTIME_TEST [[maybe_unused]] static bool CERBLIB_UNIQUE_IDENT = []() -> bool
 #define CONSTEXPR_TEST [[maybe_unused]] constexpr static bool CERBLIB_UNIQUE_IDENT = []() -> bool
 
-#if defined(CERBLIB_HAS_CONSTEXPR_VECTOR) && !defined(_MSC_VER)
+#if defined(CERBLIB_HAS_CONSTEXPR_VECTOR) &&                                                       \
+    !defined(_MSC_VER)// MSVC has some stupid errors with constexpr string
 #    define VECTOR_TEST CONSTEXPR_TEST
 #else
 #    define VECTOR_TEST RUNTIME_TEST
 #endif
 
-#if defined(CERBLIB_HAS_CONSTEXPR_STRING) && !defined(_MSC_VER)
+#if defined(CERBLIB_HAS_CONSTEXPR_STRING) &&                                                       \
+    !defined(_MSC_VER)// MSVC has some stupid errors with constexpr string
 #    define STRING_TEST CONSTEXPR_TEST
 #else
 #    define STRING_TEST RUNTIME_TEST

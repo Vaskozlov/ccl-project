@@ -10,19 +10,25 @@ namespace cerb::text::module
     CERBLIB_EXCEPTION(CommentSkipperException, TextIteratorException<CharT>);
 
     template<CharacterLiteral CharT>
+    struct CommentTokens
+    {
+        StrView<CharT> single_line{};
+        StrView<CharT> multiline_begin{};
+        StrView<CharT> multiline_end{};
+    };
+
+    template<CharacterLiteral CharT>
     class CommentSkipper
     {
     public:
-        constexpr auto skip(TextIterator<CharT> &text_iterator_) -> bool
+        constexpr auto skip() -> bool
         {
-            text_iterator = &text_iterator_;
-
-            if (isComment(single_line)) {
+            if (isComment(comment_tokens.single_line)) {
                 skipSingleLine();
                 return true;
             }
 
-            if (isComment(multiline_begin)) {
+            if (isComment(comment_tokens.multiline_begin)) {
                 skipMultiline();
                 return true;
             }
@@ -33,16 +39,13 @@ namespace cerb::text::module
         CommentSkipper() = default;
 
         constexpr CommentSkipper(
-            StrView<CharT>
-                single_line_,
-            StrView<CharT>
-                multiline_begin_,
-            StrView<CharT>
-                multiline_end_)
-          : single_line(single_line_), multiline_begin(multiline_begin_),
-            multiline_end(multiline_end_)
+            TextIterator<CharT> &text_iterator_,
+            const CommentTokens<CharT> &comment_tokens_)
+          : comment_tokens(comment_tokens_), text_iterator(text_iterator_)
         {
-            if (land(not multiline_begin.empty(), multiline_end.empty())) {
+            if (land(
+                    not comment_tokens.multiline_begin.empty(),
+                    comment_tokens.multiline_end.empty())) {
                 throw LogicError("multiline comment end can't be empty, when it's begin is not");
             }
         }
@@ -50,56 +53,54 @@ namespace cerb::text::module
     private:
         CERBLIB_DECL auto isComment(const StrView<CharT> &comment) const -> bool
         {
-            auto text = text_iterator->getRemainingFuture(1);
+            auto text = text_iterator.getRemainingFuture(1);
             return not comment.empty() && (text.substr(0, comment.size()) == comment);
         }
 
         constexpr auto skipSingleLine() -> void
         {
-            text_iterator->rawSkip(single_line.size());
+            text_iterator.rawSkip(comment_tokens.single_line.size());
 
-            CharT chr = text_iterator->nextRawChar();
+            CharT chr = text_iterator.nextRawChar();
 
             while (land(chr != 0, chr != '\n')) {
-                chr = text_iterator->nextRawChar();
+                chr = text_iterator.nextRawChar();
             }
         }
 
         constexpr auto skipMultiline() -> void
         {
-            const auto *comment_begin = text_iterator;
+            text_iterator.rawSkip(comment_tokens.multiline_begin.size());
+            const auto comment_begin = text_iterator;
 
-            text_iterator->rawSkip(multiline_begin.size());
-
-            while (not isEoF(text_iterator->getCurrentChar()) && not isComment(multiline_end)) {
-                text_iterator->nextRawChar();
+            while (not isComment(comment_tokens.multiline_end) &&
+                   not isEoF(text_iterator.nextRawChar())) {
+                // empty loop
             }
 
             checkCommentTermination(comment_begin);
-            text_iterator->rawSkip(multiline_end.size());
+            text_iterator.rawSkip(comment_tokens.multiline_end.size());
         }
 
-        constexpr auto checkCommentTermination(const TextIterator<CharT> *comment_begin) const
+        constexpr auto checkCommentTermination(const TextIterator<CharT> &comment_begin) const
             -> void
         {
-            if (isEoF(text_iterator->getCurrentChar())) {
+            if (isEoF(text_iterator.getCurrentChar())) {
                 throwUnterminatedCommentError(comment_begin);
             }
         }
 
-        constexpr auto throwUnterminatedCommentError(const TextIterator<CharT> *comment_begin) const
+        constexpr auto throwUnterminatedCommentError(const TextIterator<CharT> &comment_begin) const
             -> void
         {
             auto exception =
-                CommentSkipperException<CharT>(*comment_begin, "unterminated multiline comment");
+                CommentSkipperException<CharT>(comment_begin, "unterminated multiline comment");
 
-            text_iterator->throwException(std::move(exception));
+            text_iterator.throwException(std::move(exception));
         }
 
-        StrView<CharT> single_line{};
-        StrView<CharT> multiline_begin{};
-        StrView<CharT> multiline_end{};
-        TextIterator<CharT> *text_iterator{ nullptr };
+        const CommentTokens<CharT> &comment_tokens;// MAYBE: copy comment tokens into StrViews
+        TextIterator<CharT> &text_iterator;
     };
 }// namespace cerb::text::module
 

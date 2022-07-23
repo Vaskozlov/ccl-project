@@ -133,6 +133,16 @@ namespace cerb
             return elem == end() ? npos : static_cast<size_t>(std::distance(begin(), elem));
         }
 
+        CERBLIB_DECL auto find(CharT chr, iterator from) const -> size_t
+        {
+            if (from >= end()) {
+                return npos;
+            }
+
+            auto elem = std::find(from, end(), chr);
+            return elem == end() ? npos : static_cast<size_t>(std::distance(begin(), elem));
+        }
+
         CERBLIB_DECL auto rfind(CharT chr, size_t offset = 0) const -> size_t
         {
             if (offset >= length) {
