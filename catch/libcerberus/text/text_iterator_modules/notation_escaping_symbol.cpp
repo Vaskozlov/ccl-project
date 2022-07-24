@@ -25,7 +25,7 @@ RUNTIME_TEST
             "only 3 of them were provided\n"
             "\\077\\xFF\\u041\n"
             "            ^\n"
-            "Suggest using: \\077\\xFF\\u0041");
+            "Suggestion: \\077\\xFF\\u0041");
     }
 
     return {};
