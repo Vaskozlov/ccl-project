@@ -123,7 +123,7 @@ namespace cerb::text
         constexpr auto addSuggestion() -> void
         {
             if (not suggestion.empty()) {
-                full_message.append(fmt::format<CharT, "\nSuggest using: {}">(suggestion));
+                full_message.append(fmt::format<CharT, "\nSuggestion: {}">(suggestion));
             }
         }
 
