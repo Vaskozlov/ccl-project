@@ -66,13 +66,13 @@ namespace cerb::debug
 
     template<typename T, typename U>
     constexpr auto assertEqual(
-        const T &lhs, const U &rhs, std::source_location location = std::source_location::current())
-        -> void
+        const T &value, const U &expected,
+        std::source_location location = std::source_location::current()) -> void
     {
-        if (safeNotEqual(lhs, rhs)) {
+        if (safeNotEqual(value, expected)) {
             if constexpr (Printable<T>) {
                 throw std::runtime_error(::fmt::format(
-                    "Expected {}, got {} in {}", rhs, lhs, convertLocation(location)));
+                    "Expected {}, got {} in {}", expected, value, convertLocation(location)));
             } else {
                 throw std::runtime_error(::fmt::format("Error in {}", convertLocation(location)));
             }
@@ -81,13 +81,14 @@ namespace cerb::debug
 
     template<typename T, typename U>
     constexpr auto assertNotEqual(
-        const T &lhs, const U &rhs, std::source_location location = std::source_location::current())
-        -> void
+        const T &value, const U &not_expected,
+        std::source_location location = std::source_location::current()) -> void
     {
-        if (safeEqual(lhs, rhs)) {
+        if (safeEqual(value, not_expected)) {
             if constexpr (Printable<T>) {
                 throw std::runtime_error(::fmt::format(
-                    "Expected {} is not equal to {} in {}", lhs, rhs, convertLocation(location)));
+                    "Expected {} is not equal to {} in {}", value, not_expected,
+                    convertLocation(location)));
             } else {
                 throw std::runtime_error(::fmt::format("Error in {}", convertLocation(location)));
             }

@@ -8,23 +8,7 @@
 namespace cerb::lex::dot_item
 {
     template<CharacterLiteral CharT>
-    using ExceptionAccumulator = analysis::ExceptionAccumulator<text::TextIteratorException<CharT>>;
-
-    template<CharacterLiteral CharT>
-    using CommentTokens = text::module::CommentTokens<CharT>;
-
-    template<CharacterLiteral CharT>
     CERBLIB_EXCEPTION(DotItemException, text::TextIteratorException<CharT>);
-
-    template<CharacterLiteral CharT>
-    struct RuleInitializer
-    {
-        StrView<CharT> rule{};
-        StrView<CharT> filename{};
-        ExceptionAccumulator<CharT> *exception_accumulator{ nullptr };
-        CommentTokens<CharT> comment_tokens{};
-        ssize_t id{};
-    };
 
     template<CharacterLiteral CharT>
     class DotItem : public BasicItem<CharT>
@@ -79,18 +63,23 @@ namespace cerb::lex::dot_item
                 break;
 
             case '*':
+                addRepetition(rule_iterator, Repetition::star());
                 break;
 
             case '+':
+                addRepetition(rule_iterator, Repetition::plus());
                 break;
 
             case '?':
+                addRepetition(rule_iterator, Repetition::question());
                 break;
 
             case '{':
+                addRepetition(rule_iterator, Repetition{ rule_iterator });
                 break;
 
             case '^':
+                makeReverse(rule_iterator);
                 break;
 
             case 'c':// for chars
@@ -139,19 +128,62 @@ namespace cerb::lex::dot_item
             return new_dot_item;
         }
 
+        constexpr auto addRepetition(TextIterator &rule_iterator, Repetition new_repetition) -> void
+        {
+            if (items.size() == 0) {
+                throwUnableToApply(
+                    rule_iterator, "no item to apply repetition", "set repetition after item");
+            }
+
+            auto &last_item = items.back();
+
+            if (last_item->getRepetition() != Repetition::basic()) {
+                throwUnableToApply(
+                    rule_iterator, "item already has repetition", "do not set repetition twice");
+            }
+
+            last_item->setRepetition(new_repetition);
+        }
+
+        constexpr auto makeReverse(TextIterator &rule_iterator) -> void
+        {
+            if (items.size() == 0) {
+                throwUnableToApply(
+                    rule_iterator, "no item to reverse", "create item before reversing it");
+            }
+
+            auto &last_item = items.back();
+
+            if (last_item->isReversed()) {
+                throwUnableToApply(
+                    rule_iterator, "item is already reversed", "do not set reverse for item twice");
+            }
+
+            last_item->makeReverse();
+        }
+
+        constexpr static auto throwUnableToApply(
+            TextIterator &rule_iterator, string_view reason, string_view suggestion) -> void
+        {
+            auto message = fmt::format<CharT, "unable tp apply with reason: {}">(reason);
+            auto converted_suggestion = fmt::format<CharT, "{}">(suggestion);
+            rule_iterator.throwException(
+                DotItemException<CharT>(rule_iterator, message, converted_suggestion));
+        }
+
         constexpr static auto throwUnterminatedDotItem(TextIterator &rule_iterator) -> void
         {
-            auto error = DotItemException<CharT>(rule_iterator, "unterminated dot item");
-            rule_iterator.throwException(std::move(error));
+            rule_iterator.throwException(
+                DotItemException<CharT>(rule_iterator, "unterminated dot item"));
         }
 
         constexpr static auto throwUndefinedAction(TextIterator &rule_iterator) -> void
         {
-            auto error = DotItemException<CharT>(
-                rule_iterator, "undefined action",
-                "Use `\"` for string and `\'` for terminal symbol");
+            const auto *message = "undefined action";
+            const auto *suggestion = "Use `\"` for string and `\'` for terminal symbol";
 
-            rule_iterator.throwException(std::move(error));
+            rule_iterator.throwException(
+                DotItemException<CharT>(rule_iterator, message, suggestion));
         }
 
         boost::container::small_vector<std::unique_ptr<BasicItem<CharT>>, 4> items{};
