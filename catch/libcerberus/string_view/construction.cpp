@@ -1,10 +1,8 @@
-#include <cerberus/debug/debug.hpp>
+#include <cerberus/debug/debug_file.hpp>
 #include <cerberus/string_view.hpp>
 #include <string>
 
 using namespace cerb;
-using namespace cerb::debug;
-using namespace cerb::integral_literals;
 using namespace std::string_literals;
 
 // NOLINTBEGIN

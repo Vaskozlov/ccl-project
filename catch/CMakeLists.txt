@@ -2,34 +2,34 @@ enable_testing()
 
 file(
         GLOB_RECURSE
-        LIBCERBERUS_CATCH_OBJS
+        LIBCERBERUS_CATCH
         "catch/*.cpp"
 )
 
-add_executable(
-        libcerberus_catch
-        ${LIBCERBERUS_CATCH_OBJS}
-)
+set(i 0)
 
-target_precompile_headers(
-        libcerberus_catch
-        PUBLIC
-        <bitset>
-        <cmath> <utility>
-        <vector> <string>
-        <algorithm> <array>
-        <fmt/format.h>
-        <boost/container/small_vector.hpp>
-)
+foreach (file ${LIBCERBERUS_CATCH})
 
-target_link_libraries(
-        libcerberus_catch
-        fmt::fmt
-)
+    get_filename_component(filename ${file} NAME_WLE)
+    get_filename_component(file_dir "${file}" PATH)
+    get_filename_component(dir_name "${file_dir}" NAME)
 
-target_link_libraries(
-        libcerberus_catch
-        ${Boost_LIBRARIES}
-)
+    add_executable(
+            ${dir_name}-${filename}
+            ${file}
+    )
 
-add_test(LIBCERBERUS_TEST libcerberus_catch)
+    target_link_libraries(
+            ${dir_name}-${filename}
+            fmt::fmt
+    )
+
+    target_link_libraries(
+            ${dir_name}-${filename}
+            ${Boost_LIBRARIES}
+    )
+
+    add_test(${dir_name}-${filename}-test ${dir_name}-${filename})
+
+    math(EXPR i "${i} + 1")
+endforeach ()

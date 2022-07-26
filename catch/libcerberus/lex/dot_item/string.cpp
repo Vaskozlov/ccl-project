@@ -1,10 +1,8 @@
-#include <cerberus/debug/debug.hpp>
+#include <cerberus/debug/debug_file.hpp>
 #include <cerberus/lex/dot_item/string.hpp>
 
 using namespace cerb::text;
-using namespace cerb::debug;
 using namespace cerb::lex::dot_item;
-using namespace cerb::integral_literals;
 
 // NOLINTNEXTLINE
 RUNTIME_TEST
@@ -51,7 +49,6 @@ STRING_TEST
     return {};
 }
 ();
-
 
 // NOLINTNEXTLINE
 RUNTIME_TEST

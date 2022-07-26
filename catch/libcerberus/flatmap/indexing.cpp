@@ -1,4 +1,4 @@
-#include <cerberus/debug/debug.hpp>
+#include <cerberus/debug/debug_file.hpp>
 #include <cerberus/flatmap.hpp>
 
 // NOLINTBEGIN

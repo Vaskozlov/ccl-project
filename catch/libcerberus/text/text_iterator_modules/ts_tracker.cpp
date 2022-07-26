@@ -1,9 +1,7 @@
-#include <cerberus/debug/debug.hpp>
+#include <cerberus/debug/debug_file.hpp>
 #include <cerberus/text/text_iterator_modules/ts_tracker.hpp>
 
-using namespace cerb::debug;
 using namespace cerb::text::module;
-using namespace cerb::integral_literals;
 using namespace std::string_literals;
 
 // NOLINTNEXTLINE

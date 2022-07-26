@@ -1,5 +1,5 @@
 #include <cerberus/core/logical_ops.hpp>
-#include <cerberus/debug/debug.hpp>
+#include <cerberus/debug/debug_file.hpp>
 
 using namespace cerb;
 

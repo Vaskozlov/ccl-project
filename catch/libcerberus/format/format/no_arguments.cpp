@@ -1,8 +1,7 @@
-#include <cerberus/debug/debug.hpp>
+#include <cerberus/debug/debug_file.hpp>
 #include <cerberus/format/format.hpp>
 
 using namespace cerb::fmt;
-using namespace cerb::debug;
 
 // NOLINTNEXTLINE
 STRING_TEST

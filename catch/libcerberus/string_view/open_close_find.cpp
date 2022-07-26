@@ -1,7 +1,6 @@
-#include <cerberus/debug/debug.hpp>
+#include <cerberus/debug/debug_file.hpp>
 #include <cerberus/string_view.hpp>
 
-using namespace cerb::debug;
 using namespace cerb::string_view_literals;
 
 CONSTEXPR_TEST
