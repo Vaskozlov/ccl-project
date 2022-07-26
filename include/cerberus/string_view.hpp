@@ -54,8 +54,8 @@ namespace cerb
 
     template<typename T, typename CharT>
     concept StringType = std::is_same_v<T, BasicStringView<CharT>> ||
-                         std::is_same_v<T, std::basic_string_view<CharT>> ||
-                         std::is_same_v<T, std::basic_string<CharT>>;
+        std::is_same_v<T, std::basic_string_view<CharT>> ||
+        std::is_same_v<T, std::basic_string<CharT>>;
 
     template<CharacterLiteral CharT>
     struct BasicStringView
@@ -130,7 +130,7 @@ namespace cerb
             }
 
             auto elem = std::find(begin() + offset, end(), chr);
-            return elem == end() ? npos : static_cast<size_t>(std::distance(begin(), elem));
+            return elem == end() ? npos : distance(begin(), elem);
         }
 
         CERBLIB_DECL auto find(CharT chr, iterator from) const -> size_t
@@ -140,7 +140,28 @@ namespace cerb
             }
 
             auto elem = std::find(from, end(), chr);
-            return elem == end() ? npos : static_cast<size_t>(std::distance(begin(), elem));
+            return elem == end() ? npos : distance(begin(), elem);
+        }
+
+        CERBLIB_DECL auto openCloseFind(CharT open, CharT close) const -> size_t
+        {
+            auto passed_pairs = static_cast<size_t>(0);
+
+            auto elem = std::ranges::find_if(*this, [&passed_pairs, open, close](CharT chr) {
+                if (chr == open) {
+                    ++passed_pairs;
+                } else if (chr == close) {
+                    --passed_pairs;
+                }
+
+                return passed_pairs == 0;
+            });
+
+            if (elem == end()) {
+                return npos;
+            }
+
+            return distance(begin(), elem);
         }
 
         CERBLIB_DECL auto rfind(CharT chr, size_t offset = 0) const -> size_t
@@ -150,7 +171,7 @@ namespace cerb
             }
 
             auto elem = std::find(rbegin() + static_cast<long>(offset), rend(), chr);
-            return elem == rend() ? npos : static_cast<size_t>(std::distance(elem, rend())) - 1;
+            return elem == rend() ? npos : distance(elem, rend()) - 1;
         }
 
         CERBLIB_DECL auto operator[](size_t index) const -> CharT
@@ -218,7 +239,7 @@ namespace cerb
         {}
 
         constexpr BasicStringView(iterator first, iterator last)
-          : string{ first }, length{ static_cast<size_t>(std::distance(first, last)) }
+          : string{ first }, length{ distance(first, last) }
         {}
 
         // NOLINTNEXTLINE
@@ -234,6 +255,12 @@ namespace cerb
         static constexpr size_t npos = std::numeric_limits<size_t>::max();
 
     private:
+        template<typename T>
+        CERBLIB_DECL static auto distance(T first, T last) -> size_t
+        {
+            return static_cast<size_t>(std::distance(first, last));
+        }
+
         pointer string{ nullptr };
         size_t length{ 0 };
     };
