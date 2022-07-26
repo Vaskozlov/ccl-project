@@ -4,9 +4,10 @@
 using namespace cerb::text;
 using namespace cerb::lex::dot_item;
 
-STRING_TEST
+// NOLINTNEXTLINE
+RUNTIME_TEST
 {
-    auto dot_item = DotItem<char>(TextIterator<char>{ "[a-z]*", nullptr, {}, "none" });
+    auto dot_item = DotItem<char>(TextIterator<char>{ "(\"Test\")", nullptr, {}, "none" });
     return {};
 }
 ();
