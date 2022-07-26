@@ -10,7 +10,7 @@
     Class(Class &&) noexcept = default;                                                            \
     ~Class() = default;                                                                            \
     auto operator=(const Class &)->Class & = default;                                              \
-    auto operator=(Class &&) noexcept -> Class & = default
+    auto operator=(Class &&) noexcept->Class & = default
 // NOLINTEND
 
 namespace cerb::lex
