@@ -4,6 +4,24 @@
 using namespace cerb::text;
 using namespace cerb::debug;
 using namespace cerb::lex::dot_item;
+using namespace cerb::integral_literals;
+
+// NOLINTNEXTLINE
+RUNTIME_TEST
+{
+    auto exception_accumulator = TextIterator<char>::ExceptionAccumulator{};
+    auto text_iterator = TextIterator<char>{ R"("")", &exception_accumulator };
+    text_iterator.nextRawChar();
+
+    auto string_item = String<char>(false, "\"", text_iterator);
+    const auto &string = string_item.get();
+
+    assertTrue(string.empty());
+    assertEqual(exception_accumulator.getWarnings().size(), 1_ZU);
+
+    return {};
+}
+();
 
 // NOLINTNEXTLINE
 STRING_TEST
@@ -43,7 +61,7 @@ RUNTIME_TEST
 
     ERROR_EXPECTED(
         String<char>(false, "\"", text_iterator), TextIteratorException<char>,
-        "Error occurred at: , line: 1, column: 1. Error message: unterminated string literal\n"
+        "Error occurred at: , line: 1, column: 1. Error message: unterminated string item\n"
         "\"Hello, World!\n"
         "^");
 

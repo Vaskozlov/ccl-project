@@ -24,11 +24,7 @@ namespace cerb::lex::dot_item
             return string;
         }
 
-        constexpr explicit String(
-            bool multiline_,
-            StrView<CharT>
-                str_token_,
-            TextIterator &rule_iterator_)
+        constexpr String(bool multiline_, StrView<CharT> str_token_, TextIterator &rule_iterator_)
           : str_token(str_token_), multiline(multiline_)
         {
             auto &rule_iterator = rule_iterator_;
@@ -48,9 +44,11 @@ namespace cerb::lex::dot_item
 
                 string.push_back(chr);
             }
+
+            addWarningIfEmpty(rule_iterator);
         }
 
-        ~String() = default;
+        CERBLIB_DERIVED_CONSTRUCTORS(String);
 
     private:
         constexpr auto isStringEnd(TextIterator &rule_iterator, bool is_escaping) const -> bool
@@ -74,7 +72,7 @@ namespace cerb::lex::dot_item
             }
 
             if (isEoF(chr)) {
-                throwUnterminatedString(rule_iterator, "unterminated string literal");
+                throwUnterminatedString(rule_iterator, "unterminated string item");
             }
 
             if (land(chr == '\n', not multiline)) {
@@ -101,6 +99,15 @@ namespace cerb::lex::dot_item
 
             if (text.substr(0, str_token.size()) != str_token) {
                 throwStringBeginException(rule_iterator);
+            }
+        }
+
+        constexpr auto addWarningIfEmpty(TextIterator &rule_iterator) -> void
+        {
+            if (string.empty()) {
+                auto error =
+                    StringException<CharT>(rule_iterator, "empty string should not be used");
+                rule_iterator.throwWarning(std::move(error));
             }
         }
 
