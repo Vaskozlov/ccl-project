@@ -5,14 +5,17 @@
 #include <cerberus/string_view.hpp>
 #include <cerberus/typed_bitset.hpp>
 #include <map>
+#include <memory_resource>
 
 namespace cerb
 {
-    template<CharacterLiteral CharT, std::integral Value>
+    template<// NOLINTNEXTLINE
+        CharacterLiteral CharT, std::integral Value, size_t AllocationSize = 1024 * sizeof(CharT)>
     class StringMap
     {
     public:
         using Str = std::basic_string<CharT>;
+        using Map = std::pmr::map<Str, Value>;
         using CharLevel = TypedBitset<CharT>;
         using CharLevels = boost::container::small_vector<CharLevel, 4>;// NOLINT
 
@@ -28,6 +31,11 @@ namespace cerb
             Value value{};
             Str repr{};
         };
+
+        [[nodiscard]] auto size() const -> size_t
+        {
+            return map.size();
+        }
 
         auto addString(Str &&string, Value value) -> void
         {
@@ -86,7 +94,7 @@ namespace cerb
             return land(level != string.size(), level != char_levels.size());
         }
 
-        auto mapStringToLevels(const Str &string) -> void
+        auto mapStringToLevels(const std::basic_string<CharT> &string) -> void
         {
             auto level = static_cast<size_t>(0);
             resizeLevels(string.size());
@@ -103,7 +111,10 @@ namespace cerb
             }
         }
 
-        std::map<Str, Value> map{};
+        std::array<std::byte, AllocationSize> local_buffer{};
+        std::pmr::monotonic_buffer_resource memory_resource{ local_buffer.data(),
+                                                             local_buffer.size() };
+        Map map{ &memory_resource };
         CharLevels char_levels = CharLevels(4);
     };
 }// namespace cerb
