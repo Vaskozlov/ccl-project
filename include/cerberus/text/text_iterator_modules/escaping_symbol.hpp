@@ -14,7 +14,7 @@ namespace cerb::text::module
     public:
         using extra_symbols_t = std::vector<std::pair<TextT, EscapingT>>;
 
-        constexpr auto getExtraSymbols() const -> const extra_symbols_t &
+        CERBLIB_DECL auto getExtraSymbols() const -> const extra_symbols_t &
         {
             return extra_symbols;
         }
@@ -61,6 +61,12 @@ namespace cerb::text::module
 
             case 'b':
                 return '\b';
+
+            case 'v':
+                return '\v';
+
+            case 'a':
+                return '\a';
 
             case '0':
                 return calculateNotationEscapeSymbol(text_iterator, 2, 3, false);
