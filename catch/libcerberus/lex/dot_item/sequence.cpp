@@ -1,5 +1,5 @@
 #include <cerberus/debug/debug_file.hpp>
-#include <cerberus/lex/dot_item/string.hpp>
+#include <cerberus/lex/dot_item/sequence.hpp>
 
 using namespace cerb::text;
 using namespace cerb::lex::dot_item;
@@ -11,7 +11,7 @@ RUNTIME_TEST
     auto text_iterator = TextIterator<char>{ R"("")", &exception_accumulator };
     text_iterator.nextRawChar();
 
-    auto string_item = String<char>(false, "\"", text_iterator);
+    auto string_item = Sequence<char>(false, "\"", text_iterator);
     const auto &string = string_item.get();
 
     assertTrue(string.empty());
@@ -27,7 +27,7 @@ STRING_TEST
     auto text_iterator = TextIterator<char>{ R"("Hello, \"World\"!")" };
     text_iterator.nextRawChar();
 
-    auto string_item = String<char>(false, "\"", text_iterator);
+    auto string_item = Sequence<char>(false, "\"", text_iterator);
     const auto &string = string_item.get();
 
     assertEqual(string, R"(Hello, "World"!)");
@@ -42,7 +42,7 @@ STRING_TEST
     auto text_iterator = TextIterator<char>{ "\"\"\"Hello,\n    \"World\"!\"\"\"" };
     text_iterator.nextRawChar();
 
-    auto string_item = String<char>(true, R"(""")", text_iterator);
+    auto string_item = Sequence<char>(true, R"(""")", text_iterator);
     const auto &string = string_item.get();
 
     assertEqual(string, "Hello,\n    \"World\"!");
@@ -57,7 +57,7 @@ RUNTIME_TEST
     text_iterator.nextRawChar();
 
     ERROR_EXPECTED(
-        String<char>(false, "\"", text_iterator), TextIteratorException<char>,
+        Sequence<char>(false, "\"", text_iterator), TextIteratorException<char>,
         "Error occurred at: , line: 1, column: 1. Error message: unterminated string item\n"
         "\"Hello, World!\n"
         "^");
@@ -73,7 +73,7 @@ RUNTIME_TEST
     text_iterator.nextRawChar();
 
     ERROR_EXPECTED(
-        String<char>(false, "\"", text_iterator), TextIteratorException<char>,
+        Sequence<char>(false, "\"", text_iterator), TextIteratorException<char>,
         "Error occurred at: , line: 1, column: 1. Error message: New line reached, but string "
         "literal has not been terminated\n"
         "\"Hello, World!\n"

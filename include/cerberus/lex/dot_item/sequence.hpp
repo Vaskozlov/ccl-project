@@ -10,7 +10,7 @@ namespace cerb::lex::dot_item
     CERBLIB_EXCEPTION(StringException, text::TextIteratorException<CharT>);
 
     template<CharacterLiteral CharT>
-    class String : public BasicItem<CharT>
+    class Sequence : public BasicItem<CharT>
     {
     private:
         using Base = BasicItem<CharT>;
@@ -24,7 +24,12 @@ namespace cerb::lex::dot_item
             return string;
         }
 
-        constexpr String(bool multiline_, StrView<CharT> str_token_, TextIterator &rule_iterator_)
+        CERBLIB_DECL auto getRef() -> Str<CharT> &
+        {
+            return string;
+        }
+
+        constexpr Sequence(bool multiline_, StrView<CharT> str_token_, TextIterator &rule_iterator_)
           : str_token(str_token_), multiline(multiline_)
         {
             auto &rule_iterator = rule_iterator_;
@@ -48,7 +53,7 @@ namespace cerb::lex::dot_item
             addWarningIfEmpty(rule_iterator);
         }
 
-        CERBLIB_DERIVED_CONSTRUCTORS(String);
+        CERBLIB_DERIVED_CONSTRUCTORS(Sequence);
 
     private:
         constexpr auto isStringEnd(TextIterator &rule_iterator, bool is_escaping) const -> bool
@@ -66,6 +71,7 @@ namespace cerb::lex::dot_item
             -> void
         {
             using namespace std::string_literals;
+            using namespace cerb::string_view_literals;
 
             if (is_escaping) {
                 return;
@@ -76,7 +82,7 @@ namespace cerb::lex::dot_item
             }
 
             if (land(chr == '\n', not multiline)) {
-                auto message = "New line reached, but string literal has not been terminated"s;
+                auto message = "New line reached, but string literal has not been terminated"_sv;
                 auto suggestion =
                     fmt::format<"use multiline option or close string literal with {}">(str_token);
 
@@ -104,16 +110,20 @@ namespace cerb::lex::dot_item
 
         constexpr auto addWarningIfEmpty(TextIterator &rule_iterator) -> void
         {
+            using namespace string_view_literals;
+
             if (string.empty()) {
                 auto error =
-                    StringException<CharT>(rule_iterator, "empty string should not be used");
+                    StringException<CharT>(rule_iterator, "empty string should not be used"_sv);
                 rule_iterator.throwWarning(std::move(error));
             }
         }
 
         constexpr static auto throwEmptyStringBegin() -> void
         {
-            throw LogicError("string literal begin can not be empty");
+            using namespace std::string_view_literals;
+
+            throw LogicError("string literal begin can not be empty"sv);
         }
 
         constexpr static auto throwUnterminatedString(
