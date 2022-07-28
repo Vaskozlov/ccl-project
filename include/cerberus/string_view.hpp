@@ -7,40 +7,16 @@
 
 namespace cerb
 {
-    namespace private_
-    {
-        template<CharacterLiteral CharT, size_t Length>// NOLINTNEXTLINE
-        constexpr auto arrayLength(const CharT (&/*unused*/)[Length]) -> size_t
-        {
-            return Length - 1;
-        }
-
-        template<CharacterLiteral CharT>
-        constexpr auto rawStringLength(const CharT *str) -> size_t
-        {
-            if (str == nullptr) {
-                return 0;
-            }
-
-            constexpr auto searching_limit = std::numeric_limits<u32>::max();
-            auto terminator = std::find(str, str + searching_limit, 0);
-
-            return static_cast<size_t>(std::distance(str, terminator));
-        }
-    }// namespace private_
-
     template<CharacterArray T>
     constexpr auto strlen(const T &str) -> size_t
     {
-        if constexpr (std::is_array_v<T>) {
-            return private_::arrayLength<>(str);
-        } else {
-            if CERBLIB_RUNTIME_BRANCH {
-                return private_::rawStringLength(str);
+        if constexpr (std::is_pointer_v<T>) {
+            if (str == nullptr) {
+                return 0;
             }
-
-            return std::basic_string_view{ str }.size();
         }
+
+        return std::basic_string_view{ str }.size();
     }
 
     template<CharacterLiteral CharT>
