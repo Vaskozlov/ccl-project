@@ -49,9 +49,9 @@ namespace cerb
             multiset(begin_index, end_index, value);
         }
 
-        [[nodiscard]] auto at(T position) const -> bool
+        [[nodiscard]] auto at(T value) const -> bool
         {
-            auto index = toIndex(position);
+            auto index = toIndex(value);
 
             if (index >= storage.size()) {
                 return false;
