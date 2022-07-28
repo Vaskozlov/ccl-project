@@ -40,4 +40,14 @@
 #define CERBLIB_HAS_CONSTEXPR_VECTOR                                                               \
     __cpp_lib_constexpr_vector >= 201907L && (!__clang__ || __clang_major__ >= 15)
 
+// NOLINTBEGIN
+#define CERBLIB_DERIVED_CONSTRUCTORS(Class)                                                        \
+    Class() = default;                                                                             \
+    Class(const Class &) = default;                                                                \
+    Class(Class &&) noexcept = default;                                                            \
+    ~Class() = default;                                                                            \
+    auto operator=(const Class &)->Class & = default;                                              \
+    auto operator=(Class &&) noexcept->Class & = default
+// NOLINTEND
+
 #endif /* CERBERUS_PROJECT_DEFINES_HPP */

@@ -3,16 +3,6 @@
 
 #include <cerberus/text/typedefs.hpp>
 
-// NOLINTBEGIN
-#define CERBLIB_DERIVED_CONSTRUCTORS(Class)                                                        \
-    Class() = default;                                                                             \
-    Class(const Class &) = default;                                                                \
-    Class(Class &&) noexcept = default;                                                            \
-    ~Class() = default;                                                                            \
-    auto operator=(const Class &)->Class & = default;                                              \
-    auto operator=(Class &&) noexcept->Class & = default
-// NOLINTEND
-
 namespace cerb::lex
 {
     template<CharacterLiteral CharT>
