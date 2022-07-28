@@ -2,7 +2,6 @@
 #define CERBERUS_PROJECT_LEXICAL_ANALYZER_HPP
 
 #include <cerberus/lex/dot_item/dot_item.hpp>
-#include <cerberus/lex/typedefs.hpp>
 
 namespace cerb::lex
 {
@@ -19,6 +18,7 @@ namespace cerb::lex
         }
 
     private:
+        AnalysisShared<CharT> shared{};
     };
 }// namespace cerb::lex
 
