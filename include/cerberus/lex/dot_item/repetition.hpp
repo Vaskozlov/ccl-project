@@ -44,7 +44,7 @@ namespace cerb::lex::dot_item
 
             auto iterator_copy = text_iterator;
 
-            from = parseNumber(text_iterator, ',');// NOLINT
+            from = parseNumber(text_iterator, ',');// NOLINT initialization via =
             to = parseNumber(text_iterator, '}');  // NOLINT
 
             checkCorrectnessOfValues(iterator_copy);
@@ -111,16 +111,20 @@ namespace cerb::lex::dot_item
         constexpr static auto throwUnexpectedTermination(text::TextIterator<CharT> &text_iterator)
             -> void
         {
+            using namespace string_view_literals;
+
             text_iterator.throwException(
-                RepetitionException<CharT>(text_iterator, "unexpected termination"));
+                RepetitionException<CharT>(text_iterator, "unexpected termination"_sv));
         }
 
         template<CharacterLiteral CharT>
         constexpr static auto throwRangeBeginException(text::TextIterator<CharT> &text_iterator)
             -> void
         {
+            using namespace string_view_literals;
+
             text_iterator.throwException(RepetitionException<CharT>(
-                text_iterator, "expected '{' at the beginning of repetition range"));
+                text_iterator, "expected '{' at the beginning of repetition range"_sv));
         }
 
     public:
