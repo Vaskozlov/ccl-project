@@ -8,18 +8,13 @@
 namespace cerb::lex::dot_item
 {
     template<CharacterLiteral CharT>
-    using ExceptionAccumulator = analysis::ExceptionAccumulator<text::TextIteratorException<CharT>>;
-
-    template<CharacterLiteral CharT>
-    using CommentTokens = text::module::CommentTokens<CharT>;
-
-    template<CharacterLiteral CharT>
     class BasicItem
     {
     protected:
         using TextIterator = text::TextIterator<CharT>;
-        using CommentTokens = CommentTokens<CharT>;
-        using ExceptionAccumulator = ExceptionAccumulator<CharT>;
+        using CommentTokens = text::module::CommentTokens<CharT>;
+        using ExceptionAccumulator =
+            analysis::ExceptionAccumulator<text::TextIteratorException<CharT>>;
 
     public:
         CERBLIB_DECL auto getRepetition() const -> Repetition
