@@ -53,5 +53,5 @@ jobs:
       - name: Test
         run: |
           cd ${{github.workspace}}/${{github.actor}}-${{ github.head_ref }}/${{ matrix.config.key }}
-          ctest
+          ctest -j ${{ matrix.config.threads_count }}
           cd ..
