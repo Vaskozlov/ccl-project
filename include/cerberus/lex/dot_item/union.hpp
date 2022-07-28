@@ -101,33 +101,35 @@ namespace cerb::lex::dot_item
 
         constexpr static auto addWarningIfEmpty(TextIterator &rule_iterator, bool is_empty) -> void
         {
+            using namespace string_view_literals;
+
             if (is_empty) {
-                auto error = UnionException<CharT>(rule_iterator, "empty union should not be used");
-                rule_iterator.throwWarning(std::move(error));
+                rule_iterator.throwWarning(
+                    UnionException<CharT>(rule_iterator, "empty union should not be used"_sv));
             }
         }
 
         constexpr static auto throwUnterminatedUnion(TextIterator &rule_iterator) -> void
         {
-            auto error = UnionException<CharT>(rule_iterator, "unterminated union item");
-            rule_iterator.throwException(std::move(error));
+            using namespace string_view_literals;
+            rule_iterator.throwException(
+                UnionException<CharT>(rule_iterator, "unterminated union item"_sv));
         }
 
         constexpr static auto throwUnterminatedRangeException(TextIterator &rule_iterator) -> void
         {
-            auto error = UnionException<CharT>(rule_iterator, "unterminated range");
-            rule_iterator.throwException(std::move(error));
+            using namespace string_view_literals;
+            rule_iterator.throwException(
+                UnionException<CharT>(rule_iterator, "unterminated range"_sv));
         }
 
         constexpr static auto throwUnionBeginException(TextIterator &rule_iterator) -> void
         {
-            auto error = UnionException<CharT>(
-                rule_iterator,
-                fmt::format<
-                    CharT,
-                    "expected `[` at the beginning of union item declaration, got {}">(
-                    rule_iterator.getCurrentChar()));
-            rule_iterator.throwException(std::move(error));
+            auto message = fmt::
+                format<CharT, "expected `[` at the beginning of union item declaration, got {}">(
+                    rule_iterator.getCurrentChar());
+
+            rule_iterator.throwException(UnionException<CharT>(rule_iterator, message));
         }
 
         TypedBitset<CharT> bitset{};

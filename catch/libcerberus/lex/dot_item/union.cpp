@@ -14,11 +14,7 @@ RUNTIME_TEST
     const auto &bitset = union_item.get();
 
     for (char i = 0; i < 127; ++i) {// NOLINT
-        if (i == 'a') {
-            assertTrue(bitset.at(i));
-        } else {
-            assertFalse(bitset.at(i));
-        }
+        assertEqual(bitset.at(i), i == 'a');
     }
 
     return {};
@@ -38,10 +34,10 @@ RUNTIME_TEST
         assertTrue(bitset.at(i));
     }
 
+    assertTrue(bitset.at('_'));
+
     assertFalse(bitset.at('\0'));
     assertFalse(bitset.at('z' + 1));
-
-    assertTrue(bitset.at('_'));
 
     return {};
 }
