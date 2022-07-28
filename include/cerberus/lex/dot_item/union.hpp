@@ -125,9 +125,9 @@ namespace cerb::lex::dot_item
 
         constexpr static auto throwUnionBeginException(TextIterator &rule_iterator) -> void
         {
-            auto message = fmt::
-                format<CharT, "expected `[` at the beginning of union item declaration, got {}">(
-                    rule_iterator.getCurrentChar());
+            auto message = fmt::format<
+                CharT, "expected `[` at the beginning of union item declaration, got {}">(
+                rule_iterator.getCurrentChar());
 
             rule_iterator.throwException(UnionException<CharT>(rule_iterator, message));
         }
