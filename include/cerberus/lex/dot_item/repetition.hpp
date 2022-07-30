@@ -31,6 +31,11 @@ namespace cerb::lex::dot_item
             return { 1, std::numeric_limits<size_t>::max() };
         }
 
+        CERBLIB_DECL auto inRange(size_t value) const noexcept
+        {
+            return land(value >= from, value <= to);
+        }
+
         CERBLIB_DECL auto operator<=>(const Repetition &) const noexcept
             -> std::weak_ordering = default;
 
@@ -96,7 +101,9 @@ namespace cerb::lex::dot_item
             auto message =
                 fmt::format<CharT, "Beginning of the range ({}) is greater than end ({})">(
                     from, to);
-            text_iterator.throwException(RepetitionException<CharT>(text_iterator, message));
+
+            text_iterator.throwException(RepetitionException<CharT>{ text_iterator, message });
+            throw UnrecoverableError{ "unrecoverable error in Repetition" };
         }
 
         template<CharacterLiteral CharT>
@@ -104,7 +111,9 @@ namespace cerb::lex::dot_item
             throwUnexpectedCharacter(text::TextIterator<CharT> &text_iterator, CharT chr) -> void
         {
             auto message = fmt::format<CharT, "expected a number, but found `{}`">(chr);
-            text_iterator.throwException(RepetitionException<CharT>(text_iterator, message));
+
+            text_iterator.throwException(RepetitionException<CharT>{ text_iterator, message });
+            throw UnrecoverableError{ "unrecoverable error in Repetition" };
         }
 
         template<CharacterLiteral CharT>
@@ -114,7 +123,8 @@ namespace cerb::lex::dot_item
             using namespace string_view_literals;
 
             text_iterator.throwException(
-                RepetitionException<CharT>(text_iterator, "unexpected termination"_sv));
+                RepetitionException<CharT>{ text_iterator, "unexpected termination"_sv });
+            throw UnrecoverableError{ "unrecoverable error in Repetition" };
         }
 
         template<CharacterLiteral CharT>
@@ -123,8 +133,9 @@ namespace cerb::lex::dot_item
         {
             using namespace string_view_literals;
 
-            text_iterator.throwException(RepetitionException<CharT>(
-                text_iterator, "expected '{' at the beginning of repetition range"_sv));
+            text_iterator.throwException(RepetitionException<CharT>{
+                text_iterator, "expected '{' at the beginning of repetition range"_sv });
+            throw UnrecoverableError{ "unrecoverable error in Repetition" };
         }
 
     public:

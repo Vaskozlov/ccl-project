@@ -104,11 +104,10 @@ namespace cerb::text::module
                 fmt::format<TextT, "expected {} characters, but only {} of them were provided">(
                     max_times, chars_count);
 
-            auto exception = NotationEscapingSymbolizerException<TextT>{
-                text_iterator, exception_message, createSuggestionNotEnoughChars(chars_count)
-            };
+            auto suggestion_message = createSuggestionNotEnoughChars(chars_count);
 
-            text_iterator.throwException(std::move(exception));
+            text_iterator.throwException(NotationEscapingSymbolizerException<TextT>{
+                text_iterator, exception_message, suggestion_message });
         }
 
         constexpr auto createSuggestionNotEnoughChars(u16 chars_count) const -> Str<TextT>

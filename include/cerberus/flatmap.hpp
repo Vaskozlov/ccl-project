@@ -118,14 +118,12 @@ namespace cerb
 
         CERBLIB_DECL auto find(const Key &key) -> iterator
         {
-            return std::ranges::find_if(
-                *this, [key](const value_type &value) { return value.first == key; });
+            return staticFind(*this, key);
         }
 
         CERBLIB_DECL auto find(const Key &key) const -> const_iterator
         {
-            return std::ranges::find_if(
-                *this, [key](const value_type &value) { return value.first == key; });
+            return staticFind(*this, key);
         }
 
         Flatmap() = default;
@@ -138,6 +136,14 @@ namespace cerb
         }
 
     private:
+        template<typename Self>
+        CERBLIB_DECL static auto staticFind(Self &self, const Key &key)
+            -> std::conditional_t<std::is_const_v<Self>, const_iterator, iterator>
+        {
+            return std::ranges::find_if(
+                self, [key](const value_type &value) { return value.first == key; });
+        }
+
         template<typename Self>
         CERBLIB_DECL static auto staticAt(Self &self, const Key &key)
             -> std::conditional_t<std::is_const_v<Self>, const Value &, Value &>

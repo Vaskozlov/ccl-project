@@ -93,10 +93,8 @@ namespace cerb::text::module
         constexpr auto throwUnterminatedCommentError(const TextIterator<CharT> &comment_begin) const
             -> void
         {
-            auto exception =
-                CommentSkipperException<CharT>(comment_begin, "unterminated multiline comment");
-
-            text_iterator.throwException(std::move(exception));
+            text_iterator.throwException(
+                CommentSkipperException<CharT>{ comment_begin, "unterminated multiline comment" });
         }
 
         const CommentTokens<CharT> &comment_tokens;// MAYBE: copy comment tokens into StrViews

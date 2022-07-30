@@ -108,6 +108,7 @@ namespace cerb::text::module
 
             if (it == extra_symbols.end()) {
                 throwMatchException();
+                return '?';
             }
 
             return it->second;
@@ -115,12 +116,8 @@ namespace cerb::text::module
 
         constexpr auto throwMatchException() -> void
         {
-            auto exception = TextIteratorException(
-                text_iterator,
-                "unable to "
-                "match any escaping symbol");
-
-            text_iterator.throwException(std::move(exception));
+            text_iterator.throwException(
+                TextIteratorException{ text_iterator, "unable to match any escaping symbol" });
         }
 
         text_iterator_t &text_iterator;

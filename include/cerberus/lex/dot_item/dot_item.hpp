@@ -18,9 +18,28 @@ namespace cerb::lex::dot_item
         using Base = BasicItem<CharT>;
         using typename Base::CommentTokens;
         using typename Base::ExceptionAccumulator;
+        using typename Base::ScanStatus;
         using typename Base::TextIterator;
 
     public:
+        CERBLIB_DECL auto scan(TextIterator &text_iterator) const -> ScanStatus override
+        {
+            auto times = static_cast<size_t>(0);
+
+
+            for (auto &item : items) {
+                auto local_iterator = text_iterator;
+
+                if (item->scan(text_iterator) == ScanStatus::FAILURE) {
+                    return ScanStatus::FAILURE;
+                }
+
+                text_iterator = local_iterator;
+            }
+
+            return {};
+        }
+
         constexpr explicit DotItem(
             const TextIterator &rule_iterator_,
             size_t id_,
@@ -162,8 +181,7 @@ namespace cerb::lex::dot_item
             constructString(TextIterator &rule_iterator, bool is_character, bool is_multiline)
                 -> void
         {
-            if (items.size() == 0 ||
-                dynamic_cast<Sequence<CharT> *>(items.back().get()) == nullptr) {
+            if (items.empty() || dynamic_cast<Sequence<CharT> *>(items.back().get()) == nullptr) {
                 throwUnableToApply(
                     rule_iterator,
                     "unable to apply char/string modifier, because there are not "
@@ -256,6 +274,7 @@ namespace cerb::lex::dot_item
         {
             rule_iterator.throwException(
                 DotItemException<CharT>(rule_iterator, message, suggestion));
+            throw UnrecoverableError{ "unrecoverable error in dot item" };
         }
 
         constexpr static auto throwUnableToApply(
@@ -268,12 +287,14 @@ namespace cerb::lex::dot_item
 
             rule_iterator.throwException(
                 DotItemException<CharT>(rule_iterator, message, converted_suggestion));
+            throw UnrecoverableError{ "unrecoverable error in DotItem" };
         }
 
         constexpr static auto throwUnterminatedDotItem(TextIterator &rule_iterator) -> void
         {
             rule_iterator.throwException(
                 DotItemException<CharT>(rule_iterator, "unterminated dot item"));
+            throw UnrecoverableError{ "unrecoverable error in DotItem" };
         }
 
         constexpr static auto throwUndefinedAction(TextIterator &rule_iterator) -> void
@@ -286,6 +307,7 @@ namespace cerb::lex::dot_item
 
             rule_iterator.throwException(
                 DotItemException<CharT>(rule_iterator, message, suggestion));
+            throw UnrecoverableError{ "unrecoverable error in DotItem" };
         }
 
         boost::container::small_vector<std::unique_ptr<BasicItem<CharT>>, 4> items{};

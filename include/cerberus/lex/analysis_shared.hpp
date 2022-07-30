@@ -27,6 +27,11 @@ namespace cerb::lex
     template<CharacterLiteral CharT>
     struct AnalysisShared
     {
+        constexpr auto isTerminal() const -> void
+        {
+
+        }
+
         std::vector<String<CharT>> strings_and_chars{};
         StringMap<CharT, size_t> terminals{};
     };

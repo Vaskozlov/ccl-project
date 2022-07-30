@@ -1,6 +1,7 @@
 #ifndef CERBERUS_PROJECT_BASIC_ITEM_HPP
 #define CERBERUS_PROJECT_BASIC_ITEM_HPP
 
+#include <cerberus/lex/analysis_shared.hpp>
 #include <cerberus/lex/dot_item/repetition.hpp>
 #include <cerberus/lex/typedefs.hpp>
 #include <cerberus/text/text_iterator.hpp>
@@ -10,13 +11,18 @@ namespace cerb::lex::dot_item
     template<CharacterLiteral CharT>
     class BasicItem
     {
-    protected:
+    public:
         using TextIterator = text::TextIterator<CharT>;
         using CommentTokens = text::module::CommentTokens<CharT>;
         using ExceptionAccumulator =
             analysis::ExceptionAccumulator<text::TextIteratorException<CharT>>;
 
-    public:
+        enum struct ScanStatus : bool
+        {
+            FAILURE = false,
+            SUCCESS = true
+        };
+
         CERBLIB_DECL auto getRepetition() const -> Repetition
         {
             return repetition;
@@ -36,6 +42,21 @@ namespace cerb::lex::dot_item
         {
             repetition = new_repetition;
         }
+
+        CERBLIB_DECL auto
+            isNextCharForScanning(TextIterator &text_iterator, AnalysisShared<CharT> &shared) const
+            -> bool
+        {
+            auto chr = text_iterator.futureRawChar();
+
+            if (lor(isLayout(chr), isEoF(chr))) {
+                return false;
+            }
+
+            auto text = text_iterator.getRemainingFuture(1);
+        }
+
+        CERBLIB_DECL virtual auto scan(TextIterator &text_iterator) const -> ScanStatus = 0;
 
         auto operator=(const BasicItem &) -> BasicItem & = default;
         auto operator=(BasicItem &&) noexcept -> BasicItem & = default;

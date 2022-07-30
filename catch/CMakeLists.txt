@@ -15,21 +15,36 @@ foreach (file ${LIBCERBERUS_CATCH})
     get_filename_component(dir_name "${file_dir}" NAME)
 
     add_executable(
-            ${dir_name}-${filename}
+            ${filename}-${dir_name}
             ${file}
     )
 
+    if (PRECOMPILED_HEADERS)
+        target_precompile_headers(
+                ${filename}-${dir_name}
+                PUBLIC
+                <bitset> <map>
+                <string_view>
+                <cmath> <utility>
+                <vector> <string>
+                <initializer_list>
+                <algorithm> <array>
+                <numeric> <fmt/format.h>
+                <boost/container/small_vector.hpp>
+        )
+    endif()
+
     target_link_libraries(
-            ${dir_name}-${filename}
+            ${filename}-${dir_name}
             fmt::fmt
     )
 
     target_link_libraries(
-            ${dir_name}-${filename}
+            ${filename}-${dir_name}
             ${Boost_LIBRARIES}
     )
 
-    add_test(${dir_name}-${filename}-test ${dir_name}-${filename})
+    add_test(${filename}-${dir_name}-test ${filename}-${dir_name})
 
     math(EXPR i "${i} + 1")
 endforeach ()

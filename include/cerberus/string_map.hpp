@@ -5,17 +5,15 @@
 #include <cerberus/string_view.hpp>
 #include <cerberus/typed_bitset.hpp>
 #include <map>
-#include <memory_resource>
 
 namespace cerb
 {
-    template<// NOLINTNEXTLINE
-        CharacterLiteral CharT, std::integral Value, size_t AllocationSize = 1024 * sizeof(CharT)>
+    template<CharacterLiteral CharT, std::integral Value>
     class StringMap
     {
     public:
         using Str = std::basic_string<CharT>;
-        using Map = std::pmr::map<Str, Value>;
+        using Map = std::map<Str, Value>;
         using CharLevel = TypedBitset<CharT>;
         using CharLevels = boost::container::small_vector<CharLevel, 4>;// NOLINT
 
@@ -111,10 +109,7 @@ namespace cerb
             }
         }
 
-        std::array<std::byte, AllocationSize> local_buffer{};
-        std::pmr::monotonic_buffer_resource memory_resource{ local_buffer.data(),
-                                                             local_buffer.size() };
-        Map map{ &memory_resource };
+        Map map{};
         CharLevels char_levels = CharLevels(4);
     };
 }// namespace cerb

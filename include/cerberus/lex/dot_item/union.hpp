@@ -12,12 +12,28 @@ namespace cerb::lex::dot_item
     template<CharacterLiteral CharT>
     class Union : public BasicItem<CharT>
     {
+    public:
         using Base = BasicItem<CharT>;
         using typename Base::CommentTokens;
         using typename Base::ExceptionAccumulator;
+        using typename Base::ScanStatus;
         using typename Base::TextIterator;
 
-    public:
+        CERBLIB_DECL auto scan(TextIterator &text_iterator) const -> ScanStatus override
+        {
+            auto times = static_cast<size_t>(0);
+
+            while (true) {
+                if (matching(text_iterator)) {
+                    ++times;
+                    text_iterator.nextRawChar();
+                    continue;
+                }
+
+                return Base::repetition.inRange(times) ? ScanStatus::SUCCESS : ScanStatus::FAILURE;
+            }
+        }
+
         CERBLIB_DECL auto get() const -> const TypedBitset<CharT> &
         {
             return bitset;
@@ -63,7 +79,12 @@ namespace cerb::lex::dot_item
         CERBLIB_DERIVED_CONSTRUCTORS(Union);
 
     private:
-        constexpr static auto isRange(bool is_escaping, CharT chr) -> bool
+        CERBLIB_DECL auto matching(const TextIterator &text_iterator) const -> bool
+        {
+            return bitset.at(text_iterator.futureRawChar(1));
+        }
+
+        CERBLIB_DECL static auto isRange(bool is_escaping, CharT chr) -> bool
         {
             if (is_escaping) {
                 return false;
@@ -72,7 +93,7 @@ namespace cerb::lex::dot_item
             return chr == '-';
         }
 
-        constexpr static auto isUnionEnd(bool is_escaping, CharT chr) -> bool
+        CERBLIB_DECL static auto isUnionEnd(bool is_escaping, CharT chr) -> bool
         {
             return land(not is_escaping, chr == ']');
         }
@@ -112,24 +133,29 @@ namespace cerb::lex::dot_item
         constexpr static auto throwUnterminatedUnion(TextIterator &rule_iterator) -> void
         {
             using namespace string_view_literals;
+
             rule_iterator.throwException(
                 UnionException<CharT>(rule_iterator, "unterminated union item"_sv));
+            throw UnrecoverableError{ "unrecoverable error in Union" };
         }
 
         constexpr static auto throwUnterminatedRangeException(TextIterator &rule_iterator) -> void
         {
             using namespace string_view_literals;
+
             rule_iterator.throwException(
                 UnionException<CharT>(rule_iterator, "unterminated range"_sv));
+            throw UnrecoverableError{ "unrecoverable error in Union" };
         }
 
         constexpr static auto throwUnionBeginException(TextIterator &rule_iterator) -> void
         {
-            auto message = fmt::format<
-                CharT, "expected `[` at the beginning of union item declaration, got {}">(
-                rule_iterator.getCurrentChar());
+            auto message = fmt::
+                format<CharT, "expected `[` at the beginning of union item declaration, got {}">(
+                    rule_iterator.getCurrentChar());
 
             rule_iterator.throwException(UnionException<CharT>(rule_iterator, message));
+            throw UnrecoverableError{ "unrecoverable error in Union" };
         }
 
         TypedBitset<CharT> bitset{};
