@@ -3,6 +3,7 @@
 
 #include <cerberus/lex/typedefs.hpp>
 #include <cerberus/string_map.hpp>
+#include <cerberus/text/text_iterator.hpp>
 #include <vector>
 
 namespace cerb::lex
@@ -27,11 +28,50 @@ namespace cerb::lex
     template<CharacterLiteral CharT>
     struct AnalysisShared
     {
-        constexpr auto isTerminal() const -> void
-        {
+        using CommentTokens = text::module::CommentTokens<CharT>;
 
+        CERBLIB_DECL auto
+            isNextCharForScanning(const text::TextIterator<CharT> &text_iterator) const -> bool
+        {
+            auto text = text_iterator.getRemainingFuture(1);
+
+            return not(isComment(text) || isTerminal(text) || isStringOrChar(text));
         }
 
+        CERBLIB_DECL auto isTerminal(const StrView<CharT> &text) const -> bool
+        {
+            return terminals.matches(text).success;
+        }
+
+        CERBLIB_DECL auto isComment(const StrView<CharT> &text) const -> bool
+        {
+            return basicIsComment(text, comment_tokens.single_line) ||
+                   basicIsComment(text, comment_tokens.multiline_begin) ||
+                   basicIsComment(text, comment_tokens.multiline_end);
+        }
+
+    private:
+        CERBLIB_DECL auto
+            basicIsComment(const StrView<CharT> &text, const StrView<CharT> &comment) const -> bool
+        {
+            return not comment.empty() && text.substr(0, comment.size()) == comment;
+        }
+
+    public:
+        CERBLIB_DECL auto isStringOrChar(const StrView<CharT> &text) const -> bool
+        {
+            for (auto &str : strings_and_chars) {
+                auto substr = text.substr(0, str.str.size());
+
+                if (substr == str.str) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        CommentTokens comment_tokens{};
         std::vector<String<CharT>> strings_and_chars{};
         StringMap<CharT, size_t> terminals{};
     };

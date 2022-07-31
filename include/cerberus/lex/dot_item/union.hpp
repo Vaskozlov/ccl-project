@@ -14,24 +14,33 @@ namespace cerb::lex::dot_item
     {
     public:
         using Base = BasicItem<CharT>;
+        using Base::isNextCharNotForScanning;
+
         using typename Base::CommentTokens;
         using typename Base::ExceptionAccumulator;
         using typename Base::ScanStatus;
         using typename Base::TextIterator;
 
-        CERBLIB_DECL auto scan(TextIterator &text_iterator) const -> ScanStatus override
+        CERBLIB_DECL auto scan(const TextIterator &text_iterator) const
+            -> std::pair<bool, TextIterator> override
         {
             auto times = static_cast<size_t>(0);
+            auto local_iterator = text_iterator;
 
-            while (true) {
-                if (matching(text_iterator)) {
-                    ++times;
-                    text_iterator.nextRawChar();
-                    continue;
+            while (times <= Base::repetition.to) {
+                if (isNextCharNotForScanning(local_iterator)) {
+                    break;
                 }
 
-                return Base::repetition.inRange(times) ? ScanStatus::SUCCESS : ScanStatus::FAILURE;
+                if (bitset.at(local_iterator.futureRawChar(1))) {
+                    ++times;
+                    local_iterator.nextRawChar();
+                } else {
+                    break;
+                }
             }
+
+            return { Base::repetition.inRange(times), local_iterator };
         }
 
         CERBLIB_DECL auto get() const -> const TypedBitset<CharT> &
@@ -39,7 +48,8 @@ namespace cerb::lex::dot_item
             return bitset;
         }
 
-        constexpr explicit Union(TextIterator &rule_iterator_)
+        constexpr Union(TextIterator &rule_iterator_, AnalysisShared<CharT> &analysis_shared_)
+          : Base(analysis_shared_)
         {
             auto is_range = false;
             auto previous_chr = static_cast<CharT>(0);
@@ -150,9 +160,9 @@ namespace cerb::lex::dot_item
 
         constexpr static auto throwUnionBeginException(TextIterator &rule_iterator) -> void
         {
-            auto message = fmt::
-                format<CharT, "expected `[` at the beginning of union item declaration, got {}">(
-                    rule_iterator.getCurrentChar());
+            auto message = fmt::format<
+                CharT, "expected `[` at the beginning of union item declaration, got {}">(
+                rule_iterator.getCurrentChar());
 
             rule_iterator.throwException(UnionException<CharT>(rule_iterator, message));
             throw UnrecoverableError{ "unrecoverable error in Union" };

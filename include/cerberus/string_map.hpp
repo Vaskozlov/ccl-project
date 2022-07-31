@@ -47,7 +47,7 @@ namespace cerb
             map.emplace(string, value);
         }
 
-        [[nodiscard]] auto matches(const Str &string) const -> Result
+        [[nodiscard]] auto matches(const BasicStringView<CharT> &string) const -> Result
         {
             auto matching_str = getMatchingPart(string);
 
@@ -68,7 +68,7 @@ namespace cerb
         }
 
     private:
-        [[nodiscard]] auto getMatchingPart(const Str &string) const -> Str
+        [[nodiscard]] auto getMatchingPart(const BasicStringView<CharT> &string) const -> Str
         {
             auto index = static_cast<size_t>(0);
             auto matching_str = std::basic_string<CharT>{};
@@ -87,7 +87,8 @@ namespace cerb
             return matching_str;
         }
 
-        [[nodiscard]] auto reachable(const Str &string, size_t level) const -> bool
+        [[nodiscard]] auto reachable(const BasicStringView<CharT> &string, size_t level) const
+            -> bool
         {
             return land(level != string.size(), level != char_levels.size());
         }

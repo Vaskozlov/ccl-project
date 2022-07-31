@@ -16,35 +16,55 @@ namespace cerb::lex::dot_item
     {
     private:
         using Base = BasicItem<CharT>;
+
+        using Base::analysis_shared;
+        using Base::isNextCharNotForScanning;
+
         using typename Base::CommentTokens;
         using typename Base::ExceptionAccumulator;
         using typename Base::ScanStatus;
         using typename Base::TextIterator;
 
     public:
-        CERBLIB_DECL auto scan(TextIterator &text_iterator) const -> ScanStatus override
+        CERBLIB_DECL auto scan(const TextIterator &text_iterator) const
+            -> std::pair<bool, TextIterator> override
         {
             auto times = static_cast<size_t>(0);
+            auto local_iterator = text_iterator;
 
-
-            for (auto &item : items) {
-                auto local_iterator = text_iterator;
-
-                if (item->scan(text_iterator) == ScanStatus::FAILURE) {
-                    return ScanStatus::FAILURE;
-                }
-
-                text_iterator = local_iterator;
+            if (items.empty()) {
+                return { Base::repetition.inRange(times), local_iterator };
             }
 
-            return {};
+            while (times <= Base::repetition.to) {
+                auto loop_iterator = local_iterator;
+
+                if (isNextCharNotForScanning(local_iterator)) {
+                    break;
+                }
+
+                for (auto &item : items) {
+                    auto [success, iterator] = item->scan(loop_iterator);
+
+                    if (success) {
+                        loop_iterator = iterator;
+                    } else {
+                        return { Base::repetition.inRange(times), local_iterator };
+                    }
+                }
+
+                ++times;
+                local_iterator = loop_iterator;
+            }
+
+            return { Base::repetition.inRange(times), local_iterator };
         }
 
         constexpr explicit DotItem(
             const TextIterator &rule_iterator_,
             size_t id_,
             AnalysisShared<CharT> &analysis_shared_)
-          : analysis_shared(analysis_shared_), id(id_)
+          : Base(analysis_shared_), id(id_)
         {
             auto rule_iterator = rule_iterator_;
             parseRule(rule_iterator);
@@ -54,7 +74,7 @@ namespace cerb::lex::dot_item
             TextIterator &&rule_iterator_,
             size_t id_,
             AnalysisShared<CharT> &analysis_shared_)
-          : analysis_shared(analysis_shared_), id(id_)
+          : Base(analysis_shared_), id(id_)
         {
             parseRule(rule_iterator_);
         }
@@ -63,7 +83,7 @@ namespace cerb::lex::dot_item
             TextIterator &rule_iterator_,
             size_t id_,
             AnalysisShared<CharT> &analysis_shared_)
-          : analysis_shared(analysis_shared_), id(id_)
+          : Base(analysis_shared_), id(id_)
         {
             parseRule(rule_iterator_);
         }
@@ -75,11 +95,16 @@ namespace cerb::lex::dot_item
         {
             rule_iterator.skipCommentsAndLayout();
 
-            while (not isEoF(rule_iterator.nextRawChar())) {
+            while (moveToTheNextChar(rule_iterator)) {
                 auto chr = rule_iterator.getCurrentChar();
                 recognizeAction(chr, rule_iterator);
                 rule_iterator.skipCommentsAndLayout();
             }
+        }
+
+        CERBLIB_DECL static auto moveToTheNextChar(TextIterator &rule_iterator) -> bool
+        {
+            return not isEoF(rule_iterator.nextRawChar());
         }
 
         constexpr auto recognizeAction(CharT chr, TextIterator &rule_iterator) -> void
@@ -141,16 +166,16 @@ namespace cerb::lex::dot_item
             }
         }
 
-        CERBLIB_DECL static auto constructNewSequence(TextIterator &rule_iterator)
+        CERBLIB_DECL auto constructNewSequence(TextIterator &rule_iterator)
             -> std::unique_ptr<BasicItem<CharT>>
         {
-            return std::make_unique<Sequence<CharT>>(false, "\"", rule_iterator);
+            return std::make_unique<Sequence<CharT>>(false, "\"", rule_iterator, analysis_shared);
         }
 
-        CERBLIB_DECL static auto constructNewUnion(TextIterator &rule_iterator)
+        CERBLIB_DECL auto constructNewUnion(TextIterator &rule_iterator)
             -> std::unique_ptr<BasicItem<CharT>>
         {
-            return std::make_unique<Union<CharT>>(rule_iterator);
+            return std::make_unique<Union<CharT>>(rule_iterator, analysis_shared);
         }
 
         constexpr auto constructNewItem(TextIterator &rule_iterator) -> void
@@ -208,8 +233,10 @@ namespace cerb::lex::dot_item
             checkSize(
                 rule_iterator, 0, "dot item with terminal must be empty", "delete other items");
 
-            auto sequence = Sequence<CharT>(false, "\'", rule_iterator);
-            analysis_shared.terminals.addString(std::move(sequence.getRef()), 0);// ADD ID
+            auto sequence = Sequence<CharT>(false, "\'", rule_iterator, analysis_shared);
+            auto &terminals = analysis_shared.terminals;
+
+            terminals.addString(std::move(sequence.getRef()), id);
             stored_item = "terminal";
         }
 
@@ -312,7 +339,6 @@ namespace cerb::lex::dot_item
 
         boost::container::small_vector<std::unique_ptr<BasicItem<CharT>>, 4> items{};
         string_view stored_item{};
-        AnalysisShared<CharT> &analysis_shared;
         size_t id{};
     };
 }// namespace cerb::lex::dot_item

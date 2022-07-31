@@ -18,9 +18,9 @@ namespace cerb::lex
         constexpr auto yield(TextIterator &text_iterator) const -> void
         {
             for (auto &item : items) {
-                auto local_iterator = text_iterator;
-                auto result = item.scan(local_iterator);
-                ::fmt::print("{}\n", static_cast<bool>(result));
+                text_iterator.skipCommentsAndLayout();
+                auto result = item.scan(text_iterator);
+                ::fmt::print("{}\n{}\n", result.first, result.second.getRemainingFuture(1));
             }
         }
 

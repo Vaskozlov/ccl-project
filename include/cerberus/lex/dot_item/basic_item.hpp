@@ -5,6 +5,7 @@
 #include <cerberus/lex/dot_item/repetition.hpp>
 #include <cerberus/lex/typedefs.hpp>
 #include <cerberus/text/text_iterator.hpp>
+#include <expected>
 
 namespace cerb::lex::dot_item
 {
@@ -43,23 +44,48 @@ namespace cerb::lex::dot_item
             repetition = new_repetition;
         }
 
-        CERBLIB_DECL auto
-            isNextCharForScanning(TextIterator &text_iterator, AnalysisShared<CharT> &shared) const
-            -> bool
+        CERBLIB_DECL auto isNextCharNotForScanning(const TextIterator &text_iterator) const -> bool
         {
-            auto chr = text_iterator.futureRawChar();
+            auto chr = text_iterator.futureRawChar(1);
 
             if (lor(isLayout(chr), isEoF(chr))) {
-                return false;
+                return true;
             }
 
-            auto text = text_iterator.getRemainingFuture(1);
+            return not analysis_shared.isNextCharForScanning(text_iterator);
         }
 
-        CERBLIB_DECL virtual auto scan(TextIterator &text_iterator) const -> ScanStatus = 0;
+        CERBLIB_DECL virtual auto scan(const TextIterator &text_iterator) const
+            -> std::pair<bool, TextIterator> = 0;
+
+        CERBLIB_DECL auto scan2(const TextIterator &text_iterator) const
+            -> std::pair<bool, TextIterator>
+        {
+            auto local_iterator = text_iterator;
+            auto times = static_cast<size_t>(0);
+
+            while (times <= repetition.to) {
+                if (isNextCharNotForScanning(local_iterator)) {
+                    break;
+                }
+
+                if (auto [success, iterator] = scan(local_iterator); success) {
+                    ++times;
+                    local_iterator = iterator;
+                } else {
+                    break;
+                }
+            }
+
+            return { repetition.inRange(times), local_iterator };
+        }
 
         auto operator=(const BasicItem &) -> BasicItem & = default;
         auto operator=(BasicItem &&) noexcept -> BasicItem & = default;
+
+        constexpr explicit BasicItem(AnalysisShared<CharT> &analysis_shared_)
+          : analysis_shared{ analysis_shared_ }
+        {}
 
         BasicItem() = default;
         BasicItem(BasicItem &&) noexcept = default;
@@ -69,6 +95,7 @@ namespace cerb::lex::dot_item
 
     protected:
         Repetition repetition{ Repetition::basic() };
+        AnalysisShared<CharT> &analysis_shared;
         bool reversed{ false };
     };
 }// namespace cerb::lex::dot_item

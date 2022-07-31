@@ -14,30 +14,34 @@ namespace cerb::lex::dot_item
     {
     private:
         using Base = BasicItem<CharT>;
+        using Base::isNextCharNotForScanning;
+
         using typename Base::CommentTokens;
         using typename Base::ExceptionAccumulator;
         using typename Base::ScanStatus;
         using typename Base::TextIterator;
 
     public:
-        CERBLIB_DECL auto scan(TextIterator & /*text_iterator*/) const -> ScanStatus override
+        CERBLIB_DECL auto scan(const TextIterator &text_iterator) const
+            -> std::pair<bool, TextIterator> override
         {
-            /*
             auto times = static_cast<size_t>(0);
+            auto local_iterator = text_iterator;
 
-            while (true) {
-                auto local_iterator = text_iterator;
-
-                if (matching(local_iterator)) {
-                    ++times;
-                    text_iterator = local_iterator;
-                    continue;
+            while (times <= Base::repetition.to) {
+                if (isNextCharNotForScanning(local_iterator)) {
+                    break;
                 }
 
-                return Base::repetition.inRange(times) ? ScanStatus::SUCCESS : ScanStatus::FAILURE;
-            }*/
+                if (local_iterator.getRemainingFuture(1).substr(0, string.size()) == string) {
+                    ++times;
+                    local_iterator.rawSkip(string.size());
+                } else {
+                    break;
+                }
+            }
 
-            return {};
+            return { Base::repetition.inRange(times), local_iterator };
         }
 
         CERBLIB_DECL auto get() const -> const Str<CharT> &
@@ -50,8 +54,10 @@ namespace cerb::lex::dot_item
             return string;
         }
 
-        constexpr Sequence(bool multiline_, StrView<CharT> str_token_, TextIterator &rule_iterator_)
-          : str_token(str_token_), multiline(multiline_)
+        constexpr Sequence(
+            bool multiline_, StrView<CharT> str_token_, TextIterator &rule_iterator_,
+            AnalysisShared<CharT> &analysis_shared_)
+          : Base(analysis_shared_), str_token(str_token_), multiline(multiline_)
         {
             auto &rule_iterator = rule_iterator_;
             auto begin_iterator_state = rule_iterator;
