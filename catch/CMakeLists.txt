@@ -7,6 +7,7 @@ file(
 )
 
 set(i 0)
+set(first_target "")
 
 foreach (file ${LIBCERBERUS_CATCH})
 
@@ -19,10 +20,15 @@ foreach (file ${LIBCERBERUS_CATCH})
             ${file}
     )
 
-    if (PRECOMPILED_HEADERS)
+    if ((i EQUAL 0) AND (PRECOMPILED_HEADERS))
+        set(first_target ${filename}-${dir_name})
+
         target_precompile_headers(
                 ${filename}-${dir_name}
                 PUBLIC
+                <atomic>
+                <set> <thread>
+                <deque> <list>
                 <bitset> <map>
                 <string_view>
                 <cmath> <utility>
@@ -31,6 +37,14 @@ foreach (file ${LIBCERBERUS_CATCH})
                 <algorithm> <array>
                 <numeric> <fmt/format.h>
                 <boost/container/small_vector.hpp>
+        )
+    endif()
+
+    if ((i GREATER 0) AND PRECOMPILED_HEADERS)
+        target_precompile_headers(
+                ${filename}-${dir_name}
+                REUSE_FROM
+                ${first_target}
         )
     endif()
 
