@@ -19,7 +19,7 @@ namespace cerb::lex
         {
             for (auto &item : items) {
                 text_iterator.skipCommentsAndLayout();
-                auto result = item.scan(text_iterator);
+                auto result = item.scan(text_iterator, true);
                 ::fmt::print("{}\n{}\n", result.first, result.second.getRemainingFuture(1));
             }
         }

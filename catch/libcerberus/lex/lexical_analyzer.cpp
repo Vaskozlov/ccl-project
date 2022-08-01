@@ -7,8 +7,20 @@ using namespace cerb::text;
 // NOLINTNEXTLINE
 RUNTIME_TEST
 {
+    auto text = TextIterator<char>{ "test 123" };
+    auto analyzer = LexicalAnalyzer<char>{ { 0, R"("test")" } };
+
+    analyzer.yield(text);
+
+    return {};
+}
+();
+
+// NOLINTNEXTLINE
+RUNTIME_TEST
+{
     auto text = TextIterator<char>{ "abcd 131" };
-    auto analyzer = LexicalAnalyzer<char>{ { 0, R"([a-z]+)" } };
+    auto analyzer = LexicalAnalyzer<char>{ { 0, R"([a-z]+[0-9]*)" } };
 
     analyzer.yield(text);
 

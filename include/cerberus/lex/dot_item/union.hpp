@@ -21,28 +21,6 @@ namespace cerb::lex::dot_item
         using typename Base::ScanStatus;
         using typename Base::TextIterator;
 
-        CERBLIB_DECL auto scan(const TextIterator &text_iterator) const
-            -> std::pair<bool, TextIterator> override
-        {
-            auto times = static_cast<size_t>(0);
-            auto local_iterator = text_iterator;
-
-            while (times <= Base::repetition.to) {
-                if (isNextCharNotForScanning(local_iterator)) {
-                    break;
-                }
-
-                if (bitset.at(local_iterator.futureRawChar(1))) {
-                    ++times;
-                    local_iterator.nextRawChar();
-                } else {
-                    break;
-                }
-            }
-
-            return { Base::repetition.inRange(times), local_iterator };
-        }
-
         CERBLIB_DECL auto get() const -> const TypedBitset<CharT> &
         {
             return bitset;
@@ -59,7 +37,8 @@ namespace cerb::lex::dot_item
             checkUnionBegin(rule_iterator);
 
             while (true) {
-                auto [is_escaping, chr] = rule_iterator.nextRawCharWithEscapingSymbols();
+                auto [is_escaping, chr] =
+                    rule_iterator.nextRawCharWithEscapingSymbols({ { '[', '[' }, { ']', ']' } });
 
                 checkForUnexpectedEnd(begin_iterator_state, is_escaping, chr);
 
@@ -89,9 +68,9 @@ namespace cerb::lex::dot_item
         CERBLIB_DERIVED_CONSTRUCTORS(Union);
 
     private:
-        CERBLIB_DECL auto matching(const TextIterator &text_iterator) const -> bool
+        CERBLIB_DECL auto scanIteration(TextIterator &text_iterator) const -> bool override
         {
-            return bitset.at(text_iterator.futureRawChar(1));
+            return bitset.at(text_iterator.nextRawChar());
         }
 
         CERBLIB_DECL static auto isRange(bool is_escaping, CharT chr) -> bool

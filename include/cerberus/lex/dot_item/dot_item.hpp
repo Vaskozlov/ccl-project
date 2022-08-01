@@ -26,40 +26,6 @@ namespace cerb::lex::dot_item
         using typename Base::TextIterator;
 
     public:
-        CERBLIB_DECL auto scan(const TextIterator &text_iterator) const
-            -> std::pair<bool, TextIterator> override
-        {
-            auto times = static_cast<size_t>(0);
-            auto local_iterator = text_iterator;
-
-            if (items.empty()) {
-                return { Base::repetition.inRange(times), local_iterator };
-            }
-
-            while (times <= Base::repetition.to) {
-                auto loop_iterator = local_iterator;
-
-                if (isNextCharNotForScanning(local_iterator)) {
-                    break;
-                }
-
-                for (auto &item : items) {
-                    auto [success, iterator] = item->scan(loop_iterator);
-
-                    if (success) {
-                        loop_iterator = iterator;
-                    } else {
-                        return { Base::repetition.inRange(times), local_iterator };
-                    }
-                }
-
-                ++times;
-                local_iterator = loop_iterator;
-            }
-
-            return { Base::repetition.inRange(times), local_iterator };
-        }
-
         constexpr explicit DotItem(
             const TextIterator &rule_iterator_,
             size_t id_,
@@ -91,6 +57,19 @@ namespace cerb::lex::dot_item
         CERBLIB_DERIVED_CONSTRUCTORS(DotItem);
 
     private:
+        CERBLIB_DECL auto scanIteration(TextIterator &text_iterator) const -> bool override
+        {
+            for (auto &item : items) {
+                if (auto [success, iterator] = item->scan(text_iterator); success) {
+                    text_iterator = iterator;
+                } else {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         constexpr auto parseRule(TextIterator &rule_iterator) -> void
         {
             rule_iterator.skipCommentsAndLayout();

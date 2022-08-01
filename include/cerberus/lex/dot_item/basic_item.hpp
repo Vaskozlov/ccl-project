@@ -48,38 +48,45 @@ namespace cerb::lex::dot_item
         {
             auto chr = text_iterator.futureRawChar(1);
 
-            if (lor(isLayout(chr), isEoF(chr))) {
+            if (isLayoutOrEoF(chr)) {
                 return true;
             }
 
             return not analysis_shared.isNextCharForScanning(text_iterator);
         }
 
-        CERBLIB_DECL virtual auto scan(const TextIterator &text_iterator) const
-            -> std::pair<bool, TextIterator> = 0;
-
-        CERBLIB_DECL auto scan2(const TextIterator &text_iterator) const
+        CERBLIB_DECL auto scan(const TextIterator &text_iterator, bool main_scan = false) const
             -> std::pair<bool, TextIterator>
         {
-            auto local_iterator = text_iterator;
             auto times = static_cast<size_t>(0);
+            auto local_iterator = text_iterator;
 
             while (times <= repetition.to) {
-                if (isNextCharNotForScanning(local_iterator)) {
-                    break;
-                }
+                auto iterator_copy = local_iterator;
 
-                if (auto [success, iterator] = scan(local_iterator); success) {
+                if (scanIteration(iterator_copy)) {
                     ++times;
-                    local_iterator = iterator;
+                    local_iterator = std::move(iterator_copy);
                 } else {
                     break;
                 }
             }
 
-            return { repetition.inRange(times), local_iterator };
+            return { computeScanResult(local_iterator, times, main_scan), local_iterator };
         }
 
+    private:
+        CERBLIB_DECL virtual auto scanIteration(TextIterator &text_iterator) const -> bool = 0;
+
+        CERBLIB_DECL auto
+            computeScanResult(const TextIterator &text_iterator, size_t times, bool main_scan) const
+            -> bool
+        {
+            return repetition.inRange(times) &&
+                   (not main_scan || isNextCharNotForScanning(text_iterator));
+        }
+
+    public:
         auto operator=(const BasicItem &) -> BasicItem & = default;
         auto operator=(BasicItem &&) noexcept -> BasicItem & = default;
 

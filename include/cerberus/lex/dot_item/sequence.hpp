@@ -22,28 +22,6 @@ namespace cerb::lex::dot_item
         using typename Base::TextIterator;
 
     public:
-        CERBLIB_DECL auto scan(const TextIterator &text_iterator) const
-            -> std::pair<bool, TextIterator> override
-        {
-            auto times = static_cast<size_t>(0);
-            auto local_iterator = text_iterator;
-
-            while (times <= Base::repetition.to) {
-                if (isNextCharNotForScanning(local_iterator)) {
-                    break;
-                }
-
-                if (local_iterator.getRemainingFuture(1).substr(0, string.size()) == string) {
-                    ++times;
-                    local_iterator.rawSkip(string.size());
-                } else {
-                    break;
-                }
-            }
-
-            return { Base::repetition.inRange(times), local_iterator };
-        }
-
         CERBLIB_DECL auto get() const -> const Str<CharT> &
         {
             return string;
@@ -83,15 +61,16 @@ namespace cerb::lex::dot_item
         CERBLIB_DERIVED_CONSTRUCTORS(Sequence);
 
     private:
-        CERBLIB_DECL auto matching(TextIterator &text_iterator) const -> bool
+        CERBLIB_DECL auto scanIteration(TextIterator &text_iterator) const -> bool override
         {
-            for (size_t i = 0; i != string.size(); ++i) {
-                if (text_iterator.nextRawChar() != string[i]) {
-                    return false;
-                }
+            auto future_text = text_iterator.getRemainingFuture(1);
+
+            if (future_text.substr(0, string.size()) == string) {
+                text_iterator.rawSkip(string.size());
+                return true;
             }
 
-            return true;
+            return false;
         }
 
         CERBLIB_DECL auto isStringEnd(TextIterator &rule_iterator, bool is_escaping) const -> bool
