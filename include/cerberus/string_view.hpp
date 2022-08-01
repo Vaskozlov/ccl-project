@@ -124,12 +124,8 @@ namespace cerb
             auto passed_pairs = static_cast<size_t>(0);
 
             auto elem = std::ranges::find_if(*this, [&passed_pairs, open, close](CharT chr) {
-                if (chr == open) {
-                    ++passed_pairs;
-                } else if (chr == close) {
-                    --passed_pairs;
-                }
-
+                passed_pairs += (chr == open);
+                passed_pairs -= (chr == close);
                 return passed_pairs == 0;
             });
 
