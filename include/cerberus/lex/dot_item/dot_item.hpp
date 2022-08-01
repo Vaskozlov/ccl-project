@@ -26,6 +26,11 @@ namespace cerb::lex::dot_item
         using typename Base::TextIterator;
 
     public:
+        CERBLIB_DECL auto getId() const -> size_t
+        {
+            return id;
+        }
+
         constexpr explicit DotItem(
             const TextIterator &rule_iterator_,
             size_t id_,
@@ -74,14 +79,14 @@ namespace cerb::lex::dot_item
         {
             rule_iterator.skipCommentsAndLayout();
 
-            while (moveToTheNextChar(rule_iterator)) {
+            while (movedToTheNextChar(rule_iterator)) {
                 auto chr = rule_iterator.getCurrentChar();
                 recognizeAction(chr, rule_iterator);
                 rule_iterator.skipCommentsAndLayout();
             }
         }
 
-        CERBLIB_DECL static auto moveToTheNextChar(TextIterator &rule_iterator) -> bool
+        CERBLIB_DECL static auto movedToTheNextChar(TextIterator &rule_iterator) -> bool
         {
             return not isEoF(rule_iterator.nextRawChar());
         }
@@ -92,11 +97,11 @@ namespace cerb::lex::dot_item
 
             switch (chr) {
             case '[':
-                items.emplace_back(constructNewUnion(rule_iterator));
+                constructNewUnion(rule_iterator);
                 break;
 
             case '\"':
-                items.emplace_back(constructNewSequence(rule_iterator));
+                constructNewSequence(rule_iterator);
                 break;
 
             case '\'':
@@ -145,16 +150,15 @@ namespace cerb::lex::dot_item
             }
         }
 
-        CERBLIB_DECL auto constructNewSequence(TextIterator &rule_iterator)
-            -> std::unique_ptr<BasicItem<CharT>>
+        constexpr auto constructNewSequence(TextIterator &rule_iterator) -> void
         {
-            return std::make_unique<Sequence<CharT>>(false, "\"", rule_iterator, analysis_shared);
+            items.emplace_back(
+                std::make_unique<Sequence<CharT>>(false, "\"", rule_iterator, analysis_shared));
         }
 
-        CERBLIB_DECL auto constructNewUnion(TextIterator &rule_iterator)
-            -> std::unique_ptr<BasicItem<CharT>>
+        constexpr auto constructNewUnion(TextIterator &rule_iterator) -> void
         {
-            return std::make_unique<Union<CharT>>(rule_iterator, analysis_shared);
+            items.emplace_back(std::make_unique<Union<CharT>>(rule_iterator, analysis_shared));
         }
 
         constexpr auto constructNewItem(TextIterator &rule_iterator) -> void
