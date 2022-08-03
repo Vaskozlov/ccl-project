@@ -1,7 +1,7 @@
 option(USE_ADDRESS_SANITIZER "Use sanitizers" OFF)
 option(USE_LIBCPP "Use libc++ when compiling with clang" OFF)
-option(STRICT_COMPILATION "Enable -Werror strict compilation" OFF)
-option(PRECOMPILED_HEADERS "Use precompiled headers" OFF)
+option(STRICT_COMPILATION "Enable -Werror strict compilation" ON)
+option(PRECOMPILED_HEADERS "Use precompiled headers" ON)
 
 message(STATUS "CC " ${CMAKE_C_COMPILER})
 message(STATUS "CXX " ${CMAKE_CXX_COMPILER})

@@ -5,7 +5,6 @@
 #include <cerberus/lex/dot_item/repetition.hpp>
 #include <cerberus/lex/typedefs.hpp>
 #include <cerberus/text/text_iterator.hpp>
-#include <expected>
 
 namespace cerb::lex::dot_item
 {
@@ -34,9 +33,9 @@ namespace cerb::lex::dot_item
             return reversed;
         }
 
-        constexpr auto makeReverse() -> void
+        constexpr auto reverse() -> void
         {
-            reversed = true;
+            reversed = !reversed;
         }
 
         constexpr auto setRepetition(Repetition new_repetition) -> void
@@ -52,8 +51,10 @@ namespace cerb::lex::dot_item
                 return true;
             }
 
-            return not analysis_shared.isNextCharForScanning(text_iterator);
+            return analysis_shared.isNextCharNotForScanning(text_iterator);
         }
+
+        CERBLIB_DECL virtual auto empty() const -> bool = 0;
 
         CERBLIB_DECL auto scan(const TextIterator &text_iterator, bool main_scan = false) const
             -> std::pair<bool, TextIterator>
@@ -64,7 +65,7 @@ namespace cerb::lex::dot_item
             while (times <= repetition.to) {
                 auto iterator_copy = local_iterator;
 
-                if (scanIteration(iterator_copy)) {
+                if (scanIteration(iterator_copy) ^ reversed) {
                     ++times;
                     local_iterator = std::move(iterator_copy);
                 } else {

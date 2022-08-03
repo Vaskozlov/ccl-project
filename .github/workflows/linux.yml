@@ -46,7 +46,8 @@ jobs:
         run: |
           cmake ${{ matrix.config.cmake_params }} -G Ninja \
             -B ${{github.workspace}}/${{github.actor}}-${{ github.head_ref }}/${{ matrix.config.key }} \
-            -DCMAKE_BUILD_TYPE=Release -DSTRICT_COMPILATION=ON -DUSE_LIBCPP=OFF -DUSE_ADDRESS_SANITIZER=ON
+            -DCMAKE_BUILD_TYPE=Release -DSTRICT_COMPILATION=ON -DUSE_LIBCPP=OFF -DUSE_ADDRESS_SANITIZER=ON \
+            -DPRECOMPILED_HEADERS=ON
           
           cmake --build ${{github.workspace}}/${{github.actor}}-${{ github.head_ref }}/${{ matrix.config.key }} -j ${{ matrix.config.threads_count }}
 
