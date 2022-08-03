@@ -15,11 +15,13 @@ jobs:
             key: linux-gcc-amd64
             os: [ self-hosted, linux, X64 ]
             cmake_params: ''
+            threads_count: 1
 
           - name: Linux arm64 gcc
             key: linux-gcc-arm64
             os: [ self-hosted, linux, ARM64 ]
             cmake_params: ''
+            threads_count: 4
 
     name: CMake (${{ matrix.config.name }})
     runs-on: ${{ matrix.config.os }}
@@ -44,12 +46,13 @@ jobs:
         run: |
           cmake ${{ matrix.config.cmake_params }} -G Ninja \
             -B ${{github.workspace}}/${{github.actor}}-${{ github.head_ref }}/${{ matrix.config.key }} \
-            -DCMAKE_BUILD_TYPE=Release -DSTRICT_COMPILATION=ON -DUSE_LIBCPP=OFF -DUSE_ADDRESS_SANITIZER=ON
+            -DCMAKE_BUILD_TYPE=Release -DSTRICT_COMPILATION=ON -DUSE_LIBCPP=OFF -DUSE_ADDRESS_SANITIZER=ON \
+            -DPRECOMPILED_HEADERS=ON
           
-          cmake --build ${{github.workspace}}/${{github.actor}}-${{ github.head_ref }}/${{ matrix.config.key }}
+          cmake --build ${{github.workspace}}/${{github.actor}}-${{ github.head_ref }}/${{ matrix.config.key }} -j ${{ matrix.config.threads_count }}
 
       - name: Test
         run: |
           cd ${{github.workspace}}/${{github.actor}}-${{ github.head_ref }}/${{ matrix.config.key }}
-          ctest
+          ctest -j ${{ matrix.config.threads_count }}
           cd ..

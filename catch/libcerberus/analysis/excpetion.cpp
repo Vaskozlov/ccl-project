@@ -1,10 +1,8 @@
 #include <cerberus/analysis/exception_accumulator.hpp>
-#include <cerberus/debug/debug.hpp>
+#include <cerberus/debug/debug_file.hpp>
 
 using namespace cerb;
-using namespace cerb::debug;
 using namespace cerb::analysis;
-using namespace cerb::integral_literals;
 
 RUNTIME_TEST
 {

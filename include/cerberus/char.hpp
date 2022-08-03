@@ -19,44 +19,42 @@ namespace cerb
         std::array<CharT, 16>{ '0', '1', '2', '3', '4', '5', '6', '7',
                                '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 
-    template<CharacterLiteral CharT>
-    CERBLIB_DECL auto isEoF(CharT chr) -> bool
+    CERBLIB_DECL auto isEoF(CharacterLiteral auto chr) -> bool
     {
-        return chr == static_cast<CharT>(0);
+        return chr == '\0';
     }
 
-    template<CharacterLiteral CharT>
-    CERBLIB_DECL auto isLayout(CharT chr) -> bool
+    CERBLIB_DECL auto isLayout(CharacterLiteral auto chr) -> bool
     {
-        return land(chr > static_cast<CharT>(0), chr <= ' ');
+        return land(chr > '\0', chr <= ' ');
     }
 
-    template<CharacterLiteral CharT>
-    CERBLIB_DECL auto isDigit(CharT chr) -> bool
+    CERBLIB_DECL auto isLayoutOrEoF(CharacterLiteral auto chr) -> bool
+    {
+        return land(chr >= '\0', chr <= ' ');
+    }
+
+    CERBLIB_DECL auto isDigit(CharacterLiteral auto chr) -> bool
     {
         return land(chr >= '0', chr <= '9');
     }
 
-    template<CharacterLiteral CharT>
-    CERBLIB_DECL auto isUcLetter(CharT chr) -> bool
+    CERBLIB_DECL auto isUcLetter(CharacterLiteral auto chr) -> bool
     {
         return land(chr >= 'A', chr <= 'Z');
     }
 
-    template<CharacterLiteral CharT>
-    CERBLIB_DECL auto isLcLetter(CharT chr) -> bool
+    CERBLIB_DECL auto isLcLetter(CharacterLiteral auto chr) -> bool
     {
         return land(chr >= 'a', chr <= 'z');
     }
 
-    template<CharacterLiteral CharT>
-    CERBLIB_DECL auto isLetter(CharT chr) -> bool
+    CERBLIB_DECL auto isLetter(CharacterLiteral auto chr) -> bool
     {
         return lor(isUcLetter(chr), isLcLetter(chr));
     }
 
-    template<CharacterLiteral CharT>
-    CERBLIB_DECL auto isLetterOrDigit(CharT chr) -> bool
+    CERBLIB_DECL auto isLetterOrDigit(CharacterLiteral auto chr) -> bool
     {
         return lor(isLetter(chr), isDigit(chr));
     }

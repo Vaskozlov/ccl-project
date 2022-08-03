@@ -1,8 +1,7 @@
-#include <cerberus/debug/debug.hpp>
+#include <cerberus/debug/debug_file.hpp>
 #include <cerberus/format/format.hpp>
 
 using namespace cerb::fmt;
-using namespace cerb::debug;
 using namespace std::string_literals;
 using namespace std::string_view_literals;
 

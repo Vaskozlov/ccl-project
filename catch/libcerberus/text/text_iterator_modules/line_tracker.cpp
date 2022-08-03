@@ -1,11 +1,9 @@
-#include <cerberus/debug/debug.hpp>
+#include <cerberus/debug/debug_file.hpp>
 #include <cerberus/text/text_iterator_modules/line_tracker.hpp>
 
 using namespace cerb;
 using namespace cerb::text;
-using namespace cerb::debug;
 using namespace cerb::text::module;
-using namespace cerb::integral_literals;
 using namespace cerb::string_view_literals;
 
 constexpr static auto Input = "Hello, World!\nIt's a \nTest!\nOf line tracker\n "_sv;

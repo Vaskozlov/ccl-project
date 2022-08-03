@@ -1,10 +1,8 @@
-#include <cerberus/debug/debug.hpp>
+#include <cerberus/debug/debug_file.hpp>
 #include <cerberus/format/core/string_splitter.hpp>
 
 using namespace cerb;
-using namespace cerb::debug;
 using namespace cerb::fmt::core;
-using namespace cerb::integral_literals;
 using namespace cerb::string_view_literals;
 
 template<ConstString String, CharacterLiteral CharT>

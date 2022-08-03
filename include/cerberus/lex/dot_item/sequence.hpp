@@ -7,15 +7,18 @@
 namespace cerb::lex::dot_item
 {
     template<CharacterLiteral CharT>
-    CERBLIB_EXCEPTION(StringException, text::TextIteratorException<CharT>);
+    CERBLIB_EXCEPTION(SequenceException, text::TextIteratorException<CharT>);
 
     template<CharacterLiteral CharT>
-    class String : public BasicItem<CharT>
+    class Sequence : public BasicItem<CharT>
     {
     private:
         using Base = BasicItem<CharT>;
+        using Base::isNextCharNotForScanning;
+
         using typename Base::CommentTokens;
         using typename Base::ExceptionAccumulator;
+        using typename Base::ScanStatus;
         using typename Base::TextIterator;
 
     public:
@@ -24,12 +27,20 @@ namespace cerb::lex::dot_item
             return string;
         }
 
-        constexpr explicit String(
-            bool multiline_,
-            StrView<CharT>
-                str_token_,
-            TextIterator &rule_iterator_)
-          : str_token(str_token_), multiline(multiline_)
+        CERBLIB_DECL auto getRef() -> Str<CharT> &
+        {
+            return string;
+        }
+
+        CERBLIB_DECL auto empty() const -> bool override
+        {
+            return string.empty();
+        }
+
+        constexpr Sequence(
+            bool multiline_, StrView<CharT> str_token_, TextIterator &rule_iterator_,
+            AnalysisShared<CharT> &analysis_shared_)
+          : Base(analysis_shared_), str_token(str_token_), multiline(multiline_)
         {
             auto &rule_iterator = rule_iterator_;
             auto begin_iterator_state = rule_iterator;
@@ -48,12 +59,26 @@ namespace cerb::lex::dot_item
 
                 string.push_back(chr);
             }
+
+            addWarningIfEmpty(rule_iterator);
         }
 
-        ~String() = default;
+        CERBLIB_DERIVED_CONSTRUCTORS(Sequence);
 
     private:
-        constexpr auto isStringEnd(TextIterator &rule_iterator, bool is_escaping) const -> bool
+        CERBLIB_DECL auto scanIteration(TextIterator &text_iterator) const -> bool override
+        {
+            auto future_text = text_iterator.getRemainingFuture(1);
+
+            if (future_text.substr(0, string.size()) == string) {
+                text_iterator.rawSkip(string.size());
+                return true;
+            }
+
+            return false;
+        }
+
+        CERBLIB_DECL auto isStringEnd(TextIterator &rule_iterator, bool is_escaping) const -> bool
         {
             if (is_escaping) {
                 return false;
@@ -67,18 +92,18 @@ namespace cerb::lex::dot_item
             checkForUnexpectedEnd(TextIterator &rule_iterator, bool is_escaping, CharT chr) const
             -> void
         {
-            using namespace std::string_literals;
+            using namespace cerb::string_view_literals;
 
             if (is_escaping) {
                 return;
             }
 
             if (isEoF(chr)) {
-                throwUnterminatedString(rule_iterator, "unterminated string literal");
+                throwUnterminatedString(rule_iterator, "unterminated string item");
             }
 
             if (land(chr == '\n', not multiline)) {
-                auto message = "New line reached, but string literal has not been terminated"s;
+                auto message = "New line reached, but string literal has not been terminated"_sv;
                 auto suggestion =
                     fmt::format<"use multiline option or close string literal with {}">(str_token);
 
@@ -96,7 +121,7 @@ namespace cerb::lex::dot_item
             auto text = rule_iterator.getRemaining();
 
             if (str_token.empty()) {
-                throwEmptyStringBegin();
+                throwEmptyStringBegin(rule_iterator);
             }
 
             if (text.substr(0, str_token.size()) != str_token) {
@@ -104,9 +129,24 @@ namespace cerb::lex::dot_item
             }
         }
 
-        constexpr static auto throwEmptyStringBegin() -> void
+        constexpr auto addWarningIfEmpty(TextIterator &rule_iterator) -> void
         {
-            throw LogicError("string literal begin can not be empty");
+            using namespace string_view_literals;
+
+            if (string.empty()) {
+                auto error =
+                    SequenceException<CharT>(rule_iterator, "empty string should not be used"_sv);
+                rule_iterator.throwWarning(std::move(error));
+            }
+        }
+
+        constexpr static auto throwEmptyStringBegin(TextIterator &rule_iterator) -> void
+        {
+            using namespace std::string_view_literals;
+
+            rule_iterator.throwException(
+                SequenceException<CharT>{ rule_iterator, "sequence item begin cannot be empty" });
+            throw UnrecoverableError{ "unreachable error in Sequence" };
         }
 
         constexpr static auto throwUnterminatedString(
@@ -114,15 +154,17 @@ namespace cerb::lex::dot_item
             string_view message,
             string_view suggestion = {}) -> void
         {
-            auto error = StringException<CharT>(rule_iterator, message, suggestion);
-            rule_iterator.throwException(std::move(error));
+            rule_iterator.throwException(
+                SequenceException<CharT>{ rule_iterator, message, suggestion });
+            throw UnrecoverableError{ "unreachable error in Sequence" };
         }
 
         constexpr auto throwStringBeginException(TextIterator &rule_iterator) const -> void
         {
-            auto error = StringException<CharT>(
-                rule_iterator, fmt::format<CharT, "string literal must begin with {}">(str_token));
-            rule_iterator.throwException(std::move(error));
+            auto message = fmt::format<CharT, "string literal must begin with {}">(str_token);
+
+            rule_iterator.throwException(SequenceException<CharT>{ rule_iterator, message });
+            throw UnrecoverableError{ "unreachable error in Sequence" };
         }
 
         StrView<CharT> str_token{};

@@ -40,14 +40,31 @@ namespace cerb::fmt
         private:
             constexpr auto convertNumber() -> void
             {
-                if (number == 0) {
-                    formatting_string.push_back('0');
+                if constexpr (CharacterLiteral<Int>) {
+                    convertChar();
                     return;
-                }
+                } else {
+                    if (number == 0) {
+                        formatting_string.push_back('0');
+                        return;
+                    }
 
-                processSign();
-                fillBuffer();
-                copyBuffer();
+                    processSign();
+                    fillBuffer();
+                    copyBuffer();
+                }
+            }
+
+            constexpr auto convertChar() -> void
+            {
+                constexpr auto upper_limit = std::numeric_limits<CharT>::max();
+                constexpr auto lower_limit = std::numeric_limits<CharT>::min();
+
+                if (number >= lower_limit && number <= upper_limit) {
+                    formatting_string.push_back(static_cast<CharT>(number));
+                } else {
+                    formatting_string.push_back('?');
+                }
             }
 
             constexpr auto processSign() -> void

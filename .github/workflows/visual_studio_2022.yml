@@ -75,7 +75,7 @@ jobs:
           cmake -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake \
           -DBoost_INCLUDE_DIR=${{ matrix.config.boost-path }}/boost/boost/include \
           -DCMAKE_BUILD_TYPE=Release -DUSE_ADDRESS_SANITIZER=OFF \
-          -LH -G 'Visual Studio 17 2022' -A x64 -S ../..
+          -LH -G 'Visual Studio 17 2022' -A x64 -S ../.. -DPRECOMPILED_HEADERS=ON
         env:
           BOOST_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}
 
@@ -87,4 +87,4 @@ jobs:
       - name: Tests
         working-directory: ${{github.workspace}}/${{github.actor}}-${{ github.head_ref }}/${{ matrix.config.key }}
         shell: bash
-        run: ctest
+        run: ctest -j 2

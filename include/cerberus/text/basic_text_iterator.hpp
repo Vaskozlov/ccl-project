@@ -19,6 +19,11 @@ namespace cerb::text
             return carriage;
         }
 
+        CERBLIB_DECL auto getEnd() const -> iterator
+        {
+            return end;
+        }
+
         CERBLIB_DECL auto getRemaining() const -> StrView<CharT>
         {
             return { carriage, end };
@@ -42,6 +47,15 @@ namespace cerb::text
             }
 
             return *carriage;
+        }
+
+        constexpr auto setEnd(iterator new_end) -> void
+        {
+            if (new_end < carriage) {
+                throw LogicError("end can't be before carriage");
+            }
+
+            end = new_end;
         }
 
         constexpr auto rawSkip(size_t n) -> void

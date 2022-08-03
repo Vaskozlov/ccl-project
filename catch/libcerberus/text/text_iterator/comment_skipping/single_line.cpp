@@ -1,13 +1,12 @@
-#include <cerberus/debug/debug.hpp>
+#include <cerberus/debug/debug_file.hpp>
 #include <cerberus/text/text_iterator.hpp>
 
 using namespace cerb::text;
-using namespace cerb::debug;
 
 // NOLINTNEXTLINE
 STRING_TEST
 {
-    auto text_iterator = TextIterator<char>{ "//\nHi!", nullptr, { "//", "/*", "*/" } };
+    auto text_iterator = TextIterator<char>{ "//\nHi!", nullptr, { "//" } };
     text_iterator.skipCommentsAndLayout();
 
     assertEqual(text_iterator.getRemaining(), "\nHi!");
@@ -20,7 +19,7 @@ STRING_TEST
 // NOLINTNEXTLINE
 STRING_TEST
 {
-    auto text_iterator = TextIterator<char>{ "Hi! //", nullptr, { "//", "/*", "*/" } };
+    auto text_iterator = TextIterator<char>{ "Hi! //", nullptr, { "//" } };
     text_iterator.rawSkip(3);
     text_iterator.skipCommentsAndLayout();
 
@@ -34,7 +33,7 @@ STRING_TEST
 // NOLINTNEXTLINE
 STRING_TEST
 {
-    auto text_iterator = TextIterator<char>{ "Hi! //\nHello!", nullptr, { "//", "/*", "*/" } };
+    auto text_iterator = TextIterator<char>{ "Hi! //\nHello!", nullptr, { "//" } };
     text_iterator.rawSkip(3);
     text_iterator.skipCommentsAndLayout();
 
@@ -48,7 +47,7 @@ STRING_TEST
 // NOLINTNEXTLINE
 STRING_TEST
 {
-    auto text_iterator = TextIterator<char>{ "Hi! //\n //\nHello!", nullptr, { "//", "/*", "*/" } };
+    auto text_iterator = TextIterator<char>{ "Hi! //\n //\nHello!", nullptr, { "//" } };
     text_iterator.rawSkip(3);
     text_iterator.skipCommentsAndLayout();
 

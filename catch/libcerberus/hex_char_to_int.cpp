@@ -1,8 +1,7 @@
 #include <cerberus/char.hpp>
-#include <cerberus/debug/debug.hpp>
+#include <cerberus/debug/debug_file.hpp>
 
 using namespace cerb;
-using namespace integral_literals;
 
 template<CharacterLiteral CharT>
 static constexpr auto HCTI = HexadecimalCharsToInt<CharT>;

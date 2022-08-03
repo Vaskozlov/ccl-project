@@ -1,10 +1,8 @@
-#include <cerberus/debug/debug.hpp>
+#include <cerberus/debug/debug_file.hpp>
 #include <cerberus/flatmap.hpp>
 
 // NOLINTBEGIN
 
-using namespace cerb::debug;
-using namespace cerb::integral_literals;
 
 using Flatmap = cerb::Flatmap<int, int, 10>;
 template class cerb::Flatmap<int, int, 10>;

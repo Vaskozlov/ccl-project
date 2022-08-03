@@ -5,6 +5,8 @@
 
 namespace cerb::lex
 {
+    CERBLIB_EXCEPTION(UnrecoverableError, CerberusException);
+
     template<CharacterLiteral CharT>
     using Str = text::Str<CharT>;
 

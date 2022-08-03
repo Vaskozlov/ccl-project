@@ -13,6 +13,7 @@ namespace cerb
     {
     public:
         using Str = std::basic_string<CharT>;
+        using Map = std::map<Str, Value>;
         using CharLevel = TypedBitset<CharT>;
         using CharLevels = boost::container::small_vector<CharLevel, 4>;// NOLINT
 
@@ -29,6 +30,11 @@ namespace cerb
             Str repr{};
         };
 
+        [[nodiscard]] auto size() const -> size_t
+        {
+            return map.size();
+        }
+
         auto addString(Str &&string, Value value) -> void
         {
             mapStringToLevels(string);
@@ -41,7 +47,7 @@ namespace cerb
             map.emplace(string, value);
         }
 
-        [[nodiscard]] auto matches(const Str &string) const -> Result
+        [[nodiscard]] auto matches(const BasicStringView<CharT> &string) const -> Result
         {
             auto matching_str = getMatchingPart(string);
 
@@ -62,7 +68,7 @@ namespace cerb
         }
 
     private:
-        [[nodiscard]] auto getMatchingPart(const Str &string) const -> Str
+        [[nodiscard]] auto getMatchingPart(const BasicStringView<CharT> &string) const -> Str
         {
             auto index = static_cast<size_t>(0);
             auto matching_str = std::basic_string<CharT>{};
@@ -81,12 +87,13 @@ namespace cerb
             return matching_str;
         }
 
-        [[nodiscard]] auto reachable(const Str &string, size_t level) const -> bool
+        [[nodiscard]] auto reachable(const BasicStringView<CharT> &string, size_t level) const
+            -> bool
         {
             return land(level != string.size(), level != char_levels.size());
         }
 
-        auto mapStringToLevels(const Str &string) -> void
+        auto mapStringToLevels(const std::basic_string<CharT> &string) -> void
         {
             auto level = static_cast<size_t>(0);
             resizeLevels(string.size());
@@ -103,7 +110,7 @@ namespace cerb
             }
         }
 
-        std::map<Str, Value> map{};
+        Map map{};
         CharLevels char_levels = CharLevels(4);
     };
 }// namespace cerb

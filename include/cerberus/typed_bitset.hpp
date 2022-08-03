@@ -18,6 +18,15 @@ namespace cerb
             std::conditional_t<is_small_bitset, std::bitset<small_bitset_size>, std::vector<bool>>;
 
     public:
+        CERBLIB_DECL auto empty() const -> bool
+        {
+            if constexpr (is_small_bitset) {
+                return storage.none();
+            } else {
+                return std::ranges::find(storage, true) != storage.end();// MAYBE: optimize somehow
+            }
+        }
+
         CERBLIB_DECL auto capacity() const -> size_t
         {
             if constexpr (is_small_bitset) {
@@ -48,9 +57,9 @@ namespace cerb
             multiset(begin_index, end_index, value);
         }
 
-        CERBLIB_DECL auto at(T position) const -> bool
+        CERBLIB_DECL auto at(T value) const -> bool
         {
-            auto index = toIndex(position);
+            auto index = toIndex(value);
 
             if (index >= storage.size()) {
                 return false;

@@ -1,7 +1,6 @@
-#include <cerberus/debug/debug.hpp>
+#include <cerberus/debug/debug_file.hpp>
 #include <cerberus/text/location.hpp>
 
-using namespace cerb::debug;
 using Location = cerb::text::Location<char>;
 
 CONSTEXPR_TEST

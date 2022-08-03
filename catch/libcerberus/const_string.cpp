@@ -1,7 +1,6 @@
 #include <cerberus/const_string.hpp>
-#include <cerberus/debug/debug.hpp>
+#include <cerberus/debug/debug_file.hpp>
 
-using namespace cerb::debug;
 using namespace cerb::string_view_literals;
 
 template<cerb::ConstString String>

@@ -11,15 +11,15 @@ namespace cerb::fmt
     {
         template<CharacterLiteral CharT1, CharacterLiteral CharT2>
         constexpr auto dumpDifferentStrings(
-            std::basic_string<CharT2> &formatting_string,
-            const std::basic_string_view<CharT1> &string) -> void
+            std::basic_string<CharT1> &formatting_string,
+            const std::basic_string_view<CharT2> &string) -> void
         {
-            constexpr auto upper_limit = std::numeric_limits<CharT2>::max();
-            constexpr auto lower_limit = std::numeric_limits<CharT2>::min();
+            constexpr auto upper_limit = std::numeric_limits<CharT1>::max();
+            constexpr auto lower_limit = std::numeric_limits<CharT1>::min();
 
             for (auto &chr : string) {
                 if (chr >= lower_limit && chr <= upper_limit) {
-                    formatting_string.push_back(static_cast<CharT2>(chr));
+                    formatting_string.push_back(static_cast<CharT1>(chr));
                 } else {
                     formatting_string.push_back('?');
                 }

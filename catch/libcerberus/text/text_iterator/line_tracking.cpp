@@ -1,8 +1,7 @@
-#include <cerberus/debug/debug.hpp>
+#include <cerberus/debug/debug_file.hpp>
 #include <cerberus/text/text_iterator.hpp>
 
 using namespace cerb::text;
-using namespace cerb::debug;
 using namespace cerb::string_view_literals;
 
 // NOLINTNEXTLINE

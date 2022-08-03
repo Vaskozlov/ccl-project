@@ -1,7 +1,6 @@
-#include <cerberus/debug/debug.hpp>
+#include <cerberus/debug/debug_file.hpp>
 #include <cerberus/format/core/arguments_counter.hpp>
 
-using namespace cerb::debug;
 using namespace cerb::fmt::core;
 using namespace cerb::string_view_literals;
 

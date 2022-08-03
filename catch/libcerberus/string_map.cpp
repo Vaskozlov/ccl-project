@@ -1,7 +1,5 @@
-#include <cerberus/debug/debug.hpp>
+#include <cerberus/debug/debug_file.hpp>
 #include <cerberus/string_map.hpp>
-
-using namespace cerb::debug;
 
 // NOLINTNEXTLINE
 RUNTIME_TEST
