@@ -118,14 +118,17 @@ namespace cerb::lex::dot_item
                 break;
 
             case '\"':
+                ++counter.strings;
                 emplaceItem(constructNewSequence(rule_iterator));
                 break;
 
             case '(':
+                ++counter.dot_items;
                 emplaceItem(constructNewItem(rule_iterator));
                 break;
 
             case '\'':
+                ++counter.terminals;
                 constructTerminal(rule_iterator);
                 break;
 
@@ -149,15 +152,15 @@ namespace cerb::lex::dot_item
                 makeReverse(rule_iterator);
                 break;
 
-            case 'c':// chars
+            case 'c':
                 constructString(rule_iterator, true, false);
                 break;
 
-            case 's':// strings
+            case 's':
                 constructString(rule_iterator, false, false);
                 break;
 
-            case 'm':// multiline strings
+            case 'm':
                 constructString(rule_iterator, false, true);
                 break;
 
@@ -215,7 +218,7 @@ namespace cerb::lex::dot_item
                     rule_iterator,
                     "unable to apply char/string modifier, because there are not "
                     "any items or the last item is not a sequence",
-                    "create sequence");
+                    "create sequence or do not apply string modifier to other items");
             }
 
             checkSize(
@@ -237,13 +240,14 @@ namespace cerb::lex::dot_item
                 rule_iterator, 0, "dot item with terminal must be empty", "delete other items");
 
             auto &terminals = analysis_shared.terminals;
+            auto sequence = Sequence<CharT>{ false, "\'", rule_iterator, analysis_shared };
 
             terminals.addString(std::move(sequence.getRef()), id);
         }
 
         constexpr auto addRepetition(TextIterator &rule_iterator, Repetition new_repetition) -> void
         {
-            if (items.size() == 0) {
+            if (items.empty()) {
                 throwUnableToApply(
                     rule_iterator, "no item to apply repetition", "set repetition after item");
             }
@@ -252,7 +256,8 @@ namespace cerb::lex::dot_item
 
             if (last_item->getRepetition() != Repetition::basic()) {
                 throwUnableToApply(
-                    rule_iterator, "item already has repetition", "do not set repetition twice");
+                    rule_iterator, "item already has repetition",
+                    "do not set repetition more than once");
             }
 
             last_item->setRepetition(new_repetition);
@@ -260,7 +265,7 @@ namespace cerb::lex::dot_item
 
         constexpr auto makeReverse(TextIterator &rule_iterator) -> void
         {
-            if (items.size() == 0) {
+            if (items.empty()) {
                 throwUnableToApply(
                     rule_iterator, "no item to reverse", "create item before reversing it");
             }
@@ -320,7 +325,7 @@ namespace cerb::lex::dot_item
 
             constexpr auto message = "undefined action"_sv;
             constexpr auto suggestion =
-                R"(Use `"` for string, `'` for terminal symbol and `[` for unions")"_sv;
+                R"(Use `"` for string, `'` for terminal symbol, `[` for unions, `(` for dot items")"_sv;
 
             rule_iterator.throwException(
                 DotItemException<CharT>(rule_iterator, message, suggestion));

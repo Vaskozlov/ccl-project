@@ -134,9 +134,8 @@ namespace cerb::lex::dot_item
             using namespace string_view_literals;
 
             if (string.empty()) {
-                auto error =
-                    SequenceException<CharT>(rule_iterator, "empty string should not be used"_sv);
-                rule_iterator.throwWarning(std::move(error));
+                rule_iterator.throwWarning(SequenceException<CharT>{
+                    rule_iterator, "empty string should not be used"_sv });
             }
         }
 

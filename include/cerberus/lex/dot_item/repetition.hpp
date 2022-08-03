@@ -70,9 +70,10 @@ namespace cerb::lex::dot_item
 
                 if (isDigit(chr)) {
                     result = result * decimal_base + static_cast<size_t>(chr - '0');
-                } else {
-                    throwUnexpectedCharacter(text_iterator, chr);
+                    continue;
                 }
+
+                throwUnexpectedCharacter(text_iterator, chr);
             }
 
             return result;
