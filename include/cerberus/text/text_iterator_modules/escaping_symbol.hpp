@@ -1,6 +1,7 @@
 #ifndef CERBERUS_PROJECT_ESCAPING_SYMBOL_HPP
 #define CERBERUS_PROJECT_ESCAPING_SYMBOL_HPP
 
+#include <cerberus/pair.hpp>
 #include <cerberus/text/text_iterator_modules/notation_escaping_symbol.hpp>
 
 namespace cerb::text::module
@@ -12,7 +13,7 @@ namespace cerb::text::module
         using text_iterator_t = TextIterator<TextT, EscapingT>;
 
     public:
-        using extra_symbols_t = std::vector<std::pair<TextT, EscapingT>>;
+        using extra_symbols_t = std::basic_string<Pair<TextT, EscapingT>>;
 
         CERBLIB_DECL auto getExtraSymbols() const -> const extra_symbols_t &
         {
@@ -32,7 +33,7 @@ namespace cerb::text::module
         CERBLIB_DECL auto match() -> EscapingT
         {
             if (text_iterator.getCurrentChar() != '\\') {
-                throw LogicError("called EscapingSymbolizer::match() without preceding '\\'");
+                throw LogicError("called EscapingSymbolizer::match() without preceding `\\`");
             }
 
             auto chr = text_iterator.nextRawChar();
@@ -127,7 +128,7 @@ namespace cerb::text::module
     template<CharacterLiteral TextT, CharacterLiteral EscapingT>
     CERBLIB_DECL auto doEscapeSymbolizing(
         TextIterator<TextT, EscapingT> &text_iterator,
-        const std::vector<std::pair<TextT, EscapingT>> &extra_symbols_) -> EscapingT
+        const std::basic_string<Pair<TextT, EscapingT>> &extra_symbols_) -> EscapingT
     {
         auto symbolizer = EscapingSymbolizer<TextT, EscapingT>{ text_iterator, extra_symbols_ };
         return symbolizer.match();

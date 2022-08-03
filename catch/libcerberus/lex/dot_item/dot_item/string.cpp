@@ -24,12 +24,17 @@ RUNTIME_TEST
 RUNTIME_TEST
 {
     auto shared = AnalysisShared<char>{};
-    auto dot_item = DotItem<char>(TextIterator<char>{ R"("\"\""s)" }, 0, shared);
+    auto dot_item = DotItem<char>(TextIterator<char>{ R"("\"\""s "''"s)" }, 0, shared);
 
-    assertEqual(shared.strings_and_chars.size(), 1_ZU);
+    assertEqual(shared.strings_and_chars.size(), 2_ZU);
+
     assertEqual(shared.strings_and_chars[0].str, R"("")");
-    assertEqual(shared.strings_and_chars[0].is_multiline, false);
-    assertEqual(shared.strings_and_chars[0].is_character, false);
+    assertEqual(shared.strings_and_chars[1].str, R"('')");
+
+    for (auto &string : shared.strings_and_chars) {
+        assertEqual(string.is_multiline, false);
+        assertEqual(string.is_character, false);
+    }
 
     return {};
 }

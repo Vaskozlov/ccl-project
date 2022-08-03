@@ -21,13 +21,18 @@ namespace cerb::lex::dot_item
         using typename Base::ScanStatus;
         using typename Base::TextIterator;
 
+        CERBLIB_DECL auto empty() const -> bool override
+        {
+            return bitset.empty();
+        }
+
         CERBLIB_DECL auto get() const -> const TypedBitset<CharT> &
         {
             return bitset;
         }
 
         constexpr Union(TextIterator &rule_iterator_, AnalysisShared<CharT> &analysis_shared_)
-          : Base(analysis_shared_)
+          : Base{ analysis_shared_ }
         {
             auto is_range = false;
             auto previous_chr = static_cast<CharT>(0);
@@ -37,8 +42,8 @@ namespace cerb::lex::dot_item
             checkUnionBegin(rule_iterator);
 
             while (true) {
-                auto [is_escaping, chr] =
-                    rule_iterator.nextRawCharWithEscapingSymbols({ { '[', '[' }, { ']', ']' } });
+                auto [is_escaping, chr] = rule_iterator.nextRawCharWithEscapingSymbols(
+                    { { '[', '[' }, { ']', ']' }, { '-', '-' } });
 
                 checkForUnexpectedEnd(begin_iterator_state, is_escaping, chr);
 
@@ -62,7 +67,6 @@ namespace cerb::lex::dot_item
             }
 
             checkForClosedRange(rule_iterator, is_range);
-            addWarningIfEmpty(rule_iterator, previous_chr == 0);
         }
 
         CERBLIB_DERIVED_CONSTRUCTORS(Union);
@@ -106,16 +110,6 @@ namespace cerb::lex::dot_item
         {
             if (is_open) {
                 throwUnterminatedRangeException(rule_iterator);
-            }
-        }
-
-        constexpr static auto addWarningIfEmpty(TextIterator &rule_iterator, bool is_empty) -> void
-        {
-            using namespace string_view_literals;
-
-            if (is_empty) {
-                rule_iterator.throwWarning(
-                    UnionException<CharT>(rule_iterator, "empty union should not be used"_sv));
             }
         }
 

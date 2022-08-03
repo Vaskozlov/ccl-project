@@ -32,6 +32,11 @@ namespace cerb::lex::dot_item
             return string;
         }
 
+        CERBLIB_DECL auto empty() const -> bool override
+        {
+            return string.empty();
+        }
+
         constexpr Sequence(
             bool multiline_, StrView<CharT> str_token_, TextIterator &rule_iterator_,
             AnalysisShared<CharT> &analysis_shared_)
@@ -140,7 +145,7 @@ namespace cerb::lex::dot_item
             using namespace std::string_view_literals;
 
             rule_iterator.throwException(
-                SequenceException<CharT>{ rule_iterator, "sequence item begin can not be empty" });
+                SequenceException<CharT>{ rule_iterator, "sequence item begin cannot be empty" });
             throw UnrecoverableError{ "unreachable error in Sequence" };
         }
 

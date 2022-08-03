@@ -58,7 +58,7 @@ namespace cerb::text
         [[nodiscard("You will not be allowed to get this char from getCurrentChar")]]// new line
         constexpr auto
             nextRawCharWithEscapingSymbols(const ExtraSymbols &extra_symbols = {})
-                -> std::pair<bool, EscapingT>
+                -> Pair<bool, EscapingT>
         {
             auto chr = nextRawChar();
 
@@ -66,7 +66,7 @@ namespace cerb::text
                 return { true, module::doEscapeSymbolizing(*this, extra_symbols) };
             }
 
-            return { false, chr };
+            return { false, static_cast<EscapingT>(chr) };
         }
 
         constexpr auto nextRawChar() -> TextT override

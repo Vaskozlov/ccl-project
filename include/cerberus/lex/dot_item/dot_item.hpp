@@ -19,16 +19,31 @@ namespace cerb::lex::dot_item
 
         using Base::analysis_shared;
         using Base::isNextCharNotForScanning;
+        using Base::repetition;
 
         using typename Base::CommentTokens;
         using typename Base::ExceptionAccumulator;
         using typename Base::ScanStatus;
         using typename Base::TextIterator;
 
+        struct ItemsCounter
+        {
+            size_t strings{};
+            size_t unions{};
+            size_t sequences{};
+            size_t dot_items{};
+            size_t terminals{};
+        };
+
     public:
         CERBLIB_DECL auto getId() const -> size_t
         {
             return id;
+        }
+
+        CERBLIB_DECL auto empty() const -> bool override
+        {
+            return items.empty();
         }
 
         constexpr explicit DotItem(
@@ -66,7 +81,7 @@ namespace cerb::lex::dot_item
         {
             for (auto &item : items) {
                 if (auto [success, iterator] = item->scan(text_iterator); success) {
-                    text_iterator = iterator;
+                    text_iterator = std::move(iterator);
                 } else {
                     return false;
                 }
@@ -77,11 +92,12 @@ namespace cerb::lex::dot_item
 
         constexpr auto parseRule(TextIterator &rule_iterator) -> void
         {
+            auto counter = ItemsCounter{};
             rule_iterator.skipCommentsAndLayout();
 
             while (movedToTheNextChar(rule_iterator)) {
                 auto chr = rule_iterator.getCurrentChar();
-                recognizeAction(chr, rule_iterator);
+                recognizeAction(rule_iterator, chr, counter);
                 rule_iterator.skipCommentsAndLayout();
             }
         }
@@ -91,25 +107,25 @@ namespace cerb::lex::dot_item
             return not isEoF(rule_iterator.nextRawChar());
         }
 
-        constexpr auto recognizeAction(CharT chr, TextIterator &rule_iterator) -> void
+        constexpr auto
+            recognizeAction(TextIterator &rule_iterator, CharT chr, ItemsCounter &counter) -> void
         {
-            checkStoredItemExistence(rule_iterator);
-
             switch (chr) {
             case '[':
-                constructNewUnion(rule_iterator);
+                ++counter.unions;
+                emplaceItem(constructNewUnion(rule_iterator));
                 break;
 
             case '\"':
-                constructNewSequence(rule_iterator);
+                emplaceItem(constructNewSequence(rule_iterator));
+                break;
+
+            case '(':
+                emplaceItem(constructNewItem(rule_iterator));
                 break;
 
             case '\'':
                 constructTerminal(rule_iterator);
-                break;
-
-            case '(':
-                constructNewItem(rule_iterator);
                 break;
 
             case '*':
@@ -150,18 +166,20 @@ namespace cerb::lex::dot_item
             }
         }
 
-        constexpr auto constructNewSequence(TextIterator &rule_iterator) -> void
+        CERBLIB_DECL auto constructNewSequence(TextIterator &rule_iterator)
+            -> std::unique_ptr<BasicItem<CharT>>
         {
-            items.emplace_back(
-                std::make_unique<Sequence<CharT>>(false, "\"", rule_iterator, analysis_shared));
+            return std::make_unique<Sequence<CharT>>(false, "\"", rule_iterator, analysis_shared);
         }
 
-        constexpr auto constructNewUnion(TextIterator &rule_iterator) -> void
+        CERBLIB_DECL auto constructNewUnion(TextIterator &rule_iterator)
+            -> std::unique_ptr<BasicItem<CharT>>
         {
-            items.emplace_back(std::make_unique<Union<CharT>>(rule_iterator, analysis_shared));
+            return std::make_unique<Union<CharT>>(rule_iterator, analysis_shared);
         }
 
-        constexpr auto constructNewItem(TextIterator &rule_iterator) -> void
+        CERBLIB_DECL auto constructNewItem(TextIterator &rule_iterator)
+            -> std::unique_ptr<BasicItem<CharT>>
         {
             auto text = rule_iterator.getRemaining();
             auto saved_end = text.end();
@@ -177,11 +195,13 @@ namespace cerb::lex::dot_item
                 std::make_unique<DotItem<CharT>>(rule_iterator, id, analysis_shared);
             rule_iterator.setEnd(saved_end);
 
-            auto need_to_emplace = new_dot_item->items.size() != 0 ||
-                                   new_dot_item->getRepetition() != Repetition::basic();
+            return new_dot_item;
+        }
 
-            if (need_to_emplace) {
-                items.emplace_back(std::move(new_dot_item));
+        constexpr auto emplaceItem(std::unique_ptr<BasicItem<CharT>> item) -> void
+        {
+            if (not item->empty() || item->getRepetition().from != 0) {
+                items.emplace_back(std::move(item));
             }
         }
 
@@ -207,7 +227,6 @@ namespace cerb::lex::dot_item
             strings_and_chars.emplace_back(
                 std::move(sequence->getRef()), 0, is_character, is_multiline);
 
-            stored_item = is_character ? "character" : "string";
             items.pop_back();
         }
 
@@ -220,7 +239,6 @@ namespace cerb::lex::dot_item
             auto &terminals = analysis_shared.terminals;
 
             terminals.addString(std::move(sequence.getRef()), id);
-            stored_item = "terminal";
         }
 
         constexpr auto addRepetition(TextIterator &rule_iterator, Repetition new_repetition) -> void
@@ -254,7 +272,7 @@ namespace cerb::lex::dot_item
                     rule_iterator, "item is already reversed", "do not set reverse for item twice");
             }
 
-            last_item->makeReverse();
+            last_item->reverse();
         }
 
         constexpr auto checkSize(
@@ -263,17 +281,6 @@ namespace cerb::lex::dot_item
         {
             if (items.size() != expected_size) {
                 throwUnexpectedSize(rule_iterator, message, suggestion);
-            }
-        }
-
-        constexpr auto checkStoredItemExistence(TextIterator &rule_iterator) const -> void
-        {
-            if (not stored_item.empty()) {
-                throwUnableToApply(
-                    rule_iterator,
-                    fmt::format<"dot item, which contains {} can not "
-                                "hold anything else">(stored_item),
-                    "remove other items");
             }
         }
 
@@ -321,7 +328,6 @@ namespace cerb::lex::dot_item
         }
 
         boost::container::small_vector<std::unique_ptr<BasicItem<CharT>>, 4> items{};
-        string_view stored_item{};
         size_t id{};
     };
 }// namespace cerb::lex::dot_item

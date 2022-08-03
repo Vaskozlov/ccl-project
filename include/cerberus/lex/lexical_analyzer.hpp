@@ -10,23 +10,26 @@ namespace cerb::lex
     template<CharacterLiteral CharT>
     class LexicalAnalyzer
     {
-        using TextIterator = typename dot_item::BasicItem<CharT>::TextIterator;
-        using CommentTokens = typename dot_item::BasicItem<CharT>::CommentTokens;
-        using ExceptionAccumulator = typename dot_item::BasicItem<CharT>::ExceptionAccumulator;
+        using DotItem = dot_item::DotItem<CharT>;
+        using BasicItem = dot_item::BasicItem<CharT>;
+        using TextIterator = typename BasicItem::TextIterator;
+        using CommentTokens = typename BasicItem::CommentTokens;
+        using ExceptionAccumulator = typename BasicItem::ExceptionAccumulator;
 
     public:
         constexpr auto yield(TextIterator &text_iterator) const -> void
         {
             for (auto &item : items) {
                 text_iterator.skipCommentsAndLayout();
-                auto result = item.scan(text_iterator, true);
-                ::fmt::print("{}\n{}\n", result.first, result.second.getRemainingFuture(1));
+
+                auto [success, iterator] = item.scan(text_iterator, true);
+                ::fmt::print("{}\n{}\n", success, iterator.getRemainingFuture(1));
             }
         }
 
         constexpr LexicalAnalyzer(
             const std::initializer_list<std::pair<size_t, StrView<CharT>>> &rules_,
-            CommentTokens comment_tokens_ = { "#", {}, {} }, string_view filename = {})
+            CommentTokens comment_tokens_ = { "#" }, string_view filename = {})
         {
             for (auto [id, rule] : rules_) {
                 errors += createDotItem(rule, id, comment_tokens_, filename);
@@ -43,8 +46,7 @@ namespace cerb::lex
             return 0;
         }
 
-
-        std::deque<dot_item::DotItem<CharT>> items{};
+        std::deque<DotItem> items{};
         AnalysisShared<CharT> shared{};
         ExceptionAccumulator exception_accumulator{};
         size_t errors{};

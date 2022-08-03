@@ -31,11 +31,11 @@ namespace cerb::lex
         using CommentTokens = text::module::CommentTokens<CharT>;
 
         CERBLIB_DECL auto
-            isNextCharForScanning(const text::TextIterator<CharT> &text_iterator) const -> bool
+            isNextCharNotForScanning(const text::TextIterator<CharT> &text_iterator) const -> bool
         {
             auto text = text_iterator.getRemainingFuture(1);
 
-            return not(isComment(text) || isTerminal(text) || isStringOrChar(text));
+            return isComment(text) || isTerminal(text) || isStringOrChar(text);
         }
 
         CERBLIB_DECL auto isTerminal(const StrView<CharT> &text) const -> bool
