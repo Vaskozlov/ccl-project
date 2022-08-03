@@ -54,7 +54,12 @@ namespace cerb::lex::dot_item
             return analysis_shared.isNextCharNotForScanning(text_iterator);
         }
 
-        CERBLIB_DECL virtual auto empty() const -> bool = 0;
+        CERBLIB_DECL auto canBeOptimized() const -> bool
+        {
+            return empty() && repetition.from == 0;
+        }
+
+        CERBLIB_DECL virtual auto empty() const noexcept -> bool = 0;
 
         CERBLIB_DECL auto scan(const TextIterator &text_iterator, bool main_scan = false) const
             -> std::pair<bool, TextIterator>
