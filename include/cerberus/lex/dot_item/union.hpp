@@ -21,7 +21,7 @@ namespace cerb::lex::dot_item
         using typename Base::ScanStatus;
         using typename Base::TextIterator;
 
-        CERBLIB_DECL auto empty() const -> bool override
+        CERBLIB_DECL auto empty() const noexcept -> bool override
         {
             return bitset.empty();
         }

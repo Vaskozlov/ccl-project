@@ -18,6 +18,7 @@ namespace cerb::lex::dot_item
         using Base = BasicItem<CharT>;
 
         using Base::analysis_shared;
+        using Base::canBeOptimized;
         using Base::isNextCharNotForScanning;
         using Base::repetition;
 
@@ -41,7 +42,7 @@ namespace cerb::lex::dot_item
             return id;
         }
 
-        CERBLIB_DECL auto empty() const -> bool override
+        CERBLIB_DECL auto empty() const noexcept -> bool override
         {
             return items.empty();
         }
@@ -200,7 +201,7 @@ namespace cerb::lex::dot_item
 
         constexpr auto emplaceItem(std::unique_ptr<BasicItem<CharT>> item) -> void
         {
-            if (not item->empty() || item->getRepetition().from != 0) {
+            if (not canBeOptimized()) {
                 items.emplace_back(std::move(item));
             }
         }
@@ -235,7 +236,6 @@ namespace cerb::lex::dot_item
             checkSize(
                 rule_iterator, 0, "dot item with terminal must be empty", "delete other items");
 
-            auto sequence = Sequence<CharT>(false, "\'", rule_iterator, analysis_shared);
             auto &terminals = analysis_shared.terminals;
 
             terminals.addString(std::move(sequence.getRef()), id);

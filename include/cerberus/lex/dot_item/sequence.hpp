@@ -32,7 +32,7 @@ namespace cerb::lex::dot_item
             return string;
         }
 
-        CERBLIB_DECL auto empty() const -> bool override
+        CERBLIB_DECL auto empty() const noexcept -> bool override
         {
             return string.empty();
         }
