@@ -7,7 +7,6 @@
 
 namespace cerb
 {
-    // MAYBE: use pmr for small bitsets
     template<std::integral T>
     class TypedBitset
     {
@@ -19,6 +18,15 @@ namespace cerb
             std::conditional_t<is_small_bitset, std::bitset<small_bitset_size>, std::vector<bool>>;
 
     public:
+        CERBLIB_DECL auto empty() const -> bool
+        {
+            if constexpr (is_small_bitset) {
+                return storage.none();
+            } else {
+                return std::ranges::find(storage, true) != storage.end();// MAYBE: optimize somehow
+            }
+        }
+
         CERBLIB_DECL auto capacity() const -> size_t
         {
             if constexpr (is_small_bitset) {
@@ -28,7 +36,7 @@ namespace cerb
             }
         }
 
-        auto set(T position, bool value) -> void
+        constexpr auto set(T position, bool value) -> void
         {
             auto index = toIndex(position);
             resize(index + 1);
@@ -40,7 +48,7 @@ namespace cerb
             }
         }
 
-        auto set(T from, T to, bool value) -> void
+        constexpr auto set(T from, T to, bool value) -> void
         {
             auto begin_index = toIndex(from);
             auto end_index = toIndex(to);
@@ -49,7 +57,7 @@ namespace cerb
             multiset(begin_index, end_index, value);
         }
 
-        [[nodiscard]] auto at(T value) const -> bool
+        CERBLIB_DECL auto at(T value) const -> bool
         {
             auto index = toIndex(value);
 
@@ -60,7 +68,7 @@ namespace cerb
             return storage[index];
         }
 
-        [[nodiscard]] auto operator[](T position) const -> bool
+        CERBLIB_DECL auto operator[](T position) const -> bool
         {
             return at(position);
         }
@@ -71,7 +79,7 @@ namespace cerb
         {}
 
     private:
-        auto multiset(size_t begin_index, size_t end_index, bool value) -> void
+        constexpr auto multiset(size_t begin_index, size_t end_index, bool value) -> void
         {
             for (size_t i = begin_index; i <= end_index; ++i) {
                 if constexpr (is_small_bitset) {
@@ -82,7 +90,7 @@ namespace cerb
             }
         }
 
-        auto resize(size_t size) -> void
+        constexpr auto resize(size_t size) -> void
         {
             if (size >= storage.size()) {
                 if constexpr (is_small_bitset) {
@@ -93,7 +101,7 @@ namespace cerb
             }
         }
 
-        static auto toIndex(T value) -> size_t
+        CERBLIB_DECL static auto toIndex(T value) -> size_t
         {
             if constexpr (std::unsigned_integral<T>) {
                 return static_cast<size_t>(value);
