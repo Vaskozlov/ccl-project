@@ -27,11 +27,11 @@ RUNTIME_TEST
 
     ERROR_EXPECTED(
         DotItem<char>(TextIterator<char>{ R"([] '+' )" }, 0, shared), TextIteratorException<char>,
-        "Error occurred at: , line: 1, column: 4. Error message: dot item with terminal must be "
-        "empty\n"
+        "Error occurred at: , line: 1, column: 4. Error message: unable to create terminal: "
+        "terminals cannot coexist with other items\n"
         "[] '+' \n"
         "   ^\n"
-        "Suggestion: delete other items");
+        "Suggestion: do not declare terminal or delete other items");
 
     return {};
 }
