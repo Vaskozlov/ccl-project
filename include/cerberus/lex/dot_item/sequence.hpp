@@ -145,7 +145,7 @@ namespace cerb::lex::dot_item
 
             rule_iterator.throwException(
                 SequenceException<CharT>{ rule_iterator, "sequence item begin cannot be empty" });
-            throw UnrecoverableError{ "unreachable error in Sequence" };
+            throw UnrecoverableError{ "unreachable error in SequenceType" };
         }
 
         constexpr static auto throwUnterminatedString(
@@ -155,7 +155,7 @@ namespace cerb::lex::dot_item
         {
             rule_iterator.throwException(
                 SequenceException<CharT>{ rule_iterator, message, suggestion });
-            throw UnrecoverableError{ "unreachable error in Sequence" };
+            throw UnrecoverableError{ "unreachable error in SequenceType" };
         }
 
         constexpr auto throwStringBeginException(TextIterator &rule_iterator) const -> void
@@ -163,7 +163,7 @@ namespace cerb::lex::dot_item
             auto message = fmt::format<CharT, "string literal must begin with {}">(str_token);
 
             rule_iterator.throwException(SequenceException<CharT>{ rule_iterator, message });
-            throw UnrecoverableError{ "unreachable error in Sequence" };
+            throw UnrecoverableError{ "unreachable error in SequenceType" };
         }
 
         StrView<CharT> str_token{};
