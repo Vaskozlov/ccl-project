@@ -5,6 +5,7 @@ using namespace cerb::lex;
 using namespace cerb::text;
 using namespace cerb::lex::dot_item;
 
+// NOLINTNEXTLINE
 auto shared = AnalysisShared<char>{};
 
 // NOLINTNEXTLINE
@@ -59,11 +60,13 @@ RUNTIME_TEST
     auto text_iterator = TextIterator<char>{ R"("Hello, World!)" };
     text_iterator.nextRawChar();
 
-    ERROR_EXPECTED(
-        Sequence<char>(false, "\"", text_iterator, shared), TextIteratorException<char>,
-        "Error occurred at: , line: 1, column: 1. Error message: unterminated string item\n"
-        "\"Hello, World!\n"
-        "^");
+    try {
+        UNUSED_DECL Sequence<char>(false, "\"", text_iterator, shared);
+        assertTrue(false);
+    } catch (const SequenceException<char> &exception) {
+        assertEqual(exception.getColumn(), 1_ZU);// NOLINT
+        assertEqual(exception.getMessage(), "unterminated sequence");
+    }
 
     return {};
 }
@@ -75,13 +78,15 @@ RUNTIME_TEST
     auto text_iterator = TextIterator<char>{ "\"Hello, World!\n\"" };
     text_iterator.nextRawChar();
 
-    ERROR_EXPECTED(
-        Sequence<char>(false, "\"", text_iterator, shared), TextIteratorException<char>,
-        "Error occurred at: , line: 1, column: 1. Error message: New line reached, but string "
-        "literal has not been terminated\n"
-        "\"Hello, World!\n"
-        "^\n"
-        "Suggestion: use multiline option or close string literal with \"");
+    try {
+        UNUSED_DECL Sequence<char>(false, "\"", text_iterator, shared);
+        assertTrue(false);
+    } catch (const SequenceException<char> &exception) {
+        assertEqual(exception.getColumn(), 1_ZU);// NOLINT
+        assertEqual(
+            exception.getMessage(), "new line is reached, but sequence has not been terminated");
+        assertEqual(exception.getSuggestion(), "use multiline sequence or close it with `\"`");
+    }
 
     return {};
 }

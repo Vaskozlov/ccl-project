@@ -25,13 +25,34 @@ RUNTIME_TEST
 {
     auto shared = AnalysisShared<char>{};
 
-    ERROR_EXPECTED(
-        DotItem<char>(TextIterator<char>{ R"([] '+' )" }, 0, shared), TextIteratorException<char>,
-        "Error occurred at: , line: 1, column: 4. Error message: unable to create terminal: "
-        "terminals cannot coexist with other items\n"
-        "[] '+' \n"
-        "   ^\n"
-        "Suggestion: do not declare terminal or delete other items");
+    try {
+        UNUSED_DECL DotItem<char>(TextIterator<char>{ R"([] '+' )" }, 0, shared);
+        assertTrue(false);
+    } catch (const DotItemException<char> &exception) {
+        assertEqual(exception.getColumn(), 4_ZU);// NOLINT
+        assertEqual(
+            exception.getMessage(),
+            "unable to create terminal: terminals cannot coexist with other items");
+    }
+
+    return {};
+}
+();
+
+// NOLINTNEXTLINE
+RUNTIME_TEST
+{
+    auto shared = AnalysisShared<char>{};
+
+    try {
+        UNUSED_DECL DotItem<char>(TextIterator<char>{ R"('+' [])" }, 0, shared);
+        assertTrue(false);
+    } catch (const DotItemException<char> &exception) {
+        assertEqual(exception.getColumn(), 5_ZU);// NOLINT
+        assertEqual(
+            exception.getMessage(),
+            "unable to create union: terminals cannot coexist with other items");
+    }
 
     return {};
 }

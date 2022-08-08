@@ -25,12 +25,13 @@ RUNTIME_TEST
 {
     auto text_iterator = TextIterator<char>{ R"(\w)" };
 
-    ERROR_EXPECTED(
-        UNUSED_DECL text_iterator.nextRawCharWithEscapingSymbols(), TextIteratorException<char>,
-        "Error occurred at: , line: 1, column: 2. Error message: unable to match any escaping "
-        "symbol\n"
-        "\\w\n"
-        " ^");
+    try {
+        UNUSED_DECL text_iterator.nextRawCharWithEscapingSymbols();
+        assertTrue(false);
+    } catch (const TextIteratorException<char> &exception) {
+        assertEqual(exception.getColumn(), 2_ZU);// NOLINT
+        assertEqual(exception.getMessage(), "unable to match any escaping symbol");
+    }
 
     return {};
 }

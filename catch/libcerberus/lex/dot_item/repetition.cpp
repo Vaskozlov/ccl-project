@@ -37,12 +37,15 @@ RUNTIME_TEST
     auto text_iterator = TextIterator<char>{ "{2, 1}" };
     text_iterator.nextRawChar();
 
-    ERROR_EXPECTED(
-        Repetition{ text_iterator }, TextIteratorException<char>,
-        "Error occurred at: , line: 1, column: 1. Error message: Beginning of the range (2) is "
-        "greater than end (1)\n"
-        "{2, 1}\n"
-        "^");
+    try {
+        UNUSED_DECL Repetition{ text_iterator };
+        assertTrue(false);
+    } catch (const RepetitionException<char> &exception) {
+        assertEqual(exception.getColumn(), 1_ZU);// NOLINT
+        assertEqual(
+            exception.getMessage(),
+            "the beginning of the repetition (2) is greater than the end (1)");
+    }
 
     return {};
 }

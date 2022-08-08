@@ -99,13 +99,13 @@ namespace cerb::lex::dot_item
             }
 
             if (isEoF(chr)) {
-                throwUnterminatedString(rule_iterator, "unterminated string item");
+                throwUnterminatedString(rule_iterator, "unterminated sequence");
             }
 
             if (land(chr == '\n', not multiline)) {
-                auto message = "New line reached, but string literal has not been terminated"_sv;
+                auto message = "new line is reached, but sequence has not been terminated"_sv;
                 auto suggestion =
-                    fmt::format<"use multiline option or close string literal with {}">(str_token);
+                    fmt::format<"use multiline sequence or close it with `{}`">(str_token);
 
                 throwUnterminatedString(rule_iterator, message, suggestion);
             }

@@ -103,22 +103,22 @@ namespace cerb::lex::dot_item
         {
             switch (chr) {
             case '[':
-                counter += item_type::Union;
+                counter += item::Union;
                 emplaceItem(constructNewUnion(rule_iterator));
                 break;
 
             case '\"':
-                counter += item_type::Sequence;
+                counter += item::Sequence;
                 emplaceItem(constructNewSequence(rule_iterator));
                 break;
 
             case '(':
-                counter += item_type::DotItem;
+                counter += item::DotItem;
                 emplaceItem(constructNewItem(rule_iterator));
                 break;
 
             case '\'':
-                counter += item_type::Terminal;
+                counter += item::Terminal;
                 constructTerminal(rule_iterator);
                 break;
 
@@ -143,17 +143,17 @@ namespace cerb::lex::dot_item
                 break;
 
             case 'c':
-                counter += item_type::Character;
+                counter += item::Character;
                 constructString(rule_iterator, true, false);
                 break;
 
             case 's':
-                counter += item_type::String;
+                counter += item::String;
                 constructString(rule_iterator, false, false);
                 break;
 
             case 'm':
-                counter += item_type::String;
+                counter += item::String;
                 constructString(rule_iterator, false, true);
                 break;
 

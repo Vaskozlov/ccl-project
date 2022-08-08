@@ -10,7 +10,7 @@ namespace cerb::lex::dot_item
     template<CharacterLiteral CharT>
     CERBLIB_EXCEPTION(DotItemException, text::TextIteratorException<CharT>);
 
-    namespace item_type
+    namespace item
     {
         struct UnionType : std::true_type
         {
@@ -42,7 +42,7 @@ namespace cerb::lex::dot_item
         constexpr auto String = StringType{};
         constexpr auto Character = CharacterType{};
         constexpr auto Terminal = TerminalType{};
-    }// namespace item_type
+    }// namespace item
 
     template<CharacterLiteral CharT>
     struct ItemsCounter
@@ -82,7 +82,7 @@ namespace cerb::lex::dot_item
             return lor(hasStrings(), hasCharacters());
         }
 
-        constexpr auto operator+=(item_type::UnionType /* unused */) -> ItemsCounter &
+        constexpr auto operator+=(item::UnionType /* unused */) -> ItemsCounter &
         {
             checkForUnexpectedTerminals("union");
             checkNoStringOrChars("union");
@@ -90,7 +90,7 @@ namespace cerb::lex::dot_item
             return *this;
         }
 
-        constexpr auto operator+=(item_type::DotItemType /* unused */) -> ItemsCounter &
+        constexpr auto operator+=(item::DotItemType /* unused */) -> ItemsCounter &
         {
             checkForUnexpectedTerminals("dot item");
             checkNoStringOrChars("dot item");
@@ -98,7 +98,7 @@ namespace cerb::lex::dot_item
             return *this;
         }
 
-        constexpr auto operator+=(item_type::SequenceType /* unused */) -> ItemsCounter &
+        constexpr auto operator+=(item::SequenceType /* unused */) -> ItemsCounter &
         {
             checkForUnexpectedTerminals("sequence");
             checkAbilityToCreateSequence();
@@ -106,7 +106,7 @@ namespace cerb::lex::dot_item
             return *this;
         }
 
-        constexpr auto operator+=(item_type::StringType /* unused */) -> ItemsCounter &
+        constexpr auto operator+=(item::StringType /* unused */) -> ItemsCounter &
         {
             checkForUnexpectedTerminals("string");
             checkAbilityToCreateStringOrCharacter();
@@ -115,7 +115,7 @@ namespace cerb::lex::dot_item
             return *this;
         }
 
-        constexpr auto operator+=(item_type::CharacterType /* unused */) -> ItemsCounter &
+        constexpr auto operator+=(item::CharacterType /* unused */) -> ItemsCounter &
         {
             checkForUnexpectedTerminals("character");
             checkAbilityToCreateStringOrCharacter();
@@ -124,7 +124,7 @@ namespace cerb::lex::dot_item
             return *this;
         }
 
-        constexpr auto operator+=(item_type::TerminalType /* unused */) -> ItemsCounter &
+        constexpr auto operator+=(item::TerminalType /* unused */) -> ItemsCounter &
         {
             checkAbilityToCreateTerminal();
             ++terminals;
@@ -182,10 +182,7 @@ namespace cerb::lex::dot_item
         constexpr auto checkForUnexpectedTerminals(string_view item_name) -> void
         {
             if (hasTerminals()) {
-                throwItemCreationError(
-                    item_name,
-                    "terminals cannot coexist with other items",
-                    "do not declare terminal or delete other items");
+                throwItemCreationError(item_name, "terminals cannot coexist with other items");
             }
         }
 

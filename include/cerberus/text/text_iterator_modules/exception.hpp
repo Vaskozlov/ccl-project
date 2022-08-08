@@ -97,7 +97,7 @@ namespace cerb::text
     private:
         constexpr auto createFullMessage() -> void
         {
-            full_message = fmt::format<CharT, "Error occurred at: {}. Error message: {}\n{}\n">(
+            full_message = fmt::format<CharT, "Error occurred at: {}, message: {}\n{}\n">(
                 location, message, working_line);
 
             addArrowToError();
