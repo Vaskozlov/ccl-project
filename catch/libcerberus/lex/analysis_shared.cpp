@@ -7,10 +7,10 @@ using namespace cerb::text;
 // NOLINTNEXTLINE
 RUNTIME_TEST
 {
-    auto text_iterator = TextIterator<char>{ "/* test */" };
-    auto analysis_shared = AnalysisShared<char>{ { "//", "/*", "*/" } };
+    auto text_iterator = TextIterator{ u8"/* test */" };
+    auto analysis_shared = AnalysisShared{ { u8"//", u8"/*", u8"*/" } };
 
-    assertTrue(analysis_shared.isComment(text_iterator.getRemainingFuture(1)));
+    assertTrue(analysis_shared.isComment(text_iterator.getRemainingFutureAfterSymbols(1)));
     assertTrue(analysis_shared.isNextCharNotForScanning(text_iterator));
 
     return {};
@@ -20,10 +20,10 @@ RUNTIME_TEST
 // NOLINTNEXTLINE
 RUNTIME_TEST
 {
-    auto text_iterator = TextIterator<char>{ "+" };
-    auto analysis_shared = AnalysisShared<char>{ {}, {}, { { "+", 1 } } };
+    auto text_iterator = TextIterator{ u8"+" };
+    auto analysis_shared = AnalysisShared{ {}, {}, { { u8"+", 1 } } };
 
-    assertTrue(analysis_shared.isTerminal(text_iterator.getRemainingFuture(1)));
+    assertTrue(analysis_shared.isTerminal(text_iterator.getRemainingFutureAfterSymbols(1)));
     assertTrue(analysis_shared.isNextCharNotForScanning(text_iterator));
 
     return {};
@@ -33,8 +33,8 @@ RUNTIME_TEST
 // NOLINTNEXTLINE
 RUNTIME_TEST
 {
-    auto text_iterator = TextIterator<char>{ R"("")" };
-    auto analysis_shared = AnalysisShared<char>{ {}, { { "\"", 0, false, false } } };
+    auto text_iterator = TextIterator{ u8R"("")" };
+    auto analysis_shared = AnalysisShared{ {}, { { u8"\"", 0, false, false } } };
 
     assertTrue(analysis_shared.isNextCharNotForScanning(text_iterator));
 

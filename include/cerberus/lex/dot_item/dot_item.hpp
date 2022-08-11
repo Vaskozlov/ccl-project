@@ -9,67 +9,59 @@
 
 namespace cerb::lex::dot_item
 {
-    template<CharacterLiteral CharT>
-    class DotItem : public BasicItem<CharT>
+    class DotItem : public BasicItem
     {
     private:
-        using Base = BasicItem<CharT>;
+        using BasicItem::analysis_shared;
+        using BasicItem::canBeOptimized;
+        using BasicItem::isNextCharNotForScanning;
+        using BasicItem::repetition;
 
-        using Base::analysis_shared;
-        using Base::canBeOptimized;
-        using Base::isNextCharNotForScanning;
-        using Base::repetition;
-
-        using typename Base::CommentTokens;
-        using typename Base::ExceptionAccumulator;
-        using typename Base::ScanStatus;
-        using typename Base::TextIterator;
+        using typename BasicItem::CommentTokens;
+        using typename BasicItem::ExceptionAccumulator;
+        using typename BasicItem::ScanStatus;
+        using typename BasicItem::TextIterator;
 
     public:
-        CERBLIB_DECL auto getId() const -> size_t
+        [[nodiscard]] auto getId() const -> size_t
         {
             return id;
         }
 
-        CERBLIB_DECL auto empty() const noexcept -> bool override
+        [[nodiscard]] auto empty() const noexcept -> bool override
         {
             return items.empty();
         }
 
-        constexpr explicit DotItem(
+        explicit DotItem(
             const TextIterator &rule_iterator_,
             size_t id_,
-            AnalysisShared<CharT> &analysis_shared_)
-          : Base(analysis_shared_), id(id_)
+            AnalysisShared &analysis_shared_)
+          : BasicItem(analysis_shared_), id(id_)
         {
             auto rule_iterator = rule_iterator_;
             parseRule(rule_iterator);
         }
 
-        constexpr explicit DotItem(
+        explicit DotItem(
             TextIterator &&rule_iterator_,
             size_t id_,
-            AnalysisShared<CharT> &analysis_shared_)
-          : Base(analysis_shared_), id(id_)
+            AnalysisShared &analysis_shared_)
+          : BasicItem(analysis_shared_), id(id_)
         {
             parseRule(rule_iterator_);
         }
 
-        constexpr explicit DotItem(
-            TextIterator &rule_iterator_,
-            size_t id_,
-            AnalysisShared<CharT> &analysis_shared_)
-          : Base(analysis_shared_), id(id_)
+        explicit DotItem(TextIterator &rule_iterator_, size_t id_, AnalysisShared &analysis_shared_)
+          : BasicItem(analysis_shared_), id(id_)
         {
             parseRule(rule_iterator_);
         }
-
-        CERBLIB_DERIVED_CONSTRUCTORS(DotItem);
 
     private:
-        CERBLIB_DECL auto scanIteration(TextIterator &text_iterator) const -> bool override
+        [[nodiscard]] auto scanIteration(TextIterator &text_iterator) const -> bool override
         {
-            for (auto &item : items) {
+            for (const auto &item : items) {
                 if (auto [success, iterator] = item->scan(text_iterator); success) {
                     text_iterator = std::move(iterator);
                 } else {
@@ -80,9 +72,9 @@ namespace cerb::lex::dot_item
             return true;
         }
 
-        constexpr auto parseRule(TextIterator &rule_iterator) -> void
+        auto parseRule(TextIterator &rule_iterator) -> void
         {
-            auto counter = ItemsCounter<CharT>{ rule_iterator };
+            auto counter = ItemsCounter{ rule_iterator };
             rule_iterator.skipCommentsAndLayout();
 
             while (movedToTheNextChar(rule_iterator)) {
@@ -92,14 +84,13 @@ namespace cerb::lex::dot_item
             }
         }
 
-        CERBLIB_DECL static auto movedToTheNextChar(TextIterator &rule_iterator) -> bool
+        [[nodiscard]] static auto movedToTheNextChar(TextIterator &rule_iterator) -> bool
         {
             return not isEoF(rule_iterator.nextRawChar());
         }
 
-        constexpr auto
-            recognizeAction(TextIterator &rule_iterator, CharT chr, ItemsCounter<CharT> &counter)
-                -> void
+        auto recognizeAction(TextIterator &rule_iterator, char32_t chr, ItemsCounter &counter)
+            -> void
         {
             switch (chr) {
             case '[':
@@ -163,62 +154,60 @@ namespace cerb::lex::dot_item
             }
         }
 
-        CERBLIB_DECL auto constructNewSequence(TextIterator &rule_iterator)
-            -> std::unique_ptr<BasicItem<CharT>>
+        [[nodiscard]] auto constructNewSequence(TextIterator &rule_iterator)
+            -> std::unique_ptr<BasicItem>
         {
-            return std::make_unique<Sequence<CharT>>(false, "\"", rule_iterator, analysis_shared);
+            return std::make_unique<Sequence>(false, u8"\"", rule_iterator, analysis_shared);
         }
 
-        CERBLIB_DECL auto constructNewUnion(TextIterator &rule_iterator)
-            -> std::unique_ptr<BasicItem<CharT>>
+        [[nodiscard]] auto constructNewUnion(TextIterator &rule_iterator)
+            -> std::unique_ptr<BasicItem>
         {
-            return std::make_unique<Union<CharT>>(rule_iterator, analysis_shared);
+            return std::make_unique<Union>(rule_iterator, analysis_shared);
         }
 
-        CERBLIB_DECL auto constructNewItem(TextIterator &rule_iterator)
-            -> std::unique_ptr<BasicItem<CharT>>
+        [[nodiscard]] auto constructNewItem(TextIterator &rule_iterator)
+            -> std::unique_ptr<BasicItem>
         {
             auto text = rule_iterator.getRemaining();
             auto saved_end = text.end();
             auto bracket_index = text.openCloseFind('(', ')');
 
-            if (bracket_index == StrView<CharT>::npos) {
+            if (bracket_index == u8string_view ::npos) {
                 throwUnterminatedDotItem(rule_iterator);
             }
 
             rule_iterator.setEnd(text.begin() + bracket_index);
 
-            auto new_dot_item =
-                std::make_unique<DotItem<CharT>>(rule_iterator, id, analysis_shared);
+            auto new_dot_item = std::make_unique<DotItem>(rule_iterator, id, analysis_shared);
             rule_iterator.setEnd(saved_end);
 
             return new_dot_item;
         }
 
-        constexpr auto emplaceItem(std::unique_ptr<BasicItem<CharT>> item) -> void
+        auto emplaceItem(std::unique_ptr<BasicItem> item) -> void
         {
             if (not canBeOptimized()) {
                 items.emplace_back(std::move(item));
             }
         }
 
-        constexpr auto
-            constructString(TextIterator &rule_iterator, bool is_character, bool is_multiline)
-                -> void
+        auto constructString(TextIterator &rule_iterator, bool is_character, bool is_multiline)
+            -> void
         {
-            if (items.empty() || dynamic_cast<Sequence<CharT> *>(items.back().get()) == nullptr) {
+            if (items.empty() || dynamic_cast<Sequence *>(items.back().get()) == nullptr) {
                 throwUnableToApply(
                     rule_iterator,
-                    "unable to apply char/string modifier, because there are not "
+                    u8"unable to apply char/string modifier, because there are not "
                     "any items or the last item is not a sequence",
-                    "create sequence or do not apply string modifier to other items");
+                    u8"create sequence or do not apply string modifier to other items");
             }
 
             checkSize(
-                rule_iterator, 1, "dot item with string must contain only one item - sequence",
-                "delete other items");
+                rule_iterator, 1, u8"dot item with string must contain only one item - sequence",
+                u8"delete other items");
 
-            auto *sequence = dynamic_cast<Sequence<CharT> *>(items.back().get());
+            auto *sequence = dynamic_cast<Sequence *>(items.back().get());
             auto &strings_and_chars = analysis_shared.strings_and_chars;
 
             strings_and_chars.emplace_back(
@@ -227,105 +216,103 @@ namespace cerb::lex::dot_item
             items.pop_back();
         }
 
-        constexpr auto constructTerminal(TextIterator &rule_iterator) -> void
+        auto constructTerminal(TextIterator &rule_iterator) -> void
         {
             checkSize(
-                rule_iterator, 0, "dot item with terminal must be empty", "delete other items");
+                rule_iterator, 0, u8"dot item with terminal must be empty", u8"delete other items");
 
             auto &terminals = analysis_shared.terminals;
-            auto sequence = Sequence<CharT>{ false, "\'", rule_iterator, analysis_shared };
+            auto sequence = Sequence{ false, u8"\'", rule_iterator, analysis_shared };
 
             terminals.addString(std::move(sequence.getRef()), id);
         }
 
-        constexpr auto addRepetition(TextIterator &rule_iterator, Repetition new_repetition) -> void
+        auto addRepetition(TextIterator &rule_iterator, Repetition new_repetition) -> void
         {
             if (items.empty()) {
                 throwUnableToApply(
-                    rule_iterator, "no item to apply repetition", "set repetition after item");
+                    rule_iterator, u8"no item to apply repetition", u8"set repetition after item");
             }
 
             auto &last_item = items.back();
 
             if (last_item->getRepetition() != Repetition::basic()) {
                 throwUnableToApply(
-                    rule_iterator, "item already has repetition",
-                    "do not set repetition more than once");
+                    rule_iterator, u8"item already has repetition",
+                    u8"do not set repetition more than once");
             }
 
             last_item->setRepetition(new_repetition);
         }
 
-        constexpr auto reverseLastItem(TextIterator &rule_iterator) -> void
+        auto reverseLastItem(TextIterator &rule_iterator) -> void
         {
             if (items.empty()) {
                 throwUnableToApply(
-                    rule_iterator, "no item to reverse", "create item before rever2ing it");
+                    rule_iterator, u8"no item to reverse", u8"create item before rever2ing it");
             }
 
             auto &last_item = items.back();
 
             if (last_item->isReversed()) {
                 throwUnableToApply(
-                    rule_iterator, "item is already reversed", "do not set reverse for item twice");
+                    rule_iterator, u8"item is already reversed",
+                    u8"do not set reverse for item twice");
             }
 
             last_item->reverse();
         }
 
-        constexpr auto checkSize(
-            TextIterator &rule_iterator, size_t expected_size, string_view message,
-            string_view suggestion = {}) -> void
+        auto checkSize(
+            TextIterator &rule_iterator, size_t expected_size, std::u8string_view message,
+            std::u8string_view suggestion = {}) -> void
         {
             if (items.size() != expected_size) {
                 throwUnexpectedSize(rule_iterator, message, suggestion);
             }
         }
 
-        constexpr static auto throwUnexpectedSize(
+        static auto throwUnexpectedSize(
             TextIterator &rule_iterator,
-            string_view message,
-            string_view suggestion = {}) -> void
+            std::u8string_view message,
+            std::u8string_view suggestion = {}) -> void
         {
-            rule_iterator.throwException(
-                DotItemException<CharT>(rule_iterator, message, suggestion));
+            rule_iterator.template throwException<DotItemException>(message, suggestion);
             throw UnrecoverableError{ "unrecoverable error in dot item" };
         }
 
-        constexpr static auto throwUnableToApply(
+        static auto throwUnableToApply(
             TextIterator &rule_iterator,
-            string_view reason,
-            string_view suggestion = {}) -> void
+            std::u8string_view reason,
+            std::u8string_view suggestion = {}) -> void
         {
-            auto message = fmt::format<CharT, "unable to apply with reason: {}">(reason);
-            auto converted_suggestion = fmt::format<CharT, "{}">(suggestion);
+            auto message = fmt::format<u8"unable to apply with reason: {}">(reason);
+            auto converted_suggestion = fmt::format<u8"{}">(suggestion);
 
-            rule_iterator.throwException(
-                DotItemException<CharT>(rule_iterator, message, converted_suggestion));
+            rule_iterator.template throwException<DotItemException>(message, converted_suggestion);
             throw UnrecoverableError{ "unrecoverable error in DotItemType" };
         }
 
-        constexpr static auto throwUnterminatedDotItem(TextIterator &rule_iterator) -> void
+        static auto throwUnterminatedDotItem(TextIterator &rule_iterator) -> void
         {
-            rule_iterator.throwException(
-                DotItemException<CharT>(rule_iterator, "unterminated dot item"));
+            rule_iterator.throwException<DotItemException>(u8"unterminated dot item");
             throw UnrecoverableError{ "unrecoverable error in DotItemType" };
         }
 
-        constexpr static auto throwUndefinedAction(TextIterator &rule_iterator) -> void
+        static auto throwUndefinedAction(TextIterator &rule_iterator) -> void
         {
-            using namespace string_view_literals;
+            using namespace std::string_view_literals;
 
-            constexpr auto message = "undefined action"_sv;
-            constexpr auto suggestion =
-                R"(Use `"` for string, `'` for terminal symbol, `[` for unions, `(` for dot items")"_sv;
+            auto message = u8"undefined action"sv;
+            auto suggestion =
+                u8"Use `\"` for string, `'` for terminal symbol, `[` for unions, `(` for dot "
+                "items"sv;
 
-            rule_iterator.throwException(
-                DotItemException<CharT>(rule_iterator, message, suggestion));
+            rule_iterator.template throwException<DotItemException>(message, suggestion);
             throw UnrecoverableError{ "unrecoverable error in DotItemType" };
         }
 
-        boost::container::small_vector<std::unique_ptr<BasicItem<CharT>>, 4> items{};
+        boost::container::small_vector<std::unique_ptr<BasicItem>, 4> items{};
         size_t id{};
     };
 }// namespace cerb::lex::dot_item

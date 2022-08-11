@@ -58,6 +58,11 @@ foreach (file ${LIBCERBERUS_CATCH})
             ${Boost_LIBRARIES}
     )
 
+    target_link_libraries(
+            ${filename}-${dir_name}
+            cerberus
+    )
+
     add_test(${filename}-${dir_name}-test ${filename}-${dir_name})
 
     math(EXPR i "${i} + 1")

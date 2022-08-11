@@ -6,14 +6,14 @@ using namespace cerb::text;
 // NOLINTNEXTLINE
 RUNTIME_TEST
 {
-    auto text_iterator = TextIterator<char>{ "/*", nullptr, { "//", "/*", "*/" } };
+    auto text_iterator = TextIterator{ u8"/*", nullptr, { u8"//", u8"/*", u8"*/" } };
 
     try {
         text_iterator.skipCommentsAndLayout();
         assertTrue(false);
-    } catch (const module::CommentSkipperException<char> &exception) {
+    } catch (const CommentSkipperException &exception) {
         assertEqual(exception.getColumn(), 2_ZU);// NOLINT
-        assertEqual(exception.getMessage(), "unterminated multiline comment");
+        assertEqual(exception.getMessage(), u8"unterminated multiline comment");
     }
 
     return {};
@@ -21,41 +21,41 @@ RUNTIME_TEST
 ();
 
 // NOLINTNEXTLINE
-STRING_TEST
+RUNTIME_TEST
 {
-    auto text_iterator = TextIterator<char>{ "/**/Hi!", nullptr, { "//", "/*", "*/" } };
+    auto text_iterator = TextIterator{ u8"/**/Hi!", nullptr, { u8"//", u8"/*", u8"*/" } };
     text_iterator.skipCommentsAndLayout();
 
-    assertEqual(text_iterator.getRemaining(), "/Hi!");
-    assertEqual(text_iterator.nextRawChar(), 'H');
+    assertEqual(text_iterator.getRemaining(), u8"/Hi!");
+    assertEqual(text_iterator.nextRawChar(), U'H');
 
     return {};
 }
 ();
 
 // NOLINTNEXTLINE
-STRING_TEST
+RUNTIME_TEST
 {
     auto text_iterator =
-        TextIterator<char>{ "/*1521\n\n151t*/\nHi!", nullptr, { "//", "/*", "*/" } };
+        TextIterator{ u8"/*1521\n\n151t*/\nHi!", nullptr, { u8"//", u8"/*", u8"*/" } };
     text_iterator.skipCommentsAndLayout();
 
-    assertEqual(text_iterator.getRemaining(), "\nHi!");
-    assertEqual(text_iterator.nextRawChar(), 'H');
+    assertEqual(text_iterator.getRemaining(), u8"\nHi!");
+    assertEqual(text_iterator.nextRawChar(), U'H');
 
     return {};
 }
 ();
 
 // NOLINTNEXTLINE
-STRING_TEST
+RUNTIME_TEST
 {
     auto text_iterator =
-        TextIterator<char>{ "/*1521\n\n151t*/\n/* */ Hi!", nullptr, { "//", "/*", "*/" } };
+        TextIterator{ u8"/*1521\n\n151t*/\n/* */ Hi!", nullptr, { u8"//", u8"/*", u8"*/" } };
     text_iterator.skipCommentsAndLayout();
 
-    assertEqual(text_iterator.getRemaining(), " Hi!");
-    assertEqual(text_iterator.nextRawChar(), 'H');
+    assertEqual(text_iterator.getRemaining(), u8" Hi!");
+    assertEqual(text_iterator.nextRawChar(), U'H');
 
     return {};
 }

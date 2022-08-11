@@ -12,8 +12,7 @@ namespace cerb::fmt::core
     class StringSplitter
     {
     private:
-        using CharT = decltype(String.zeroChar());
-        using value_type = BasicStringView<CharT>;
+        using value_type = u8string_view;
         using iterator = typename value_type::iterator;
         using const_iterator = typename value_type::const_iterator;
 
@@ -83,7 +82,7 @@ namespace cerb::fmt::core
         }
 
         storage_t blocks{};
-        text::BasicTextIterator<CharT> text_iterator{ String.strView() };
+        text::BasicTextIterator text_iterator{ String.strView() };
         const_iterator block_begin{ text_iterator.getCarriage() };
         size_t current_block{};
     };

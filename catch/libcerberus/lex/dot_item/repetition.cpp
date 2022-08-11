@@ -6,9 +6,9 @@ using namespace cerb::lex::dot_item;
 
 // NOLINTBEGIN
 
-STRING_TEST
+RUNTIME_TEST
 {
-    auto text_iterator = TextIterator<char>{ "{10, 20}" };
+    auto text_iterator = TextIterator{ u8"{10, 20}" };
     text_iterator.nextRawChar();
 
     auto repetition = Repetition{ text_iterator };
@@ -19,9 +19,9 @@ STRING_TEST
 }
 ();
 
-STRING_TEST
+RUNTIME_TEST
 {
-    auto text_iterator = TextIterator<char>{ "{, 1}" };
+    auto text_iterator = TextIterator{ u8"{, 1}" };
     text_iterator.nextRawChar();
 
     auto repetition = Repetition{ text_iterator };
@@ -34,17 +34,17 @@ STRING_TEST
 
 RUNTIME_TEST
 {
-    auto text_iterator = TextIterator<char>{ "{2, 1}" };
+    auto text_iterator = TextIterator{ u8"{2, 1}" };
     text_iterator.nextRawChar();
 
     try {
         UNUSED_DECL Repetition{ text_iterator };
         assertTrue(false);
-    } catch (const RepetitionException<char> &exception) {
+    } catch (const RepetitionException &exception) {
         assertEqual(exception.getColumn(), 1_ZU);// NOLINT
         assertEqual(
             exception.getMessage(),
-            "the beginning of the repetition (2) is greater than the end (1)");
+            u8"the beginning of the repetition (2) is greater than the end (1)");
     }
 
     return {};

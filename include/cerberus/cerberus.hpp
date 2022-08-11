@@ -5,6 +5,7 @@
 #    error cerberus requires at least C++2b
 #endif /* minimum requirements */
 
+#include <boost/outcome.hpp>
 #include <cerberus/core/concepts.hpp>
 #include <cerberus/core/conversion.hpp>
 #include <cerberus/core/defines.hpp>

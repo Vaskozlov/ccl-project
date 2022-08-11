@@ -8,21 +8,13 @@
 
 namespace cerb
 {
-    template<size_t N, CharacterLiteral CharT>
+    template<size_t N>
     struct ConstString
     {
-        using value_type = CharT;
-        using storage_t = std::array<CharT, N>;
+        using value_type = char8_t;
+        using storage_t = std::array<char8_t, N>;
         using const_iterator = typename storage_t::const_iterator;
         using const_reverse_iterator = typename storage_t::const_reverse_iterator;
-
-        /**
-         * @brief Returns TextT to get type via decltype()
-         */
-        CERBLIB_DECL static auto zeroChar() -> CharT
-        {
-            return 0;
-        }
 
         CERBLIB_DECL auto begin() const -> const_iterator
         {
@@ -74,17 +66,17 @@ namespace cerb
             return size() == 0;
         }
 
-        CERBLIB_DECL auto strView() const -> BasicStringView<CharT>
+        CERBLIB_DECL auto strView() const -> BasicStringView<char8_t>
         {
             return { string.data(), size() };
         }
 
-        CERBLIB_DECL auto at(size_t index) const -> CharT
+        CERBLIB_DECL auto at(size_t index) const -> char8_t
         {
             return string.at(index);
         }
 
-        CERBLIB_DECL auto operator[](size_t index) const -> CharT
+        CERBLIB_DECL auto operator[](size_t index) const -> char8_t
         {
             return string[index];
         }
@@ -92,18 +84,12 @@ namespace cerb
         CERBLIB_DECL auto operator<=>(const ConstString &other) const
             -> std::weak_ordering = default;
 
-        template<CharacterLiteral To>
-        consteval auto convert() const -> ConstString<N, To>
-        {
-            return ConstString<N, To>{ strCast<To>(string) };
-        }
-
         // NOLINTNEXTLINE
-        consteval ConstString(const CharT (&str)[N]) : string{ std::to_array(str) }
+        consteval ConstString(const char8_t (&str)[N]) : string{ std::to_array(str) }
         {}
 
         // NOLINTNEXTLINE
-        consteval ConstString(const std::array<CharT, N> &str) : string{ str }
+        consteval ConstString(const std::array<char8_t, N> &str) : string{ str }
         {}
 
         storage_t string{};

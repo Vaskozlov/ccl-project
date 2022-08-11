@@ -6,41 +6,38 @@
 
 namespace cerb::lex::dot_item
 {
-    template<CharacterLiteral CharT>
-    CERBLIB_EXCEPTION(SequenceException, text::TextIteratorException<CharT>);
+    CERBLIB_EXCEPTION(SequenceException, text::TextIteratorException);
 
-    template<CharacterLiteral CharT>
-    class Sequence : public BasicItem<CharT>
+    class Sequence : public BasicItem
     {
     private:
-        using Base = BasicItem<CharT>;
-        using Base::isNextCharNotForScanning;
+        using BasicItem::isNextCharNotForScanning;
 
-        using typename Base::CommentTokens;
-        using typename Base::ExceptionAccumulator;
-        using typename Base::ScanStatus;
-        using typename Base::TextIterator;
+        using typename BasicItem::CommentTokens;
+        using typename BasicItem::ExceptionAccumulator;
+        using typename BasicItem::ScanStatus;
+        using typename BasicItem::TextIterator;
 
     public:
-        CERBLIB_DECL auto get() const -> const Str<CharT> &
+        [[nodiscard]] auto get() const -> const std::u8string &
         {
             return string;
         }
 
-        CERBLIB_DECL auto getRef() -> Str<CharT> &
+        [[nodiscard]] auto getRef() -> std::u8string &
         {
             return string;
         }
 
-        CERBLIB_DECL auto empty() const noexcept -> bool override
+        [[nodiscard]] auto empty() const noexcept -> bool override
         {
             return string.empty();
         }
 
-        constexpr Sequence(
-            bool multiline_, StrView<CharT> str_token_, TextIterator &rule_iterator_,
-            AnalysisShared<CharT> &analysis_shared_)
-          : Base(analysis_shared_), str_token(str_token_), multiline(multiline_)
+        Sequence(
+            bool multiline_, u8string_view str_token_, TextIterator &rule_iterator_,
+            AnalysisShared &analysis_shared_)
+          : BasicItem(analysis_shared_), str_token(str_token_), multiline(multiline_)
         {
             auto &rule_iterator = rule_iterator_;
             auto begin_iterator_state = rule_iterator;
@@ -57,18 +54,16 @@ namespace cerb::lex::dot_item
                     break;
                 }
 
-                string.push_back(chr);
+                utf8::addUtf32ToUtf8String(string, chr);
             }
 
             addWarningIfEmpty(rule_iterator);
         }
 
-        CERBLIB_DERIVED_CONSTRUCTORS(Sequence);
-
     private:
-        CERBLIB_DECL auto scanIteration(TextIterator &text_iterator) const -> bool override
+        [[nodiscard]] auto scanIteration(TextIterator &text_iterator) const -> bool override
         {
-            auto future_text = text_iterator.getRemainingFuture(1);
+            auto future_text = text_iterator.getRemainingFutureAfterSymbols(1);
 
             if (future_text.substr(0, string.size()) == string) {
                 text_iterator.rawSkip(string.size());
@@ -88,35 +83,35 @@ namespace cerb::lex::dot_item
             return text.substr(0, str_token.size()) == str_token;
         }
 
-        constexpr auto
-            checkForUnexpectedEnd(TextIterator &rule_iterator, bool is_escaping, CharT chr) const
+        auto
+            checkForUnexpectedEnd(TextIterator &rule_iterator, bool is_escaping, char32_t chr) const
             -> void
         {
-            using namespace cerb::string_view_literals;
+            using namespace std::string_view_literals;
 
             if (is_escaping) {
                 return;
             }
 
             if (isEoF(chr)) {
-                throwUnterminatedString(rule_iterator, "unterminated sequence");
+                throwUnterminatedString(rule_iterator, u8"unterminated sequence");
             }
 
             if (land(chr == '\n', not multiline)) {
-                auto message = "new line is reached, but sequence has not been terminated"_sv;
+                auto message = u8"new line is reached, but sequence has not been terminated"sv;
                 auto suggestion =
-                    fmt::format<"use multiline sequence or close it with `{}`">(str_token);
+                    fmt::format<u8"use multiline sequence or close it with `{}`">(str_token);
 
                 throwUnterminatedString(rule_iterator, message, suggestion);
             }
         }
 
-        constexpr auto skipStringDefinition(TextIterator &rule_iterator) const -> void
+        auto skipStringDefinition(TextIterator &rule_iterator) const -> void
         {
             rule_iterator.rawSkip(str_token.size() - 1);
         }
 
-        constexpr auto checkStringBegin(TextIterator &rule_iterator) const -> void
+        auto checkStringBegin(TextIterator &rule_iterator) const -> void
         {
             auto text = rule_iterator.getRemaining();
 
@@ -129,45 +124,44 @@ namespace cerb::lex::dot_item
             }
         }
 
-        constexpr auto addWarningIfEmpty(TextIterator &rule_iterator) -> void
-        {
-            using namespace string_view_literals;
-
-            if (string.empty()) {
-                rule_iterator.throwWarning(SequenceException<CharT>{
-                    rule_iterator, "empty string should not be used"_sv });
-            }
-        }
-
-        constexpr static auto throwEmptyStringBegin(TextIterator &rule_iterator) -> void
+        auto addWarningIfEmpty(TextIterator &rule_iterator) -> void
         {
             using namespace std::string_view_literals;
 
-            rule_iterator.throwException(
-                SequenceException<CharT>{ rule_iterator, "sequence item begin cannot be empty" });
+            if (string.empty()) {
+                rule_iterator.template throwWarning<SequenceException>(
+                    u8"empty string should not be used"sv);
+            }
+        }
+
+        static auto throwEmptyStringBegin(TextIterator &rule_iterator) -> void
+        {
+            using namespace std::string_view_literals;
+
+            rule_iterator.throwException<SequenceException>(
+                u8"sequence item begin cannot be empty"sv);
             throw UnrecoverableError{ "unreachable error in SequenceType" };
         }
 
-        constexpr static auto throwUnterminatedString(
+        static auto throwUnterminatedString(
             TextIterator &rule_iterator,
-            string_view message,
-            string_view suggestion = {}) -> void
+            std::u8string_view message,
+            std::u8string_view suggestion = {}) -> void
         {
-            rule_iterator.throwException(
-                SequenceException<CharT>{ rule_iterator, message, suggestion });
+            rule_iterator.template throwException<SequenceException>(message, suggestion);
             throw UnrecoverableError{ "unreachable error in SequenceType" };
         }
 
-        constexpr auto throwStringBeginException(TextIterator &rule_iterator) const -> void
+        auto throwStringBeginException(TextIterator &rule_iterator) const -> void
         {
-            auto message = fmt::format<CharT, "string literal must begin with {}">(str_token);
+            auto message = fmt::format<u8"string literal must begin with {}">(str_token);
 
-            rule_iterator.throwException(SequenceException<CharT>{ rule_iterator, message });
+            rule_iterator.template throwException<SequenceException>(message);
             throw UnrecoverableError{ "unreachable error in SequenceType" };
         }
 
-        StrView<CharT> str_token{};
-        Str<CharT> string{};
+        u8string_view str_token{};
+        std::u8string string{};
         bool multiline{};
     };
 }// namespace cerb::lex::dot_item

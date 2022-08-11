@@ -39,6 +39,8 @@ namespace cerb
     CERBLIB_EXCEPTION(LogicError, CerberusException);
     CERBLIB_EXCEPTION(OutOfRange, CerberusException);
     CERBLIB_EXCEPTION(KeyNotFound, CerberusException);
+    CERBLIB_EXCEPTION(InvalidArgument, CerberusException);
+    CERBLIB_EXCEPTION(UnrecoverableError, CerberusException);
 }// namespace cerb
 
 #endif /* CERBERUS_PROJECT_EXCEPTION_HPP */

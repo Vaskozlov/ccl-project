@@ -2,99 +2,124 @@
 #define CERBERUS_PROJECT_TEXT_ITERATOR_HPP
 
 #include <cerberus/analysis/exception_accumulator.hpp>
+#include <cerberus/pair.hpp>
 #include <cerberus/text/location.hpp>
-#include <cerberus/text/text_iterator_modules/comment_skipper.hpp>
-#include <cerberus/text/text_iterator_modules/escaping_symbol.hpp>
+#include <cerberus/text/text_iterator_modules/exception.hpp>
 #include <cerberus/text/text_iterator_modules/line_tracker.hpp>
 #include <cerberus/text/text_iterator_modules/ts_tracker.hpp>
+#include <utility>
 
 namespace cerb::text
 {
-    template<CharacterLiteral TextT, CharacterLiteral EscapingT>
-    class TextIterator : public BasicTextIterator<TextT>
+    struct CommentTokens
+    {
+        u8string_view single_line{};
+        u8string_view multiline_begin{};
+        u8string_view multiline_end{};
+    };
+
+    CERBLIB_EXCEPTION(CommentSkipperException, TextIteratorException);
+    CERBLIB_EXCEPTION(NotationEscapingSymbolizerException, TextIteratorException);
+
+    class TextIterator : public BasicTextIterator
     {
     private:
-        using Base = BasicTextIterator<TextT>;
-        using CommentTokens = module::CommentTokens<TextT>;
-        using CommentSkipper = module::CommentSkipper<TextT>;
-        using LineTracker = module::LineTracker<TextT>;
-        using EscapingSymbolizer = module::EscapingSymbolizer<TextT, EscapingT>;
-        using ExtraSymbols = typename EscapingSymbolizer::extra_symbols_t;
-        using TsTracker = module::TsTracker<TextT>;
+        using Base = BasicTextIterator;
+        using extra_symbols_t = std::basic_string<Pair<char32_t, char32_t>>;
+
+        class CommentSkipper;
+        class EscapingSymbolizer;
+        class NotationEscapingSymbolizer;
+
+        [[nodiscard]] static auto
+            doEscapeSymbolizing(TextIterator &text_iterator, const extra_symbols_t &extra_symbols_)
+                -> char32_t;
+
+        [[nodiscard]] static auto calculateNotationEscapeSymbol(
+            TextIterator &text_iterator, u16 max_times, u16 notation_power, bool need_all_chars)
+            -> char32_t;
 
     public:
-        using ExceptionAccumulator = analysis::ExceptionAccumulator<TextIteratorException<TextT>>;
+        using ExceptionAccumulator = analysis::ExceptionAccumulator<TextIteratorException>;
 
-        CERBLIB_DECL auto getLocation() const -> const Location<> &
+        [[nodiscard]] auto getLocation() const -> const Location &
         {
             return location;
         }
 
-        CERBLIB_DECL auto getLine() const -> size_t
+        [[nodiscard]] auto getLine() const -> size_t
         {
             return location.getLine();
         }
 
-        CERBLIB_DECL auto getColumn() const -> size_t
+        [[nodiscard]] auto getColumn() const -> size_t
         {
             return location.getColumn();
         }
 
-        CERBLIB_DECL auto getFilename() const -> const StrView<char> &
+        [[nodiscard]] auto getRealColumn() const -> size_t
+        {
+            return location.getRealColumn();
+        }
+
+        [[nodiscard]] auto getFilename() const -> const u8string_view &
         {
             return location.getFilename();
         }
 
-        CERBLIB_DECL auto getWorkingLine() const -> const StrView<TextT> &
+        [[nodiscard]] auto getWorkingLine() const -> const u8string_view &
         {
             return line_tracker.get();
         }
 
-        CERBLIB_DECL auto getTabsAndSpaces() const -> const Str<TextT> &
+        [[nodiscard]] auto getTabsAndSpaces() const -> const std::u8string &
         {
             return ts_tracker.get();
         }
 
-        [[nodiscard("You will not be allowed to get this char from getCurrentChar")]]// new line
-        constexpr auto
-            nextRawCharWithEscapingSymbols(const ExtraSymbols &extra_symbols = {})
-                -> Pair<bool, EscapingT>
+        auto nextRawCharWithEscapingSymbols(const extra_symbols_t &extra_symbols = {})
+            -> Pair<bool, char32_t>;
+
+        auto onMove(char8_t chr) -> void override
         {
-            auto chr = nextRawChar();
-
-            if (chr == '\\') {
-                return { true, module::doEscapeSymbolizing(*this, extra_symbols) };
-            }
-
-            return { false, static_cast<EscapingT>(chr) };
+            location.intermediateNext(chr);
         }
 
-        constexpr auto nextRawChar() -> TextT override
+        auto onCharacter(char32_t chr) -> void override
         {
-            auto chr = Base::basicNextRawChar();
-            updateModules(chr);
-            return chr;
+            location.next(chr);
+            ts_tracker.next(chr);
+            line_tracker.next(chr);
         }
 
-        constexpr auto skipCommentsAndLayout() -> void
-        {
-            auto comment_skipper = CommentSkipper{ *this, comment_tokens };
+        auto skipCommentsAndLayout() -> void;
 
-            do {
-                Base::moveToCleanChar();
-            } while (comment_skipper.skip());
+        template<Exception T>
+        auto throwException(T &&exception) -> void
+        {
+            addError(exception_accumulator, std::forward<T>(exception));
+        }
+
+        template<Exception T, typename... Ts>
+        auto throwException(Ts &&...args) -> void
+        {
+            addError(
+                exception_accumulator,
+                T(getLocation(), getWorkingLine(), std::forward<Ts>(args)...));
         }
 
         template<Exception T>
-        constexpr auto throwException(T &&exception) -> void
+        auto throwWarning(T &&exception) -> void
         {
-            addError(exceptions, std::forward<T>(exception));
+            addWarning(exception_accumulator, std::forward<T>(exception));
         }
 
-        template<Exception T>
-        constexpr auto throwWarning(T &&exception) -> void
+        template<Exception T, typename... Ts>
+        auto throwWarning(Ts &&...args) -> void
         {
-            addWarning(exceptions, std::forward<T>(exception));
+            addWarning(
+                exception_accumulator,
+                T(getLocation(), getWorkingLine(), std::forward<Ts>(args)...));
         }
 
         auto operator=(const TextIterator &) -> TextIterator & = default;
@@ -103,31 +128,117 @@ namespace cerb::text
         TextIterator(const TextIterator &) = default;
         TextIterator(TextIterator &&) noexcept = default;
 
-        constexpr explicit TextIterator(
-            StrView<TextT>
-                input,
-            ExceptionAccumulator *exceptions_ = nullptr,
-            CommentTokens comment_tokens_ = {},
-            string_view filename = {})
-          : Base(input), comment_tokens(comment_tokens_), location(filename),
-            exceptions(exceptions_)
+        explicit TextIterator(
+            u8string_view input, ExceptionAccumulator *exception_accumulator_ = {},
+            CommentTokens comment_tokens_ = {}, u8string_view filename = {})
+          : Base(input), location(filename), line_tracker(input), comment_tokens(comment_tokens_),
+            exception_accumulator(exception_accumulator_)
         {}
 
-        ~TextIterator() = default;
+        ~TextIterator() override = default;
 
     private:
-        constexpr auto updateModules(TextT chr) -> void
+        Location location{};
+        module::TsTracker ts_tracker{};
+        module::LineTracker line_tracker;
+        CommentTokens comment_tokens{};
+        ExceptionAccumulator *exception_accumulator{};
+    };
+
+    class TextIterator::CommentSkipper
+    {
+    public:
+        auto skip() -> bool;
+
+        CommentSkipper(TextIterator &text_iterator_, const CommentTokens &comment_tokens_);
+
+    private:
+        [[nodiscard]] auto isComment(const u8string_view &comment) const -> bool;
+        auto skipSingleLine() -> void;
+        auto skipMultiline() -> void;
+
+        auto checkCommentTermination(const TextIterator &comment_begin) const -> void
         {
-            location.next(chr);
-            line_tracker.next(chr);
-            ts_tracker.next(chr);
+            if (isEoF(text_iterator.getCurrentChar())) {
+                throwUnterminatedCommentError(comment_begin);
+            }
         }
 
-        LineTracker line_tracker{ Base::getRemaining() };
-        CommentTokens comment_tokens{};
-        Location<char> location{};
-        TsTracker ts_tracker{};
-        ExceptionAccumulator *exceptions{ nullptr };
+        auto throwUnterminatedCommentError(const TextIterator &comment_begin) const -> void;
+
+        const CommentTokens &comment_tokens;// MAYBE: copy comment tokens into StrViews
+        TextIterator &text_iterator;
+    };
+
+    class TextIterator::EscapingSymbolizer
+    {
+    public:
+        [[nodiscard]] auto getExtraSymbols() const -> const extra_symbols_t &
+        {
+            return extra_symbols;
+        }
+
+        [[nodiscard]] auto match() -> char32_t;
+
+        auto operator=(EscapingSymbolizer &&) -> void = delete;
+        auto operator=(const EscapingSymbolizer &) -> void = delete;
+
+        EscapingSymbolizer() = delete;
+        EscapingSymbolizer(EscapingSymbolizer &&) = delete;
+        EscapingSymbolizer(const EscapingSymbolizer &) = delete;
+
+        explicit EscapingSymbolizer(TextIterator &text_iterator_, extra_symbols_t extra_symbols_)
+          : extra_symbols{ std::move(extra_symbols_) }, text_iterator{ text_iterator_ }
+        {}
+
+        ~EscapingSymbolizer() = default;
+
+    private:
+        auto searchInExtraSymbols(char32_t chr) -> char32_t;
+        auto throwMatchException() -> void;
+
+        extra_symbols_t extra_symbols;
+        TextIterator &text_iterator;
+    };
+
+    class TextIterator::NotationEscapingSymbolizer
+    {
+    public:
+        CERBLIB_DECL auto get() const -> char32_t
+        {
+            return result;
+        }
+
+        auto operator=(NotationEscapingSymbolizer &&) -> void = delete;
+        auto operator=(const NotationEscapingSymbolizer &) -> void = delete;
+
+        NotationEscapingSymbolizer() = delete;
+        NotationEscapingSymbolizer(NotationEscapingSymbolizer &&) = delete;
+        NotationEscapingSymbolizer(const NotationEscapingSymbolizer &) = delete;
+
+        NotationEscapingSymbolizer(
+            TextIterator &text_iterator_, u16 max_times_, u16 notation_power_,
+            bool need_all_chars_);
+
+        ~NotationEscapingSymbolizer() = default;
+
+    private:
+        auto calculateResult() -> void;
+        auto checkNotation() const -> void;
+        [[nodiscard]] auto isOutOfNotation(char32_t chr) const -> bool;
+        auto checkCharacterOverflow() const -> void;
+        auto checkAllCharsUsage(u16 chars_count) const -> void;
+        auto throwCharacterOverflow() const -> void;
+        auto throwNotEnoughCharsException(u16 chars_count) const -> void;
+        [[nodiscard]] auto createSuggestionNotEnoughChars(u16 chars_count) const -> std::u8string;
+        auto insertExtraZerosToNotEnoughMessage(u16 chars_count, std::u8string &message) const
+            -> void;
+
+        TextIterator &text_iterator;
+        char32_t result{};
+        u16 max_times;
+        u16 notation_power;
+        bool need_all_chars;
     };
 }// namespace cerb::text
 

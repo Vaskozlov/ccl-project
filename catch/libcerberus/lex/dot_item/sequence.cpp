@@ -6,16 +6,16 @@ using namespace cerb::text;
 using namespace cerb::lex::dot_item;
 
 // NOLINTNEXTLINE
-auto shared = AnalysisShared<char>{};
+auto shared = AnalysisShared{};
 
 // NOLINTNEXTLINE
 RUNTIME_TEST
 {
-    auto exception_accumulator = TextIterator<char>::ExceptionAccumulator{};
-    auto text_iterator = TextIterator<char>{ R"("")", &exception_accumulator };
+    auto exception_accumulator = TextIterator::ExceptionAccumulator{};
+    auto text_iterator = TextIterator{ u8R"("")", &exception_accumulator };
     text_iterator.nextRawChar();
 
-    auto string_item = Sequence<char>(false, "\"", text_iterator, shared);
+    auto string_item = Sequence(false, u8"\"", text_iterator, shared);
     const auto &string = string_item.get();
 
     assertTrue(string.empty());
@@ -26,30 +26,16 @@ RUNTIME_TEST
 ();
 
 // NOLINTNEXTLINE
-STRING_TEST
+RUNTIME_TEST
 {
-    auto text_iterator = TextIterator<char>{ R"("Hello, \"World\"!")" };
+    auto text_iterator = TextIterator{ u8R"("Hello, \"World\"!")" };
     text_iterator.nextRawChar();
 
-    auto string_item = Sequence<char>(false, "\"", text_iterator, shared);
+    auto string_item = Sequence(false, u8"\"", text_iterator, shared);
     const auto &string = string_item.get();
 
-    assertEqual(string, R"(Hello, "World"!)");
+    assertEqual(string, u8R"(Hello, "World"!)");
 
-    return {};
-}
-();
-
-// NOLINTNEXTLINE
-STRING_TEST
-{
-    auto text_iterator = TextIterator<char>{ "\"\"\"Hello,\n    \"World\"!\"\"\"" };
-    text_iterator.nextRawChar();
-
-    auto string_item = Sequence<char>(true, R"(""")", text_iterator, shared);
-    const auto &string = string_item.get();
-
-    assertEqual(string, "Hello,\n    \"World\"!");
     return {};
 }
 ();
@@ -57,15 +43,29 @@ STRING_TEST
 // NOLINTNEXTLINE
 RUNTIME_TEST
 {
-    auto text_iterator = TextIterator<char>{ R"("Hello, World!)" };
+    auto text_iterator = TextIterator{ u8"\"\"\"Hello,\n    \"World\"!\"\"\"" };
+    text_iterator.nextRawChar();
+
+    auto string_item = Sequence(true, u8R"(""")", text_iterator, shared);
+    const auto &string = string_item.get();
+
+    assertEqual(string, u8"Hello,\n    \"World\"!");
+    return {};
+}
+();
+
+// NOLINTNEXTLINE
+RUNTIME_TEST
+{
+    auto text_iterator = TextIterator{ u8R"("Hello, World!)" };
     text_iterator.nextRawChar();
 
     try {
-        UNUSED_DECL Sequence<char>(false, "\"", text_iterator, shared);
+        UNUSED_DECL Sequence(false, u8"\"", text_iterator, shared);
         assertTrue(false);
-    } catch (const SequenceException<char> &exception) {
+    } catch (const SequenceException &exception) {
         assertEqual(exception.getColumn(), 1_ZU);// NOLINT
-        assertEqual(exception.getMessage(), "unterminated sequence");
+        assertEqual(exception.getMessage(), u8"unterminated sequence");
     }
 
     return {};
@@ -75,17 +75,17 @@ RUNTIME_TEST
 // NOLINTNEXTLINE
 RUNTIME_TEST
 {
-    auto text_iterator = TextIterator<char>{ "\"Hello, World!\n\"" };
+    auto text_iterator = TextIterator{ u8"\"Hello, World!\n\"" };
     text_iterator.nextRawChar();
 
     try {
-        UNUSED_DECL Sequence<char>(false, "\"", text_iterator, shared);
+        UNUSED_DECL Sequence(false, u8"\"", text_iterator, shared);
         assertTrue(false);
-    } catch (const SequenceException<char> &exception) {
+    } catch (const SequenceException &exception) {
         assertEqual(exception.getColumn(), 1_ZU);// NOLINT
         assertEqual(
-            exception.getMessage(), "new line is reached, but sequence has not been terminated");
-        assertEqual(exception.getSuggestion(), "use multiline sequence or close it with `\"`");
+            exception.getMessage(), u8"new line is reached, but sequence has not been terminated");
+        assertEqual(exception.getSuggestion(), u8"use multiline sequence or close it with `\"`");
     }
 
     return {};

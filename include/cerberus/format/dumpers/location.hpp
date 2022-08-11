@@ -8,16 +8,11 @@
 namespace cerb::fmt
 {
     template<ConstString String, typename... Args>
-    CERBLIB_DECL auto format(Args &&...args) -> std::basic_string<decltype(String.zeroChar())>;
+    CERBLIB_DECL auto format(Args &&...args) -> std::u8string;
 
-    template<CharacterLiteral To, ConstString String, typename... Args>
-    CERBLIB_DECL auto format(Args &&...args) -> std::basic_string<To>;
-
-    template<CharacterLiteral CharT1, CharacterLiteral CharT2>
-    constexpr auto
-        dump(std::basic_string<CharT1> &formatting_string, const text::Location<CharT2> &location)
+    constexpr auto dump(std::u8string &formatting_string, const text::Location &location)
     {
-        auto formatted_string = fmt::format<CharT1, "{}, line: {}, column: {}">(
+        auto formatted_string = fmt::format<u8"{}, line: {}, column: {}">(
             location.getFilename(), location.getLine(), location.getColumn());
 
         dump(formatting_string, formatted_string);

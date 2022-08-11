@@ -18,8 +18,5 @@ constexpr static auto testConstString(auto input) -> bool
     return true;
 }
 
-static_assert(testConstString<"">(""_sv));
-static_assert(testConstString<"Hello, World!">("Hello, World!"_sv));
-
-static_assert(testConstString<u"">(u""_sv));
-static_assert(testConstString<u"Hello, World!">(u"Hello, World!"_sv));
+static_assert(testConstString<u8"">(u8""_sv));
+static_assert(testConstString<u8"Hello, World!">(u8"Hello, World!"_sv));

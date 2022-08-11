@@ -4,7 +4,7 @@
 using namespace cerb::fmt::core;
 using namespace cerb::string_view_literals;
 
-constexpr static auto counterTest(auto string, size_t n) -> bool
+constexpr static auto counterTest(cerb::u8string_view string, size_t n) -> bool
 {
     auto counter = ArgumentsCounter{ string };
     return counter.get() == n;
@@ -12,16 +12,10 @@ constexpr static auto counterTest(auto string, size_t n) -> bool
 
 CONSTEXPR_TEST
 {
-    assertTrue(counterTest(""_sv, 0));
-    assertTrue(counterTest("Hello!{}"_sv, 1));
-    assertTrue(counterTest("Hello {}, { }!"_sv, 2));
-    assertTrue(counterTest("Hello {}{{, {}}}!_"_sv, 2));
-
-    assertTrue(counterTest(u""_sv, 0));
-    assertTrue(counterTest(u"Hello!{}"_sv, 1));
-    assertTrue(counterTest(u"Hello {}, { }!"_sv, 2));
-    assertTrue(counterTest(u"Hello {}{{, {}}}!"_sv, 2));
-
+    assertTrue(counterTest(u8"", 0));
+    assertTrue(counterTest(u8"Hello!{}", 1));
+    assertTrue(counterTest(u8"Hello {}, { }!", 2));
+    assertTrue(counterTest(u8"Hello {}{{, {}}}!_", 2));
     return {};
 }
 ();
