@@ -27,40 +27,21 @@ namespace cerb::lex
     {
         using CommentTokens = text::CommentTokens;
 
-        [[nodiscard]] auto isNextCharNotForScanning(const text::TextIterator &text_iterator) const
-            -> bool
-        {
-            auto text = text_iterator.getRemainingFutureAfterSymbols(1);
-
-            return isComment(text) || isTerminal(text) || isStringOrChar(text);
-        }
-
         [[nodiscard]] auto isTerminal(const u8string_view &text) const -> bool
         {
             return terminals.matches(text).success;
         }
 
-        [[nodiscard]] auto isComment(const u8string_view &text) const -> bool
-        {
-            return basicIsComment(text, comment_tokens.single_line) ||
-                   basicIsComment(text, comment_tokens.multiline_begin) ||
-                   basicIsComment(text, comment_tokens.multiline_end);
-        }
+        [[nodiscard]] auto isComment(const u8string_view &text) const -> bool;
+        [[nodiscard]] auto isNextCharNotForScanning(const text::TextIterator &text_iterator) const
+            -> bool;
 
     private:
         [[nodiscard]] static auto
-            basicIsComment(const u8string_view &text, const u8string_view &comment) -> bool
-        {
-            return not comment.empty() && text.substr(0, comment.size()) == comment;
-        }
+            basicIsComment(const u8string_view &text, const u8string_view &comment) -> bool;
 
     public:
-        [[nodiscard]] auto isStringOrChar(const u8string_view &text) const -> bool
-        {
-            return std::ranges::any_of(strings_and_chars, [text](const auto &elem) {
-                return text.substr(0, elem.str.size()) == elem.str;
-            });
-        }
+        [[nodiscard]] auto isStringOrChar(const u8string_view &text) const -> bool;
 
         CommentTokens comment_tokens{};
         std::vector<String> strings_and_chars{};

@@ -7,61 +7,56 @@ namespace cerb::utf8
 {
     CERBLIB_EXCEPTION(Utf8ConvertionError, CerberusException);
 
-    constexpr u8 one_byte_mask = 0b1000'0000;
-    constexpr u8 two_bytes_mask = 0b1110'0000;
-    constexpr u8 two_bytes_signature = 0b1100'0000;
-    constexpr u8 tree_bytes_mask = 0b1111'0000;
-    constexpr u8 tree_bytes_signature = 0b1110'0000;
-    constexpr u8 four_bytes_mask = 0b1111'1000;
-    constexpr u8 four_bytes_signature = 0b1111'0000;
-    constexpr u8 continuation_mask = 0b1100'0000;
-    constexpr u8 continuation_signature = 0b1000'0000;
-    constexpr u8 trailing_bytes_size = 6;
+    template<typename T>
+    concept ValueTypeUtf8 = std::is_same_v<char8_t, typename T::value_type>;
 
-    constexpr u32 one_byte_utf_max = 127;
-    constexpr u32 two_byte_utf_max = 2047;
-    constexpr u32 tree_byte_utf_max = 65535;
-    constexpr u32 four_byte_utf_max = 1114111;
+    constexpr u8 OneByteMask = 0b1000'0000;
+    constexpr u8 TwoBytesMask = 0b1110'0000;
+    constexpr u8 TwoBytesSignature = 0b1100'0000;
+    constexpr u8 TreeBytesMask = 0b1111'0000;
+    constexpr u8 TreeBytesSignature = 0b1110'0000;
+    constexpr u8 FourBytesMask = 0b1111'1000;
+    constexpr u8 FourBytesSignature = 0b1111'0000;
+    constexpr u8 ContinuationMask = 0b1100'0000;
+    constexpr u8 ContinuationSignature = 0b1000'0000;
+    constexpr u8 TrailingSize = 6;
 
-    CERBLIB_DECL auto isTrailingCharacter(char8_t byte) -> bool
+    constexpr u32 OneByteMax = 127;
+    constexpr u32 TwoBytesMax = 2047;
+    constexpr u32 TreeBytesMax = 65535;
+    constexpr u32 FourBytesMax = 1114111;
+
+    constexpr std::array<u8, 5> UtfMasks{ 0, OneByteMask, TwoBytesMask, TreeBytesMask,
+                                          FourBytesMask };
+
+    CERBLIB_DECL auto isTrailingCharacter(char8_t chr) -> bool
     {
-        return (byte & continuation_mask) == continuation_signature;
+        return (chr & ContinuationMask) == ContinuationSignature;
     }
 
     CERBLIB_DECL auto isOneByteSize(char8_t chr) -> bool
     {
-        return (chr & one_byte_mask) == 0;
+        return (chr & OneByteMask) == 0;
     }
 
     CERBLIB_DECL auto isTwoBytesSize(char8_t chr) -> bool
     {
-        return (chr & two_bytes_mask) == two_bytes_signature;
+        return (chr & TwoBytesMask) == TwoBytesSignature;
     }
 
     CERBLIB_DECL auto isThreeBytesSize(char8_t chr) -> bool
     {
-        return (chr & tree_bytes_mask) == tree_bytes_signature;
+        return (chr & TreeBytesMask) == TreeBytesSignature;
     }
 
     CERBLIB_DECL auto isFourBytesSize(char8_t chr) -> bool
     {
-        return (chr & four_bytes_mask) == four_bytes_signature;
+        return (chr & FourBytesMask) == FourBytesSignature;
     }
 
     CERBLIB_DECL auto getMask(u16 size) -> u8
     {
-        switch (size) {
-        case 1:
-            return one_byte_mask;
-        case 2:
-            return two_bytes_mask;
-        case 3:
-            return tree_bytes_mask;
-        case 4:
-            return four_bytes_mask;
-        default:
-            return 0;
-        }
+        return UtfMasks.at(size);
     }
 
     CERBLIB_DECL auto utfSize(char8_t chr) -> u16
@@ -89,34 +84,35 @@ namespace cerb::utf8
     {
         using namespace std::string_view_literals;
 
-        if ((chr & continuation_mask) != continuation_signature) {
+        if ((chr & ContinuationMask) != ContinuationSignature) {
             throw Utf8ConvertionError{ "unable to convert symbol to utf8"sv };
         }
     }
 
-    constexpr auto addUtf32ToUtf8String(std::u8string &string, char32_t chr) -> void
+    template<ValueTypeUtf8 T>
+    constexpr auto appendUtf32ToUtf8Container(T &string, char32_t chr) -> void
     {
         using namespace std::string_view_literals;
 
         // NOLINTBEGIN
 
-        if (chr <= one_byte_utf_max) {
+        if (chr <= OneByteMax) {
             string.push_back(static_cast<char8_t>(chr));
-        } else if (chr <= two_byte_utf_max) {
-            string.push_back(static_cast<char8_t>(two_bytes_signature | (chr >> 6)));
-            string.push_back(static_cast<char8_t>(continuation_signature | (chr & 0b0011'1111)));
-        } else if (chr <= tree_byte_utf_max) {
-            string.push_back(static_cast<char8_t>(tree_bytes_signature | (chr >> 12)));
+        } else if (chr <= TwoBytesMax) {
+            string.push_back(static_cast<char8_t>(TwoBytesSignature | (chr >> 6)));
+            string.push_back(static_cast<char8_t>(ContinuationSignature | (chr & 0b0011'1111)));
+        } else if (chr <= TreeBytesMax) {
+            string.push_back(static_cast<char8_t>(TreeBytesSignature | (chr >> 12)));
             string.push_back(
-                static_cast<char8_t>(continuation_signature | ((chr >> 6) & 0b0011'1111)));
-            string.push_back(static_cast<char8_t>(continuation_signature | (chr & 0b0011'1111)));
-        } else if (chr <= four_byte_utf_max) {
-            string.push_back(static_cast<char8_t>(four_bytes_signature | (chr >> 18)));
+                static_cast<char8_t>(ContinuationSignature | ((chr >> 6) & 0b0011'1111)));
+            string.push_back(static_cast<char8_t>(ContinuationSignature | (chr & 0b0011'1111)));
+        } else if (chr <= FourBytesMax) {
+            string.push_back(static_cast<char8_t>(FourBytesSignature | (chr >> 18)));
             string.push_back(
-                static_cast<char8_t>(continuation_signature | ((chr >> 12) & 0b0011'1111)));
+                static_cast<char8_t>(ContinuationSignature | ((chr >> 12) & 0b0011'1111)));
             string.push_back(
-                static_cast<char8_t>(continuation_signature | ((chr >> 6) & 0b0011'1111)));
-            string.push_back(static_cast<char8_t>(continuation_signature | (chr & 0b0011'1111)));
+                static_cast<char8_t>(ContinuationSignature | ((chr >> 6) & 0b0011'1111)));
+            string.push_back(static_cast<char8_t>(ContinuationSignature | (chr & 0b0011'1111)));
         } else {
             throw Utf8ConvertionError{ "unable to convert symbol to utf8"sv };
         }

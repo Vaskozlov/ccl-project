@@ -6,15 +6,15 @@ STRING_TEST
 {
     std::u8string test;
 
-    cerb::utf8::addUtf32ToUtf8String(test, U'\u00FF');
+    cerb::utf8::appendUtf32ToUtf8Container(test, U'\u00FF');
     assertEqual(test, u8"\xC3\xBF");
 
     test.clear();
-    cerb::utf8::addUtf32ToUtf8String(test, U'\uFFFF');
+    cerb::utf8::appendUtf32ToUtf8Container(test, U'\uFFFF');
     assertEqual(test, u8"\xEF\xBF\xBF");
 
     test.clear();
-    cerb::utf8::addUtf32ToUtf8String(test, U'\U0010FFFF');
+    cerb::utf8::appendUtf32ToUtf8Container(test, U'\U0010FFFF');
     assertEqual(test, u8"\xF4\x8F\xBF\xBF");
 
     return {};

@@ -20,74 +20,42 @@ namespace cerb::lex::dot_item
             SUCCESS = true
         };
 
-        [[nodiscard]] auto getRepetition() const -> Repetition
+        [[nodiscard]] auto getRepetition() const noexcept -> Repetition
         {
             return repetition;
         }
 
-        [[nodiscard]] auto isReversed() const -> bool
+        [[nodiscard]] auto isReversed() const noexcept -> bool
         {
             return reversed;
         }
 
-        auto reverse() -> void
+        auto reverse() noexcept -> void
         {
             reversed = !reversed;
         }
 
-        auto setRepetition(Repetition new_repetition) -> void
+        auto setRepetition(Repetition new_repetition) noexcept -> void
         {
             repetition = new_repetition;
         }
 
-        [[nodiscard]] auto isNextCharNotForScanning(const TextIterator &text_iterator) const -> bool
+        [[nodiscard]] auto canBeOptimized() const noexcept -> bool
         {
-            auto chr = text_iterator.futureRawChar(1);
-
-            if (isLayoutOrEoF(chr)) {
-                return true;
-            }
-
-            return analysis_shared.isNextCharNotForScanning(text_iterator);
-        }
-
-        [[nodiscard]] auto canBeOptimized() const -> bool
-        {
-            return empty() && repetition.from == 0;
+            return repetition.from == 0 && empty();
         }
 
         [[nodiscard]] virtual auto empty() const noexcept -> bool = 0;
-
+        [[nodiscard]] auto isNextCharNotForScanning(const TextIterator &text_iterator) const
+            -> bool;
         [[nodiscard]] auto scan(const TextIterator &text_iterator, bool main_scan = false) const
-            -> std::pair<bool, TextIterator>
-        {
-            auto times = static_cast<size_t>(0);
-            auto local_iterator = text_iterator;
-
-            while (times <= repetition.to) {
-                auto iterator_copy = local_iterator;
-
-                if (scanIteration(iterator_copy) ^ reversed) {
-                    ++times;
-                    local_iterator = std::move(iterator_copy);
-                } else {
-                    break;
-                }
-            }
-
-            return { computeScanResult(local_iterator, times, main_scan), local_iterator };
-        }
+            -> std::pair<bool, TextIterator>;
 
     private:
         [[nodiscard]] virtual auto scanIteration(TextIterator &text_iterator) const -> bool = 0;
-
         [[nodiscard]] auto
             computeScanResult(const TextIterator &text_iterator, size_t times, bool main_scan) const
-            -> bool
-        {
-            return repetition.inRange(times) &&
-                   (not main_scan || isNextCharNotForScanning(text_iterator));
-        }
+            -> bool;
 
     public:
         auto operator=(const BasicItem &) -> BasicItem & = delete;
