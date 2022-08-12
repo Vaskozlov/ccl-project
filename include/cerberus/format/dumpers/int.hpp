@@ -20,12 +20,12 @@ namespace cerb::fmt
 
     namespace private_
     {
-        template<std::integral Int, CharacterLiteral CharT>
+        template<std::integral Int>
         class IntegralConverter
         {
         public:
             constexpr IntegralConverter(
-                std::basic_string<CharT> &formatting_string_,
+                std::u8string &formatting_string_,
                 Int number_,
                 u16 notation_ = Notation::DECIMAL)
               : formatting_string{ formatting_string_ }, number{ number_ }, notation{ notation_ }
@@ -45,7 +45,7 @@ namespace cerb::fmt
                     return;
                 } else {
                     if (number == 0) {
-                        formatting_string.push_back('0');
+                        formatting_string.push_back(u8'0');
                         return;
                     }
 
@@ -57,21 +57,23 @@ namespace cerb::fmt
 
             constexpr auto convertChar() -> void
             {
-                constexpr auto upper_limit = std::numeric_limits<CharT>::max();
-                constexpr auto lower_limit = std::numeric_limits<CharT>::min();
+                constexpr auto upper_limit = std::numeric_limits<char8_t>::max();
+                constexpr auto lower_limit = std::numeric_limits<char8_t>::min();
 
                 if (number >= lower_limit && number <= upper_limit) {
-                    formatting_string.push_back(static_cast<CharT>(number));
+                    formatting_string.push_back(static_cast<char8_t>(number));
                 } else {
-                    formatting_string.push_back('?');
+                    formatting_string.push_back(u8'?');
                 }
             }
 
             constexpr auto processSign() -> void
             {
-                if (number < 0) {
-                    formatting_string.push_back('-');
-                    number = -number;
+                if constexpr (not std::unsigned_integral<Int>) {
+                    if (number < 0) {
+                        formatting_string.push_back(u8'-');
+                        number = -number;
+                    }
                 }
             }
 
@@ -79,7 +81,7 @@ namespace cerb::fmt
             {
                 while (number != 0) {
                     conversion_buffer[--buffer_index] =
-                        IntToHexadecimalChars<CharT>[static_cast<u16>(number % notation)];
+                        IntToHexadecimalChars<char8_t>[static_cast<u16>(number % notation)];
                     number /= notation;
                 }
             }
@@ -93,18 +95,18 @@ namespace cerb::fmt
 
             constexpr static size_t maximum_digits = std::numeric_limits<Int>::digits10 + 1;
 
-            std::basic_string<CharT> &formatting_string;
+            std::u8string &formatting_string;
             size_t buffer_index{ maximum_digits };
-            std::array<CharT, maximum_digits> conversion_buffer{};
+            std::array<char8_t, maximum_digits> conversion_buffer{};
             Int number;
             u16 notation;
         };
     }// namespace private_
 
-    template<std::integral Int, CharacterLiteral CharT>
-    constexpr auto dump(std::basic_string<CharT> &formatting_string, Int value) -> void
+    template<std::integral Int>
+    constexpr auto dump(std::u8string &formatting_string, Int value) -> void
     {
-        private_::IntegralConverter<Int, CharT>{ formatting_string, value };
+        private_::IntegralConverter<Int>{ formatting_string, value };
     }
 }// namespace cerb::fmt
 

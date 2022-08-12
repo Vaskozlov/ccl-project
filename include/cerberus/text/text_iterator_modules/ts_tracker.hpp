@@ -1,12 +1,10 @@
 #ifndef CERBERUS_PROJECT_TS_TRACKER_HPP
 #define CERBERUS_PROJECT_TS_TRACKER_HPP
 
-#include <cerberus/text/typedefs.hpp>
 #include <string>
 
 namespace cerb::text::module
 {
-    template<CharacterLiteral CharT>
     class TsTracker
     {
     public:
@@ -20,17 +18,17 @@ namespace cerb::text::module
             return tabs_and_spaces.empty();
         }
 
-        CERBLIB_DECL auto get() const -> const Str<CharT> &
+        CERBLIB_DECL auto get() const -> const std::u8string &
         {
             return tabs_and_spaces;
         }
 
-        constexpr auto next(CharT chr) -> void
+        constexpr auto next(char32_t chr) -> void
         {
             clearIfNeeded();
 
             if (isTs(chr)) {
-                tabs_and_spaces.push_back(chr);
+                tabs_and_spaces.push_back(static_cast<char8_t>(chr));
             } else {
                 need_to_clear = true;
             }
@@ -47,12 +45,12 @@ namespace cerb::text::module
             }
         }
 
-        CERBLIB_DECL static auto isTs(CharT chr) -> bool
+        CERBLIB_DECL static auto isTs(char32_t chr) -> bool
         {
             return lor(chr == '\t', chr == ' ');
         }
 
-        Str<CharT> tabs_and_spaces{};
+        std::u8string tabs_and_spaces{};
         bool need_to_clear{};
     };
 }// namespace cerb::text::module

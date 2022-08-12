@@ -1,18 +1,14 @@
 #include <cerberus/debug/debug_file.hpp>
 #include <cerberus/text/basic_text_iterator.hpp>
 
-using namespace cerb;
 using namespace cerb::text;
 using namespace cerb::string_view_literals;
 
-template<cerb::CharacterLiteral CharT>
-constexpr auto testCleanIteration() -> bool
+// NOLINTNEXTLINE
+STRING_TEST
 {
-    auto raw_input = strCast<CharT>("Hello, \t\nWorld!");
-    auto input = BasicStringView{ raw_input };
-
-    auto raw_expected = strCast<CharT>("Hello,World!");
-    auto expected = BasicStringView{ raw_expected };
+    auto input = u8"Hello, \t\nWorld! \u00FF \uFFFF \U000FFFFF"_sv;
+    auto expected = U"Hello,World!\u00FF\uFFFF\U000FFFFF"_sv;
 
     auto text_iterator = BasicTextIterator{ input };
 
@@ -21,8 +17,6 @@ constexpr auto testCleanIteration() -> bool
         assertEqual(text_iterator.getCurrentChar(), chr);
     }
 
-    return true;
+    return {};
 }
-
-static_assert(testCleanIteration<char>());
-static_assert(testCleanIteration<char16_t>());
+();

@@ -6,8 +6,8 @@ using namespace cerb::fmt;
 // NOLINTNEXTLINE
 STRING_TEST
 {
-    assertEqual(format<"">(), "");
-    assertEqual(format<"Hello, World!">(), "Hello, World!");
+    assertEqual(format<u8"">(), u8"");
+    assertEqual(format<u8"Hello, World!">(), u8"Hello, World!");
     return {};
 }
 ();

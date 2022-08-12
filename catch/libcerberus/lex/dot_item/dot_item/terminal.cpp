@@ -8,13 +8,13 @@ using namespace cerb::lex::dot_item;
 // NOLINTNEXTLINE
 RUNTIME_TEST
 {
-    auto shared = AnalysisShared<char>{};
-    auto dot_item = DotItem<char>(TextIterator<char>{ R"('+' '-')" }, 0, shared);
+    auto shared = AnalysisShared{};
+    auto dot_item = DotItem(TextIterator{ u8R"('+' '-')" }, 0, shared);
 
     assertEqual(shared.terminals.size(), 2_ZU);
 
-    assertEqual(shared.terminals.matches("+").success, true);
-    assertEqual(shared.terminals.matches("-").success, true);
+    assertEqual(shared.terminals.matches(u8"+").success, true);
+    assertEqual(shared.terminals.matches(u8"-").success, true);
 
     return {};
 }
@@ -23,16 +23,16 @@ RUNTIME_TEST
 // NOLINTNEXTLINE
 RUNTIME_TEST
 {
-    auto shared = AnalysisShared<char>{};
+    auto shared = AnalysisShared{};
 
     try {
-        UNUSED_DECL DotItem<char>(TextIterator<char>{ R"([] '+' )" }, 0, shared);
+        UNUSED_DECL DotItem(TextIterator{ u8R"([] '+' )" }, 0, shared);
         assertTrue(false);
-    } catch (const DotItemException<char> &exception) {
+    } catch (const DotItemException &exception) {
         assertEqual(exception.getColumn(), 4_ZU);// NOLINT
         assertEqual(
             exception.getMessage(),
-            "unable to create terminal: terminals cannot coexist with other items");
+            u8"unable to create terminal: terminals cannot coexist with other items");
     }
 
     return {};
@@ -42,16 +42,16 @@ RUNTIME_TEST
 // NOLINTNEXTLINE
 RUNTIME_TEST
 {
-    auto shared = AnalysisShared<char>{};
+    auto shared = AnalysisShared{};
 
     try {
-        UNUSED_DECL DotItem<char>(TextIterator<char>{ R"('+' [])" }, 0, shared);
+        UNUSED_DECL DotItem(TextIterator{ u8R"('+' [])" }, 0, shared);
         assertTrue(false);
-    } catch (const DotItemException<char> &exception) {
+    } catch (const DotItemException &exception) {
         assertEqual(exception.getColumn(), 5_ZU);// NOLINT
         assertEqual(
             exception.getMessage(),
-            "unable to create union: terminals cannot coexist with other items");
+            u8"unable to create union: terminals cannot coexist with other items");
     }
 
     return {};

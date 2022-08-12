@@ -2,6 +2,7 @@
 #define CERBERUS_PROJECT_STRING_HPP
 
 #include <cerberus/string_view.hpp>
+#include <cerberus/utf8.hpp>
 #include <string>
 #include <string_view>
 

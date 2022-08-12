@@ -13,11 +13,8 @@ namespace cerb::fmt
     template<ConstString String>
     class Formatter
     {
-    private:
-        using CharT = decltype(String.zeroChar());
-
     public:
-        CERBLIB_DECL auto get() -> std::basic_string<CharT> &
+        CERBLIB_DECL auto get() -> std::u8string &
         {
             return formatted_string;
         }
@@ -60,12 +57,12 @@ namespace cerb::fmt
             return not string_blocks[Index].empty();
         }
 
-        constexpr auto append(const BasicStringView<CharT> &str) -> void
+        constexpr auto append(const u8string_view &str) -> void
         {
             if CERBLIB_RUNTIME_BRANCH {// G++-12 doesn't allow to append string at compile time
-                formatted_string.append(static_cast<std::basic_string_view<CharT>>(str));
+                formatted_string.append(static_cast<std::u8string_view>(str));
             } else {
-                for (auto &chr : str) {
+                for (const auto &chr : str) {
                     formatted_string.push_back(chr);
                 }
             }
@@ -74,7 +71,7 @@ namespace cerb::fmt
         constexpr static auto countApproximateLength() -> unsigned long
         {
             constexpr auto string_size = std::accumulate(
-                string_blocks.begin(), string_blocks.end(), 0UL,
+                string_blocks.begin(), string_blocks.end(), static_cast<size_t>(0),
                 [](auto acc, auto &block) { return acc + block.size(); });
 
             constexpr auto argument_count = string_blocks.size() - 1;
@@ -86,20 +83,14 @@ namespace cerb::fmt
         constexpr static auto string_blocks = core::splitString<String>();
         constexpr static auto approximate_length = countApproximateLength();
 
-        std::basic_string<CharT> formatted_string{};
+        std::u8string formatted_string{};
     };
 
     template<ConstString String, typename... Args>
-    CERBLIB_DECL auto format(Args &&...args) -> std::basic_string<decltype(String.zeroChar())>
+    CERBLIB_DECL auto format(Args &&...args) -> std::u8string
     {
         auto formatter = Formatter<String>{ std::forward<Args>(args)... };
         return formatter.get();
-    }
-
-    template<CharacterLiteral To, ConstString String, typename... Args>
-    CERBLIB_DECL auto format(Args &&...args) -> std::basic_string<To>
-    {
-        return format<String.template convert<To>(), Args...>(std::forward<Args>(args)...);
     }
 }// namespace cerb::fmt
 

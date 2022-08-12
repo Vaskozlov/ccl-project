@@ -51,6 +51,11 @@ namespace cerb
             return size() == 0;
         }
 
+        CERBLIB_DECL auto data() const -> pointer
+        {
+            return begin();
+        }
+
         CERBLIB_DECL auto begin() const -> iterator
         {
             return string;
