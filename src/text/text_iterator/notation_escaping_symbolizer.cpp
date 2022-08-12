@@ -43,8 +43,7 @@ namespace cerb::text
 
     auto TextIterator::NotationEscapingSymbolizer::checkNotation() const -> void
     {
-        constexpr auto max_notation_power = 4;
-        assert(land(notation_power > 0, notation_power <= max_notation_power));
+        assert(land(notation_power > 0, notation_power <= 4));
     }
 
     auto TextIterator::NotationEscapingSymbolizer::isOutOfNotation(char32_t chr) const -> bool

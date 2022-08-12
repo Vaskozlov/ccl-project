@@ -11,9 +11,9 @@ CONSTEXPR_TEST
     auto first_test_enum = TestIntEnum::ONE;
     auto second_test_enum = TestIntEnum::TWO;
 
-    assertTrue(std::is_nothrow_constructible_v<TestIntEnum>);
-    assertTrue(std::is_nothrow_move_assignable_v<TestIntEnum>);
-    assertTrue(std::is_nothrow_move_constructible_v<TestIntEnum>);
+    static_assert(std::is_nothrow_constructible_v<TestIntEnum>);
+    static_assert(std::is_nothrow_move_assignable_v<TestIntEnum>);
+    static_assert(std::is_nothrow_move_constructible_v<TestIntEnum>);
 
     assertEqual(first_test_enum, 1);
     assertEqual(second_test_enum, 2);
@@ -33,9 +33,8 @@ RUNTIME_TEST
     auto first_test_enum = TestStringEnum::ONE;
     auto second_test_enum = TestStringEnum::TWO;
 
-    assertTrue(std::is_nothrow_constructible_v<TestStringEnum>);
-    assertTrue(std::is_nothrow_move_assignable_v<TestStringEnum>);
-    assertTrue(std::is_nothrow_move_constructible_v<TestStringEnum>);
+    static_assert( std::is_nothrow_move_assignable_v<TestStringEnum>);
+    static_assert(std::is_nothrow_move_constructible_v<TestStringEnum>);
 
     assertEqual(first_test_enum, "ONE");
     assertEqual(second_test_enum, "TWO");
