@@ -2,10 +2,7 @@
 
 namespace cerb::lex::dot_item
 {
-    auto Union::empty() const noexcept -> bool
-    {
-        return bitset.empty();
-    }
+    using namespace cerb::string_view_literals;
 
     Union::Union(TextIterator &rule_iterator_, AnalysisShared &analysis_shared_)
       : BasicItem{ analysis_shared_ }
@@ -43,6 +40,11 @@ namespace cerb::lex::dot_item
         }
 
         checkForClosedRange(rule_iterator, is_range);
+    }
+
+    auto Union::empty() const noexcept -> bool
+    {
+        return bitset.empty();
     }
 
     auto Union::scanIteration(TextIterator &text_iterator) const -> bool
@@ -88,17 +90,13 @@ namespace cerb::lex::dot_item
 
     auto Union::throwUnterminatedUnion(TextIterator &rule_iterator) -> void
     {
-        using namespace std::string_view_literals;
-
-        rule_iterator.template throwException<UnionException>(u8"unterminated union item"sv);
+        rule_iterator.template throwException<UnionException>(u8"unterminated union item"_sv);
         throw UnrecoverableError{ "unrecoverable error in UnionType" };
     }
 
     auto Union::throwUnterminatedRangeException(TextIterator &rule_iterator) -> void
     {
-        using namespace std::string_view_literals;
-
-        rule_iterator.template throwException<UnionException>(u8"unterminated range"sv);
+        rule_iterator.template throwException<UnionException>(u8"unterminated range"_sv);
         throw UnrecoverableError{ "unrecoverable error in UnionType" };
     }
 

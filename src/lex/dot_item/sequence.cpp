@@ -2,10 +2,7 @@
 
 namespace cerb::lex::dot_item
 {
-    auto Sequence::empty() const noexcept -> bool
-    {
-        return string.empty();
-    }
+    using namespace cerb::string_view_literals;
 
     Sequence::Sequence(
         bool multiline_, u8string_view str_token_, TextIterator &rule_iterator_,
@@ -33,6 +30,11 @@ namespace cerb::lex::dot_item
         addWarningIfEmpty(rule_iterator);
     }
 
+    auto Sequence::empty() const noexcept -> bool
+    {
+        return string.empty();
+    }
+
     auto Sequence::scanIteration(TextIterator &text_iterator) const -> bool
     {
         auto future_text = text_iterator.getRemainingFutureAfterSymbols(1);
@@ -58,8 +60,6 @@ namespace cerb::lex::dot_item
     auto Sequence::checkForUnexpectedEnd(
         TextIterator &rule_iterator, bool is_escaping, char32_t chr) const -> void
     {
-        using namespace std::string_view_literals;
-
         if (is_escaping) {
             return;
         }
@@ -69,7 +69,7 @@ namespace cerb::lex::dot_item
         }
 
         if (land(chr == '\n', not multiline)) {
-            auto message = u8"new line is reached, but sequence has not been terminated"sv;
+            auto message = u8"new line is reached, but sequence has not been terminated"_sv;
             auto suggestion =
                 fmt::format<u8"use multiline sequence or close it with `{}`">(str_token);
 
@@ -97,19 +97,15 @@ namespace cerb::lex::dot_item
 
     auto Sequence::addWarningIfEmpty(TextIterator &rule_iterator) -> void
     {
-        using namespace std::string_view_literals;
-
         if (string.empty()) {
             rule_iterator.template throwWarning<SequenceException>(
-                u8"empty string should not be used"sv);
+                u8"empty string should not be used"_sv);
         }
     }
 
     auto Sequence::throwEmptyStringBegin(TextIterator &rule_iterator) -> void
     {
-        using namespace std::string_view_literals;
-
-        rule_iterator.throwException<SequenceException>(u8"sequence item begin cannot be empty"sv);
+        rule_iterator.throwException<SequenceException>(u8"sequence item begin cannot be empty"_sv);
         throw UnrecoverableError{ "unreachable error in SequenceType" };
     }
 

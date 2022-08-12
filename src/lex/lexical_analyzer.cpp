@@ -8,9 +8,7 @@ namespace cerb::lex
             text_iterator.skipCommentsAndLayout();
 
             auto [success, iterator] = item.scan(text_iterator, true);
-            ::fmt::print(
-                "{}\n{}\n", success,// NOLINTNEXTLINE
-                (const char *)iterator.getRemainingFutureAfterSymbols(1).begin());
+            ::fmt::print("{}\n", success);
         }
     }
 

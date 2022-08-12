@@ -19,6 +19,10 @@ namespace cerb::lex::dot_item
         using typename BasicItem::TextIterator;
 
     public:
+        Sequence(
+            bool multiline_, u8string_view str_token_, TextIterator &rule_iterator_,
+            AnalysisShared &analysis_shared_);
+
         [[nodiscard]] auto get() const noexcept -> const std::u8string &
         {
             return string;
@@ -30,10 +34,6 @@ namespace cerb::lex::dot_item
         }
 
         [[nodiscard]] auto empty() const noexcept -> bool override;
-
-        Sequence(
-            bool multiline_, u8string_view str_token_, TextIterator &rule_iterator_,
-            AnalysisShared &analysis_shared_);
 
     private:
         [[nodiscard]] auto scanIteration(TextIterator &text_iterator) const -> bool override;

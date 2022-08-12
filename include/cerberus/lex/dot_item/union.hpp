@@ -18,6 +18,8 @@ namespace cerb::lex::dot_item
         using typename BasicItem::ScanStatus;
         using typename BasicItem::TextIterator;
 
+        Union(TextIterator &rule_iterator_, AnalysisShared &analysis_shared_);
+
         [[nodiscard]] auto get() const -> const UtfSet &
         {
             return bitset;
@@ -25,12 +27,11 @@ namespace cerb::lex::dot_item
 
         [[nodiscard]] auto empty() const noexcept -> bool override;
 
-        Union(TextIterator &rule_iterator_, AnalysisShared &analysis_shared_);
-
     private:
         [[nodiscard]] auto scanIteration(TextIterator &text_iterator) const -> bool override;
 
         [[nodiscard]] static auto isRange(bool is_escaping, char32_t chr) noexcept -> bool;
+
         [[nodiscard]] static auto isUnionEnd(bool is_escaping, char32_t chr) noexcept -> bool;
 
         static auto

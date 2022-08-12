@@ -9,6 +9,11 @@ namespace cerb::lex::dot_item
 
     struct CERBLIB_TRIVIAL_ABI Repetition
     {
+        constexpr Repetition(size_t from_, size_t to_) noexcept : from(from_), to(to_)
+        {}
+
+        explicit Repetition(text::TextIterator &text_iterator);
+
         consteval static auto basic() -> Repetition
         {
             return { 1, 1 };
@@ -37,11 +42,6 @@ namespace cerb::lex::dot_item
         [[nodiscard]] auto operator<=>(const Repetition &) const noexcept
             -> std::weak_ordering = default;
 
-        constexpr Repetition(size_t from_, size_t to_) noexcept : from(from_), to(to_)
-        {}
-
-        explicit Repetition(text::TextIterator &text_iterator);
-
     private:
         static auto parseNumber(text::TextIterator &text_iterator, char32_t terminator) -> size_t;
 
@@ -49,10 +49,10 @@ namespace cerb::lex::dot_item
         auto checkCorrectnessOfValues(text::TextIterator &text_iterator) const -> void;
 
         auto throwBadValues(text::TextIterator &text_iterator) const -> void;
-        static auto throwUnexpectedCharacter(text::TextIterator &text_iterator, char32_t chr)
-            -> void;
         static auto throwUnexpectedTermination(text::TextIterator &text_iterator) -> void;
         static auto throwRangeBeginException(text::TextIterator &text_iterator) -> void;
+        static auto throwUnexpectedCharacter(text::TextIterator &text_iterator, char32_t chr)
+            -> void;
 
     public:
         size_t from{};

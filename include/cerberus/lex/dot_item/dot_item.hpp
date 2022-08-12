@@ -23,16 +23,6 @@ namespace cerb::lex::dot_item
         using typename BasicItem::TextIterator;
 
     public:
-        [[nodiscard]] auto getId() const -> size_t
-        {
-            return id;
-        }
-
-        [[nodiscard]] auto empty() const noexcept -> bool override
-        {
-            return items.empty();
-        }
-
         explicit DotItem(
             const TextIterator &rule_iterator_,
             size_t id_,
@@ -56,6 +46,16 @@ namespace cerb::lex::dot_item
           : BasicItem(analysis_shared_), id(id_)
         {
             parseRule(rule_iterator_);
+        }
+
+        [[nodiscard]] auto getId() const -> size_t
+        {
+            return id;
+        }
+
+        [[nodiscard]] auto empty() const noexcept -> bool override
+        {
+            return items.empty();
         }
 
     private:
@@ -92,18 +92,18 @@ namespace cerb::lex::dot_item
         auto reverseLastItem(TextIterator &rule_iterator) -> void;
 
         auto checkSize(
-            TextIterator &rule_iterator, size_t expected_size, std::u8string_view message,
-            std::u8string_view suggestion = {}) -> void;
+            TextIterator &rule_iterator, size_t expected_size, u8string_view message,
+            u8string_view suggestion = {}) -> void;
 
         static auto throwUnexpectedSize(
             TextIterator &rule_iterator,
-            std::u8string_view message,
-            std::u8string_view suggestion = {}) -> void;
+            u8string_view message,
+            u8string_view suggestion = {}) -> void;
 
         static auto throwUnableToApply(
             TextIterator &rule_iterator,
-            std::u8string_view reason,
-            std::u8string_view suggestion = {}) -> void;
+            u8string_view reason,
+            u8string_view suggestion = {}) -> void;
 
         static auto throwUnterminatedDotItem(TextIterator &rule_iterator) -> void;
 

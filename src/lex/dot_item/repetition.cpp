@@ -2,6 +2,8 @@
 
 namespace cerb::lex::dot_item
 {
+    using namespace cerb::string_view_literals;
+
     Repetition::Repetition(text::TextIterator &text_iterator)
     {
         checkRangeStart(text_iterator);
@@ -70,18 +72,14 @@ namespace cerb::lex::dot_item
 
     auto Repetition::throwUnexpectedTermination(text::TextIterator &text_iterator) -> void
     {
-        using namespace std::string_view_literals;
-
-        text_iterator.template throwException<RepetitionException>(u8"unexpected termination"sv);
+        text_iterator.template throwException<RepetitionException>(u8"unexpected termination"_sv);
         throw UnrecoverableError{ "unrecoverable error in Repetition" };
     }
 
     auto Repetition::throwRangeBeginException(text::TextIterator &text_iterator) -> void
     {
-        using namespace std::string_view_literals;
-
         text_iterator.template throwException<RepetitionException>(
-            u8"expected '{' at the beginning of repetition range"sv);
+            u8"expected '{' at the beginning of repetition range"_sv);
         throw UnrecoverableError{ "unrecoverable error in Repetition" };
     }
 }// namespace cerb::lex::dot_item

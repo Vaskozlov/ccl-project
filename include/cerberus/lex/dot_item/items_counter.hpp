@@ -44,6 +44,9 @@ namespace cerb::lex::dot_item
 
     struct ItemsCounter
     {
+        explicit ItemsCounter(text::TextIterator &text_iterator_) : text_iterator(text_iterator_)
+        {}
+
         [[nodiscard]] auto hasStrings() const -> bool
         {
             return strings != 0;
@@ -78,16 +81,13 @@ namespace cerb::lex::dot_item
         {
             return lor(hasStrings(), hasCharacters());
         }
-
         auto operator+=(item::UnionType /* unused */) -> ItemsCounter &;
         auto operator+=(item::DotItemType /* unused */) -> ItemsCounter &;
         auto operator+=(item::SequenceType /* unused */) -> ItemsCounter &;
         auto operator+=(item::StringType /* unused */) -> ItemsCounter &;
         auto operator+=(item::CharacterType /* unused */) -> ItemsCounter &;
-        auto operator+=(item::TerminalType /* unused */) -> ItemsCounter &;
 
-        explicit ItemsCounter(text::TextIterator &text_iterator_) : text_iterator(text_iterator_)
-        {}
+        auto operator+=(item::TerminalType /* unused */) -> ItemsCounter &;
 
     private:
         auto checkAbilityToCreateSequence() -> void;

@@ -46,13 +46,16 @@ namespace cerb::lex::dot_item
         }
 
         [[nodiscard]] virtual auto empty() const noexcept -> bool = 0;
+
         [[nodiscard]] auto isNextCharNotForScanning(const TextIterator &text_iterator) const
             -> bool;
+
         [[nodiscard]] auto scan(const TextIterator &text_iterator, bool main_scan = false) const
             -> std::pair<bool, TextIterator>;
 
     private:
         [[nodiscard]] virtual auto scanIteration(TextIterator &text_iterator) const -> bool = 0;
+
         [[nodiscard]] auto
             computeScanResult(const TextIterator &text_iterator, size_t times, bool main_scan) const
             -> bool;

@@ -38,7 +38,7 @@ foreach (file ${LIBCERBERUS_CATCH})
                 <numeric> <fmt/format.h>
                 <boost/container/small_vector.hpp>
         )
-    endif()
+    endif ()
 
     if ((i GREATER 0) AND PRECOMPILED_HEADERS)
         target_precompile_headers(
@@ -46,7 +46,8 @@ foreach (file ${LIBCERBERUS_CATCH})
                 REUSE_FROM
                 ${first_target}
         )
-    endif()
+
+    endif ()
 
     target_link_libraries(
             ${filename}-${dir_name}

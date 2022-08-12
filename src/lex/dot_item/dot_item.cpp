@@ -2,6 +2,8 @@
 
 namespace cerb::lex::dot_item
 {
+    using namespace cerb::string_view_literals;
+
     auto DotItem::scanIteration(TextIterator &text_iterator) const -> bool
     {
         for (const auto &item : items) {
@@ -31,57 +33,57 @@ namespace cerb::lex::dot_item
         -> void
     {
         switch (chr) {
-        case '[':
+        case U'[':
             counter += item::Union;
             emplaceItem(constructNewUnion(rule_iterator));
             break;
 
-        case '\"':
+        case U'\"':
             counter += item::Sequence;
             emplaceItem(constructNewSequence(rule_iterator));
             break;
 
-        case '(':
+        case U'(':
             counter += item::DotItem;
             emplaceItem(constructNewItem(rule_iterator));
             break;
 
-        case '\'':
+        case U'\'':
             counter += item::Terminal;
             constructTerminal(rule_iterator);
             break;
 
-        case '*':
+        case U'*':
             addRepetition(rule_iterator, Repetition::star());
             break;
 
-        case '+':
+        case U'+':
             addRepetition(rule_iterator, Repetition::plus());
             break;
 
-        case '?':
+        case U'?':
             addRepetition(rule_iterator, Repetition::question());
             break;
 
-        case '{':
+        case U'{':
             addRepetition(rule_iterator, Repetition{ rule_iterator });
             break;
 
-        case '^':
+        case U'^':
             reverseLastItem(rule_iterator);
             break;
 
-        case 'c':
+        case U'c':
             counter += item::Character;
             constructString(rule_iterator, true, false);
             break;
 
-        case 's':
+        case U's':
             counter += item::String;
             constructString(rule_iterator, false, false);
             break;
 
-        case 'm':
+        case U'm':
             counter += item::String;
             constructString(rule_iterator, false, true);
             break;
@@ -108,7 +110,7 @@ namespace cerb::lex::dot_item
         const auto *saved_end = text.end();
         auto bracket_index = text.openCloseFind('(', ')');
 
-        if (bracket_index == u8string_view ::npos) {
+        if (bracket_index == u8string_view::npos) {
             throwUnterminatedDotItem(rule_iterator);
         }
 
@@ -198,8 +200,8 @@ namespace cerb::lex::dot_item
     }
 
     auto DotItem::checkSize(
-        TextIterator &rule_iterator, size_t expected_size, std::u8string_view message,
-        std::u8string_view suggestion) -> void
+        TextIterator &rule_iterator, size_t expected_size, u8string_view message,
+        u8string_view suggestion) -> void
     {
         if (items.size() != expected_size) {
             throwUnexpectedSize(rule_iterator, message, suggestion);
@@ -208,8 +210,8 @@ namespace cerb::lex::dot_item
 
     auto DotItem::throwUnexpectedSize(
         TextIterator &rule_iterator,
-        std::u8string_view message,
-        std::u8string_view suggestion) -> void
+        u8string_view message,
+        u8string_view suggestion) -> void
     {
         rule_iterator.template throwException<DotItemException>(message, suggestion);
         throw UnrecoverableError{ "unrecoverable error in dot item" };
@@ -217,8 +219,8 @@ namespace cerb::lex::dot_item
 
     auto DotItem::throwUnableToApply(
         TextIterator &rule_iterator,
-        std::u8string_view reason,
-        std::u8string_view suggestion) -> void
+        u8string_view reason,
+        u8string_view suggestion) -> void
     {
         auto message = fmt::format<u8"unable to apply with reason: {}">(reason);
         auto converted_suggestion = fmt::format<u8"{}">(suggestion);
@@ -235,12 +237,10 @@ namespace cerb::lex::dot_item
 
     auto DotItem::throwUndefinedAction(TextIterator &rule_iterator) -> void
     {
-        using namespace std::string_view_literals;
-
-        auto message = u8"undefined action"sv;
+        auto message = u8"undefined action"_sv;
         auto suggestion =
             u8"Use `\"` for string, `'` for terminal symbol, `[` for unions, `(` for dot "
-            "items"sv;
+            "items"_sv;
 
         rule_iterator.template throwException<DotItemException>(message, suggestion);
         throw UnrecoverableError{ "unrecoverable error in DotItemType" };
