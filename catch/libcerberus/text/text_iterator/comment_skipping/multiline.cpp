@@ -8,11 +8,13 @@ RUNTIME_TEST
 {
     auto text_iterator = TextIterator<char>{ "/*", nullptr, { "//", "/*", "*/" } };
 
-    ERROR_EXPECTED(
-        text_iterator.skipCommentsAndLayout(), BasicTextIteratorException,
-        "Error occurred at: , line: 1, column: 2. Error message: unterminated multiline comment\n"
-        "/*\n"
-        " ^");
+    try {
+        text_iterator.skipCommentsAndLayout();
+        assertTrue(false);
+    } catch (const module::CommentSkipperException<char> &exception) {
+        assertEqual(exception.getColumn(), 2_ZU);// NOLINT
+        assertEqual(exception.getMessage(), "unterminated multiline comment");
+    }
 
     return {};
 }

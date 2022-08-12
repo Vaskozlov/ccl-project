@@ -86,9 +86,8 @@ namespace cerb::text::module
 
         constexpr auto throwCharacterOverflow() const -> void
         {
-            auto exception = NotationEscapingSymbolizerException<TextT>(
-                text_iterator, "character literal overflow");
-            text_iterator.throwException(std::move(exception));
+            text_iterator.throwException(NotationEscapingSymbolizerException<TextT>{
+                text_iterator, "character literal overflow" });
         }
 
         constexpr auto checkAllCharsUsage(u16 chars_count) const -> void

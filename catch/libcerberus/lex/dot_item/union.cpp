@@ -34,14 +34,23 @@ RUNTIME_TEST
     auto union_item = Union<char>(text_iterator, shared);
     const auto &bitset = union_item.get();
 
-    for (char i = 'a'; i <= 'z'; ++i) {
-        assertTrue(bitset.at(i));
+    for (char i = '\0'; i != '_'; ++i) {
+        assertFalse(bitset.at(i));
     }
 
     assertTrue(bitset.at('_'));
 
-    assertFalse(bitset.at('\0'));
-    assertFalse(bitset.at('z' + 1));
+    for (char i = '_' + 1; i != 'a'; ++i) {
+        assertFalse(bitset.at(i));
+    }
+
+    for (char i = 'a'; i <= 'z'; ++i) {
+        assertTrue(bitset.at(i));
+    }
+
+    for (char i = 'z' + 1; i != '\x7F'; ++i) {
+        assertFalse(bitset.at(i));
+    }
 
     return {};
 }

@@ -18,13 +18,9 @@ RUNTIME_TEST
         }
         assertTrue(false);
     } catch (const TextIteratorException<char> &error) {
-        assertEqual(
-            error.getFullMessage(),
-            "Error occurred at: , line: 1, column: 13. Error message: expected 4 characters, but "
-            "only 3 of them were provided\n"
-            "\\077\\xFF\\u041\n"
-            "            ^\n"
-            "Suggestion: \\077\\xFF\\u0041");
+        assertEqual(error.getColumn(), 13_ZU);// NOLINT
+        assertEqual(error.getMessage(), "expected 4 characters, but only 3 of them were provided");
+        assertEqual(error.getSuggestion(), R"(\077\xFF\u0041)");
     }
 
     return {};
@@ -36,11 +32,13 @@ RUNTIME_TEST
 {
     auto text_iterator = TextIterator<char16_t, char>{ uR"(\u01FF)" };
 
-    ERROR_EXPECTED(
-        UNUSED_DECL text_iterator.nextRawCharWithEscapingSymbols(), TextIteratorException<char16_t>,
-        "Error occurred at: , line: 1, column: 6. Error message: character literal overflow\n"
-        "\\u01FF\n"
-        "     ^");
+    try {
+        UNUSED_DECL text_iterator.nextRawCharWithEscapingSymbols();
+        assertTrue(false);
+    } catch (const module::NotationEscapingSymbolizerException<char16_t> &exception) {
+        assertEqual(exception.getColumn(), 6_ZU);// NOLINT
+        assertEqual(exception.getMessage(), u"character literal overflow");
+    }
 
     return {};
 }

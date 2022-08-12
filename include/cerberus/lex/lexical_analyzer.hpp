@@ -29,7 +29,7 @@ namespace cerb::lex
 
         constexpr LexicalAnalyzer(
             const std::initializer_list<std::pair<size_t, StrView<CharT>>> &rules_,
-            CommentTokens comment_tokens_ = { "#" }, string_view filename = {})
+            string_view filename = {}, CommentTokens comment_tokens_ = { "#" })
         {
             for (auto [id, rule] : rules_) {
                 errors += createDotItem(rule, id, comment_tokens_, filename);

@@ -21,7 +21,7 @@ namespace cerb::lex::dot_item
         using typename Base::ScanStatus;
         using typename Base::TextIterator;
 
-        CERBLIB_DECL auto empty() const -> bool override
+        CERBLIB_DECL auto empty() const noexcept -> bool override
         {
             return bitset.empty();
         }
@@ -119,7 +119,7 @@ namespace cerb::lex::dot_item
 
             rule_iterator.throwException(
                 UnionException<CharT>(rule_iterator, "unterminated union item"_sv));
-            throw UnrecoverableError{ "unrecoverable error in Union" };
+            throw UnrecoverableError{ "unrecoverable error in UnionType" };
         }
 
         constexpr static auto throwUnterminatedRangeException(TextIterator &rule_iterator) -> void
@@ -128,7 +128,7 @@ namespace cerb::lex::dot_item
 
             rule_iterator.throwException(
                 UnionException<CharT>(rule_iterator, "unterminated range"_sv));
-            throw UnrecoverableError{ "unrecoverable error in Union" };
+            throw UnrecoverableError{ "unrecoverable error in UnionType" };
         }
 
         constexpr static auto throwUnionBeginException(TextIterator &rule_iterator) -> void
@@ -138,7 +138,7 @@ namespace cerb::lex::dot_item
                 rule_iterator.getCurrentChar());
 
             rule_iterator.throwException(UnionException<CharT>(rule_iterator, message));
-            throw UnrecoverableError{ "unrecoverable error in Union" };
+            throw UnrecoverableError{ "unrecoverable error in UnionType" };
         }
 
         TypedBitset<CharT> bitset{};

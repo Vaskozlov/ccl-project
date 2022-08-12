@@ -70,9 +70,10 @@ namespace cerb::lex::dot_item
 
                 if (isDigit(chr)) {
                     result = result * decimal_base + static_cast<size_t>(chr - '0');
-                } else {
-                    throwUnexpectedCharacter(text_iterator, chr);
+                    continue;
                 }
+
+                throwUnexpectedCharacter(text_iterator, chr);
             }
 
             return result;
@@ -98,9 +99,10 @@ namespace cerb::lex::dot_item
         template<CharacterLiteral CharT>
         constexpr auto throwBadValues(text::TextIterator<CharT> &text_iterator) const -> void
         {
-            auto message =
-                fmt::format<CharT, "Beginning of the range ({}) is greater than end ({})">(
-                    from, to);
+            auto message = fmt::format<
+                CharT,
+                "the beginning of the repetition ({}) is greater than the end "
+                "({})">(from, to);
 
             text_iterator.throwException(RepetitionException<CharT>{ text_iterator, message });
             throw UnrecoverableError{ "unrecoverable error in Repetition" };
