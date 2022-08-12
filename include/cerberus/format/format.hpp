@@ -71,7 +71,7 @@ namespace cerb::fmt
         constexpr static auto countApproximateLength() -> unsigned long
         {
             constexpr auto string_size = std::accumulate(
-                string_blocks.begin(), string_blocks.end(), 0UL,
+                string_blocks.begin(), string_blocks.end(), static_cast<size_t>(0),
                 [](auto acc, auto &block) { return acc + block.size(); });
 
             constexpr auto argument_count = string_blocks.size() - 1;

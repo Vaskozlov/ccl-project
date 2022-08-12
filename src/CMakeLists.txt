@@ -4,7 +4,7 @@ file(
         "src/*.cpp"
 )
 
-add_library(cerberus SHARED ${LIBCERBERUS_OBJS})
+add_library(cerberus STATIC ${LIBCERBERUS_OBJS})
 
 target_link_libraries(
         cerberus

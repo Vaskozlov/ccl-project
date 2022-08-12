@@ -69,9 +69,11 @@ namespace cerb::fmt
 
             constexpr auto processSign() -> void
             {
-                if (number < 0) {
-                    formatting_string.push_back(u8'-');
-                    number = -number;
+                if constexpr (not std::unsigned_integral<Int>) {
+                    if (number < 0) {
+                        formatting_string.push_back(u8'-');
+                        number = -number;
+                    }
                 }
             }
 
