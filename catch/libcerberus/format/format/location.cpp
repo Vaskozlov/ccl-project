@@ -5,10 +5,10 @@ using namespace cerb::fmt;
 using namespace cerb::text;
 
 // NOLINTNEXTLINE
-STRING_TEST
+RUNTIME_TEST
 {
-    auto location = Location<char>{ "builtin" };
-    assertEqual(format<"{}">(location), "builtin, line: 1, column: 0");
+    auto location = Location{ u8"builtin" };
+    assertEqual(format<u8"{}">(location), u8"builtin, line: 1, column: 0");
     return {};
 }
 ();

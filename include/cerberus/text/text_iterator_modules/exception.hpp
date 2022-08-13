@@ -9,110 +9,95 @@ namespace cerb::text
 {
     CERBLIB_EXCEPTION(BasicTextIteratorException, CerberusException);
 
-    template<CharacterLiteral TextT, CharacterLiteral EscapingT = TextT>
-    class TextIterator;
-
-    template<CharacterLiteral CharT>
     class TextIteratorException : public BasicTextIteratorException
     {
     public:
-        CERBLIB_DECL auto getLine() const -> size_t
+        [[nodiscard]] auto getLine() const -> size_t
         {
             return location.getLine();
         }
 
-        CERBLIB_DECL auto getColumn() const -> size_t
+        [[nodiscard]] auto getColumn() const -> size_t
         {
             return location.getColumn();
         }
 
-        CERBLIB_DECL auto getLocation() const -> const Location<char> &
+        [[nodiscard]] auto getLocation() const -> const Location &
         {
             return location;
         }
 
-        CERBLIB_DECL auto getWorkingLine() const -> const StrView<CharT> &
+        [[nodiscard]] auto getWorkingLine() const -> const u8string_view &
         {
             return working_line;
         }
 
-        CERBLIB_DECL auto getMessage() const -> StrView<CharT>
+        [[nodiscard]] auto getMessage() const -> u8string_view
         {
             return message;
         }
 
-        CERBLIB_DECL auto getFullMessage() const -> StrView<CharT>
-        {
-            return full_message;
-        }
-
-        CERBLIB_DECL auto getSuggestion() const -> StrView<CharT>
+        [[nodiscard]] auto getSuggestion() const -> u8string_view
         {
             return suggestion;
         }
 
-        CERBLIB_DECL auto hasSuggestion() const -> bool
+        [[nodiscard]] auto hasSuggestion() const -> bool
         {
             return not suggestion.empty();
         }
 
         [[nodiscard]] auto what() const noexcept -> const char * override
         {
-            if constexpr (std::is_same_v<char, CharT>) {
-                return full_message.c_str();
-            } else {
-                return char_full_message.c_str();
-            }
+            return "unable to return error message (use getMessage or getFullMessage instead)";
         }
 
-        template<CharacterLiteral MessageT, CharacterLiteral EscapingT>
-        constexpr TextIteratorException(
-            const TextIterator<CharT, EscapingT> &text_iterator_, StrView<MessageT> message_,
-            StrView<MessageT> suggestion_ = {})
-          : location(text_iterator_.getLocation()), working_line(text_iterator_.getWorkingLine())
-        {
-            fmt::dump(message, message_);
-            fmt::dump(suggestion, suggestion_);
+        TextIteratorException() = default;
 
-            createFullMessage();
-            createCharFullMessage();
-        }
-
-        template<CharacterLiteral MessageT, CharacterLiteral EscapingT>
-        constexpr TextIteratorException(
-            const TextIterator<CharT, EscapingT> &text_iterator_, const Str<MessageT> &message_,
-            const Str<MessageT> &suggestion_ = {})
-          : TextIteratorException{ text_iterator_, StrView<MessageT>{ message_ },
-                                   StrView<MessageT>{ suggestion_ } }
+        TextIteratorException(
+            const Location &location_, const u8string_view &working_line_, u8string_view message_,
+            u8string_view suggestion_ = {})
+          : location(location_), message(message_), suggestion(suggestion_),
+            working_line(working_line_)
         {}
 
-        template<CharacterLiteral MessageT, CharacterLiteral EscapingT>
-        constexpr TextIteratorException(
-            const TextIterator<CharT, EscapingT> &text_iterator_, const MessageT *message_,
-            const MessageT *suggestion_ = nullptr)
+        TextIteratorException(
+            const Location &location_, const u8string_view &working_line_,
+            const std::u8string &message_, const std::u8string &suggestion_ = {})
+          : TextIteratorException{ location_, working_line_, u8string_view{ message_ },
+                                   u8string_view{ suggestion_ } }
+        {}
+
+        TextIteratorException(
+            const Location &location_, const u8string_view &working_line_, const char8_t *message_,
+            const char8_t *suggestion_ = nullptr)
           : TextIteratorException(
-                text_iterator_, StrView<MessageT>{ message_ }, StrView<MessageT>{ suggestion_ })
+                location_, working_line_, u8string_view{ message_ }, u8string_view{ suggestion_ })
         {}
 
-    private:
-        constexpr auto createFullMessage() -> void
+        [[nodiscard]] auto createFullMessage() const -> std::u8string
         {
-            full_message = fmt::format<CharT, "Error occurred at: {}, message: {}\n{}\n">(
+            auto full_message = fmt::format<u8"Error occurred at: {}, message: {}\n{}\n">(
                 location, message, working_line);
 
-            addArrowToError();
-            addSuggestion();
+            addArrowToError(full_message);
+            addSuggestion(full_message);
+
+            return full_message;
         }
 
-        constexpr auto createCharFullMessage() -> void
+        [[nodiscard]] auto createCharFullMessage() const -> std::string
         {
-            if constexpr (not std::is_same_v<char, CharT>) {
-                char_full_message.reserve(full_message.size());
-                fmt::dump(char_full_message, full_message);
-            }
+            auto full_message = createFullMessage();
+            auto char_full_message = std::string{};
+
+            fmt::dump(char_full_message, full_message);
+
+            return char_full_message;
         }
 
-        constexpr auto addArrowToError() -> void
+    private:
+        auto addArrowToError(std::u8string &full_message) const -> void
         {
             auto column_pos = location.getColumn();
             auto new_message_size = full_message.size() + (column_pos > 0 ? column_pos - 1 : 0);
@@ -120,19 +105,17 @@ namespace cerb::text
             full_message.push_back('^');
         }
 
-        constexpr auto addSuggestion() -> void
+        auto addSuggestion(std::u8string &full_message) const -> void
         {
             if (not suggestion.empty()) {
-                full_message.append(fmt::format<CharT, "\nSuggestion: {}">(suggestion));
+                full_message.append(fmt::format<u8"\nSuggestion: {}">(suggestion));
             }
         }
 
-        Location<char> location{};
-        Str<CharT> message{};
-        Str<CharT> suggestion{};
-        StrView<CharT> working_line{};
-        Str<CharT> full_message{};
-        Str<char> char_full_message{};
+        Location location{};
+        std::u8string message{};
+        std::u8string suggestion{};
+        u8string_view working_line{};
     };
 }// namespace cerb::text
 

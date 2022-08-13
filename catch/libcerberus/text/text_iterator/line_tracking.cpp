@@ -5,17 +5,17 @@ using namespace cerb::text;
 using namespace cerb::string_view_literals;
 
 // NOLINTNEXTLINE
-STRING_TEST
+RUNTIME_TEST
 {
-    auto text_iterator = TextIterator{ "Hi\nWorld!"_sv };
+    auto text_iterator = TextIterator{ u8"Hi\nWorld!"_sv };
 
     for (size_t i = 0; i != 3; ++i) {
         text_iterator.nextRawChar();
-        assertEqual(text_iterator.getWorkingLine(), "Hi");
+        assertEqual(text_iterator.getWorkingLine(), u8"Hi");
     }
 
     text_iterator.nextRawChar();
-    assertEqual(text_iterator.getWorkingLine(), "World!");
+    assertEqual(text_iterator.getWorkingLine(), u8"World!");
 
     return {};
 }

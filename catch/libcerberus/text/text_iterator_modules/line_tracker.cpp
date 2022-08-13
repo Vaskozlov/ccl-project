@@ -6,12 +6,12 @@ using namespace cerb::text;
 using namespace cerb::text::module;
 using namespace cerb::string_view_literals;
 
-constexpr static auto Input = "Hello, World!\nIt's a \nTest!\nOf line tracker\n "_sv;
+constexpr static auto Input = u8"Hello, World!\nIt's a \nTest!\nOf line tracker\n "_sv;
 
-constexpr static auto ExpectedLines = std::array{ "Hello, World!", "It's a ", "Test!",
-                                                  "Of line "
-                                                  "tracker",
-                                                  " " };
+constexpr static auto ExpectedLines = std::array{ u8"Hello, World!", u8"It's a ", u8"Test!",
+                                                  u8"Of line "
+                                                  u8"tracker",
+                                                  u8" " };
 // NOLINTNEXTLINE
 RUNTIME_TEST
 {
@@ -25,7 +25,7 @@ RUNTIME_TEST
             assertEqual(ExpectedLines.at(current_line), line_tracker.get());
             ++current_line;
         }
-    };
+    }
 
     assertEqual(ExpectedLines.at(current_line), line_tracker.get());
     return {};

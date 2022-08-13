@@ -3,19 +3,16 @@
 
 #include <cerberus/lex/analysis_shared.hpp>
 #include <cerberus/lex/dot_item/repetition.hpp>
-#include <cerberus/lex/typedefs.hpp>
 #include <cerberus/text/text_iterator.hpp>
 
 namespace cerb::lex::dot_item
 {
-    template<CharacterLiteral CharT>
     class BasicItem
     {
     public:
-        using TextIterator = text::TextIterator<CharT>;
-        using CommentTokens = text::module::CommentTokens<CharT>;
-        using ExceptionAccumulator =
-            analysis::ExceptionAccumulator<text::TextIteratorException<CharT>>;
+        using TextIterator = text::TextIterator;
+        using CommentTokens = text::CommentTokens;
+        using ExceptionAccumulator = analysis::ExceptionAccumulator<text::TextIteratorException>;
 
         enum struct ScanStatus : bool
         {
@@ -23,84 +20,53 @@ namespace cerb::lex::dot_item
             SUCCESS = true
         };
 
-        CERBLIB_DECL auto getRepetition() const -> Repetition
+        [[nodiscard]] auto getRepetition() const noexcept -> Repetition
         {
             return repetition;
         }
 
-        CERBLIB_DECL auto isReversed() const -> bool
+        [[nodiscard]] auto isReversed() const noexcept -> bool
         {
             return reversed;
         }
 
-        constexpr auto reverse() -> void
+        auto reverse() noexcept -> void
         {
             reversed = !reversed;
         }
 
-        constexpr auto setRepetition(Repetition new_repetition) -> void
+        auto setRepetition(Repetition new_repetition) noexcept -> void
         {
             repetition = new_repetition;
         }
 
-        CERBLIB_DECL auto isNextCharNotForScanning(const TextIterator &text_iterator) const -> bool
+        [[nodiscard]] auto canBeOptimized() const noexcept -> bool
         {
-            auto chr = text_iterator.futureRawChar(1);
-
-            if (isLayoutOrEoF(chr)) {
-                return true;
-            }
-
-            return analysis_shared.isNextCharNotForScanning(text_iterator);
+            return repetition.from == 0 && empty();
         }
 
-        CERBLIB_DECL auto canBeOptimized() const -> bool
-        {
-            return empty() && repetition.from == 0;
-        }
+        [[nodiscard]] virtual auto empty() const noexcept -> bool = 0;
 
-        CERBLIB_DECL virtual auto empty() const noexcept -> bool = 0;
+        [[nodiscard]] auto isNextCharNotForScanning(const TextIterator &text_iterator) const
+            -> bool;
 
-        CERBLIB_DECL auto scan(const TextIterator &text_iterator, bool main_scan = false) const
-            -> std::pair<bool, TextIterator>
-        {
-            auto times = static_cast<size_t>(0);
-            auto local_iterator = text_iterator;
-
-            while (times <= repetition.to) {
-                auto iterator_copy = local_iterator;
-
-                if (scanIteration(iterator_copy) ^ reversed) {
-                    ++times;
-                    local_iterator = std::move(iterator_copy);
-                } else {
-                    break;
-                }
-            }
-
-            return { computeScanResult(local_iterator, times, main_scan), local_iterator };
-        }
+        [[nodiscard]] auto scan(const TextIterator &text_iterator, bool main_scan = false) const
+            -> std::pair<bool, TextIterator>;
 
     private:
-        CERBLIB_DECL virtual auto scanIteration(TextIterator &text_iterator) const -> bool = 0;
+        [[nodiscard]] virtual auto scanIteration(TextIterator &text_iterator) const -> bool = 0;
 
-        CERBLIB_DECL auto
+        [[nodiscard]] auto
             computeScanResult(const TextIterator &text_iterator, size_t times, bool main_scan) const
-            -> bool
-        {
-            return repetition.inRange(times) &&
-                   (not main_scan || isNextCharNotForScanning(text_iterator));
-        }
+            -> bool;
 
     public:
-        auto operator=(const BasicItem &) -> BasicItem & = default;
-        auto operator=(BasicItem &&) noexcept -> BasicItem & = default;
+        auto operator=(const BasicItem &) -> BasicItem & = delete;
+        auto operator=(BasicItem &&) noexcept -> BasicItem & = delete;
 
-        constexpr explicit BasicItem(AnalysisShared<CharT> &analysis_shared_)
-          : analysis_shared{ analysis_shared_ }
+        explicit BasicItem(AnalysisShared &analysis_shared_) : analysis_shared{ analysis_shared_ }
         {}
 
-        BasicItem() = default;
         BasicItem(BasicItem &&) noexcept = default;
         BasicItem(const BasicItem &) = default;
 
@@ -108,7 +74,7 @@ namespace cerb::lex::dot_item
 
     protected:
         Repetition repetition{ Repetition::basic() };
-        AnalysisShared<CharT> &analysis_shared;
+        AnalysisShared &analysis_shared;
         bool reversed{ false };
     };
 }// namespace cerb::lex::dot_item

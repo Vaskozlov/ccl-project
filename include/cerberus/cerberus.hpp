@@ -5,11 +5,15 @@
 #    error cerberus requires at least C++2b
 #endif /* minimum requirements */
 
+#include <boost/outcome.hpp>
 #include <cerberus/core/concepts.hpp>
 #include <cerberus/core/conversion.hpp>
 #include <cerberus/core/defines.hpp>
+#include <cerberus/core/enum.hpp>
 #include <cerberus/core/exception.hpp>
 #include <cerberus/core/int_types.hpp>
 #include <cerberus/core/logical_ops.hpp>
+
+namespace outcome = boost::outcome_v2;
 
 #endif /* CERBERUS_PROJECT_CERBERUS_HPP */

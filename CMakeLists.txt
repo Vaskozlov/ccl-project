@@ -6,4 +6,5 @@ include(cmake/project-options.cmake)
 include(cmake/compile-options.cmake)
 include(cmake/libraries.cmake)
 
+include(src/CMakeLists.txt)
 include(catch/CMakeLists.txt)

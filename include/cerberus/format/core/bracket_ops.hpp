@@ -5,25 +5,22 @@
 
 namespace cerb::fmt::core::bracket
 {
-    template<CharacterLiteral CharT>
-    CERBLIB_DECL auto isOpened(const text::BasicTextIterator<CharT> &text_iterator) -> bool
+    CERBLIB_DECL auto isOpened(const text::BasicTextIterator &text_iterator) -> bool
     {
-        return text_iterator.getCurrentChar() == '{' && text_iterator.futureRawChar(1) != '{';
+        return text_iterator.getCurrentChar() == U'{' && text_iterator.futureRawChar(1) != U'{';
     }
 
-    template<CharacterLiteral CharT>
-    CERBLIB_DECL auto isClosed(const text::BasicTextIterator<CharT> &text_iterator) -> bool
+    CERBLIB_DECL auto isClosed(const text::BasicTextIterator &text_iterator) -> bool
     {
-        return text_iterator.getCurrentChar() == '}' && text_iterator.futureRawChar(1) != '}';
+        return text_iterator.getCurrentChar() == U'}' && text_iterator.futureRawChar(1) != U'}';
     }
 
-    template<CharacterLiteral CharT>
-    CERBLIB_DECL auto needToSkip(const text::BasicTextIterator<CharT> &text_iterator) -> bool
+    CERBLIB_DECL auto needToSkip(const text::BasicTextIterator &text_iterator) -> bool
     {
         auto chr = text_iterator.getCurrentChar();
         auto future_chr = text_iterator.futureRawChar(1);
 
-        return land(lor(chr == '{', chr == '}'), chr == future_chr);
+        return land(lor(chr == U'{', chr == U'}'), chr == future_chr);
     }
 }// namespace cerb::fmt::core::bracket
 

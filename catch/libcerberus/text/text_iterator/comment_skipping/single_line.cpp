@@ -4,55 +4,55 @@
 using namespace cerb::text;
 
 // NOLINTNEXTLINE
-STRING_TEST
+RUNTIME_TEST
 {
-    auto text_iterator = TextIterator<char>{ "//\nHi!", nullptr, { "//" } };
+    auto text_iterator = TextIterator{ u8"\U0001F600\nHi!", nullptr, { u8"\U0001F600" } };
     text_iterator.skipCommentsAndLayout();
 
-    assertEqual(text_iterator.getRemaining(), "\nHi!");
-    assertEqual(text_iterator.nextRawChar(), 'H');
+    assertEqual(text_iterator.getRemaining(), u8"\nHi!");
+    assertEqual(text_iterator.nextRawChar(), u8'H');
 
     return {};
 }
 ();
 
 // NOLINTNEXTLINE
-STRING_TEST
+RUNTIME_TEST
 {
-    auto text_iterator = TextIterator<char>{ "Hi! //", nullptr, { "//" } };
+    auto text_iterator = TextIterator{ u8"Hi! //", nullptr, { u8"//" } };
     text_iterator.rawSkip(3);
     text_iterator.skipCommentsAndLayout();
 
-    assertEqual(text_iterator.getRemaining(), "");
-    assertEqual(text_iterator.nextRawChar(), '\0');
+    assertEqual(text_iterator.getRemaining(), u8"");
+    assertEqual(text_iterator.nextRawChar(), u8'\0');
 
     return {};
 }
 ();
 
 // NOLINTNEXTLINE
-STRING_TEST
+RUNTIME_TEST
 {
-    auto text_iterator = TextIterator<char>{ "Hi! //\nHello!", nullptr, { "//" } };
+    auto text_iterator = TextIterator{ u8"Hi! //\nHello!", nullptr, { u8"//" } };
     text_iterator.rawSkip(3);
     text_iterator.skipCommentsAndLayout();
 
-    assertEqual(text_iterator.getRemaining(), "\nHello!");
-    assertEqual(text_iterator.nextRawChar(), 'H');
+    assertEqual(text_iterator.getRemaining(), u8"\nHello!");
+    assertEqual(text_iterator.nextRawChar(), u8'H');
 
     return {};
 }
 ();
 
 // NOLINTNEXTLINE
-STRING_TEST
+RUNTIME_TEST
 {
-    auto text_iterator = TextIterator<char>{ "Hi! //\n //\nHello!", nullptr, { "//" } };
+    auto text_iterator = TextIterator{ u8"Hi! //\n //\nHello!", nullptr, { u8"//" } };
     text_iterator.rawSkip(3);
     text_iterator.skipCommentsAndLayout();
 
-    assertEqual(text_iterator.getRemaining(), "\nHello!");
-    assertEqual(text_iterator.nextRawChar(), 'H');
+    assertEqual(text_iterator.getRemaining(), u8"\nHello!");
+    assertEqual(text_iterator.nextRawChar(), u8'H');
 
     return {};
 }

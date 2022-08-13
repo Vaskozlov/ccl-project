@@ -7,7 +7,6 @@
 
 namespace cerb::fmt::core
 {
-    template<CharacterLiteral CharT>
     class ArgumentsCounter
     {
     public:
@@ -18,8 +17,7 @@ namespace cerb::fmt::core
 
         constexpr ArgumentsCounter() = default;
 
-        constexpr explicit ArgumentsCounter(const BasicStringView<CharT> &text)
-          : text_iterator{ text }
+        constexpr explicit ArgumentsCounter(const u8string_view &text) : text_iterator{ text }
         {
             count();
 
@@ -53,13 +51,12 @@ namespace cerb::fmt::core
             return opened_brackets_counter != 0;
         }
 
-        text::BasicTextIterator<CharT> text_iterator{};
+        text::BasicTextIterator text_iterator{};
         size_t arguments_counter{};
         size_t opened_brackets_counter{};
     };
 
-    template<CharacterLiteral CharT>
-    constexpr auto countArgs(const BasicStringView<CharT> &text) -> size_t
+    constexpr auto countArgs(const u8string_view &text) -> size_t
     {
         return ArgumentsCounter{ text }.get();
     }
