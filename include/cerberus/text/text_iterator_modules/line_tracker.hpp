@@ -1,7 +1,8 @@
 #ifndef CERBERUS_PROJECT_LINE_TRACKER_HPP
 #define CERBERUS_PROJECT_LINE_TRACKER_HPP
 
-#include <cerberus/text/basic_text_iterator.hpp>
+#include <cerberus/string_view.hpp>
+#include <string>
 
 namespace cerb::text::module
 {

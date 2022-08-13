@@ -49,6 +49,14 @@ namespace cerb::text
         text_iterator.rawSkip(comment_tokens.multiline_end.size());
     }
 
+    auto TextIterator::CommentSkipper::checkCommentTermination(
+        const TextIterator &comment_begin) const -> void
+    {
+        if (isEoF(text_iterator.getCurrentChar())) {
+            throwUnterminatedCommentError(comment_begin);
+        }
+    }
+
     auto TextIterator::CommentSkipper::throwUnterminatedCommentError(
         TextIterator const &comment_begin) const -> void
     {

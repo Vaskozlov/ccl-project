@@ -137,6 +137,13 @@ namespace cerb::text
         constexpr virtual auto onCharacter(char32_t /* chr */) -> void
         {}
 
+        virtual auto onUtfError(char8_t /* chr */) -> void
+        {
+            using namespace std::string_view_literals;
+
+            throw utf8::Utf8ConvertionError{ "unable to convert character to utf8"sv };
+        }
+
         auto operator=(const BasicTextIterator &) -> BasicTextIterator & = default;
         auto operator=(BasicTextIterator &&) noexcept -> BasicTextIterator & = default;
 
@@ -184,13 +191,18 @@ namespace cerb::text
 
             if (remaining_to_finish_utf != 0) {
                 if (not utf8::isTrailingCharacter(chr)) {
-                    throw utf8::Utf8ConvertionError{ "unable to convert character to utf8"sv };
+                    onUtfError(chr);
                 }
 
                 current_char <<= utf8::TrailingSize;
                 current_char |= chr & static_cast<char8_t>(~utf8::ContinuationMask);
             } else {
                 remaining_to_finish_utf = utf8::utfSize(chr);
+
+                if (remaining_to_finish_utf == 0) {
+                    onUtfError(chr);
+                }
+
                 current_char = chr & static_cast<char8_t>(~utf8::getMask(remaining_to_finish_utf));
             }
 
@@ -198,6 +210,21 @@ namespace cerb::text
 
             if (remaining_to_finish_utf == 0) {
                 onCharacter(current_char);
+            }
+        }
+
+        constexpr auto skipBadUtf() -> void
+        {
+            auto fork = *this;
+
+            while (true) {
+                auto chr = fork.moveCarriage();
+
+                if (utf8::utfSize(chr) != 0) {
+                    break;
+                }
+
+                moveCarriage();
             }
         }
 

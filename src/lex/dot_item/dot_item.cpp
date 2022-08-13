@@ -9,9 +9,10 @@ namespace cerb::lex::dot_item
         for (const auto &item : items) {
             if (auto [success, iterator] = item->scan(text_iterator); success) {
                 text_iterator = std::move(iterator);
-            } else {
-                return false;
+                continue;
             }
+
+            return false;
         }
 
         return true;
@@ -23,16 +24,16 @@ namespace cerb::lex::dot_item
         rule_iterator.skipCommentsAndLayout();
 
         while (movedToTheNextChar(rule_iterator)) {
-            auto chr = rule_iterator.getCurrentChar();
-            recognizeAction(rule_iterator, chr, counter);
+            recognizeAction(rule_iterator, counter);
             rule_iterator.skipCommentsAndLayout();
         }
+
+        postCheck(rule_iterator, counter);
     }
 
-    auto DotItem::recognizeAction(TextIterator &rule_iterator, char32_t chr, ItemsCounter &counter)
-        -> void
+    auto DotItem::recognizeAction(TextIterator &rule_iterator, ItemsCounter &counter) -> void
     {
-        switch (chr) {
+        switch (rule_iterator.getCurrentChar()) {
         case U'[':
             counter += item::Union;
             emplaceItem(constructNewUnion(rule_iterator));
@@ -73,6 +74,11 @@ namespace cerb::lex::dot_item
             reverseLastItem(rule_iterator);
             break;
 
+        case U'p':
+            checkAbilityToCreatePrefixPostfix(rule_iterator);
+            addPrefixPostfix();
+            break;
+
         case U'c':
             counter += item::Character;
             constructString(rule_iterator, true, false);
@@ -108,7 +114,7 @@ namespace cerb::lex::dot_item
     {
         auto text = rule_iterator.getRemaining();
         const auto *saved_end = text.end();
-        auto bracket_index = text.openCloseFind('(', ')');
+        auto bracket_index = text.openCloseFind(u8'(', u8')');
 
         if (bracket_index == u8string_view::npos) {
             throwUnterminatedDotItem(rule_iterator);
@@ -116,16 +122,28 @@ namespace cerb::lex::dot_item
 
         rule_iterator.setEnd(text.begin() + bracket_index);
 
-        auto new_dot_item = std::make_unique<DotItem>(rule_iterator, id, analysis_shared);
+        auto new_dot_item = std::make_unique<DotItem>(rule_iterator, id, analysis_shared, false);
         rule_iterator.setEnd(saved_end);
 
         return new_dot_item;
     }
 
-    auto DotItem::emplaceItem(std::unique_ptr<BasicItem> item) -> void
+    auto DotItem::emplaceItem(std::unique_ptr<BasicItem> &&item) -> void
     {
         if (not canBeOptimized()) {
             items.emplace_back(std::move(item));
+        }
+    }
+
+    auto DotItem::addPrefixPostfix() -> void
+    {
+        auto &last_item = items.back();
+        auto is_prefix = items.size() == 1 || items[items.size() - 2]->hasPrefix();
+
+        if (is_prefix) {
+            last_item->setPrefix();
+        } else {
+            last_item->setPostfix();
         }
     }
 
@@ -197,6 +215,57 @@ namespace cerb::lex::dot_item
         }
 
         last_item->reverse();
+    }
+
+    auto DotItem::postCheck(TextIterator &rule_iterator, const ItemsCounter &counter) -> void
+    {
+        if (counter.hasStrOrChar() && counter.hasSequences()) {
+            throwUnableToApply(
+                rule_iterator, u8"string or character expected, but got sequence",
+                u8"add string or character modifier to the sequence");
+        }
+
+        auto postfix_elem =
+            std::ranges::find_if(items, [](auto &elem) { return elem->hasPostfix(); });
+
+        auto are_postfixes_correct =
+            std::all_of(postfix_elem, items.end(), [](auto &elem) { return elem->hasPostfix(); });
+
+        if (not are_postfixes_correct) {
+            auto suggestion = fmt::format<u8"add postfix modifier to the last item\n{}p">(
+                rule_iterator.getWorkingLine());
+            throwUnableToApply(
+                rule_iterator, u8"item without postfix modifier exists after items with them"_sv,
+                suggestion);
+        }
+    }
+
+    auto DotItem::checkAbilityToCreatePrefixPostfix(TextIterator &rule_iterator) -> void
+    {
+        if (not main_item) {
+            throwUnableToApply(
+                rule_iterator,
+                u8"you are not allowed to create prefixes or postfixes inside other dot items",
+                u8"create them only in main item");
+        }
+
+        if (items.empty()) {
+            throwUnableToApply(rule_iterator, u8"there are not any items to apply prefix/postfix");
+        }
+
+        auto &last_item = items.back();
+
+        if (last_item->hasPrefix()) {
+            throwUnableToApply(
+                rule_iterator, u8"item is already has prefix modifier",
+                u8"do not add it more than once");
+        }
+
+        if (last_item->hasPostfix()) {
+            throwUnableToApply(
+                rule_iterator, u8"item is already has postfix modifier",
+                u8"do not add it more than once");
+        }
     }
 
     auto DotItem::checkSize(

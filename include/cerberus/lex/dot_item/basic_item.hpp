@@ -30,6 +30,26 @@ namespace cerb::lex::dot_item
             return reversed;
         }
 
+        [[nodiscard]] auto hasPrefix() const -> bool
+        {
+            return prefix;
+        }
+
+        [[nodiscard]] auto hasPostfix() const -> bool
+        {
+            return postfix;
+        }
+
+        void setPrefix()
+        {
+            prefix = true;
+        }
+
+        void setPostfix()
+        {
+            postfix = true;
+        }
+
         auto reverse() noexcept -> void
         {
             reversed = !reversed;
@@ -76,6 +96,8 @@ namespace cerb::lex::dot_item
         Repetition repetition{ Repetition::basic() };
         AnalysisShared &analysis_shared;
         bool reversed{ false };
+        bool prefix{};
+        bool postfix{};
     };
 }// namespace cerb::lex::dot_item
 

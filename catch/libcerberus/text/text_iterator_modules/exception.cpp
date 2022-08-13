@@ -1,6 +1,6 @@
 #include <cerberus/debug/debug_file.hpp>
+#include <cerberus/text/iterator_exception.hpp>
 #include <cerberus/text/text_iterator.hpp>
-#include <cerberus/text/text_iterator_modules/exception.hpp>
 
 using namespace cerb::text;
 

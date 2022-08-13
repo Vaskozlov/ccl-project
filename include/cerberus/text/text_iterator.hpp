@@ -3,8 +3,8 @@
 
 #include <cerberus/analysis/exception_accumulator.hpp>
 #include <cerberus/pair.hpp>
+#include <cerberus/text/iterator_exception.hpp>
 #include <cerberus/text/location.hpp>
-#include <cerberus/text/text_iterator_modules/exception.hpp>
 #include <cerberus/text/text_iterator_modules/line_tracker.hpp>
 #include <cerberus/text/text_iterator_modules/ts_tracker.hpp>
 #include <utility>
@@ -27,6 +27,9 @@ namespace cerb::text
         using Base = BasicTextIterator;
         using extra_symbols_t = std::basic_string<Pair<char32_t, char32_t>>;
 
+    public:
+        using ExceptionAccumulator = analysis::ExceptionAccumulator<TextIteratorException>;
+
         class CommentSkipper;
         class EscapingSymbolizer;
         class NotationEscapingSymbolizer;
@@ -38,9 +41,6 @@ namespace cerb::text
         [[nodiscard]] static auto calculateNotationEscapeSymbol(
             TextIterator &text_iterator, u16 max_times, u16 notation_power, bool need_all_chars)
             -> char32_t;
-
-    public:
-        using ExceptionAccumulator = analysis::ExceptionAccumulator<TextIteratorException>;
 
         [[nodiscard]] auto getLocation() const -> const Location &
         {
@@ -80,17 +80,9 @@ namespace cerb::text
         auto nextRawCharWithEscapingSymbols(const extra_symbols_t &extra_symbols = {})
             -> Pair<bool, char32_t>;
 
-        auto onMove(char8_t chr) -> void override
-        {
-            location.intermediateNext(chr);
-        }
-
-        auto onCharacter(char32_t chr) -> void override
-        {
-            location.next(chr);
-            ts_tracker.next(chr);
-            line_tracker.next(chr);
-        }
+        auto onMove(char8_t chr) -> void override;
+        auto onCharacter(char32_t chr) -> void override;
+        auto onUtfError(char8_t chr) -> void override;
 
         auto skipCommentsAndLayout() -> void;
 
@@ -154,21 +146,18 @@ namespace cerb::text
 
     private:
         [[nodiscard]] auto isComment(const u8string_view &comment) const -> bool;
+
         auto skipSingleLine() -> void;
         auto skipMultiline() -> void;
 
-        auto checkCommentTermination(const TextIterator &comment_begin) const -> void
-        {
-            if (isEoF(text_iterator.getCurrentChar())) {
-                throwUnterminatedCommentError(comment_begin);
-            }
-        }
+        auto checkCommentTermination(const TextIterator &comment_begin) const -> void;
 
         auto throwUnterminatedCommentError(const TextIterator &comment_begin) const -> void;
 
         const CommentTokens &comment_tokens;// MAYBE: copy comment tokens into StrViews
         TextIterator &text_iterator;
     };
+
 
     class TextIterator::EscapingSymbolizer
     {
@@ -224,13 +213,18 @@ namespace cerb::text
 
     private:
         auto calculateResult() -> void;
-        auto checkNotation() const -> void;
+
         [[nodiscard]] auto isOutOfNotation(char32_t chr) const -> bool;
+
+        auto checkNotation() const -> void;
         auto checkCharacterOverflow() const -> void;
         auto checkAllCharsUsage(u16 chars_count) const -> void;
+
         auto throwCharacterOverflow() const -> void;
         auto throwNotEnoughCharsException(u16 chars_count) const -> void;
+
         [[nodiscard]] auto createSuggestionNotEnoughChars(u16 chars_count) const -> std::u8string;
+
         auto insertExtraZerosToNotEnoughMessage(u16 chars_count, std::u8string &message) const
             -> void;
 

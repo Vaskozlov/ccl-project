@@ -47,10 +47,7 @@ namespace cerb::text
             return not suggestion.empty();
         }
 
-        [[nodiscard]] auto what() const noexcept -> const char * override
-        {
-            return "unable to return error message (use getMessage or getFullMessage instead)";
-        }
+        [[nodiscard]] auto what() const noexcept -> const char * override;
 
         TextIteratorException() = default;
 
@@ -75,42 +72,12 @@ namespace cerb::text
                 location_, working_line_, u8string_view{ message_ }, u8string_view{ suggestion_ })
         {}
 
-        [[nodiscard]] auto createFullMessage() const -> std::u8string
-        {
-            auto full_message = fmt::format<u8"Error occurred at: {}, message: {}\n{}\n">(
-                location, message, working_line);
-
-            addArrowToError(full_message);
-            addSuggestion(full_message);
-
-            return full_message;
-        }
-
-        [[nodiscard]] auto createCharFullMessage() const -> std::string
-        {
-            auto full_message = createFullMessage();
-            auto char_full_message = std::string{};
-
-            fmt::dump(char_full_message, full_message);
-
-            return char_full_message;
-        }
+        [[nodiscard]] auto createFullMessage() const -> std::u8string;
+        [[nodiscard]] auto createCharFullMessage() const -> std::string;
 
     private:
-        auto addArrowToError(std::u8string &full_message) const -> void
-        {
-            auto column_pos = location.getColumn();
-            auto new_message_size = full_message.size() + (column_pos > 0 ? column_pos - 1 : 0);
-            full_message.resize(new_message_size, ' ');
-            full_message.push_back('^');
-        }
-
-        auto addSuggestion(std::u8string &full_message) const -> void
-        {
-            if (not suggestion.empty()) {
-                full_message.append(fmt::format<u8"\nSuggestion: {}">(suggestion));
-            }
-        }
+        auto addSuggestion(std::u8string &full_message) const -> void;
+        auto addArrowToError(std::u8string &full_message) const -> void;
 
         Location location{};
         std::u8string message{};
