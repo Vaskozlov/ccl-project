@@ -3,21 +3,26 @@
 
 #include <cerberus/string_map.hpp>
 #include <cerberus/text/text_iterator.hpp>
+#include <utility>
 #include <vector>
 
 namespace cerb::lex
 {
     struct String
     {
-        String(const std::u8string &str_, size_t id_, bool is_character_, bool is_multiline_)
-          : str(str_), id(id_), is_character(is_character_), is_multiline(is_multiline_)
+        String(
+            std::u8string str_begin_, std::u8string str_end_, size_t id_, bool is_character_,
+            bool is_multiline_)
+          : str_begin(std::move(str_begin_)), str_end(std::move(str_end_)), id(id_),
+            is_character(is_character_), is_multiline(is_multiline_)
         {}
 
-        String(std::u8string &&str_, size_t id_, bool is_character_, bool is_multiline_)
-          : str(std::move(str_)), id(id_), is_character(is_character_), is_multiline(is_multiline_)
+        String(const std::u8string &str_begin_, size_t id_, bool is_character_, bool is_multiline_)
+          : String(str_begin_, str_begin_, id_, is_character_, is_multiline_)
         {}
 
-        std::u8string str;
+        std::u8string str_begin;
+        std::u8string str_end{};
         size_t id;
         bool is_character;
         bool is_multiline;

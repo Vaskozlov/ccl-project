@@ -96,6 +96,12 @@ namespace cerb
             return reverse_iterator{ begin() };
         }
 
+        CERBLIB_DECL auto substr(size_t first) const -> BasicStringView
+        {
+            first = first > size() ? size() : first;
+            return { begin() + first, begin() + size() };
+        }
+
         CERBLIB_DECL auto substr(size_t first, size_t len) const -> BasicStringView
         {
             auto last = first + len;

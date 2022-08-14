@@ -35,12 +35,12 @@ RUNTIME_TEST
 
         assertEqual(
             exception.getMessage(),
-            u8"unable to apply with reason: items without postfix modifier exist after items with "
+            u8"unable to apply with reason: item without postfix modifier exists after items with "
             u8"them");
 
         assertEqual(
             exception.getSuggestion(),
-            u8"add postfix modifier (probably to the last item)\n"
+            u8"add postfix modifier to the last item\n"
             u8"[a-z]+[_]p\"test\"p");
     }
 

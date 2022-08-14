@@ -5,14 +5,14 @@ namespace cerb::lex::dot_item
     using namespace cerb::string_view_literals;
 
     Sequence::Sequence(
-        bool multiline_, u8string_view str_token_, TextIterator &rule_iterator_,
-        AnalysisShared &analysis_shared_)
-      : BasicItem(analysis_shared_), str_token(str_token_), multiline(multiline_)
+        bool multiline_, u8string_view str_begin_, u8string_view str_end_,
+        TextIterator &rule_iterator_, AnalysisShared &analysis_shared_)
+      : BasicItem(analysis_shared_), str_begin(str_begin_), str_end(str_end_), multiline(multiline_)
     {
         auto &rule_iterator = rule_iterator_;
         auto begin_iterator_state = rule_iterator;
 
-        checkStringBegin(rule_iterator);
+        checkSequenceArguments(rule_iterator);
         skipStringDefinition(rule_iterator);
 
         while (true) {
@@ -54,7 +54,7 @@ namespace cerb::lex::dot_item
         }
 
         auto text = rule_iterator.getRemaining();
-        return text.substr(0, str_token.size()) == str_token;
+        return text.substr(0, str_end.size()) == str_end;
     }
 
     auto Sequence::checkForUnexpectedEnd(
@@ -71,7 +71,7 @@ namespace cerb::lex::dot_item
         if (land(chr == '\n', not multiline)) {
             auto message = u8"new line is reached, but sequence has not been terminated"_sv;
             auto suggestion =
-                fmt::format<u8"use multiline sequence or close it with `{}`">(str_token);
+                fmt::format<u8"use multiline sequence or close it with `{}`">(str_end);
 
             throwUnterminatedString(rule_iterator, message, suggestion);
         }
@@ -79,18 +79,22 @@ namespace cerb::lex::dot_item
 
     auto Sequence::skipStringDefinition(TextIterator &rule_iterator) const -> void
     {
-        rule_iterator.rawSkip(str_token.size() - 1);
+        rule_iterator.rawSkip(str_begin.size() - 1);
     }
 
-    auto Sequence::checkStringBegin(TextIterator &rule_iterator) const -> void
+    auto Sequence::checkSequenceArguments(TextIterator &rule_iterator) const -> void
     {
         auto text = rule_iterator.getRemaining();
 
-        if (str_token.empty()) {
+        if (str_begin.empty()) {
             throwEmptyStringBegin(rule_iterator);
         }
 
-        if (text.substr(0, str_token.size()) != str_token) {
+        if (str_end.empty()) {
+            throwEmptyStringEnd(rule_iterator);
+        }
+
+        if (text.substr(0, str_begin.size()) != str_begin) {
             throwStringBeginException(rule_iterator);
         }
     }
@@ -109,6 +113,12 @@ namespace cerb::lex::dot_item
         throw UnrecoverableError{ "unreachable error in SequenceType" };
     }
 
+    auto Sequence::throwEmptyStringEnd(TextIterator &rule_iterator) -> void
+    {
+        rule_iterator.throwException<SequenceException>(u8"sequence item end cannot be empty"_sv);
+        throw UnrecoverableError{ "unreachable error in SequenceType" };
+    }
+
     auto Sequence::throwUnterminatedString(
         TextIterator &rule_iterator,
         u8string_view message,
@@ -120,7 +130,7 @@ namespace cerb::lex::dot_item
 
     auto Sequence::throwStringBeginException(TextIterator &rule_iterator) const -> void
     {
-        auto message = fmt::format<u8"string literal must begin with {}">(str_token);
+        auto message = fmt::format<u8"string literal must begin with {}">(str_begin);
 
         rule_iterator.template throwException<SequenceException>(message);
         throw UnrecoverableError{ "unreachable error in SequenceType" };

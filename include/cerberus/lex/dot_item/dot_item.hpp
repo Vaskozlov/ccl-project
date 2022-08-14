@@ -100,6 +100,8 @@ namespace cerb::lex::dot_item
 
         auto postCheck(TextIterator &rule_iterator, const ItemsCounter &counter) -> void;
 
+        auto checkStringConstructionAvailability(TextIterator &rule_iterator) -> void;
+
         auto checkAbilityToCreatePrefixPostfix(TextIterator &rule_iterator) -> void;
 
         auto checkSize(

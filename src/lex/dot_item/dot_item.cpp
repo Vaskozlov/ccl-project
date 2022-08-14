@@ -150,23 +150,23 @@ namespace cerb::lex::dot_item
     auto DotItem::constructString(TextIterator &rule_iterator, bool is_character, bool is_multiline)
         -> void
     {
-        if (items.empty() || dynamic_cast<Sequence *>(items.back().get()) == nullptr) {
-            throwUnableToApply(
-                rule_iterator,
-                u8"unable to apply char/string modifier, because there are not "
-                "any items or the last item is not a sequence",
-                u8"create sequence or do not apply string modifier to other items");
-        }
+        checkStringConstructionAvailability(rule_iterator);
 
-        checkSize(
-            rule_iterator, 1, u8"dot item with string must contain only one item - sequence",
-            u8"delete other items");
-
-        auto *sequence = dynamic_cast<Sequence *>(items.back().get());
         auto &strings_and_chars = analysis_shared.strings_and_chars;
+        auto &last_item = items.back();
+        auto *sequence = dynamic_cast<Sequence *>(last_item.get());
+        auto &string = sequence->getRef();
+        auto column_index = string.find(u8':');
 
-        strings_and_chars.emplace_back(
-            std::move(sequence->getRef()), 0, is_character, is_multiline);
+        if (column_index == u8string_view::npos) {
+            strings_and_chars.emplace_back(string, 0, is_character, is_multiline);
+        } else {
+            auto string_begin = string.substr(0, column_index);
+            auto string_end = string.substr(column_index + 1);
+
+            strings_and_chars.emplace_back(
+                std::move(string_begin), std::move(string_end), 0, is_character, is_multiline);
+        }
 
         items.pop_back();
     }
@@ -238,6 +238,21 @@ namespace cerb::lex::dot_item
                 rule_iterator, u8"item without postfix modifier exists after items with them"_sv,
                 suggestion);
         }
+    }
+
+    auto DotItem::checkStringConstructionAvailability(TextIterator &rule_iterator) -> void
+    {
+        if (items.empty() || dynamic_cast<Sequence *>(items.back().get()) == nullptr) {
+            throwUnableToApply(
+                rule_iterator,
+                u8"unable to apply char/string modifier, because there are not "
+                "any items or the last item is not a sequence",
+                u8"create sequence or do not apply string modifier to other items");
+        }
+
+        checkSize(
+            rule_iterator, 1, u8"dot item with string must contain only one item - sequence",
+            u8"delete other items");
     }
 
     auto DotItem::checkAbilityToCreatePrefixPostfix(TextIterator &rule_iterator) -> void

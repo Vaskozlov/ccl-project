@@ -20,8 +20,14 @@ namespace cerb::lex::dot_item
 
     public:
         Sequence(
-            bool multiline_, u8string_view str_token_, TextIterator &rule_iterator_,
-            AnalysisShared &analysis_shared_);
+            bool multiline_, u8string_view str_begin_, u8string_view str_end_,
+            TextIterator &rule_iterator_, AnalysisShared &analysis_shared_);
+
+        Sequence(
+            bool multiline_, u8string_view str_begin_, TextIterator &rule_iterator_,
+            AnalysisShared &analysis_shared_)
+          : Sequence(multiline_, str_begin_, str_begin_, rule_iterator_, analysis_shared_)
+        {}
 
         [[nodiscard]] auto get() const noexcept -> const std::u8string &
         {
@@ -45,10 +51,11 @@ namespace cerb::lex::dot_item
         auto
             checkForUnexpectedEnd(TextIterator &rule_iterator, bool is_escaping, char32_t chr) const
             -> void;
-        auto checkStringBegin(TextIterator &rule_iterator) const -> void;
+        auto checkSequenceArguments(TextIterator &rule_iterator) const -> void;
 
         auto addWarningIfEmpty(TextIterator &rule_iterator) -> void;
 
+        static auto throwEmptyStringEnd(TextIterator &rule_iterator) -> void;
         static auto throwEmptyStringBegin(TextIterator &rule_iterator) -> void;
         auto throwStringBeginException(TextIterator &rule_iterator) const -> void;
         static auto throwUnterminatedString(
@@ -56,7 +63,8 @@ namespace cerb::lex::dot_item
             u8string_view message,
             u8string_view suggestion = {}) -> void;
 
-        u8string_view str_token{};
+        u8string_view str_begin{};
+        u8string_view str_end{};
         std::u8string string{};
         bool multiline{};
     };

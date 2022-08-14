@@ -26,7 +26,7 @@ namespace cerb::lex
     auto AnalysisShared::isStringOrChar(const u8string_view &text) const -> bool
     {
         return std::ranges::any_of(strings_and_chars, [text](const auto &elem) {
-            return text.substr(0, elem.str.size()) == elem.str;
+            return text.substr(0, elem.str_begin.size()) == elem.str_begin;
         });
     }
 }// namespace cerb::lex
