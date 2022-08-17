@@ -5,10 +5,9 @@
 RUNTIME_TEST
 {
     auto string_map = cerb::StringMap<char, int>{ { "Hello!", 1 } };
+    auto match_result = string_map.match("Hello, World!");
 
-    auto [success, value, repr] = string_map.matches("Hello, World!");
-
-    assertFalse(success);
+    assertFalse(match_result.has_value());
 
     return {};
 }
@@ -18,10 +17,9 @@ RUNTIME_TEST
 RUNTIME_TEST
 {
     auto string_map = cerb::StringMap<char, int>{ { "Hello!", 1 } };
+    auto match_result = string_map.match("Hell");
 
-    auto [success, value, repr] = string_map.matches("Hell");
-
-    assertFalse(success);
+    assertFalse(match_result.has_value());
 
     return {};
 }
@@ -31,12 +29,14 @@ RUNTIME_TEST
 RUNTIME_TEST
 {
     auto string_map = cerb::StringMap<char, int>{ { "Hello", 1 } };
+    auto match_result = string_map.match("Hello, World!");
 
-    auto [success, value, repr] = string_map.matches("Hello, World!");
+    assertTrue(match_result.has_value());
 
-    assertTrue(success);
+    auto &[matching_str, value] = *match_result;
+
     assertEqual(value, 1);
-    assertEqual(repr, "Hello");
+    assertEqual(matching_str, "Hello");
 
     return {};
 }
@@ -48,11 +48,14 @@ RUNTIME_TEST
     auto string_map = cerb::StringMap<char, int>{};
     string_map.addString("test", 2);
 
-    auto [success, value, repr] = string_map.matches("testtest");
+    auto match_result = string_map.match("testtest");
 
-    assertTrue(success);
+    assertTrue(match_result.has_value());
+
+    auto &[matching_str, value] = *match_result;
+
     assertEqual(value, 2);
-    assertEqual(repr, "test");
+    assertEqual(matching_str, "test");
 
     return {};
 }

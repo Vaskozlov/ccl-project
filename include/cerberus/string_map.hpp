@@ -5,6 +5,7 @@
 #include <cerberus/string_view.hpp>
 #include <cerberus/typed_bitset.hpp>
 #include <map>
+#include <optional>
 
 namespace cerb
 {
@@ -47,15 +48,22 @@ namespace cerb
             map.emplace(string, value);
         }
 
-        [[nodiscard]] auto matches(const BasicStringView<CharT> &string) const -> Result
+        [[nodiscard]] auto match(const BasicStringView<CharT> &string) const
+            -> std::optional<std::pair<Str, Value>>
         {
             auto matching_str = getMatchingPart(string);
 
             if (map.contains(matching_str)) {
-                return { true, std::move(matching_str), map.at(matching_str) };
+                return std::make_pair(std::move(matching_str), map.at(matching_str));
             }
 
-            return { false, {}, {} };
+            return std::nullopt;
+        }
+
+        [[nodiscard]] auto matches(const BasicStringView<CharT> &string) const -> bool
+        {
+            auto matching_str = getMatchingPart(string);
+            return map.contains(matching_str);
         }
 
         StringMap() = default;

@@ -34,7 +34,7 @@ namespace cerb::lex
 
         [[nodiscard]] auto isTerminal(const u8string_view &text) const -> bool
         {
-            return terminals.matches(text).success;
+            return terminals.matches(text);
         }
 
         [[nodiscard]] auto isComment(const u8string_view &text) const -> bool;
