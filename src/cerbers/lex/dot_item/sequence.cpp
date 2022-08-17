@@ -5,9 +5,10 @@ namespace cerb::lex::dot_item
     using namespace cerb::string_view_literals;
 
     Sequence::Sequence(
-        bool multiline_, u8string_view str_begin_, u8string_view str_end_,
+        SequenceFlags flags_, u8string_view str_begin_, u8string_view str_end_,
         TextIterator &rule_iterator_, AnalysisShared &analysis_shared_)
-      : BasicItem(analysis_shared_), str_begin(str_begin_), str_end(str_end_), multiline(multiline_)
+      : BasicItem(analysis_shared_), str_begin(str_begin_), str_end(str_end_),
+        sequence_flags(flags_)
     {
         auto &rule_iterator = rule_iterator_;
         auto begin_iterator_state = rule_iterator;
@@ -16,7 +17,16 @@ namespace cerb::lex::dot_item
         skipStringDefinition(rule_iterator);
 
         while (true) {
-            auto [is_escaping, chr] = rule_iterator.nextRawCharWithEscapingSymbols();
+            auto is_escaping = false;
+            auto chr = char32_t{};
+
+            if (sequence_flags.no_escaping_symbols) {
+                chr = rule_iterator.nextRawChar();
+            } else {
+                auto [escaping, character] = rule_iterator.nextRawCharWithEscapingSymbols();
+                is_escaping = escaping;
+                chr = character;
+            }
 
             checkForUnexpectedEnd(begin_iterator_state, is_escaping, chr);
 
@@ -68,7 +78,7 @@ namespace cerb::lex::dot_item
             throwUnterminatedString(rule_iterator, u8"unterminated sequence");
         }
 
-        if (land(chr == '\n', not multiline)) {
+        if (land(chr == '\n', not sequence_flags.multiline)) {
             auto message = u8"new line is reached, but sequence has not been terminated"_sv;
             auto suggestion =
                 fmt::format<u8"use multiline sequence or close it with `{}`">(str_end);

@@ -9,7 +9,7 @@ namespace cerb::coro
     template<typename T>
     struct [[nodiscard]] Generator
     {
-        struct promise_type;
+        struct [[nodiscard]] promise_type;
         using coro_handle = std::coroutine_handle<promise_type>;
 
         explicit Generator(coro_handle handle_) noexcept : handle{ handle_ }

@@ -19,14 +19,20 @@ namespace cerb::lex::dot_item
         using typename BasicItem::TextIterator;
 
     public:
+        struct SequenceFlags
+        {
+            bool multiline : 1 = false;
+            bool no_escaping_symbols : 1 = false;
+        };
+
         Sequence(
-            bool multiline_, u8string_view str_begin_, u8string_view str_end_,
+            SequenceFlags flags_, u8string_view str_begin_, u8string_view str_end,
             TextIterator &rule_iterator_, AnalysisShared &analysis_shared_);
 
         Sequence(
-            bool multiline_, u8string_view str_begin_, TextIterator &rule_iterator_,
+            SequenceFlags flags_, u8string_view str_begin_, TextIterator &rule_iterator_,
             AnalysisShared &analysis_shared_)
-          : Sequence(multiline_, str_begin_, str_begin_, rule_iterator_, analysis_shared_)
+          : Sequence(flags_, str_begin_, str_begin_, rule_iterator_, analysis_shared_)
         {}
 
         [[nodiscard]] auto get() const noexcept -> const std::u8string &
@@ -67,7 +73,7 @@ namespace cerb::lex::dot_item
         u8string_view str_begin{};
         u8string_view str_end{};
         std::u8string string{};
-        bool multiline{};
+        SequenceFlags sequence_flags{};
     };
 }// namespace cerb::lex::dot_item
 

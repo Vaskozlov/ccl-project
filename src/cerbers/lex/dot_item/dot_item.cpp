@@ -112,7 +112,8 @@ namespace cerb::lex::dot_item
 
     auto DotItem::constructNewSequence(TextIterator &rule_iterator) -> std::unique_ptr<BasicItem>
     {
-        return std::make_unique<Sequence>(false, u8"\"", rule_iterator, analysis_shared);
+        return std::make_unique<Sequence>(
+            Sequence::SequenceFlags{}, u8"\"", rule_iterator, analysis_shared);
     }
 
     auto DotItem::constructNewUnion(TextIterator &rule_iterator) -> std::unique_ptr<BasicItem>
@@ -188,7 +189,7 @@ namespace cerb::lex::dot_item
             rule_iterator, 0, u8"dot item with terminal must be empty", u8"delete other items");
 
         auto &terminals = analysis_shared.terminals;
-        auto sequence = Sequence{ false, u8"\'", rule_iterator, analysis_shared };
+        auto sequence = Sequence{ {}, u8"\'", rule_iterator, analysis_shared };
 
         terminals.addString(std::move(sequence.getRef()), id);
     }
