@@ -1,7 +1,7 @@
 #ifndef CERBERUS_PROJECT_ANALYSIS_SHARED_HPP
 #define CERBERUS_PROJECT_ANALYSIS_SHARED_HPP
 
-#include <cerberus/string_map.hpp>
+#include <cerberus/raw_string_matcher.hpp>
 #include <cerberus/text/text_iterator.hpp>
 #include <utility>
 #include <vector>
@@ -50,7 +50,7 @@ namespace cerb::lex
 
         CommentTokens comment_tokens{};
         std::vector<String> strings_and_chars{};
-        StringMap<size_t> terminals{};
+        RawStringMatcher terminals{};
     };
 }// namespace cerb::lex
 
