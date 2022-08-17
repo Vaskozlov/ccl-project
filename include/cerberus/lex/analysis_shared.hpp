@@ -50,7 +50,7 @@ namespace cerb::lex
 
         CommentTokens comment_tokens{};
         std::vector<String> strings_and_chars{};
-        StringMap<char8_t, size_t> terminals{};
+        StringMap<size_t> terminals{};
     };
 }// namespace cerb::lex
 

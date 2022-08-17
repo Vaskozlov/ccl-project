@@ -3,53 +3,35 @@
 
 #include <boost/container/small_vector.hpp>
 #include <cerberus/string_view.hpp>
-#include <cerberus/typed_bitset.hpp>
+#include <cerberus/utf_set.hpp>
 #include <map>
 #include <optional>
 
 namespace cerb
 {
-    template<CharacterLiteral CharT, std::integral Value>
+    template<std::integral Value>
     class StringMap
     {
     public:
-        using Str = std::basic_string<CharT>;
-        using Map = std::map<Str, Value>;
-        using CharLevel = TypedBitset<CharT>;
+        using Map = std::map<std::u8string, Value>;
+        using CharLevel = UtfSet;
         using CharLevels = boost::container::small_vector<CharLevel, 4>;// NOLINT
 
-        struct Result
-        {
-            Result() = default;
-
-            constexpr Result(bool success_, Str &&repr_, Value value_)
-              : success(success_), value(value_), repr(std::move(repr_))
-            {}
-
-            bool success{};
-            Value value{};
-            Str repr{};
-        };
-
-        [[nodiscard]] auto size() const -> size_t
+        [[nodiscard]] auto size() const noexcept -> size_t
         {
             return map.size();
         }
 
-        auto addString(Str &&string, Value value) -> void
+        template<typename T>
+            requires std::is_convertible_v<T, std::u8string>
+        auto addString(T &&string, Value value) -> void
         {
             mapStringToLevels(string);
-            map.emplace(std::move(string), value);
+            map.emplace(std::forward<T>(string), value);
         }
 
-        auto addString(const Str &string, Value value) -> void
-        {
-            mapStringToLevels(string);
-            map.emplace(string, value);
-        }
-
-        [[nodiscard]] auto match(const BasicStringView<CharT> &string) const
-            -> std::optional<std::pair<Str, Value>>
+        [[nodiscard]] auto match(const u8string_view &string) const
+            -> std::optional<std::pair<std::u8string, Value>>
         {
             auto matching_str = getMatchingPart(string);
 
@@ -60,7 +42,7 @@ namespace cerb
             return std::nullopt;
         }
 
-        [[nodiscard]] auto matches(const BasicStringView<CharT> &string) const -> bool
+        [[nodiscard]] auto matches(const u8string_view &string) const -> bool
         {
             auto matching_str = getMatchingPart(string);
             return map.contains(matching_str);
@@ -68,7 +50,7 @@ namespace cerb
 
         StringMap() = default;
 
-        StringMap(const std::initializer_list<std::pair<Str, Value>> &initial_data)
+        StringMap(const std::initializer_list<std::pair<std::u8string, Value>> &initial_data)
         {
             for (auto &[string, value] : initial_data) {
                 addString(string, value);
@@ -76,14 +58,14 @@ namespace cerb
         }
 
     private:
-        [[nodiscard]] auto getMatchingPart(const BasicStringView<CharT> &string) const -> Str
+        [[nodiscard]] auto getMatchingPart(const u8string_view &string) const -> std::u8string
         {
             auto index = static_cast<size_t>(0);
-            auto matching_str = std::basic_string<CharT>{};
+            auto matching_str = std::u8string{};
 
             for (; reachable(string, index); ++index) {
                 auto chr = string[index];
-                auto &level = char_levels[index];
+                const auto &level = char_levels[index];
 
                 if (not level.at(chr)) {
                     break;
@@ -95,13 +77,12 @@ namespace cerb
             return matching_str;
         }
 
-        [[nodiscard]] auto reachable(const BasicStringView<CharT> &string, size_t level) const
-            -> bool
+        [[nodiscard]] auto reachable(const u8string_view &string, size_t level) const -> bool
         {
             return land(level != string.size(), level != char_levels.size());
         }
 
-        auto mapStringToLevels(const std::basic_string<CharT> &string) -> void
+        auto mapStringToLevels(const std::u8string &string) -> void
         {
             auto level = static_cast<size_t>(0);
             resizeLevels(string.size());

@@ -10,8 +10,7 @@ namespace cerb
     concept Enum = std::is_enum_v<T>;
 
     template<typename T>
-    concept Boolean =
-        std::is_same_v<T, bool> || std::is_same_v<T, const bool &> || std::is_same_v<T, bool &>;
+    concept Boolean = std::is_convertible_v<T, bool>;
 
     template<typename T>
     concept Exception = std::is_base_of_v<std::exception, T>;
@@ -25,11 +24,10 @@ namespace cerb
     concept CharacterArray = std::is_pointer_v<T> || std::is_array_v<T>;
 
     template<typename T>
-    concept Pairable = requires(T pair)
-    {
-        pair.first;
-        pair.second;
-    };
+    concept Pairable = requires(T pair) {
+                           pair.first;
+                           pair.second;
+                       };
 }// namespace cerb
 
 #endif /* CERBERUS_PROJECT_CONCEPTS_HPP */
