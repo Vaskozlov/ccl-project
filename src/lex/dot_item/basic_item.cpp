@@ -13,30 +13,54 @@ namespace cerb::lex::dot_item
         return analysis_shared.isNextCharNotForScanning(text_iterator);
     }
 
-    auto BasicItem::scan(const TextIterator &text_iterator, bool main_scan) const
-        -> std::pair<bool, TextIterator>
+    auto
+        BasicItem::scan(const TextIterator &text_iterator, const Token &token, bool main_scan) const
+        -> std::optional<std::pair<TextIterator, Token>>
     {
         auto times = static_cast<size_t>(0);
         auto local_iterator = text_iterator;
+        auto local_token = Token{ token };
 
         while (times <= repetition.to) {
+            auto token_copy = local_token;
             auto iterator_copy = local_iterator;
 
-            if (scanIteration(iterator_copy) ^ reversed) {
+            if (scanIteration(iterator_copy, token_copy) ^ reversed) {
                 ++times;
+                modifyToken(local_iterator, iterator_copy, token_copy);
                 local_iterator = std::move(iterator_copy);
-            } else {
-                break;
+                local_token = std::move(token_copy);
+                continue;
             }
+
+            break;
         }
 
-        return { computeScanResult(local_iterator, times, main_scan), local_iterator };
+        if (successfullyScanned(local_iterator, times, main_scan)) {
+            return std::make_pair(local_iterator, local_token);
+        }
+
+        return std::nullopt;
     }
 
-    auto BasicItem::computeScanResult(
+    auto BasicItem::successfullyScanned(
         const TextIterator &text_iterator, size_t times, bool main_scan) const -> bool
     {
         return repetition.inRange(times) &&
                (not main_scan || isNextCharNotForScanning(text_iterator));
+    }
+
+    auto BasicItem::modifyToken(
+        TextIterator &before_scan_iterator, TextIterator &after_scan_iterator, Token &token) const
+        -> void
+    {
+        const auto *new_token_end = after_scan_iterator.getCarriage() + 1;
+        token.setEnd(new_token_end);
+
+        if (hasPrefix()) {
+            token.addPrefix({ before_scan_iterator.getCarriage() + 1, new_token_end });
+        } else if (hasPostfix()) {
+            token.addPostfix({ before_scan_iterator.getCarriage() + 1, new_token_end });
+        }
     }
 }// namespace cerb::lex::dot_item

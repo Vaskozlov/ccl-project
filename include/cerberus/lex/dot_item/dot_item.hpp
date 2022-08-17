@@ -66,7 +66,11 @@ namespace cerb::lex::dot_item
         }
 
     private:
-        [[nodiscard]] auto scanIteration(TextIterator &text_iterator) const -> bool override;
+        [[nodiscard]] auto scanIteration(TextIterator &text_iterator, Token &token) const
+            -> bool override;
+
+        [[nodiscard]] static auto
+            scanItem(const BasicItem *item, TextIterator &text_iterator, Token &token) -> bool;
 
         auto parseRule(TextIterator &rule_iterator) -> void;
 

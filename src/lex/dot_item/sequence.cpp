@@ -35,7 +35,7 @@ namespace cerb::lex::dot_item
         return string.empty();
     }
 
-    auto Sequence::scanIteration(TextIterator &text_iterator) const -> bool
+    auto Sequence::scanIteration(TextIterator &text_iterator, Token & /* token */) const -> bool
     {
         auto future_text = text_iterator.getRemainingFutureAfterSymbols(1);
 

@@ -3,7 +3,9 @@
 
 #include <cerberus/lex/analysis_shared.hpp>
 #include <cerberus/lex/dot_item/repetition.hpp>
+#include <cerberus/lex/token.hpp>
 #include <cerberus/text/text_iterator.hpp>
+#include <optional>
 
 namespace cerb::lex::dot_item
 {
@@ -70,15 +72,20 @@ namespace cerb::lex::dot_item
         [[nodiscard]] auto isNextCharNotForScanning(const TextIterator &text_iterator) const
             -> bool;
 
-        [[nodiscard]] auto scan(const TextIterator &text_iterator, bool main_scan = false) const
-            -> std::pair<bool, TextIterator>;
+        [[nodiscard]] auto scan(
+            const TextIterator &text_iterator, const Token &token, bool main_scan = false) const
+            -> std::optional<std::pair<TextIterator, Token>>;
 
     private:
-        [[nodiscard]] virtual auto scanIteration(TextIterator &text_iterator) const -> bool = 0;
+        [[nodiscard]] virtual auto scanIteration(TextIterator &text_iterator, Token &token) const
+            -> bool = 0;
 
-        [[nodiscard]] auto
-            computeScanResult(const TextIterator &text_iterator, size_t times, bool main_scan) const
-            -> bool;
+        [[nodiscard]] auto successfullyScanned(
+            const TextIterator &text_iterator, size_t times, bool main_scan) const -> bool;
+
+        auto modifyToken(
+            TextIterator &before_scan_iterator, TextIterator &after_scan_iterator,
+            Token &token) const -> void;
 
     public:
         auto operator=(const BasicItem &) -> BasicItem & = delete;

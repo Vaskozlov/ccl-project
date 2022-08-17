@@ -42,7 +42,8 @@ namespace cerb::lex::dot_item
         [[nodiscard]] auto empty() const noexcept -> bool override;
 
     private:
-        [[nodiscard]] auto scanIteration(TextIterator &text_iterator) const -> bool override;
+        [[nodiscard]] auto scanIteration(TextIterator &text_iterator, Token &token) const
+            -> bool override;
 
         [[nodiscard]] auto isStringEnd(TextIterator &rule_iterator, bool is_escaping) const -> bool;
 

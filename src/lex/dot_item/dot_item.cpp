@@ -4,18 +4,28 @@ namespace cerb::lex::dot_item
 {
     using namespace cerb::string_view_literals;
 
-    auto DotItem::scanIteration(TextIterator &text_iterator) const -> bool
+    auto DotItem::scanIteration(TextIterator &text_iterator, Token &token) const -> bool
     {
         for (const auto &item : items) {
-            if (auto [success, iterator] = item->scan(text_iterator); success) {
-                text_iterator = std::move(iterator);
-                continue;
+            if (not scanItem(item.get(), text_iterator, token)) {
+                return false;
             }
-
-            return false;
         }
 
         return true;
+    }
+
+    auto DotItem::scanItem(const BasicItem *item, TextIterator &text_iterator, Token &token) -> bool
+    {
+        auto scan_result = item->scan(text_iterator, token);
+
+        if (scan_result.has_value()) {
+            auto &[iterator, new_token] = *scan_result;
+            token = std::move(new_token);
+            text_iterator = std::move(iterator);
+        }
+
+        return scan_result.has_value();
     }
 
     auto DotItem::parseRule(TextIterator &rule_iterator) -> void
@@ -154,7 +164,8 @@ namespace cerb::lex::dot_item
 
         auto &strings_and_chars = analysis_shared.strings_and_chars;
         auto &last_item = items.back();
-        auto *sequence = dynamic_cast<Sequence *>(last_item.get());
+        auto *sequence = static_cast<Sequence *>(// NOLINT type has been
+            last_item.get());                    // checked in checkStringConstructionAvailability
         auto &string = sequence->getRef();
         auto column_index = string.find(u8':');
 
@@ -204,7 +215,7 @@ namespace cerb::lex::dot_item
     {
         if (items.empty()) {
             throwUnableToApply(
-                rule_iterator, u8"no item to reverse", u8"create item before rever2ing it");
+                rule_iterator, u8"no item to reverse", u8"create item before reversing it");
         }
 
         auto &last_item = items.back();

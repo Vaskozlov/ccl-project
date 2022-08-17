@@ -47,7 +47,7 @@ namespace cerb::lex::dot_item
         return bitset.empty();
     }
 
-    auto Union::scanIteration(TextIterator &text_iterator) const -> bool
+    auto Union::scanIteration(TextIterator &text_iterator, Token & /* token */) const -> bool
     {
         return bitset.at(text_iterator.nextRawChar());
     }

@@ -4,25 +4,22 @@
 using namespace cerb::lex;
 using namespace cerb::text;
 
-// NOLINTNEXTLINE
-RUNTIME_TEST
+auto convert(cerb::u8string_view str) -> std::string_view
 {
-    auto text = TextIterator{ u8"test 123" };
-    auto analyzer = LexicalAnalyzer{ { 0, u8R"("test")" } };
-
-    analyzer.yield(text);
-
-    return {};
+    return { reinterpret_cast<const char *>(str.begin()), str.size() };// NOLINT
 }
-();
 
 // NOLINTNEXTLINE
 RUNTIME_TEST
 {
-    auto text = TextIterator{ u8"abcd 131" };
-    auto analyzer = LexicalAnalyzer{ { 0, u8R"([a-z]+[0-9]*)" } };
+    auto text = TextIterator{ u8"привет фф 1986" };
+    auto analyzer = LexicalAnalyzer{ { 1, u8R"([а-я]+)" }, { 2, u8"[0-9]+" } };
+    auto tokens = analyzer.getTokenizer(text);
 
-    analyzer.yield(text);
+    while (tokens()) {
+        auto &token = tokens.getValue();
+        fmt::print("{}: {}\n", token.getId(), convert(token.getRepr()));
+    }
 
     return {};
 }
