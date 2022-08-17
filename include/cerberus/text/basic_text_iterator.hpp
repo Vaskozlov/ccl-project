@@ -25,21 +25,23 @@ namespace cerb::text
 
         CERBLIB_DECL auto getRemaining() const noexcept -> u8string_view
         {
+            if (initialized) {
+                return { std::min(carriage + 1, end), end };
+            }
+
             return { carriage, end };
         }
 
-        CERBLIB_DECL auto getRemainingFutureAfterRawSkip(size_t times) const -> u8string_view
+        CERBLIB_DECL auto getRemainingWithCurrent() const noexcept -> u8string_view
         {
-            auto fork = *this;
-            fork.rawSkip(times);
-            return fork.getRemaining();
+            return { carriage, end };
         }
 
-        CERBLIB_DECL auto getRemainingFutureAfterSymbols(size_t times) const -> u8string_view
+        CERBLIB_DECL auto getFutureRemaining(size_t times) const -> u8string_view
         {
             auto fork = *this;
             fork.rawSymbolsSkip(times);
-            return fork.getRemaining();
+            return fork.getRemainingWithCurrent();
         }
 
         CERBLIB_DECL auto getCurrentChar() const noexcept -> char32_t
@@ -60,7 +62,6 @@ namespace cerb::text
 
             end = new_end;
         }
-
 
         constexpr auto rawSkip(size_t n) -> void
         {

@@ -28,7 +28,7 @@ namespace cerb::lex::dot_item
         [[nodiscard]] auto empty() const noexcept -> bool override;
 
     private:
-        [[nodiscard]] auto scanIteration(TextIterator &text_iterator, Token &token) const
+        [[nodiscard]] auto scanIteration(TextIterator &text_iterator, Token & /* unused */) const
             -> bool override;
 
         [[nodiscard]] static auto isRange(bool is_escaping, char32_t chr) noexcept -> bool;

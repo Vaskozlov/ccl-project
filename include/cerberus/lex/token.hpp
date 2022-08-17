@@ -17,7 +17,7 @@ namespace cerb::lex
         {}
 
         Token(const text::TextIterator &text_iterator_, size_t id_)
-          : repr{ text_iterator_.getRemainingFutureAfterRawSkip(1) }, id{ id_ }
+          : repr{ text_iterator_.getRemaining() }, id{ id_ }
         {}
 
         [[nodiscard]] auto getId() const -> size_t

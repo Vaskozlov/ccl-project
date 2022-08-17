@@ -19,8 +19,7 @@ namespace cerb::text
 
     auto TextIterator::CommentSkipper::isComment(u8string_view const &comment) const -> bool
     {
-        auto text =
-            text_iterator.getRemainingFutureAfterRawSkip(1);// getRemainingFutureAfterRawSkip?
+        auto text = text_iterator.getRemaining();
         return not comment.empty() && (text.substr(0, comment.size()) == comment);
     }
 

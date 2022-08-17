@@ -5,7 +5,7 @@ namespace cerb::lex
     auto AnalysisShared::isNextCharNotForScanning(const text::TextIterator &text_iterator) const
         -> bool
     {
-        auto text = text_iterator.getRemainingFutureAfterSymbols(1);
+        auto text = text_iterator.getFutureRemaining(1);
 
         return isComment(text) || isTerminal(text) || isStringOrChar(text);
     }

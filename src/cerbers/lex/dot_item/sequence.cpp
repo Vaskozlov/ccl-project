@@ -45,9 +45,9 @@ namespace cerb::lex::dot_item
         return string.empty();
     }
 
-    auto Sequence::scanIteration(TextIterator &text_iterator, Token & /* token */) const -> bool
+    auto Sequence::scanIteration(TextIterator &text_iterator, Token & /* unused */) const -> bool
     {
-        auto future_text = text_iterator.getRemainingFutureAfterSymbols(1);
+        auto future_text = text_iterator.getFutureRemaining(1);
 
         if (future_text.substr(0, string.size()) == string) {
             text_iterator.rawSkip(string.size());
@@ -63,7 +63,7 @@ namespace cerb::lex::dot_item
             return false;
         }
 
-        auto text = rule_iterator.getRemaining();
+        auto text = rule_iterator.getRemainingWithCurrent();
         return text.substr(0, str_end.size()) == str_end;
     }
 
@@ -94,7 +94,7 @@ namespace cerb::lex::dot_item
 
     auto Sequence::checkSequenceArguments(TextIterator &rule_iterator) const -> void
     {
-        auto text = rule_iterator.getRemaining();
+        auto text = rule_iterator.getRemainingWithCurrent();
 
         if (str_begin.empty()) {
             throwEmptyStringBegin(rule_iterator);
