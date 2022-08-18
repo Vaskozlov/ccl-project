@@ -12,10 +12,9 @@ namespace cerb::lex
 {
     struct String
     {
-        String(
-            std::u8string str_begin_, std::u8string str_end_, size_t id_, bool is_character_,
-            bool is_multiline_)
-          : str_begin(std::move(str_begin_)), str_end(std::move(str_end_)), id(id_),
+        CERBLIB_PERFECT_FORWARDING_2(T1, T2, std::u8string, std::u8string)
+        String(T1 &&str_begin_, T2 &&str_end_, size_t id_, bool is_character_, bool is_multiline_)
+          : str_begin(std::forward<T1>(str_begin_)), str_end(std::forward<T2>(str_end_)), id(id_),
             is_character(is_character_), is_multiline(is_multiline_)
         {}
 
@@ -23,11 +22,11 @@ namespace cerb::lex
           : String(str_begin_, str_begin_, id_, is_character_, is_multiline_)
         {}
 
-        std::u8string str_begin;
+        std::u8string str_begin{};
         std::u8string str_end{};
-        size_t id;
-        bool is_character;
-        bool is_multiline;
+        size_t id{};
+        bool is_character{};
+        bool is_multiline{};
     };
 
     struct AnalysisShared
