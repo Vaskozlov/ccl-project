@@ -24,10 +24,11 @@ namespace cerb
     concept CharacterArray = std::is_pointer_v<T> || std::is_array_v<T>;
 
     template<typename T>
-    concept Pairable = requires(T pair) {
-                           pair.first;
-                           pair.second;
-                       };
+    concept Pairable = requires(T pair)
+    {
+        pair.first;
+        pair.second;
+    };
 }// namespace cerb
 
 #endif /* CERBERUS_PROJECT_CONCEPTS_HPP */

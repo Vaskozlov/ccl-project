@@ -67,7 +67,7 @@ namespace cerb::lex::dot_item
 
     private:
         template<typename T>
-            requires std::is_base_of_v<BasicItem, T>
+        requires std::is_base_of_v<BasicItem, T>
         auto unsafeGetLastItemAs() -> T *
         {
             // NOLINTNEXTLINE unsafe cast to increase performance
