@@ -171,13 +171,13 @@ namespace cerb::lex::dot_item
         auto column_index = string.find(u8':');
 
         if (column_index == u8string_view::npos) {
-            strings_and_chars.emplace_back(string, 0, is_character, is_multiline);
+            strings_and_chars.emplace_back(string, id, is_character, is_multiline);
         } else {
             auto string_begin = string.substr(0, column_index);
             auto string_end = string.substr(column_index + 1);
 
             strings_and_chars.emplace_back(
-                std::move(string_begin), std::move(string_end), 0, is_character, is_multiline);
+                std::move(string_begin), std::move(string_end), id, is_character, is_multiline);
         }
 
         items.pop_back();
