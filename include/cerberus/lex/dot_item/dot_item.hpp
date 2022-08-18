@@ -22,28 +22,30 @@ namespace cerb::lex::dot_item
         using typename BasicItem::ScanStatus;
         using typename BasicItem::TextIterator;
 
+        using storage_t = boost::container::small_vector<std::unique_ptr<BasicItem>, 4>;
+
     public:
         explicit DotItem(
-            const TextIterator &rule_iterator_,
-            size_t id_,
-            AnalysisShared &analysis_shared_)
-          : BasicItem(analysis_shared_), id(id_)
+            const TextIterator &rule_iterator_, size_t id_, AnalysisShared &analysis_shared_,
+            bool main_item_ = true)
+          : BasicItem(analysis_shared_), id(id_), main_item(main_item_)
         {
             auto rule_iterator = rule_iterator_;
             parseRule(rule_iterator);
         }
 
         explicit DotItem(
-            TextIterator &&rule_iterator_,
-            size_t id_,
-            AnalysisShared &analysis_shared_)
-          : BasicItem(analysis_shared_), id(id_)
+            TextIterator &&rule_iterator_, size_t id_, AnalysisShared &analysis_shared_,
+            bool main_item_ = true)
+          : BasicItem(analysis_shared_), id(id_), main_item(main_item_)
         {
             parseRule(rule_iterator_);
         }
 
-        explicit DotItem(TextIterator &rule_iterator_, size_t id_, AnalysisShared &analysis_shared_)
-          : BasicItem(analysis_shared_), id(id_)
+        explicit DotItem(
+            TextIterator &rule_iterator_, size_t id_, AnalysisShared &analysis_shared_,
+            bool main_item_ = false)
+          : BasicItem(analysis_shared_), id(id_), main_item(main_item_)
         {
             parseRule(rule_iterator_);
         }
@@ -58,8 +60,25 @@ namespace cerb::lex::dot_item
             return items.empty();
         }
 
+        [[nodiscard]] auto getItems() const noexcept -> const storage_t &
+        {
+            return items;
+        }
+
     private:
-        [[nodiscard]] auto scanIteration(TextIterator &text_iterator) const -> bool override;
+        template<typename T>
+        requires std::is_base_of_v<BasicItem, T>
+        auto unsafeGetLastItemAs() -> T *
+        {
+            // NOLINTNEXTLINE unsafe cast to increase performance
+            return static_cast<T *>(items.back().get());
+        }
+
+        [[nodiscard]] auto scanIteration(TextIterator &text_iterator, Token &token) const
+            -> bool override;
+
+        [[nodiscard]] static auto
+            scanItem(const BasicItem *item, TextIterator &text_iterator, Token &token) -> bool;
 
         auto parseRule(TextIterator &rule_iterator) -> void;
 
@@ -68,8 +87,7 @@ namespace cerb::lex::dot_item
             return not isEoF(rule_iterator.nextRawChar());
         }
 
-        auto recognizeAction(TextIterator &rule_iterator, char32_t chr, ItemsCounter &counter)
-            -> void;
+        auto recognizeAction(TextIterator &rule_iterator, ItemsCounter &counter) -> void;
 
         [[nodiscard]] auto constructNewSequence(TextIterator &rule_iterator)
             -> std::unique_ptr<BasicItem>;
@@ -80,7 +98,9 @@ namespace cerb::lex::dot_item
         [[nodiscard]] auto constructNewItem(TextIterator &rule_iterator)
             -> std::unique_ptr<BasicItem>;
 
-        auto emplaceItem(std::unique_ptr<BasicItem> item) -> void;
+        auto emplaceItem(std::unique_ptr<BasicItem> &&item) -> void;
+
+        auto addPrefixPostfix() -> void;
 
         auto constructString(TextIterator &rule_iterator, bool is_character, bool is_multiline)
             -> void;
@@ -90,6 +110,12 @@ namespace cerb::lex::dot_item
         auto addRepetition(TextIterator &rule_iterator, Repetition new_repetition) -> void;
 
         auto reverseLastItem(TextIterator &rule_iterator) -> void;
+
+        auto postCheck(TextIterator &rule_iterator, const ItemsCounter &counter) -> void;
+
+        auto checkStringConstructionAvailability(TextIterator &rule_iterator) -> void;
+
+        auto checkAbilityToCreatePrefixPostfix(TextIterator &rule_iterator) -> void;
 
         auto checkSize(
             TextIterator &rule_iterator, size_t expected_size, u8string_view message,
@@ -109,8 +135,9 @@ namespace cerb::lex::dot_item
 
         static auto throwUndefinedAction(TextIterator &rule_iterator) -> void;
 
-        boost::container::small_vector<std::unique_ptr<BasicItem>, 4> items{};
+        storage_t items{};
         size_t id{};
+        bool main_item{};
     };
 }// namespace cerb::lex::dot_item
 

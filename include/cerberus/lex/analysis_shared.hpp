@@ -1,26 +1,32 @@
 #ifndef CERBERUS_PROJECT_ANALYSIS_SHARED_HPP
 #define CERBERUS_PROJECT_ANALYSIS_SHARED_HPP
 
-#include <cerberus/string_map.hpp>
+#include <cerberus/lex/token.hpp>
+#include <cerberus/raw_string_matcher.hpp>
 #include <cerberus/text/text_iterator.hpp>
+#include <optional>
+#include <utility>
 #include <vector>
 
 namespace cerb::lex
 {
     struct String
     {
-        String(const std::u8string &str_, size_t id_, bool is_character_, bool is_multiline_)
-          : str(str_), id(id_), is_character(is_character_), is_multiline(is_multiline_)
+        CERBLIB_PERFECT_FORWARDING_2(T1, T2, std::u8string, std::u8string)
+        String(T1 &&str_begin_, T2 &&str_end_, size_t id_, bool is_character_, bool is_multiline_)
+          : str_begin(std::forward<T1>(str_begin_)), str_end(std::forward<T2>(str_end_)), id(id_),
+            is_character(is_character_), is_multiline(is_multiline_)
         {}
 
-        String(std::u8string &&str_, size_t id_, bool is_character_, bool is_multiline_)
-          : str(std::move(str_)), id(id_), is_character(is_character_), is_multiline(is_multiline_)
+        String(const std::u8string &str_begin_, size_t id_, bool is_character_, bool is_multiline_)
+          : String(str_begin_, str_begin_, id_, is_character_, is_multiline_)
         {}
 
-        std::u8string str;
-        size_t id;
-        bool is_character;
-        bool is_multiline;
+        std::u8string str_begin{};
+        std::u8string str_end{};
+        size_t id{};
+        bool is_character{};
+        bool is_multiline{};
     };
 
     struct AnalysisShared
@@ -29,23 +35,35 @@ namespace cerb::lex
 
         [[nodiscard]] auto isTerminal(const u8string_view &text) const -> bool
         {
-            return terminals.matches(text).success;
+            return terminals.matches(text);
         }
 
         [[nodiscard]] auto isComment(const u8string_view &text) const -> bool;
         [[nodiscard]] auto isNextCharNotForScanning(const text::TextIterator &text_iterator) const
             -> bool;
 
+        [[nodiscard]] auto getSpecialToken(text::TextIterator &text_iterator) const
+            -> std::optional<Token>;
+
+        [[nodiscard]] auto isStringOrChar(const u8string_view &text) const -> bool;
+
     private:
         [[nodiscard]] static auto
             basicIsComment(const u8string_view &text, const u8string_view &comment) -> bool;
 
-    public:
-        [[nodiscard]] auto isStringOrChar(const u8string_view &text) const -> bool;
+        [[nodiscard]] static auto constructTerminalToken(
+            text::TextIterator &text_iterator,
+            const u8string_view &remaining_text,
+            std::pair<std::u8string, size_t> &terminal_match) -> Token;
 
+        [[nodiscard]] static auto
+            constructStringToken(text::TextIterator &text_iterator, const String &string_elem)
+                -> Token;
+
+    public:
         CommentTokens comment_tokens{};
         std::vector<String> strings_and_chars{};
-        StringMap<char8_t, size_t> terminals{};
+        RawStringMatcher terminals{};
     };
 }// namespace cerb::lex
 

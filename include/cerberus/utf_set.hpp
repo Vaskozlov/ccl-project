@@ -14,7 +14,7 @@ namespace cerb
             return storage.empty() && small_storage.none();
         }
 
-        auto at(char32_t chr) const -> bool
+        auto at(char32_t chr) const noexcept -> bool
         {
             if (chr < small_character_optimization_size) {
                 return small_storage.test(chr);

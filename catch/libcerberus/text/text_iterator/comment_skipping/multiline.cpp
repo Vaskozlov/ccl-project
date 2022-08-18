@@ -26,7 +26,6 @@ RUNTIME_TEST
     auto text_iterator = TextIterator{ u8"/**/Hi!", nullptr, { u8"//", u8"/*", u8"*/" } };
     text_iterator.skipCommentsAndLayout();
 
-    assertEqual(text_iterator.getRemaining(), u8"/Hi!");
     assertEqual(text_iterator.nextRawChar(), U'H');
 
     return {};
@@ -40,7 +39,6 @@ RUNTIME_TEST
         TextIterator{ u8"/*1521\n\n151t*/\nHi!", nullptr, { u8"//", u8"/*", u8"*/" } };
     text_iterator.skipCommentsAndLayout();
 
-    assertEqual(text_iterator.getRemaining(), u8"\nHi!");
     assertEqual(text_iterator.nextRawChar(), U'H');
 
     return {};
@@ -54,7 +52,6 @@ RUNTIME_TEST
         TextIterator{ u8"/*1521\n\n151t*/\n/* */ Hi!", nullptr, { u8"//", u8"/*", u8"*/" } };
     text_iterator.skipCommentsAndLayout();
 
-    assertEqual(text_iterator.getRemaining(), u8" Hi!");
     assertEqual(text_iterator.nextRawChar(), U'H');
 
     return {};

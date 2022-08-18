@@ -25,21 +25,23 @@ namespace cerb::text
 
         CERBLIB_DECL auto getRemaining() const noexcept -> u8string_view
         {
+            if (initialized) {
+                return { std::min(carriage + 1, end), end };
+            }
+
             return { carriage, end };
         }
 
-        CERBLIB_DECL auto getRemainingFutureAfterRawSkip(size_t times) const -> u8string_view
+        CERBLIB_DECL auto getRemainingWithCurrent() const noexcept -> u8string_view
         {
-            auto fork = *this;
-            fork.rawSkip(times);
-            return fork.getRemaining();
+            return { carriage, end };
         }
 
-        CERBLIB_DECL auto getRemainingFutureAfterSymbols(size_t times) const -> u8string_view
+        CERBLIB_DECL auto getFutureRemaining(size_t times) const -> u8string_view
         {
             auto fork = *this;
             fork.rawSymbolsSkip(times);
-            return fork.getRemaining();
+            return fork.getRemainingWithCurrent();
         }
 
         CERBLIB_DECL auto getCurrentChar() const noexcept -> char32_t
@@ -61,7 +63,6 @@ namespace cerb::text
             end = new_end;
         }
 
-
         constexpr auto rawSkip(size_t n) -> void
         {
             for (size_t i = 0; i != n; ++i) {
@@ -73,13 +74,6 @@ namespace cerb::text
         {
             for (size_t i = 0; i != n; ++i) {
                 nextRawChar();
-            }
-        }
-
-        constexpr auto cleanSymbolsSkip(size_t n) -> void
-        {
-            for (size_t i = 0; i != n; ++i) {
-                nextCleanChar();
             }
         }
 
@@ -99,15 +93,6 @@ namespace cerb::text
             return current_char;
         }
 
-        constexpr auto nextCleanChar() -> char32_t
-        {
-            while (isLayout(nextRawChar())) {
-                // empty loop
-            }
-
-            return getCurrentChar();
-        }
-
         CERBLIB_DECL auto futureRawChar(size_t times) const -> char32_t
         {
             auto forked = *this;
@@ -119,23 +104,18 @@ namespace cerb::text
             return forked.getCurrentChar();
         }
 
-        CERBLIB_DECL auto futureCleanChar(size_t times) const -> char32_t
-        {
-            auto forked = *this;
-
-            for (size_t i = 0; i != times; ++i) {
-                forked.nextCleanChar();
-            }
-
-            return forked.getCurrentChar();
-        }
-
-
         constexpr virtual auto onMove(char8_t /* chr */) -> void
         {}
 
         constexpr virtual auto onCharacter(char32_t /* chr */) -> void
         {}
+
+        virtual auto onUtfError(char8_t /* chr */) -> void
+        {
+            using namespace std::string_view_literals;
+
+            throw utf8::Utf8ConvertionError{ "unable to convert character to utf8"sv };
+        }
 
         auto operator=(const BasicTextIterator &) -> BasicTextIterator & = default;
         auto operator=(BasicTextIterator &&) noexcept -> BasicTextIterator & = default;
@@ -184,13 +164,18 @@ namespace cerb::text
 
             if (remaining_to_finish_utf != 0) {
                 if (not utf8::isTrailingCharacter(chr)) {
-                    throw utf8::Utf8ConvertionError{ "unable to convert character to utf8"sv };
+                    onUtfError(chr);
                 }
 
                 current_char <<= utf8::TrailingSize;
                 current_char |= chr & static_cast<char8_t>(~utf8::ContinuationMask);
             } else {
                 remaining_to_finish_utf = utf8::utfSize(chr);
+
+                if (remaining_to_finish_utf == 0) {
+                    onUtfError(chr);
+                }
+
                 current_char = chr & static_cast<char8_t>(~utf8::getMask(remaining_to_finish_utf));
             }
 
@@ -198,6 +183,21 @@ namespace cerb::text
 
             if (remaining_to_finish_utf == 0) {
                 onCharacter(current_char);
+            }
+        }
+
+        constexpr auto skipBadUtf() -> void
+        {
+            auto fork = *this;
+
+            while (true) {
+                auto chr = fork.moveCarriage();
+
+                if (utf8::utfSize(chr) != 0) {
+                    break;
+                }
+
+                moveCarriage();
             }
         }
 

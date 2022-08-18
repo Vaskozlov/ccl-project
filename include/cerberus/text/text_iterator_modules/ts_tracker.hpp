@@ -1,6 +1,7 @@
 #ifndef CERBERUS_PROJECT_TS_TRACKER_HPP
 #define CERBERUS_PROJECT_TS_TRACKER_HPP
 
+#include <cerberus/cerberus.hpp>
 #include <string>
 
 namespace cerb::text::module
@@ -18,17 +19,17 @@ namespace cerb::text::module
             return tabs_and_spaces.empty();
         }
 
-        CERBLIB_DECL auto get() const -> const std::u8string &
+        CERBLIB_DECL auto get() const -> const std::u32string &
         {
             return tabs_and_spaces;
         }
 
         constexpr auto next(char32_t chr) -> void
         {
-            clearIfNeeded();
+            clearIfNeed();
 
-            if (isTs(chr)) {
-                tabs_and_spaces.push_back(static_cast<char8_t>(chr));
+            if (isTabOrSpace(chr)) {
+                tabs_and_spaces.push_back(chr);
             } else {
                 need_to_clear = true;
             }
@@ -37,7 +38,7 @@ namespace cerb::text::module
         TsTracker() = default;
 
     private:
-        constexpr auto clearIfNeeded() -> void
+        constexpr auto clearIfNeed() -> void
         {
             if (need_to_clear) {
                 tabs_and_spaces.clear();
@@ -45,12 +46,12 @@ namespace cerb::text::module
             }
         }
 
-        CERBLIB_DECL static auto isTs(char32_t chr) -> bool
+        CERBLIB_DECL static auto isTabOrSpace(char32_t chr) -> bool
         {
             return lor(chr == '\t', chr == ' ');
         }
 
-        std::u8string tabs_and_spaces{};
+        std::u32string tabs_and_spaces{};
         bool need_to_clear{};
     };
 }// namespace cerb::text::module

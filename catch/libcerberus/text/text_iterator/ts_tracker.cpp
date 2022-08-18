@@ -9,11 +9,15 @@ RUNTIME_TEST
 {
     auto text_iterator = TextIterator{ u8"\t\t  H i\nWorld!"_sv };
 
-    text_iterator.nextCleanChar();
-    assertEqual(text_iterator.getTabsAndSpaces(), u8"\t\t  ");
+    text_iterator.moveToCleanChar();
+    text_iterator.nextRawChar();
 
-    text_iterator.nextCleanChar();
-    assertEqual(text_iterator.getTabsAndSpaces(), u8" ");
+    assertEqual(text_iterator.getTabsAndSpaces(), U"\t\t  ");
+
+    text_iterator.moveToCleanChar();
+    text_iterator.nextRawChar();
+
+    assertEqual(text_iterator.getTabsAndSpaces(), U" ");
 
     return {};
 }

@@ -4,17 +4,28 @@ namespace cerb::lex::dot_item
 {
     using namespace cerb::string_view_literals;
 
-    auto DotItem::scanIteration(TextIterator &text_iterator) const -> bool
+    auto DotItem::scanIteration(TextIterator &text_iterator, Token &token) const -> bool
     {
         for (const auto &item : items) {
-            if (auto [success, iterator] = item->scan(text_iterator); success) {
-                text_iterator = std::move(iterator);
-            } else {
+            if (not scanItem(item.get(), text_iterator, token)) {
                 return false;
             }
         }
 
         return true;
+    }
+
+    auto DotItem::scanItem(const BasicItem *item, TextIterator &text_iterator, Token &token) -> bool
+    {
+        auto scan_result = item->scan(text_iterator, token);
+
+        if (scan_result.has_value()) {
+            auto &[iterator, new_token] = *scan_result;
+            token = std::move(new_token);
+            text_iterator = std::move(iterator);
+        }
+
+        return scan_result.has_value();
     }
 
     auto DotItem::parseRule(TextIterator &rule_iterator) -> void
@@ -23,16 +34,16 @@ namespace cerb::lex::dot_item
         rule_iterator.skipCommentsAndLayout();
 
         while (movedToTheNextChar(rule_iterator)) {
-            auto chr = rule_iterator.getCurrentChar();
-            recognizeAction(rule_iterator, chr, counter);
+            recognizeAction(rule_iterator, counter);
             rule_iterator.skipCommentsAndLayout();
         }
+
+        postCheck(rule_iterator, counter);
     }
 
-    auto DotItem::recognizeAction(TextIterator &rule_iterator, char32_t chr, ItemsCounter &counter)
-        -> void
+    auto DotItem::recognizeAction(TextIterator &rule_iterator, ItemsCounter &counter) -> void
     {
-        switch (chr) {
+        switch (rule_iterator.getCurrentChar()) {
         case U'[':
             counter += item::Union;
             emplaceItem(constructNewUnion(rule_iterator));
@@ -73,6 +84,11 @@ namespace cerb::lex::dot_item
             reverseLastItem(rule_iterator);
             break;
 
+        case U'p':
+            checkAbilityToCreatePrefixPostfix(rule_iterator);
+            addPrefixPostfix();
+            break;
+
         case U'c':
             counter += item::Character;
             constructString(rule_iterator, true, false);
@@ -96,7 +112,8 @@ namespace cerb::lex::dot_item
 
     auto DotItem::constructNewSequence(TextIterator &rule_iterator) -> std::unique_ptr<BasicItem>
     {
-        return std::make_unique<Sequence>(false, u8"\"", rule_iterator, analysis_shared);
+        return std::make_unique<Sequence>(
+            Sequence::SequenceFlags{}, u8"\"", rule_iterator, analysis_shared);
     }
 
     auto DotItem::constructNewUnion(TextIterator &rule_iterator) -> std::unique_ptr<BasicItem>
@@ -108,7 +125,7 @@ namespace cerb::lex::dot_item
     {
         auto text = rule_iterator.getRemaining();
         const auto *saved_end = text.end();
-        auto bracket_index = text.openCloseFind('(', ')');
+        auto bracket_index = text.openCloseFind(u8'(', u8')');
 
         if (bracket_index == u8string_view::npos) {
             throwUnterminatedDotItem(rule_iterator);
@@ -116,39 +133,52 @@ namespace cerb::lex::dot_item
 
         rule_iterator.setEnd(text.begin() + bracket_index);
 
-        auto new_dot_item = std::make_unique<DotItem>(rule_iterator, id, analysis_shared);
+        auto new_dot_item = std::make_unique<DotItem>(rule_iterator, id, analysis_shared, false);
         rule_iterator.setEnd(saved_end);
 
         return new_dot_item;
     }
 
-    auto DotItem::emplaceItem(std::unique_ptr<BasicItem> item) -> void
+    auto DotItem::emplaceItem(std::unique_ptr<BasicItem> &&item) -> void
     {
         if (not canBeOptimized()) {
             items.emplace_back(std::move(item));
         }
     }
 
+    auto DotItem::addPrefixPostfix() -> void
+    {
+        auto &last_item = items.back();
+        auto is_prefix = items.size() == 1 || items[items.size() - 2]->hasPrefix();
+
+        if (is_prefix) {
+            last_item->setPrefix();
+        } else {
+            last_item->setPostfix();
+        }
+    }
+
     auto DotItem::constructString(TextIterator &rule_iterator, bool is_character, bool is_multiline)
         -> void
     {
-        if (items.empty() || dynamic_cast<Sequence *>(items.back().get()) == nullptr) {
-            throwUnableToApply(
-                rule_iterator,
-                u8"unable to apply char/string modifier, because there are not "
-                "any items or the last item is not a sequence",
-                u8"create sequence or do not apply string modifier to other items");
-        }
+        checkStringConstructionAvailability(rule_iterator);
 
-        checkSize(
-            rule_iterator, 1, u8"dot item with string must contain only one item - sequence",
-            u8"delete other items");
-
-        auto *sequence = dynamic_cast<Sequence *>(items.back().get());
+        // usage is safe, because checkStringConstructionAvailability checks that the last item
+        // is sequence
+        auto *sequence = unsafeGetLastItemAs<Sequence>();
         auto &strings_and_chars = analysis_shared.strings_and_chars;
+        auto &string = sequence->getRef();
+        auto column_index = string.find(u8':');
 
-        strings_and_chars.emplace_back(
-            std::move(sequence->getRef()), 0, is_character, is_multiline);
+        if (column_index == u8string_view::npos) {
+            strings_and_chars.emplace_back(string, id, is_character, is_multiline);
+        } else {
+            auto string_begin = string.substr(0, column_index);
+            auto string_end = string.substr(column_index + 1);
+
+            strings_and_chars.emplace_back(
+                std::move(string_begin), std::move(string_end), id, is_character, is_multiline);
+        }
 
         items.pop_back();
     }
@@ -159,7 +189,7 @@ namespace cerb::lex::dot_item
             rule_iterator, 0, u8"dot item with terminal must be empty", u8"delete other items");
 
         auto &terminals = analysis_shared.terminals;
-        auto sequence = Sequence{ false, u8"\'", rule_iterator, analysis_shared };
+        auto sequence = Sequence{ {}, u8"\'", rule_iterator, analysis_shared };
 
         terminals.addString(std::move(sequence.getRef()), id);
     }
@@ -186,7 +216,7 @@ namespace cerb::lex::dot_item
     {
         if (items.empty()) {
             throwUnableToApply(
-                rule_iterator, u8"no item to reverse", u8"create item before rever2ing it");
+                rule_iterator, u8"no item to reverse", u8"create item before reversing it");
         }
 
         auto &last_item = items.back();
@@ -197,6 +227,72 @@ namespace cerb::lex::dot_item
         }
 
         last_item->reverse();
+    }
+
+    auto DotItem::postCheck(TextIterator &rule_iterator, const ItemsCounter &counter) -> void
+    {
+        if (counter.hasStrOrChar() && counter.hasSequences()) {
+            throwUnableToApply(
+                rule_iterator, u8"string or character expected, but got sequence",
+                u8"add string or character modifier to the sequence");
+        }
+
+        auto postfix_elem =
+            std::ranges::find_if(items, [](auto &elem) { return elem->hasPostfix(); });
+
+        auto are_postfixes_correct =
+            std::all_of(postfix_elem, items.end(), [](auto &elem) { return elem->hasPostfix(); });
+
+        if (not are_postfixes_correct) {
+            auto suggestion = fmt::format<u8"add postfix modifier to the last item\n{}p">(
+                rule_iterator.getWorkingLine());
+            throwUnableToApply(
+                rule_iterator, u8"item without postfix modifier exists after items with them"_sv,
+                suggestion);
+        }
+    }
+
+    auto DotItem::checkStringConstructionAvailability(TextIterator &rule_iterator) -> void
+    {
+        if (items.empty() || dynamic_cast<Sequence *>(items.back().get()) == nullptr) {
+            throwUnableToApply(
+                rule_iterator,
+                u8"unable to apply char/string modifier, because there are not "
+                "any items or the last item is not a sequence",
+                u8"create sequence or do not apply string modifier to other items");
+        }
+
+        checkSize(
+            rule_iterator, 1, u8"dot item with string must contain only one item - sequence",
+            u8"delete other items");
+    }
+
+    auto DotItem::checkAbilityToCreatePrefixPostfix(TextIterator &rule_iterator) -> void
+    {
+        if (not main_item) {
+            throwUnableToApply(
+                rule_iterator,
+                u8"you are not allowed to create prefixes or postfixes inside other dot items",
+                u8"create them only in main item");
+        }
+
+        if (items.empty()) {
+            throwUnableToApply(rule_iterator, u8"there are not any items to apply prefix/postfix");
+        }
+
+        auto &last_item = items.back();
+
+        if (last_item->hasPrefix()) {
+            throwUnableToApply(
+                rule_iterator, u8"item is already has prefix modifier",
+                u8"do not add it more than once");
+        }
+
+        if (last_item->hasPostfix()) {
+            throwUnableToApply(
+                rule_iterator, u8"item is already has postfix modifier",
+                u8"do not add it more than once");
+        }
     }
 
     auto DotItem::checkSize(

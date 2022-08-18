@@ -29,27 +29,27 @@ namespace cerb::utf8
     constexpr std::array<u8, 5> UtfMasks{ 0, OneByteMask, TwoBytesMask, TreeBytesMask,
                                           FourBytesMask };
 
-    CERBLIB_DECL auto isTrailingCharacter(char8_t chr) -> bool
+    CERBLIB_DECL auto isTrailingCharacter(char8_t chr) noexcept -> bool
     {
         return (chr & ContinuationMask) == ContinuationSignature;
     }
 
-    CERBLIB_DECL auto isOneByteSize(char8_t chr) -> bool
+    CERBLIB_DECL auto isOneByteSize(char8_t chr) noexcept -> bool
     {
         return (chr & OneByteMask) == 0;
     }
 
-    CERBLIB_DECL auto isTwoBytesSize(char8_t chr) -> bool
+    CERBLIB_DECL auto isTwoBytesSize(char8_t chr) noexcept -> bool
     {
         return (chr & TwoBytesMask) == TwoBytesSignature;
     }
 
-    CERBLIB_DECL auto isThreeBytesSize(char8_t chr) -> bool
+    CERBLIB_DECL auto isThreeBytesSize(char8_t chr) noexcept -> bool
     {
         return (chr & TreeBytesMask) == TreeBytesSignature;
     }
 
-    CERBLIB_DECL auto isFourBytesSize(char8_t chr) -> bool
+    CERBLIB_DECL auto isFourBytesSize(char8_t chr) noexcept -> bool
     {
         return (chr & FourBytesMask) == FourBytesSignature;
     }
@@ -59,7 +59,7 @@ namespace cerb::utf8
         return UtfMasks.at(size);
     }
 
-    CERBLIB_DECL auto utfSize(char8_t chr) -> u16
+    CERBLIB_DECL auto utfSize(char8_t chr) noexcept -> u16
     {
         if (isOneByteSize(chr)) {
             return 1U;

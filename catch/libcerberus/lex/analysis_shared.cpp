@@ -10,7 +10,7 @@ RUNTIME_TEST
     auto text_iterator = TextIterator{ u8"/* test */" };
     auto analysis_shared = AnalysisShared{ { u8"//", u8"/*", u8"*/" } };
 
-    assertTrue(analysis_shared.isComment(text_iterator.getRemainingFutureAfterSymbols(1)));
+    assertTrue(analysis_shared.isComment(text_iterator.getFutureRemaining(1)));
     assertTrue(analysis_shared.isNextCharNotForScanning(text_iterator));
 
     return {};
@@ -23,7 +23,7 @@ RUNTIME_TEST
     auto text_iterator = TextIterator{ u8"+" };
     auto analysis_shared = AnalysisShared{ {}, {}, { { u8"+", 1 } } };
 
-    assertTrue(analysis_shared.isTerminal(text_iterator.getRemainingFutureAfterSymbols(1)));
+    assertTrue(analysis_shared.isTerminal(text_iterator.getFutureRemaining(1)));
     assertTrue(analysis_shared.isNextCharNotForScanning(text_iterator));
 
     return {};

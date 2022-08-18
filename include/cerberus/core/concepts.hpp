@@ -10,8 +10,7 @@ namespace cerb
     concept Enum = std::is_enum_v<T>;
 
     template<typename T>
-    concept Boolean =
-        std::is_same_v<T, bool> || std::is_same_v<T, const bool &> || std::is_same_v<T, bool &>;
+    concept Boolean = std::is_convertible_v<T, bool>;
 
     template<typename T>
     concept Exception = std::is_base_of_v<std::exception, T>;

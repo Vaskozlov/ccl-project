@@ -13,8 +13,8 @@ RUNTIME_TEST
 
     assertEqual(shared.terminals.size(), 2_ZU);
 
-    assertEqual(shared.terminals.matches(u8"+").success, true);
-    assertEqual(shared.terminals.matches(u8"-").success, true);
+    assertEqual(shared.terminals.matches(u8"+"), true);
+    assertEqual(shared.terminals.matches(u8"-"), true);
 
     return {};
 }

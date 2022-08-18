@@ -10,6 +10,14 @@
 #define CERBLIB_FORCE_EXPAND(x, y) CERBLIB_CONCATENATE(x, y)
 #define CERBLIB_UNIQUE_IDENT CERBLIB_FORCE_EXPAND(_cerblib_uid, __COUNTER__)
 
+#define CERBLIB_PERFECT_FORWARDING(Repr, Type)                                                     \
+    template<typename Repr = Type>                                                                 \
+    requires std::is_convertible_v<Repr, Type>
+
+#define CERBLIB_PERFECT_FORWARDING_2(Repr1, Repr2, Type1, Type2)                                   \
+    template<typename Repr1 = Type1, typename Repr2 = Type2>                                       \
+    requires std::is_convertible_v<Repr1, Type1> && std::is_convertible_v<Repr2, Type2>
+
 #if INTPTR_MAX == INT32_MAX
 #    define CERBLIB_64BIT false
 #else

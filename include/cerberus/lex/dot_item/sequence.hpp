@@ -19,9 +19,21 @@ namespace cerb::lex::dot_item
         using typename BasicItem::TextIterator;
 
     public:
+        struct SequenceFlags
+        {
+            bool multiline : 1 = false;
+            bool no_escaping_symbols : 1 = false;
+        };
+
         Sequence(
-            bool multiline_, u8string_view str_token_, TextIterator &rule_iterator_,
-            AnalysisShared &analysis_shared_);
+            SequenceFlags flags_, u8string_view str_begin_, u8string_view str_end,
+            TextIterator &rule_iterator_, AnalysisShared &analysis_shared_);
+
+        Sequence(
+            SequenceFlags flags_, u8string_view str_begin_, TextIterator &rule_iterator_,
+            AnalysisShared &analysis_shared_)
+          : Sequence(flags_, str_begin_, str_begin_, rule_iterator_, analysis_shared_)
+        {}
 
         [[nodiscard]] auto get() const noexcept -> const std::u8string &
         {
@@ -36,7 +48,8 @@ namespace cerb::lex::dot_item
         [[nodiscard]] auto empty() const noexcept -> bool override;
 
     private:
-        [[nodiscard]] auto scanIteration(TextIterator &text_iterator) const -> bool override;
+        [[nodiscard]] auto scanIteration(TextIterator &text_iterator, Token &token) const
+            -> bool override;
 
         [[nodiscard]] auto isStringEnd(TextIterator &rule_iterator, bool is_escaping) const -> bool;
 
@@ -45,10 +58,11 @@ namespace cerb::lex::dot_item
         auto
             checkForUnexpectedEnd(TextIterator &rule_iterator, bool is_escaping, char32_t chr) const
             -> void;
-        auto checkStringBegin(TextIterator &rule_iterator) const -> void;
+        auto checkSequenceArguments(TextIterator &rule_iterator) const -> void;
 
         auto addWarningIfEmpty(TextIterator &rule_iterator) -> void;
 
+        static auto throwEmptyStringEnd(TextIterator &rule_iterator) -> void;
         static auto throwEmptyStringBegin(TextIterator &rule_iterator) -> void;
         auto throwStringBeginException(TextIterator &rule_iterator) const -> void;
         static auto throwUnterminatedString(
@@ -56,9 +70,10 @@ namespace cerb::lex::dot_item
             u8string_view message,
             u8string_view suggestion = {}) -> void;
 
-        u8string_view str_token{};
+        u8string_view str_begin{};
+        u8string_view str_end{};
         std::u8string string{};
-        bool multiline{};
+        SequenceFlags sequence_flags{};
     };
 }// namespace cerb::lex::dot_item
 

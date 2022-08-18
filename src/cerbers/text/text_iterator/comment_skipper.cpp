@@ -19,8 +19,7 @@ namespace cerb::text
 
     auto TextIterator::CommentSkipper::isComment(u8string_view const &comment) const -> bool
     {
-        auto text =
-            text_iterator.getRemainingFutureAfterRawSkip(1);// getRemainingFutureAfterRawSkip?
+        auto text = text_iterator.getRemaining();
         return not comment.empty() && (text.substr(0, comment.size()) == comment);
     }
 
@@ -47,6 +46,14 @@ namespace cerb::text
 
         checkCommentTermination(comment_begin);
         text_iterator.rawSkip(comment_tokens.multiline_end.size());
+    }
+
+    auto TextIterator::CommentSkipper::checkCommentTermination(
+        const TextIterator &comment_begin) const -> void
+    {
+        if (isEoF(text_iterator.getCurrentChar())) {
+            throwUnterminatedCommentError(comment_begin);
+        }
     }
 
     auto TextIterator::CommentSkipper::throwUnterminatedCommentError(

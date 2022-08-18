@@ -1,14 +1,13 @@
 #include <cerberus/debug/debug_file.hpp>
-#include <cerberus/string_map.hpp>
+#include <cerberus/raw_string_matcher.hpp>
 
 // NOLINTNEXTLINE
 RUNTIME_TEST
 {
-    auto string_map = cerb::StringMap<char, int>{ { "Hello!", 1 } };
+    auto string_map = cerb::RawStringMatcher{ { u8"Hello!", 1 } };
+    auto match_result = string_map.match(u8"Hello, World!");
 
-    auto [success, value, repr] = string_map.matches("Hello, World!");
-
-    assertFalse(success);
+    assertFalse(match_result.has_value());
 
     return {};
 }
@@ -17,26 +16,10 @@ RUNTIME_TEST
 // NOLINTNEXTLINE
 RUNTIME_TEST
 {
-    auto string_map = cerb::StringMap<char, int>{ { "Hello!", 1 } };
+    auto string_map = cerb::RawStringMatcher{ { u8"Hello!", 1 } };
+    auto match_result = string_map.match(u8"Hell");
 
-    auto [success, value, repr] = string_map.matches("Hell");
-
-    assertFalse(success);
-
-    return {};
-}
-();
-
-// NOLINTNEXTLINE
-RUNTIME_TEST
-{
-    auto string_map = cerb::StringMap<char, int>{ { "Hello", 1 } };
-
-    auto [success, value, repr] = string_map.matches("Hello, World!");
-
-    assertTrue(success);
-    assertEqual(value, 1);
-    assertEqual(repr, "Hello");
+    assertFalse(match_result.has_value());
 
     return {};
 }
@@ -45,14 +28,34 @@ RUNTIME_TEST
 // NOLINTNEXTLINE
 RUNTIME_TEST
 {
-    auto string_map = cerb::StringMap<char, int>{};
-    string_map.addString("test", 2);
+    auto string_map = cerb::RawStringMatcher{ { u8"Hello", 1 } };
+    auto match_result = string_map.match(u8"Hello, World!");
 
-    auto [success, value, repr] = string_map.matches("testtest");
+    assertTrue(match_result.has_value());
 
-    assertTrue(success);
-    assertEqual(value, 2);
-    assertEqual(repr, "test");
+    auto &[matching_str, value] = *match_result;
+
+    assertEqual(value, 1_ZU);
+    assertEqual(matching_str, u8"Hello");
+
+    return {};
+}
+();
+
+// NOLINTNEXTLINE
+RUNTIME_TEST
+{
+    auto string_map = cerb::RawStringMatcher{};
+    string_map.addString(u8"test", 2);
+
+    auto match_result = string_map.match(u8"testtest");
+
+    assertTrue(match_result.has_value());
+
+    auto &[matching_str, value] = *match_result;
+
+    assertEqual(value, 2_ZU);
+    assertEqual(matching_str, u8"test");
 
     return {};
 }

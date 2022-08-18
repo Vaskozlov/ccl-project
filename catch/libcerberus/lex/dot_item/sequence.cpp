@@ -15,7 +15,7 @@ RUNTIME_TEST
     auto text_iterator = TextIterator{ u8R"("")", &exception_accumulator };
     text_iterator.nextRawChar();
 
-    auto string_item = Sequence(false, u8"\"", text_iterator, shared);
+    auto string_item = Sequence({}, u8"\"", text_iterator, shared);
     const auto &string = string_item.get();
 
     assertTrue(string.empty());
@@ -31,7 +31,7 @@ RUNTIME_TEST
     auto text_iterator = TextIterator{ u8R"("Hello, \"World\"!")" };
     text_iterator.nextRawChar();
 
-    auto string_item = Sequence(false, u8"\"", text_iterator, shared);
+    auto string_item = Sequence({}, u8"\"", text_iterator, shared);
     const auto &string = string_item.get();
 
     assertEqual(string, u8R"(Hello, "World"!)");
@@ -46,7 +46,7 @@ RUNTIME_TEST
     auto text_iterator = TextIterator{ u8"\"\"\"Hello,\n    \"World\"!\"\"\"" };
     text_iterator.nextRawChar();
 
-    auto string_item = Sequence(true, u8R"(""")", text_iterator, shared);
+    auto string_item = Sequence({ .multiline = true }, u8R"(""")", text_iterator, shared);
     const auto &string = string_item.get();
 
     assertEqual(string, u8"Hello,\n    \"World\"!");
@@ -61,7 +61,7 @@ RUNTIME_TEST
     text_iterator.nextRawChar();
 
     try {
-        UNUSED_DECL Sequence(false, u8"\"", text_iterator, shared);
+        UNUSED_DECL Sequence({}, u8"\"", text_iterator, shared);
         assertTrue(false);
     } catch (const SequenceException &exception) {
         assertEqual(exception.getColumn(), 1_ZU);// NOLINT
@@ -79,7 +79,7 @@ RUNTIME_TEST
     text_iterator.nextRawChar();
 
     try {
-        UNUSED_DECL Sequence(false, u8"\"", text_iterator, shared);
+        UNUSED_DECL Sequence({}, u8"\"", text_iterator, shared);
         assertTrue(false);
     } catch (const SequenceException &exception) {
         assertEqual(exception.getColumn(), 1_ZU);// NOLINT
