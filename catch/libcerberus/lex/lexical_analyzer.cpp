@@ -12,13 +12,15 @@ auto convert(cerb::u8string_view str) -> std::string_view
 // NOLINTNEXTLINE
 RUNTIME_TEST
 {
-    auto text = TextIterator{ u8"привет фф 1986" };
-    auto analyzer = LexicalAnalyzer{ { 1, u8R"([а-я]+)" }, { 2, u8"[0-9]+" } };
+    auto text = TextIterator{ u8R"(auto i = 10; i + 10; auto _ = "Hello, World!" +)" };
+    auto analyzer =
+        LexicalAnalyzer{ { 1, u8R"([a-zA-Z_]+)" }, { 2, u8"[0-9]+" }, { 3, u8R"( '+')" },
+                         { 4, u8R"(';')" },        { 5, u8R"('=')" }, { 6, u8R"("\""s)" } };
     auto tokens = analyzer.getTokenizer(text);
 
-    while (tokens()) {
-        auto &token = tokens.getValue();
-        fmt::print("{}: {}\n", token.getId(), convert(token.getRepr()));
+    while (tokens().has_value()) {
+        auto &token = *tokens.getValue();
+        fmt::print("{}: {}\n", token.getId(), convert(token.getValue()));
     }
 
     return {};

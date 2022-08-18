@@ -2,17 +2,12 @@
 
 namespace cerb::lex
 {
-    auto LexicalAnalyzer::getTokenizer(TextIterator &text_iterator) const -> coro::Generator<Token>
+    auto LexicalAnalyzer::getTokenizer(TextIterator &text_iterator) const
+        -> coro::Generator<std::optional<Token>>
     {
         while (true) {
-            if (auto token = yield(text_iterator); token) {
-                co_yield token;
-            } else {
-                break;
-            }
+            co_yield yield(text_iterator);
         }
-
-        co_yield Token{ text_iterator, 0 };
     }
 
     LexicalAnalyzer::LexicalAnalyzer(
@@ -24,10 +19,16 @@ namespace cerb::lex
         }
     }
 
-    auto LexicalAnalyzer::yield(TextIterator &text_iterator) const -> Token
+    auto LexicalAnalyzer::yield(TextIterator &text_iterator) const -> std::optional<Token>
     {
         for (const auto &item : items) {
             text_iterator.skipCommentsAndLayout();
+
+            auto special_token = shared.getSpecialToken(text_iterator);
+
+            if (special_token.has_value()) {
+                return *special_token;
+            }
 
             auto scan_result = item.scan(text_iterator, Token{ text_iterator, item.getId() }, true);
 
@@ -38,7 +39,7 @@ namespace cerb::lex
             }
         }
 
-        return Token{};
+        return std::nullopt;
     }
 
     auto LexicalAnalyzer::createDotItem(

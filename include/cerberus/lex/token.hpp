@@ -3,21 +3,48 @@
 
 #include <cerberus/text/text_iterator.hpp>
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace cerb::lex
 {
+    struct TokenAttributes
+    {
+        TokenAttributes() = default;
+
+        explicit TokenAttributes(const text::TextIterator &text_iterator_)
+          : tabs_and_spaces(text_iterator_.getTabsAndSpaces()),
+            location(text_iterator_.getLocation())
+        {}
+
+        std::u32string tabs_and_spaces{};
+        text::Location location{};
+    };
+
     class Token
     {
     public:
         Token() = default;
 
-        Token(typename u8string_view::iterator begin_, size_t id_)
-          : repr{ begin_, static_cast<size_t>(0) }, id{ id_ }
+        CERBLIB_PERFECT_FORWARDING(T, std::u8string)
+        Token(
+            TokenAttributes &&attributes_, const u8string_view &repr_, size_t id_, T &&value_ = {})
+          : attributes(attributes_), value{ std::forward<T>(value_) }, repr{ repr_ }, id{ id_ }
         {}
 
-        Token(const text::TextIterator &text_iterator_, size_t id_)
-          : repr{ text_iterator_.getRemaining() }, id{ id_ }
+        CERBLIB_PERFECT_FORWARDING(T, std::u8string)
+        Token(
+            TokenAttributes &&attributes_, typename u8string_view::iterator begin_, size_t id_,
+            T &&value_ = {})
+          : Token(
+                std::move(attributes_), { begin_, static_cast<size_t>(0) }, id_,
+                std::forward<T>(value_))
+        {}
+
+        CERBLIB_PERFECT_FORWARDING(T, std::u8string)
+        Token(const text::TextIterator &text_iterator_, size_t id_, T &&value_ = {})
+          : attributes(text_iterator_), value{ std::forward<T>(value_) },
+            repr{ text_iterator_.getRemaining() }, id{ id_ }
         {}
 
         [[nodiscard]] auto getId() const -> size_t
@@ -33,6 +60,15 @@ namespace cerb::lex
         [[nodiscard]] auto getRepr() const -> u8string_view
         {
             return repr;
+        }
+
+        [[nodiscard]] auto getValue() const -> u8string_view
+        {
+            if (value.empty()) {
+                return repr;
+            }
+
+            return value;
         }
 
         [[nodiscard]] auto getPrefixes() const -> const std::vector<u8string_view> &
@@ -61,8 +97,10 @@ namespace cerb::lex
         }
 
     private:
+        TokenAttributes attributes{};
         std::vector<u8string_view> prefixes{};
         std::vector<u8string_view> postfixes{};
+        std::u8string value{};
         u8string_view repr{};
         size_t id{};
     };

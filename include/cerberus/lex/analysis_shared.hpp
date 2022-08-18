@@ -1,8 +1,10 @@
 #ifndef CERBERUS_PROJECT_ANALYSIS_SHARED_HPP
 #define CERBERUS_PROJECT_ANALYSIS_SHARED_HPP
 
+#include <cerberus/lex/token.hpp>
 #include <cerberus/raw_string_matcher.hpp>
 #include <cerberus/text/text_iterator.hpp>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -41,13 +43,25 @@ namespace cerb::lex
         [[nodiscard]] auto isNextCharNotForScanning(const text::TextIterator &text_iterator) const
             -> bool;
 
+        [[nodiscard]] auto getSpecialToken(text::TextIterator &text_iterator) const
+            -> std::optional<Token>;
+
+        [[nodiscard]] auto isStringOrChar(const u8string_view &text) const -> bool;
+
     private:
         [[nodiscard]] static auto
             basicIsComment(const u8string_view &text, const u8string_view &comment) -> bool;
 
-    public:
-        [[nodiscard]] auto isStringOrChar(const u8string_view &text) const -> bool;
+        [[nodiscard]] static auto constructTerminalToken(
+            text::TextIterator &text_iterator,
+            const u8string_view &remaining_text,
+            std::pair<std::u8string, size_t> &terminal_match) -> Token;
 
+        [[nodiscard]] static auto
+            constructStringToken(text::TextIterator &text_iterator, const String &string_elem)
+                -> Token;
+
+    public:
         CommentTokens comment_tokens{};
         std::vector<String> strings_and_chars{};
         RawStringMatcher terminals{};
