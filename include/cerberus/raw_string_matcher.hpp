@@ -12,8 +12,8 @@ namespace cerb
     class RawStringMatcher
     {
     public:
-        using Map = std::map<std::u8string, size_t>;
         using CharLevel = UtfSet;
+        using Map = std::map<std::u8string, size_t>;
         using CharLevels = boost::container::small_vector<CharLevel, 4>;// NOLINT
 
         [[nodiscard]] auto size() const noexcept -> size_t
@@ -21,8 +21,7 @@ namespace cerb
             return map.size();
         }
 
-        template<typename T>
-            requires std::is_convertible_v<T, std::u8string>
+        CERBLIB_PERFECT_FORWARDING(T, std::u8string)
         auto addString(T &&string, size_t value) -> void
         {
             mapStringToLevels(string);

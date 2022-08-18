@@ -52,8 +52,8 @@ namespace cerb::text
         TextIteratorException() = default;
 
         TextIteratorException(
-            const Location &location_, const u8string_view &working_line_, u8string_view message_,
-            u8string_view suggestion_ = {})
+            const Location &location_, const u8string_view &working_line_,
+            const u8string_view &message_, const u8string_view &suggestion_ = {})
           : location(location_), message(message_), suggestion(suggestion_),
             working_line(working_line_)
         {}
