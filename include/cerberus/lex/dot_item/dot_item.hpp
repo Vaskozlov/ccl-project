@@ -66,6 +66,14 @@ namespace cerb::lex::dot_item
         }
 
     private:
+        template<typename T>
+            requires std::is_base_of_v<BasicItem, T>
+        auto unsafeGetLastItemAs() -> T *
+        {
+            // NOLINTNEXTLINE unsafe cast to increase performance
+            return static_cast<T *>(items.back().get());
+        }
+
         [[nodiscard]] auto scanIteration(TextIterator &text_iterator, Token &token) const
             -> bool override;
 
@@ -91,6 +99,7 @@ namespace cerb::lex::dot_item
             -> std::unique_ptr<BasicItem>;
 
         auto emplaceItem(std::unique_ptr<BasicItem> &&item) -> void;
+
         auto addPrefixPostfix() -> void;
 
         auto constructString(TextIterator &rule_iterator, bool is_character, bool is_multiline)

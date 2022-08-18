@@ -163,10 +163,10 @@ namespace cerb::lex::dot_item
     {
         checkStringConstructionAvailability(rule_iterator);
 
+        // usage is safe, because checkStringConstructionAvailability checks that the last item
+        // is sequence
+        auto *sequence = unsafeGetLastItemAs<Sequence>();
         auto &strings_and_chars = analysis_shared.strings_and_chars;
-        auto &last_item = items.back();
-        auto *sequence = static_cast<Sequence *>(// NOLINT type has been
-            last_item.get());                    // checked in checkStringConstructionAvailability
         auto &string = sequence->getRef();
         auto column_index = string.find(u8':');
 
