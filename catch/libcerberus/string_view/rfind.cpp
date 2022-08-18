@@ -12,7 +12,8 @@ CONSTEXPR_TEST
     assertEqual(cerb_string.rfind('H'), std_string.rfind('H'));
     assertEqual(cerb_string.rfind(','), std_string.rfind(','));
     assertEqual(cerb_string.rfind('!'), std_string.rfind('!'));
-    assertEqual(cerb_string.rfind('A'), std_string.rfind('A'));
+
+    assertFalse(cerb_string.rfind('A').has_value());
 
     return {};
 }

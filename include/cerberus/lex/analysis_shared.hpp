@@ -33,7 +33,7 @@ namespace cerb::lex
     {
         using CommentTokens = text::CommentTokens;
 
-        [[nodiscard]] auto isTerminal(const u8string_view &text) const -> bool
+        [[nodiscard]] auto isTerminal(const u8string_view &text) const noexcept -> bool
         {
             return terminals.matches(text);
         }

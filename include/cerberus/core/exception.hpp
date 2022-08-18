@@ -13,9 +13,16 @@
                                                                                                    \
         template<typename... Ts>                                                                   \
         explicit name(Ts &&...args) : base_exception{ std::forward<Ts>(args)... }                  \
-        {                                                                                          \
-        }                                                                                          \
+        {}                                                                                         \
     }
+
+#define CERBLIB_SAFE_VERSION                                                                       \
+    template<UsageMode Mode = SAFE>                                                                \
+    requires(Mode == SAFE)
+
+#define CERBLIB_UNSAFE_VERSION                                                                     \
+    template<UsageMode Mode>                                                                       \
+    requires(Mode == UNSAFE)
 
 namespace cerb
 {
@@ -34,6 +41,12 @@ namespace cerb
 
     private:
         std::string_view message{};
+    };
+
+    enum UsageMode : bool
+    {
+        SAFE,
+        UNSAFE
     };
 
     CERBLIB_EXCEPTION(LogicError, CerberusException);

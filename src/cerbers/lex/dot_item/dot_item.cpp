@@ -41,6 +41,11 @@ namespace cerb::lex::dot_item
         postCheck(rule_iterator, counter);
     }
 
+    auto DotItem::movedToTheNextChar(TextIterator &rule_iterator) -> bool
+    {
+        return not isEoF(rule_iterator.nextRawChar());
+    }
+
     auto DotItem::recognizeAction(TextIterator &rule_iterator, ItemsCounter &counter) -> void
     {
         switch (rule_iterator.getCurrentChar()) {
@@ -127,11 +132,11 @@ namespace cerb::lex::dot_item
         const auto *saved_end = text.end();
         auto bracket_index = text.openCloseFind(u8'(', u8')');
 
-        if (bracket_index == u8string_view::npos) {
+        if (not bracket_index.has_value()) {
             throwUnterminatedDotItem(rule_iterator);
         }
 
-        rule_iterator.setEnd(text.begin() + bracket_index);
+        rule_iterator.setEnd(text.begin() + *bracket_index);
 
         auto new_dot_item = std::make_unique<DotItem>(rule_iterator, id, analysis_shared, false);
         rule_iterator.setEnd(saved_end);

@@ -47,22 +47,22 @@ namespace cerb::lex
             repr{ text_iterator_.getRemaining() }, id{ id_ }
         {}
 
-        [[nodiscard]] auto getId() const -> size_t
+        [[nodiscard]] auto getId() const noexcept -> size_t
         {
             return id;
         }
 
-        [[nodiscard]] explicit operator bool() const
+        [[nodiscard]] explicit operator bool() const noexcept
         {
             return getId() != 0;
         }
 
-        [[nodiscard]] auto getRepr() const -> u8string_view
+        [[nodiscard]] auto getRepr() const noexcept -> u8string_view
         {
             return repr;
         }
 
-        [[nodiscard]] auto getValue() const -> u8string_view
+        [[nodiscard]] auto getValue() const noexcept -> u8string_view
         {
             if (value.empty()) {
                 return repr;
@@ -71,17 +71,17 @@ namespace cerb::lex
             return value;
         }
 
-        [[nodiscard]] auto getPrefixes() const -> const std::vector<u8string_view> &
+        [[nodiscard]] auto getPrefixes() const noexcept -> const std::vector<u8string_view> &
         {
             return prefixes;
         }
 
-        [[nodiscard]] auto getPostfixes() const -> const std::vector<u8string_view> &
+        [[nodiscard]] auto getPostfixes() const noexcept -> const std::vector<u8string_view> &
         {
             return prefixes;
         }
 
-        auto setEnd(typename u8string_view::iterator end_) -> void
+        auto setEnd(typename u8string_view::iterator end_) noexcept -> void
         {
             repr = { repr.begin(), end_ };
         }

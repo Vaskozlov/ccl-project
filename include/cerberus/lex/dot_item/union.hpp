@@ -20,7 +20,7 @@ namespace cerb::lex::dot_item
 
         Union(TextIterator &rule_iterator_, AnalysisShared &analysis_shared_);
 
-        [[nodiscard]] auto get() const -> const UtfSet &
+        [[nodiscard]] auto get() const noexcept -> const UtfSet &
         {
             return bitset;
         }
