@@ -77,13 +77,6 @@ namespace cerb::text
             }
         }
 
-        constexpr auto cleanSymbolsSkip(size_t n) -> void
-        {
-            for (size_t i = 0; i != n; ++i) {
-                nextCleanChar();
-            }
-        }
-
         constexpr auto moveToCleanChar() -> void
         {
             while (isLayout(futureRawChar(1))) {
@@ -100,15 +93,6 @@ namespace cerb::text
             return current_char;
         }
 
-        constexpr auto nextCleanChar() -> char32_t
-        {
-            while (isLayout(nextRawChar())) {
-                // empty loop
-            }
-
-            return getCurrentChar();
-        }
-
         CERBLIB_DECL auto futureRawChar(size_t times) const -> char32_t
         {
             auto forked = *this;
@@ -119,18 +103,6 @@ namespace cerb::text
 
             return forked.getCurrentChar();
         }
-
-        CERBLIB_DECL auto futureCleanChar(size_t times) const -> char32_t
-        {
-            auto forked = *this;
-
-            for (size_t i = 0; i != times; ++i) {
-                forked.nextCleanChar();
-            }
-
-            return forked.getCurrentChar();
-        }
-
 
         constexpr virtual auto onMove(char8_t /* chr */) -> void
         {}
