@@ -12,12 +12,12 @@ RUNTIME_TEST
     text_iterator.moveToCleanChar();
     text_iterator.nextRawChar();
 
-    assertEqual(text_iterator.getTabsAndSpaces(), u8"\t\t  ");
+    assertEqual(text_iterator.getTabsAndSpaces(), U"\t\t  ");
 
     text_iterator.moveToCleanChar();
     text_iterator.nextRawChar();
 
-    assertEqual(text_iterator.getTabsAndSpaces(), u8" ");
+    assertEqual(text_iterator.getTabsAndSpaces(), U" ");
 
     return {};
 }

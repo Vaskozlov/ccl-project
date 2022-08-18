@@ -72,7 +72,7 @@ namespace cerb::text
             return line_tracker.get();
         }
 
-        [[nodiscard]] auto getTabsAndSpaces() const -> const std::u8string &
+        [[nodiscard]] auto getTabsAndSpaces() const -> const std::u32string &
         {
             return ts_tracker.get();
         }

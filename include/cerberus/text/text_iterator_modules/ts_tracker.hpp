@@ -19,7 +19,7 @@ namespace cerb::text::module
             return tabs_and_spaces.empty();
         }
 
-        CERBLIB_DECL auto get() const -> const std::u8string &
+        CERBLIB_DECL auto get() const -> const std::u32string &
         {
             return tabs_and_spaces;
         }
@@ -29,7 +29,7 @@ namespace cerb::text::module
             clearIfNeed();
 
             if (isTabOrSpace(chr)) {
-                tabs_and_spaces.push_back(static_cast<char8_t>(chr));
+                tabs_and_spaces.push_back(chr);
             } else {
                 need_to_clear = true;
             }
@@ -51,7 +51,7 @@ namespace cerb::text::module
             return lor(chr == '\t', chr == ' ');
         }
 
-        std::u8string tabs_and_spaces{};
+        std::u32string tabs_and_spaces{};
         bool need_to_clear{};
     };
 }// namespace cerb::text::module
