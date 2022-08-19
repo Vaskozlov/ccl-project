@@ -3,6 +3,7 @@
 
 #include <cerberus/lex/analysis_shared.hpp>
 #include <cerberus/lex/dot_item/repetition.hpp>
+#include <cerberus/lex/exception.hpp>
 #include <cerberus/lex/token.hpp>
 #include <cerberus/text/text_iterator.hpp>
 #include <optional>
@@ -84,7 +85,7 @@ namespace cerb::lex::dot_item
             const TextIterator &text_iterator, size_t times, bool main_scan) const -> bool;
 
         auto modifyToken(
-            TextIterator &before_scan_iterator, TextIterator &after_scan_iterator,
+            const TextIterator &before_scan_iterator, const TextIterator &after_scan_iterator,
             Token &token) const -> void;
 
     public:

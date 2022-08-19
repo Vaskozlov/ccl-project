@@ -212,6 +212,11 @@ namespace cerb
             return result;
         }
 
+        CERBLIB_DECL auto startsWith(const BasicStringView &str) const noexcept -> bool
+        {
+            return substr(0, str.size()) == str;
+        }
+
         CERBLIB_DECL auto operator[](size_t index) const noexcept -> CharT
         {
             return string[index];

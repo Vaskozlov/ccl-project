@@ -1,71 +1,39 @@
-#include <cerberus/debug/debug_file.hpp>
+#include <boost/test/unit_test.hpp>
 #include <cerberus/string_view.hpp>
 #include <string>
 
 using namespace cerb;
 using namespace std::string_literals;
 
-// NOLINTBEGIN
-
-CONSTEXPR_TEST
+BOOST_AUTO_TEST_CASE(StringViewConstructionEmptyArray)
 {
     auto string = BasicStringView<char>{ "" };
-    assertEqual(string.size(), 0_ZU);
-    return {};
+    BOOST_ASSERT(string.empty());
 }
-();
 
-CONSTEXPR_TEST
+BOOST_AUTO_TEST_CASE(StringViewConstructionArray)
 {
     auto string = BasicStringView<char>{ "Hello, World!" };
-    assertEqual(string.size(), 13_ZU);
-    return {};
+    BOOST_ASSERT(string.size() == 13);
 }
-();
 
-CONSTEXPR_TEST
+BOOST_AUTO_TEST_CASE(StringViewConstructionEmptyPointer)
 {
     const char *str = "";
     auto string = BasicStringView<char>{ str };
-    assertEqual(string.size(), 0_ZU);
-    return {};
+    BOOST_ASSERT(string.empty());
 }
-();
 
-CONSTEXPR_TEST
+BOOST_AUTO_TEST_CASE(StringViewConstructionPointer)
 {
     const char *str = "Hello, World!";
     auto string = BasicStringView<char>{ str };
-    assertEqual(string.size(), 13_ZU);
-    return {};
+    BOOST_ASSERT(string.size() == 13);
 }
-();
 
-RUNTIME_TEST
-{
-    const char *str = "";
-    auto string = BasicStringView<char>{ str };
-    assertEqual(string.size(), 0_ZU);
-    return {};
-}
-();
-
-RUNTIME_TEST
-{
-    const char *str = "Hello, World!";
-    auto string = BasicStringView<char>{ str };
-    assertEqual(string.size(), 13_ZU);
-    return {};
-}
-();
-
-RUNTIME_TEST
+BOOST_AUTO_TEST_CASE(StringViewConstructionFromTwoPointers)
 {
     auto str = "Hello, World!"s;
-    auto string = BasicStringView<char>{ str.data(), str.data() + str.size() };
-    assertEqual(string.size(), 13_ZU);
-    return {};
+    auto string = BasicStringView<char>{ str.data(), str.data() + str.size() };// NOLINT
+    BOOST_ASSERT(string.size() == 13);
 }
-();
-
-// NOLINTEND

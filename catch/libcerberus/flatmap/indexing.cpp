@@ -1,21 +1,19 @@
-#include <cerberus/debug/debug_file.hpp>
+#include <boost/test/unit_test.hpp>
 #include <cerberus/flatmap.hpp>
 
-// NOLINTBEGIN
+using namespace std::string_view_literals;
 
-using Flatmap = cerb::Flatmap<int, int, 10>;
-
-RUNTIME_TEST
+BOOST_AUTO_TEST_CASE(FlatmapIndexing)
 {
-    static constexpr auto flatmap = Flatmap{ { 10, 20 }, { 20, 30 }, { 30, 40 } };
+    static constexpr auto flatmap =
+        cerb::Flatmap<int, int, 10>{ { 10, 20 }, { 20, 30 }, { 30, 40 } };
 
-    static_assert(flatmap[10] == 20);
-    static_assert(flatmap[20] == 30);
-    static_assert(flatmap[30] == 40);
+    BOOST_CHECK_EQUAL(flatmap[10], 20);
+    BOOST_CHECK_EQUAL(flatmap[20], 30);
+    BOOST_CHECK_EQUAL(flatmap[30], 40);
 
-    ERROR_EXPECTED(UNUSED_DECL flatmap.at(40), cerb::KeyNotFound, "key not found");
-    return {};
+    BOOST_CHECK_EXCEPTION(
+        [[maybe_unused]] auto _ = flatmap.at(40), cerb::KeyNotFound, [](const auto &exception) {
+            return "key not found"sv == exception.what();
+        });
 }
-();
-
-// NOLINTEND

@@ -31,13 +31,12 @@ namespace cerb::lex::dot_item
             checkForUnexpectedEnd(begin_iterator_state, is_escaping, chr);
 
             if (isStringEnd(rule_iterator, is_escaping)) {
+                rule_iterator.rawSkip(str_end.size() - 1);
                 break;
             }
 
             utf8::appendUtf32ToUtf8Container(string, chr);
         }
-
-        addWarningIfEmpty(rule_iterator);
     }
 
     auto Sequence::empty() const noexcept -> bool
@@ -49,7 +48,7 @@ namespace cerb::lex::dot_item
     {
         auto future_text = text_iterator.getFutureRemaining(1);
 
-        if (future_text.substr(0, string.size()) == string) {
+        if (future_text.startsWith(string)) {
             text_iterator.rawSkip(string.size());
             return true;
         }
@@ -64,7 +63,7 @@ namespace cerb::lex::dot_item
         }
 
         auto text = rule_iterator.getRemainingWithCurrent();
-        return text.substr(0, str_end.size()) == str_end;
+        return text.startsWith(str_end);
     }
 
     auto Sequence::checkForUnexpectedEnd(
@@ -104,16 +103,8 @@ namespace cerb::lex::dot_item
             throwEmptyStringEnd(rule_iterator);
         }
 
-        if (text.substr(0, str_begin.size()) != str_begin) {
+        if (not text.startsWith(str_begin)) {
             throwStringBeginException(rule_iterator);
-        }
-    }
-
-    auto Sequence::addWarningIfEmpty(TextIterator &rule_iterator) -> void
-    {
-        if (string.empty()) {
-            rule_iterator.template throwWarning<SequenceException>(
-                u8"empty string should not be used"_sv);
         }
     }
 
@@ -134,7 +125,7 @@ namespace cerb::lex::dot_item
         u8string_view message,
         u8string_view suggestion) -> void
     {
-        rule_iterator.template throwException<SequenceException>(message, suggestion);
+        rule_iterator.throwException<SequenceException>(message, suggestion);
         throw UnrecoverableError{ "unreachable error in SequenceType" };
     }
 
@@ -142,7 +133,7 @@ namespace cerb::lex::dot_item
     {
         auto message = fmt::format<u8"string literal must begin with {}">(str_begin);
 
-        rule_iterator.template throwException<SequenceException>(message);
+        rule_iterator.throwException<SequenceException>(message);
         throw UnrecoverableError{ "unreachable error in SequenceType" };
     }
 }// namespace cerb::lex::dot_item

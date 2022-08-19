@@ -1,15 +1,14 @@
 #include <cerberus/core/logical_ops.hpp>
-#include <cerberus/debug/debug_file.hpp>
 
 using namespace cerb;
 
-static_assert(lor(true) == true);
-static_assert(lor(false) == false);
+static_assert(lor(true));
+static_assert(not lor(false));
 
-static_assert(lor(true, true) == true);
-static_assert(lor(true, false) == true);
-static_assert(lor(false, false) == false);
+static_assert(lor(true, true));
+static_assert(lor(true, false));
+static_assert(not lor(false, false));
 
-static_assert(lor(true, true, true) == true);
-static_assert(lor(true, true, false) == true);
-static_assert(lor(false, false, false) == false);
+static_assert(lor(true, true, true));
+static_assert(lor(true, true, false));
+static_assert(not lor(false, false, false));

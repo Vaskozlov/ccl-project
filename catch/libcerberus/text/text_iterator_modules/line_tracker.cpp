@@ -1,4 +1,4 @@
-#include <cerberus/debug/debug_file.hpp>
+#include <boost/test/unit_test.hpp>
 #include <cerberus/text/text_iterator_modules/line_tracker.hpp>
 
 using namespace cerb;
@@ -12,22 +12,20 @@ constexpr static auto ExpectedLines = std::array{ u8"Hello, World!", u8"It's a "
                                                   u8"Of line "
                                                   u8"tracker",
                                                   u8" " };
-// NOLINTNEXTLINE
-RUNTIME_TEST
+
+BOOST_AUTO_TEST_CASE(LineTrackig)
 {
-    auto current_line = 0_ZU;
+    auto current_line = static_cast<size_t>(0);
     auto line_tracker = LineTracker{ Input };
 
     for (auto chr : Input) {
         line_tracker.next(chr);
 
         if (chr == '\n') {
-            assertEqual(ExpectedLines.at(current_line), line_tracker.get());
+            BOOST_ASSERT(ExpectedLines.at(current_line) == line_tracker.get());
             ++current_line;
         }
     }
 
-    assertEqual(ExpectedLines.at(current_line), line_tracker.get());
-    return {};
+    BOOST_ASSERT(ExpectedLines.at(current_line) == line_tracker.get());
 }
-();

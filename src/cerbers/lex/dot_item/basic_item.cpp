@@ -27,7 +27,6 @@ namespace cerb::lex::dot_item
 
             if (scanIteration(iterator_copy, token_copy) ^ reversed) {
                 ++times;
-                modifyToken(local_iterator, iterator_copy, token_copy);
                 local_iterator = std::move(iterator_copy);
                 local_token = std::move(token_copy);
                 continue;
@@ -37,6 +36,10 @@ namespace cerb::lex::dot_item
         }
 
         if (successfullyScanned(local_iterator, times, main_scan)) {
+            if (times != 0) {
+                modifyToken(text_iterator, local_iterator, local_token);
+            }
+
             return std::make_pair(local_iterator, local_token);
         }
 
@@ -51,16 +54,16 @@ namespace cerb::lex::dot_item
     }
 
     auto BasicItem::modifyToken(
-        TextIterator &before_scan_iterator, TextIterator &after_scan_iterator, Token &token) const
-        -> void
+        const TextIterator &before_scan_iterator, const TextIterator &after_scan_iterator,
+        Token &token) const -> void
     {
-        const auto *new_token_end = after_scan_iterator.getCarriage() + 1;
+        const auto *new_token_end = after_scan_iterator.getRemainingAsCarriage();
         token.setEnd(new_token_end);
 
         if (hasPrefix()) {
-            token.addPrefix({ before_scan_iterator.getCarriage() + 1, new_token_end });
+            token.addPrefix({ before_scan_iterator.getRemainingAsCarriage(), new_token_end });
         } else if (hasPostfix()) {
-            token.addPostfix({ before_scan_iterator.getCarriage() + 1, new_token_end });
+            token.addPostfix({ before_scan_iterator.getRemainingAsCarriage(), new_token_end });
         }
     }
 }// namespace cerb::lex::dot_item

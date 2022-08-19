@@ -60,8 +60,6 @@ namespace cerb::lex::dot_item
             -> void;
         auto checkSequenceArguments(TextIterator &rule_iterator) const -> void;
 
-        auto addWarningIfEmpty(TextIterator &rule_iterator) -> void;
-
         static auto throwEmptyStringEnd(TextIterator &rule_iterator) -> void;
         static auto throwEmptyStringBegin(TextIterator &rule_iterator) -> void;
         auto throwStringBeginException(TextIterator &rule_iterator) const -> void;

@@ -1,22 +1,32 @@
+#include <boost/test/unit_test.hpp>
 #include <cerberus/const_string.hpp>
-#include <cerberus/debug/debug_file.hpp>
-
-using namespace cerb::string_view_literals;
+namespace utf = boost::unit_test;
 
 template<cerb::ConstString String>
-constexpr static auto testConstString(auto input) -> bool
+static auto testConstString(cerb::u8string_view input) -> bool
 {
     auto test_string = input;
 
-    assertEqual(String.empty(), test_string.empty());
-    assertEqual(String.size(), test_string.size());
-    assertEqual(String.strView(), test_string);
+    BOOST_ASSERT(String.empty() == test_string.empty());
+    BOOST_ASSERT(String.size() == test_string.size());
+    BOOST_ASSERT(String.strView() == test_string);
 
-    assertTrue(std::ranges::equal(String, test_string));
-    assertTrue(std::equal(String.begin(), String.end(), test_string.begin()));
+    BOOST_ASSERT(std::ranges::equal(String, test_string));
+    BOOST_ASSERT(std::equal(String.begin(), String.end(), test_string.begin()));
 
     return true;
 }
 
-static_assert(testConstString<u8"">(u8""_sv));
-static_assert(testConstString<u8"Hello, World!">(u8"Hello, World!"_sv));
+BOOST_AUTO_TEST_SUITE(ConstString)
+
+BOOST_AUTO_TEST_CASE(ConstStringEmptyInput, * utf::enabled())
+{
+    BOOST_ASSERT(testConstString<u8"">(u8""));
+}
+
+BOOST_AUTO_TEST_CASE(ConstStringSingleBasicInput)
+{
+    BOOST_ASSERT(testConstString<u8"Hello, World!">(u8"Hello, World!"));
+}
+
+BOOST_AUTO_TEST_SUITE_END()

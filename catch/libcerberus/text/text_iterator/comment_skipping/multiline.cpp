@@ -1,59 +1,47 @@
-#include <cerberus/debug/debug_file.hpp>
+#include <boost/test/unit_test.hpp>
 #include <cerberus/text/text_iterator.hpp>
 
 using namespace cerb::text;
 
-// NOLINTNEXTLINE
-RUNTIME_TEST
+BOOST_AUTO_TEST_SUITE(TextIteratorMultilineComment)
+
+BOOST_AUTO_TEST_CASE(TextIteratorUnterminatedMultilineComment)
 {
     auto text_iterator = TextIterator{ u8"/*", nullptr, { u8"//", u8"/*", u8"*/" } };
 
-    try {
-        text_iterator.skipCommentsAndLayout();
-        assertTrue(false);
-    } catch (const CommentSkipperException &exception) {
-        assertEqual(exception.getColumn(), 2_ZU);// NOLINT
-        assertEqual(exception.getMessage(), u8"unterminated multiline comment");
-    }
-
-    return {};
+    BOOST_CHECK_EXCEPTION(
+        text_iterator.skipCommentsAndLayout(), CommentSkipperException,
+        [](const CommentSkipperException &exception) {
+            BOOST_ASSERT(exception.getColumn() == 2);// NOLINT
+            BOOST_ASSERT(exception.getMessage() == u8"unterminated multiline comment");
+            return true;
+        });
 }
-();
 
-// NOLINTNEXTLINE
-RUNTIME_TEST
+BOOST_AUTO_TEST_CASE(TextIteratorMultilineCommentSkipping)
 {
     auto text_iterator = TextIterator{ u8"/**/Hi!", nullptr, { u8"//", u8"/*", u8"*/" } };
     text_iterator.skipCommentsAndLayout();
 
-    assertEqual(text_iterator.nextRawChar(), U'H');
-
-    return {};
+    BOOST_ASSERT(text_iterator.nextRawChar() == U'H');
 }
-();
 
-// NOLINTNEXTLINE
-RUNTIME_TEST
+BOOST_AUTO_TEST_CASE(TextIteratorMultilineCommentSkippingWithMultilineSymbols)
 {
     auto text_iterator =
         TextIterator{ u8"/*1521\n\n151t*/\nHi!", nullptr, { u8"//", u8"/*", u8"*/" } };
     text_iterator.skipCommentsAndLayout();
 
-    assertEqual(text_iterator.nextRawChar(), U'H');
-
-    return {};
+    BOOST_ASSERT(text_iterator.nextRawChar() == U'H');
 }
-();
 
-// NOLINTNEXTLINE
-RUNTIME_TEST
+BOOST_AUTO_TEST_CASE(TextIteratorMultilineTwoCommentSkipping)
 {
     auto text_iterator =
         TextIterator{ u8"/*1521\n\n151t*/\n/* */ Hi!", nullptr, { u8"//", u8"/*", u8"*/" } };
     text_iterator.skipCommentsAndLayout();
 
-    assertEqual(text_iterator.nextRawChar(), U'H');
-
-    return {};
+    BOOST_ASSERT(text_iterator.nextRawChar() == U'H');
 }
-();
+
+BOOST_AUTO_TEST_SUITE_END()

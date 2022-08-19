@@ -314,7 +314,7 @@ namespace cerb::lex::dot_item
         u8string_view message,
         u8string_view suggestion) -> void
     {
-        rule_iterator.template throwException<DotItemException>(message, suggestion);
+        rule_iterator.throwException<DotItemException>(message, suggestion);
         throw UnrecoverableError{ "unrecoverable error in dot item" };
     }
 
@@ -326,7 +326,7 @@ namespace cerb::lex::dot_item
         auto message = fmt::format<u8"unable to apply with reason: {}">(reason);
         auto converted_suggestion = fmt::format<u8"{}">(suggestion);
 
-        rule_iterator.template throwException<DotItemException>(message, converted_suggestion);
+        rule_iterator.throwException<DotItemException>(message, converted_suggestion);
         throw UnrecoverableError{ "unrecoverable error in DotItemType" };
     }
 
@@ -343,7 +343,7 @@ namespace cerb::lex::dot_item
             u8"Use `\"` for string, `'` for terminal symbol, `[` for unions, `(` for dot "
             "items"_sv;
 
-        rule_iterator.template throwException<DotItemException>(message, suggestion);
+        rule_iterator.throwException<DotItemException>(message, suggestion);
         throw UnrecoverableError{ "unrecoverable error in DotItemType" };
     }
 }// namespace cerb::lex::dot_item

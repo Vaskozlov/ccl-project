@@ -45,7 +45,7 @@
           : value(std::move(value_))                                                               \
         {}                                                                                         \
                                                                                                    \
-        inline static const Type __VA_ARGS__;                                                      \
+        static constexpr Type __VA_ARGS__;                                                         \
                                                                                                    \
     private:                                                                                       \
         Type value{};                                                                              \

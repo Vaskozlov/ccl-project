@@ -78,7 +78,7 @@ namespace cerb::lex
 
         [[nodiscard]] auto getPostfixes() const noexcept -> const std::vector<u8string_view> &
         {
-            return prefixes;
+            return postfixes;
         }
 
         auto setEnd(typename u8string_view::iterator end_) noexcept -> void

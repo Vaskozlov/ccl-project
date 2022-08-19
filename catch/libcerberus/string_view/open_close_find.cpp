@@ -1,12 +1,10 @@
-#include <cerberus/debug/debug_file.hpp>
+#include <boost/test/unit_test.hpp>
 #include <cerberus/string_view.hpp>
 
 using namespace cerb::string_view_literals;
 
-CONSTEXPR_TEST
+BOOST_AUTO_TEST_CASE(StringViewOpenCloseFind)
 {
     auto cerb_string = "(Hello(, )World)!"_sv;
-    assertEqual(cerb_string.openCloseFind('(', ')'), cerb_string.rfind(')'));
-    return {};
+    BOOST_ASSERT(cerb_string.openCloseFind('(', ')').value() == cerb_string.rfind(')'));
 }
-();
