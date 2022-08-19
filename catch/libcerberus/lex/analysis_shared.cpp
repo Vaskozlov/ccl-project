@@ -1,4 +1,4 @@
-#include <boost/test/unit_test.hpp>
+#include <cerberus/debug/debug_file.hpp>
 #include <cerberus/lex/analysis_shared.hpp>
 
 using namespace cerb::lex;

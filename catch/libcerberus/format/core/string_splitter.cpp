@@ -1,4 +1,4 @@
-#include <boost/test/unit_test.hpp>
+#include <cerberus/debug/debug_file.hpp>
 #include <cerberus/format/core/string_splitter.hpp>
 
 using namespace cerb;
@@ -10,7 +10,7 @@ auto testSplitter(const std::initializer_list<u8string_view> &blocks) -> bool
     auto index = static_cast<size_t>(0);
     auto split_string = splitString<String>();
 
-    for (const auto &block : blocks) {
+    for (auto &&block : blocks) {
         BOOST_ASSERT(block == split_string[index]);
         ++index;
     }

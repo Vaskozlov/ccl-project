@@ -1,4 +1,4 @@
-#include <boost/test/unit_test.hpp>
+#include <cerberus/debug/debug_file.hpp>
 #include <cerberus/text/basic_text_iterator.hpp>
 
 using namespace cerb::text;
@@ -12,7 +12,7 @@ BOOST_AUTO_TEST_CASE(BasicTextIteratorRawFuture)
     auto index = static_cast<size_t>(1);
     auto text_iterator = BasicTextIterator{ input };
 
-    for (const auto &chr : expected) {
+    for (DEBUG_DECL &&chr : expected) {
         BOOST_ASSERT(text_iterator.futureRawChar(index) == chr);
         ++index;
     }

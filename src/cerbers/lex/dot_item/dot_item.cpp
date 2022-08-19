@@ -6,7 +6,7 @@ namespace cerb::lex::dot_item
 
     auto DotItem::scanIteration(TextIterator &text_iterator, Token &token) const -> bool
     {
-        for (const auto &item : items) {
+        for (auto &&item : items) {
             if (not scanItem(item.get(), text_iterator, token)) {
                 return false;
             }

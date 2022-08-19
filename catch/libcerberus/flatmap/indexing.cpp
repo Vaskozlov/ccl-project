@@ -1,4 +1,4 @@
-#include <boost/test/unit_test.hpp>
+#include <cerberus/debug/debug_file.hpp>
 #include <cerberus/flatmap.hpp>
 
 using namespace std::string_view_literals;
@@ -13,7 +13,6 @@ BOOST_AUTO_TEST_CASE(FlatmapIndexing)
     BOOST_CHECK_EQUAL(flatmap[30], 40);
 
     BOOST_CHECK_EXCEPTION(
-        [[maybe_unused]] auto _ = flatmap.at(40), cerb::KeyNotFound, [](const auto &exception) {
-            return "key not found"sv == exception.what();
-        });
+        DEBUG_DECL _ = flatmap.at(40), cerb::KeyNotFound,
+        [](const cerb::KeyNotFound &exception) { return "key not found"sv == exception.what(); });
 }

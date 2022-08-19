@@ -1,5 +1,5 @@
-#include <boost/test/unit_test.hpp>
 #include <cerberus/analysis/exception_accumulator.hpp>
+#include <cerberus/debug/debug_file.hpp>
 
 using namespace cerb;
 using namespace cerb::analysis;

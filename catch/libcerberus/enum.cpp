@@ -1,5 +1,5 @@
-#include <boost/test/unit_test.hpp>
 #include <cerberus/cerberus.hpp>
+#include <cerberus/debug/debug_file.hpp>
 
 // NOLINTNEXTLINE
 CERBLIB_ENUM(TestStringEnum, std::string_view, ONE = "ONE", TWO = "TWO");

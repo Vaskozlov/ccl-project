@@ -1,6 +1,5 @@
-#include <boost/test/unit_test.hpp>
+#include <cerberus/debug/debug_file.hpp>
 #include <cerberus/const_string.hpp>
-namespace utf = boost::unit_test;
 
 template<cerb::ConstString String>
 static auto testConstString(cerb::u8string_view input) -> bool
@@ -19,7 +18,7 @@ static auto testConstString(cerb::u8string_view input) -> bool
 
 BOOST_AUTO_TEST_SUITE(ConstString)
 
-BOOST_AUTO_TEST_CASE(ConstStringEmptyInput, * utf::enabled())
+BOOST_AUTO_TEST_CASE(ConstStringEmptyInput)
 {
     BOOST_ASSERT(testConstString<u8"">(u8""));
 }

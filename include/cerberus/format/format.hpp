@@ -62,7 +62,7 @@ namespace cerb::fmt
             if CERBLIB_RUNTIME_BRANCH {// G++-12 doesn't allow to append string at compile time
                 formatted_string.append(static_cast<std::u8string_view>(str));
             } else {
-                for (const auto &chr : str) {
+                for (auto &&chr : str) {
                     formatted_string.push_back(chr);
                 }
             }

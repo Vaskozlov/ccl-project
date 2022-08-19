@@ -1,4 +1,4 @@
-#include <boost/test/unit_test.hpp>
+#include <cerberus/debug/debug_file.hpp>
 #include <cerberus/lex/dot_item/union.hpp>
 
 using namespace cerb::lex;
@@ -16,7 +16,7 @@ BOOST_AUTO_TEST_CASE(UnionWithOneElem)
     text_iterator.nextRawChar();
 
     auto union_item = Union(text_iterator, shared);
-    const auto &bitset = union_item.get();
+    DEBUG_DECL &&bitset = union_item.get();
 
     for (char32_t i = 0; i < 127; ++i) {// NOLINT
         BOOST_ASSERT(bitset.at(i) == (i == 'a'));
@@ -29,7 +29,7 @@ BOOST_AUTO_TEST_CASE(UnionWithMultipleElems)
     text_iterator.nextRawChar();
 
     auto union_item = Union(text_iterator, shared);
-    const auto &bitset = union_item.get();
+    DEBUG_DECL &&bitset = union_item.get();
 
     for (char32_t i = '\0'; i != '_'; ++i) {
         BOOST_ASSERT(not bitset.at(i));

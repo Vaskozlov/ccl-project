@@ -1,4 +1,4 @@
-#include <boost/test/unit_test.hpp>
+#include <cerberus/debug/debug_file.hpp>
 #include <cerberus/text/text_iterator.hpp>
 
 using namespace cerb::text;
@@ -11,7 +11,7 @@ BOOST_AUTO_TEST_CASE(TextIteratorUnterminatedMultilineComment)
 
     BOOST_CHECK_EXCEPTION(
         text_iterator.skipCommentsAndLayout(), CommentSkipperException,
-        [](const CommentSkipperException &exception) {
+        []([[maybe_unused]] const CommentSkipperException &exception) {
             BOOST_ASSERT(exception.getColumn() == 2);// NOLINT
             BOOST_ASSERT(exception.getMessage() == u8"unterminated multiline comment");
             return true;

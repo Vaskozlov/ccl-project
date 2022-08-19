@@ -33,7 +33,7 @@ namespace cerb
 
         for (; reachable(string, index); ++index) {
             auto chr = string[index];
-            const auto &level = char_levels[index];
+            auto &level = char_levels[index];
 
             if (not level.at(chr)) {
                 break;

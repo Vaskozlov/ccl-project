@@ -1,4 +1,4 @@
-#include <boost/test/unit_test.hpp>
+#include <cerberus/debug/debug_file.hpp>
 #include <cerberus/raw_string_matcher.hpp>
 
 BOOST_AUTO_TEST_CASE(StringMapMismatch)
@@ -16,7 +16,7 @@ BOOST_AUTO_TEST_CASE(StringMapMatch)
 
     BOOST_ASSERT(match_result.has_value());
 
-    auto &[matching_str, value] = *match_result;
+    DEBUG_DECL & [ matching_str, value ] = *match_result;
 
     BOOST_ASSERT(value == 1);
     BOOST_ASSERT(matching_str == u8"Hello");

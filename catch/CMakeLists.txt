@@ -11,6 +11,12 @@ add_executable(
         ${LIBCERBERUS_CATCH}
 )
 
+target_compile_definitions(
+        libcerberus-catch
+        PRIVATE
+        "BOOST_TEST_DYN_LINK"
+)
+
 target_precompile_headers(
         libcerberus-catch
         PUBLIC
@@ -24,8 +30,13 @@ target_precompile_headers(
         <initializer_list>
         <algorithm> <array>
         <numeric> <fmt/format.h>
+        <boost/test/unit_test.hpp>
+        <cerberus/debug/debug_file.hpp>
         <boost/container/small_vector.hpp>
 )
+
+set_source_files_properties(catch/runner.cpp PRIVATE
+        PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
 
 target_link_libraries(
         libcerberus-catch

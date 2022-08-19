@@ -1,4 +1,4 @@
-#include <boost/test/unit_test.hpp>
+#include <cerberus/debug/debug_file.hpp>
 #include <cerberus/lex/dot_item/sequence.hpp>
 
 using namespace cerb::lex;
@@ -16,7 +16,7 @@ BOOST_AUTO_TEST_CASE(SequenceWithOneCharBegin)
     text_iterator.nextRawChar();
 
     auto string_item = Sequence({}, u8"\"", text_iterator, shared);
-    const auto &string = string_item.get();
+    DEBUG_DECL &&string = string_item.get();
 
     BOOST_ASSERT(string == u8R"(Hello, "World"!)");
     BOOST_ASSERT(cerb::isEoF(text_iterator.nextRawChar()));
@@ -28,7 +28,7 @@ BOOST_AUTO_TEST_CASE(SequenceWithTreeCharBegin)
     text_iterator.nextRawChar();
 
     auto string_item = Sequence({ .multiline = true }, u8R"(""")", text_iterator, shared);
-    const auto &string = string_item.get();
+    DEBUG_DECL &&string = string_item.get();
 
     BOOST_ASSERT(string == u8"Hello,\n    \"World\"!");
     BOOST_ASSERT(cerb::isEoF(text_iterator.nextRawChar()));
@@ -42,7 +42,7 @@ BOOST_AUTO_TEST_CASE(UnterminatedSequence)
     BOOST_CHECK_EXCEPTION(
         Sequence({}, u8"\"", text_iterator, shared),
         SequenceException,
-        [](const SequenceException &exception) {
+        []([[maybe_unused]] const SequenceException &exception) {
             {
                 BOOST_ASSERT(exception.getColumn() == 1);
                 BOOST_ASSERT(exception.getMessage() == u8"unterminated sequence");
@@ -59,7 +59,7 @@ BOOST_AUTO_TEST_CASE(SequenceReachedNewLine)
     BOOST_CHECK_EXCEPTION(
         Sequence({}, u8"\"", text_iterator, shared),
         SequenceException,
-        [](const SequenceException &exception) {
+        []([[maybe_unused]] const SequenceException &exception) {
             {
                 BOOST_ASSERT(exception.getColumn() == 1);
                 BOOST_ASSERT(

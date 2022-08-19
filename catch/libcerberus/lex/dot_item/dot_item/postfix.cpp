@@ -1,4 +1,4 @@
-#include <boost/test/unit_test.hpp>
+#include <cerberus/debug/debug_file.hpp>
 #include <cerberus/lex/dot_item/dot_item.hpp>
 
 using namespace cerb::lex;
@@ -11,7 +11,7 @@ BOOST_AUTO_TEST_CASE(TwoPostfixes)
 {
     auto shared = AnalysisShared{};
     auto dot_item = DotItem(TextIterator{ u8R"([a-z]+[_]p"test"p)" }, 0, shared);
-    const auto &items = dot_item.getItems();
+    BOOST_ATTRIBUTE_UNUSED auto &items = dot_item.getItems();
 
     BOOST_ASSERT(not items[0]->hasPrefix());
     BOOST_ASSERT(not items[0]->hasPostfix());

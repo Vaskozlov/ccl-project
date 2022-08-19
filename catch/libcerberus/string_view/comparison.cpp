@@ -1,4 +1,4 @@
-#include <boost/test/unit_test.hpp>
+#include <cerberus/debug/debug_file.hpp>
 #include <cerberus/string_view.hpp>
 
 using namespace cerb::string_view_literals;
@@ -8,16 +8,16 @@ BOOST_AUTO_TEST_SUITE(StringViewComparison)
 
 BOOST_AUTO_TEST_CASE(StringViewComparisonEqual)
 {
-    auto std_string = "Hello, World!"sv;
-    auto cerb_string = "Hello, World!"_sv;
+    DEBUG_DECL std_string = "Hello, World!"sv;
+    DEBUG_DECL cerb_string = "Hello, World!"_sv;
 
     BOOST_ASSERT(cerb_string == std_string);
 }
 
 BOOST_AUTO_TEST_CASE(StringViewComparisonLessFirstLess)
 {
-    auto std_string = "Hello, World!"sv;
-    auto cerb_string = "hello, World!"_sv;
+    DEBUG_DECL std_string = "Hello, World!"sv;
+    DEBUG_DECL cerb_string = "hello, World!"_sv;
 
     BOOST_ASSERT(cerb_string > std_string);
     BOOST_ASSERT(cerb_string >= std_string);
@@ -25,8 +25,8 @@ BOOST_AUTO_TEST_CASE(StringViewComparisonLessFirstLess)
 
 BOOST_AUTO_TEST_CASE(StringViewComparisonLessFirstGreater)
 {
-    auto std_string = "hello, World!"sv;
-    auto cerb_string = "Hello, World!"_sv;
+    DEBUG_DECL std_string = "hello, World!"sv;
+    DEBUG_DECL cerb_string = "Hello, World!"_sv;
 
     BOOST_ASSERT(cerb_string < std_string);
     BOOST_ASSERT(cerb_string <= std_string);
@@ -34,8 +34,8 @@ BOOST_AUTO_TEST_CASE(StringViewComparisonLessFirstGreater)
 
 BOOST_AUTO_TEST_CASE(StringViewComparisonGreaterFirstLess)
 {
-    auto std_string = "Hello, World!"sv;
-    auto cerb_string = "hello, World!"_sv;
+    DEBUG_DECL std_string = "Hello, World!"sv;
+    DEBUG_DECL cerb_string = "hello, World!"_sv;
 
     BOOST_ASSERT(cerb_string > std_string);
     BOOST_ASSERT(cerb_string >= std_string);
@@ -43,8 +43,8 @@ BOOST_AUTO_TEST_CASE(StringViewComparisonGreaterFirstLess)
 
 BOOST_AUTO_TEST_CASE(StringViewComparisonGreaterFirstGreater)
 {
-    auto std_string = "Hello, World"sv;
-    auto cerb_string = "Hello, World!"_sv;
+    DEBUG_DECL std_string = "Hello, World"sv;
+    DEBUG_DECL cerb_string = "Hello, World!"_sv;
 
     BOOST_ASSERT(cerb_string > std_string);
     BOOST_ASSERT(cerb_string >= std_string);

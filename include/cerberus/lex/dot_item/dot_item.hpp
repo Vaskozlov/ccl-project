@@ -50,7 +50,7 @@ namespace cerb::lex::dot_item
             parseRule(rule_iterator_);
         }
 
-        [[nodiscard]] auto getId() const noexcept-> size_t
+        [[nodiscard]] auto getId() const noexcept -> size_t
         {
             return id;
         }

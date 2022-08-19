@@ -1,4 +1,4 @@
-#include <boost/test/unit_test.hpp>
+#include <cerberus/debug/debug_file.hpp>
 #include <cerberus/text/location.hpp>
 
 BOOST_AUTO_TEST_CASE(LocationTracking)

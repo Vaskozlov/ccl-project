@@ -35,7 +35,7 @@ namespace cerb::lex
         }
 
         auto string_or_char_elem =
-            std::ranges::find_if(strings_and_chars, [text](const auto &elem) {
+            std::ranges::find_if(strings_and_chars, [text](const String &elem) {
                 return text.startsWith(elem.str_begin);
             });
 
@@ -67,7 +67,7 @@ namespace cerb::lex
         auto empty_shared = AnalysisShared{};
         auto token_attributes = TokenAttributes{ text_iterator };
         const auto *repr_begin = text_iterator.getCarriage();
-        const auto &[str_begin, str_end, id, is_character, is_multiline] = string_elem;
+        auto &[str_begin, str_end, id, is_character, is_multiline] = string_elem;
 
         auto sequence = dot_item::Sequence(
             { .multiline = is_multiline, .no_escaping_symbols = is_multiline }, str_begin, str_end,
@@ -93,7 +93,7 @@ namespace cerb::lex
 
     auto AnalysisShared::isStringOrChar(const u8string_view &text) const -> bool
     {
-        return std::ranges::any_of(strings_and_chars, [text](const auto &elem) {
+        return std::ranges::any_of(strings_and_chars, [text](const String &elem) {
             return text.startsWith(elem.str_begin);
         });
     }

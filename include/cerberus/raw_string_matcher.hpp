@@ -38,7 +38,7 @@ namespace cerb
         RawStringMatcher(
             const std::initializer_list<std::pair<std::u8string, size_t>> &initial_data)
         {
-            for (const auto &[string, value] : initial_data) {
+            for (auto &&[string, value] : initial_data) {
                 addString(string, value);
             }
         }

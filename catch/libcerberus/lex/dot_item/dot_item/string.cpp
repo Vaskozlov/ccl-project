@@ -1,4 +1,4 @@
-#include <boost/test/unit_test.hpp>
+#include <cerberus/debug/debug_file.hpp>
 #include <cerberus/lex/dot_item/dot_item.hpp>
 
 using namespace cerb::lex;
@@ -41,7 +41,7 @@ BOOST_AUTO_TEST_CASE(DotItemTwoStringCreation)
     BOOST_ASSERT(shared.strings_and_chars[0].str_begin == u8R"(")");
     BOOST_ASSERT(shared.strings_and_chars[1].str_end == u8R"(')");
 
-    for (auto &string : shared.strings_and_chars) {
+    for (DEBUG_DECL &&string : shared.strings_and_chars) {
         BOOST_ASSERT(not string.is_multiline);
         BOOST_ASSERT(not string.is_character);
     }

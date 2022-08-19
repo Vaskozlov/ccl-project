@@ -1,4 +1,4 @@
-#include <boost/test/unit_test.hpp>
+#include <cerberus/debug/debug_file.hpp>
 #include <cerberus/lex/dot_item/dot_item.hpp>
 
 using namespace cerb::text;
@@ -11,7 +11,7 @@ BOOST_AUTO_TEST_CASE(RepetitionBasicCase)
     auto text_iterator = TextIterator{ u8"{10, 20}" };
     text_iterator.nextRawChar();
 
-    auto repetition = Repetition{ text_iterator };
+    DEBUG_DECL repetition = Repetition{ text_iterator };
     BOOST_ASSERT(repetition.from == 10);
     BOOST_ASSERT(repetition.to == 20);
 }
@@ -21,7 +21,7 @@ BOOST_AUTO_TEST_CASE(RepetitionEmptyFirstArgument)
     auto text_iterator = TextIterator{ u8"{, 1}" };
     text_iterator.nextRawChar();
 
-    auto repetition = Repetition{ text_iterator };
+    DEBUG_DECL repetition = Repetition{ text_iterator };
     BOOST_ASSERT(repetition.from == 0);
     BOOST_ASSERT(repetition.to == 1);
 }
@@ -32,7 +32,9 @@ BOOST_AUTO_TEST_CASE(RepetitionFirstArgumentGreaterThanSecond)
     text_iterator.nextRawChar();
 
     BOOST_CHECK_EXCEPTION(
-        Repetition{ text_iterator }, RepetitionException, [](const RepetitionException &exception) {
+        Repetition{ text_iterator },
+        RepetitionException,
+        []([[maybe_unused]] const RepetitionException &exception) {
             BOOST_ASSERT(exception.getColumn() == 1);
             BOOST_ASSERT(
                 exception.getMessage() ==

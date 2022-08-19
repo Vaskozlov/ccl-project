@@ -8,7 +8,7 @@ namespace cerb::lex
             return Token{};
         }
 
-        for (const auto &item : items) {
+        for (auto &&item : items) {
             text_iterator.skipCommentsAndLayout();
 
             auto special_token = shared.getSpecialToken(text_iterator);
