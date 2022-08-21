@@ -16,7 +16,7 @@ namespace cerb::fmt::core
         using iterator = typename value_type::iterator;
         using const_iterator = typename value_type::const_iterator;
 
-        static constexpr size_t blocks_num = countArgs(String.strView()) + 1;
+        static constexpr size_t blocks_num = countArgs(String) + 1;
 
     public:
         using storage_t = std::array<value_type, blocks_num>;
@@ -51,7 +51,7 @@ namespace cerb::fmt::core
 
         constexpr auto fill() -> void
         {
-            auto text = String.strView();
+            auto text = static_cast<u8string_view>(String);
 
             while (text_iterator.nextRawChar() != 0) {
                 processState();
@@ -82,7 +82,7 @@ namespace cerb::fmt::core
         }
 
         storage_t blocks{};
-        text::BasicTextIterator text_iterator{ String.strView() };
+        text::BasicTextIterator text_iterator{ String };
         const_iterator block_begin{ text_iterator.getCarriage() };
         size_t current_block{};
     };

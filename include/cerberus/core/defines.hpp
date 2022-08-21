@@ -36,6 +36,12 @@
 #    define CERBLIB_RUNTIME_BRANCH (not std::is_constant_evaluated())
 #endif /* CERBLIB_RUNTIME_BRANCH */
 
+#if defined(_MSC_VER)
+#    define CERBLIB_INLINE __forceinline
+#else
+#    define CERBLIB_INLINE __attribute__((always_inline)) inline
+#endif
+
 #if defined(__clang__)
 #    define CERBLIB_TRIVIAL_ABI [[clang::trivial_abi]]
 #else
