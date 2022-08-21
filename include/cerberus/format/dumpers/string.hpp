@@ -1,72 +1,43 @@
 #ifndef CERBERUS_PROJECT_STRING_HPP
 #define CERBERUS_PROJECT_STRING_HPP
 
-#include <cerberus/string_view.hpp>
+#include <cerberus/const_string.hpp>
 #include <cerberus/utf8.hpp>
 #include <string>
 #include <string_view>
 
 namespace cerb::fmt
 {
-    namespace private_
+    constexpr auto dump(std::u8string &formatting_string, const std::u8string_view &string) -> void
     {
-        template<CharacterLiteral CharT1, CharacterLiteral CharT2>
-        constexpr auto dumpDifferentStrings(
-            std::basic_string<CharT1> &formatting_string,
-            const std::basic_string_view<CharT2> &string) -> void
-        {
-            constexpr auto upper_limit = std::numeric_limits<CharT1>::max();
-            constexpr auto lower_limit = std::numeric_limits<CharT1>::min();
-
-            for (auto &chr : string) {
-                if (chr >= lower_limit && chr <= upper_limit) {
-                    formatting_string.push_back(static_cast<CharT1>(chr));
-                } else {
-                    formatting_string.push_back('?');
-                }
+        if CERBLIB_COMPILE_TIME_BRANCH {
+            for (auto &&chr : string) {
+                formatting_string.push_back(chr);
             }
-        }
-    }// namespace private_
-
-    template<CharacterLiteral CharT1, CharacterLiteral CharT2>
-    constexpr auto dump(
-        std::basic_string<CharT1> &formatting_string,
-        const std::basic_string_view<CharT2> &string) -> void
-    {
-        if constexpr (std::is_same_v<CharT1, CharT2>) {
-            formatting_string.append(string);
         } else {
-            private_::dumpDifferentStrings(formatting_string, string);
+            formatting_string.append(string);
         }
     }
 
-    template<CharacterLiteral CharT1, CharacterLiteral CharT2>
-    constexpr auto dump(std::basic_string<CharT1> &formatting_string, const CharT2 *string) -> void
+    constexpr auto dump(std::u8string &formatting_string, const char8_t *string) -> void
     {
-        if constexpr (std::is_same_v<CharT1, CharT2>) {
-            formatting_string.append(string);
-        } else {
-            dump(formatting_string, std::basic_string_view<CharT2>{ string });
-        }
+        formatting_string.append(string);
     }
 
-    template<CharacterLiteral CharT1, CharacterLiteral CharT2>
-    constexpr auto
-        dump(std::basic_string<CharT1> &formatting_string, const std::basic_string<CharT2> &string)
-            -> void
+    constexpr auto dump(std::u8string &formatting_string, const std::u8string &string) -> void
     {
-        if constexpr (std::is_same_v<CharT1, CharT2>) {
-            formatting_string.append(string);
-        } else {
-            dump(formatting_string, std::basic_string_view{ string.c_str(), string.size() });
-        }
+        formatting_string.append(string);
     }
 
-    template<CharacterLiteral CharT1, CharacterLiteral CharT2>
-    constexpr auto
-        dump(std::basic_string<CharT1> &formatting_string, const BasicStringView<CharT2> &string)
+    constexpr auto dump(std::u8string &formatting_string, const u8string_view &string) -> void
     {
-        dump(formatting_string, static_cast<std::basic_string_view<CharT2>>(string));
+        dump(formatting_string, static_cast<std::u8string_view>(string));
+    }
+
+    template<size_t N>
+    constexpr auto dump(std::u8string &formatting_string, const ConstString<N> &string) -> void
+    {
+        dump(formatting_string, u8string_view(string.begin(), string.end()));
     }
 }// namespace cerb::fmt
 
