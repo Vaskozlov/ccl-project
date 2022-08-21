@@ -10,13 +10,13 @@ else ()
     add_library(cerberus SHARED ${LIBCERBERUS_OBJS})
 endif ()
 
+target_link_libraries(
+        cerberus
+        fmt::fmt
+)
+
 target_precompile_headers(
         cerberus
         PUBLIC
         "pch.hpp"
-)
-
-target_link_libraries(
-        cerberus
-        fmt::fmt
 )
