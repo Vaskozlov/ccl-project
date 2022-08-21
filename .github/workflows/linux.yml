@@ -14,19 +14,19 @@ jobs:
           - name: Linux amd64 gcc
             key: linux-gcc-amd64
             os: [ self-hosted, linux, X64 ]
-            cmake_params: '-DUSE_LIBCPP=OFF '
+            cmake_params: ''
             threads_count: 1
 
           - name: Linux arm64 gcc
             key: linux-gcc-arm64
             os: [ self-hosted, linux, ARM64 ]
-            cmake_params: '-DUSE_LIBCPP=OFF'
+            cmake_params: ''
             threads_count: 4
 
           - name: Linux arm64 clang
             key: linux-local-clang-trunk-arm64
             os: [ self-hosted, linux, ARM64 ]
-            cmake_params: '-DCMAKE_CXX_COMPILER=/home/cerberus-project_2/llvm-build/bin/clang++ -DUSE_LIBCPP=ON'
+            cmake_params: '-DCMAKE_CXX_COMPILER=/home/cerberus-project_2/llvm-build/bin/clang++'
 
     name: CMake (${{ matrix.config.name }})
     runs-on: ${{ matrix.config.os }}
@@ -51,7 +51,7 @@ jobs:
         run: |
           cmake ${{ matrix.config.cmake_params }} -G Ninja \
             -B ${{github.workspace}}/${{github.actor}}-${{ github.head_ref }}/${{ matrix.config.key }} \
-            -DCMAKE_BUILD_TYPE=Release -DSTRICT_COMPILATION=ON -DUSE_ADDRESS_SANITIZER=ON \
+            -DCMAKE_BUILD_TYPE=Release -DSTRICT_COMPILATION=ON -DUSE_LIBCPP=OFF -DUSE_ADDRESS_SANITIZER=ON \
             -DPRECOMPILED_HEADERS=ON
           
           cmake --build ${{github.workspace}}/${{github.actor}}-${{ github.head_ref }}/${{ matrix.config.key }} -j ${{ matrix.config.threads_count }}

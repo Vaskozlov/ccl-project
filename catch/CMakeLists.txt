@@ -17,14 +17,10 @@ target_compile_definitions(
         "BOOST_TEST_DYN_LINK"
 )
 
-target_precompile_headers(
-        libcerberus-catch
-        PUBLIC
-        "pch.hpp"
+set_source_files_properties(
+        catch/runner.cpp PRIVATE
+        PROPERTIES SKIP_PRECOMPILE_HEADERS ON
 )
-
-set_source_files_properties(catch/runner.cpp PRIVATE
-        PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
 
 target_link_libraries(
         libcerberus-catch
@@ -39,6 +35,12 @@ target_link_libraries(
 target_link_libraries(
         libcerberus-catch
         cerberus
+)
+
+target_precompile_headers(
+        libcerberus-catch
+        PUBLIC
+        "pch.hpp"
 )
 
 add_test(libcerberus-catch-test libcerberus-catch)
