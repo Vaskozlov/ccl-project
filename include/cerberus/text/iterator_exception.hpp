@@ -73,7 +73,6 @@ namespace cerb::text
         {}
 
         [[nodiscard]] auto createFullMessage() const -> std::u8string;
-        [[nodiscard]] auto createCharFullMessage() const -> std::string;
 
     private:
         auto addSuggestion(std::u8string &full_message) const -> void;

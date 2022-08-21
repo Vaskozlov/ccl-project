@@ -66,7 +66,7 @@ namespace cerb
             return size() == 0;
         }
 
-        CERBLIB_DECL auto strView() const -> BasicStringView<char8_t>
+        CERBLIB_DECL operator u8string_view() const  // NOLINT
         {
             return { string.data(), size() };
         }

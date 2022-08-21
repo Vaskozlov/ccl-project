@@ -1,6 +1,7 @@
 #ifndef CERBERUS_PROJECT_FORMAT_HPP
 #define CERBERUS_PROJECT_FORMAT_HPP
 
+#include <array>
 #include <cerberus/const_string.hpp>
 #include <cerberus/format/core/string_splitter.hpp>
 #include <cerberus/format/dumpers/int.hpp>
@@ -10,6 +11,28 @@
 
 namespace cerb::fmt
 {
+    struct StaticFormatterFrame
+    {
+        CERBLIB_DECL operator u8string_view() const
+        {
+            return { buffer.data(), size };
+        }
+
+        constexpr explicit StaticFormatterFrame(const std::u8string &string) : size(string.size())
+        {
+            if (string.size() > buffer_size) {
+                throw InvalidArgument{ "string is too big" };
+            }
+
+            std::ranges::copy(string, buffer.begin());
+        }
+
+        static constexpr auto buffer_size = static_cast<size_t>(256);
+
+        std::array<char8_t, buffer_size> buffer{};
+        size_t size{};
+    };
+
     template<ConstString String>
     class Formatter
     {
@@ -91,6 +114,12 @@ namespace cerb::fmt
     {
         auto formatter = Formatter<String>{ std::forward<Args>(args)... };
         return formatter.get();
+    }
+
+    template<ConstString String, auto... args>
+    CERBLIB_DECL auto staticFormat() -> StaticFormatterFrame
+    {
+        return StaticFormatterFrame{ format<String>(args...) };
     }
 }// namespace cerb::fmt
 

@@ -21,16 +21,6 @@ namespace cerb::text
         return full_message;
     }
 
-    auto TextIteratorException::createCharFullMessage() const -> std::string
-    {
-        auto full_message = createFullMessage();
-        auto char_full_message = std::string{};
-
-        fmt::dump(char_full_message, full_message);
-
-        return char_full_message;
-    }
-
     auto TextIteratorException::addArrowToError(std::u8string &full_message) const -> void
     {
         auto column_pos = location.getColumn();
