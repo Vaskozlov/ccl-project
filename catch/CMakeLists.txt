@@ -41,6 +41,7 @@ target_precompile_headers(
         libcerberus-catch
         PUBLIC
         "pch.hpp"
+        <boost/test/unit_test.hpp>
 )
 
 add_test(libcerberus-catch-test libcerberus-catch)
