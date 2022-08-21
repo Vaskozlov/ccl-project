@@ -1,26 +1,27 @@
+#include <cerberus/format/format.hpp>
 #include <cerberus/lex/dot_item/items_counter.hpp>
 
 namespace cerb::lex::dot_item
 {
     auto ItemsCounter::operator+=(item::UnionType /* unused */) -> ItemsCounter &
     {
-        checkForUnexpectedTerminals(u8"union");
-        checkNoStringOrChars(u8"union");
+        checkForUnexpectedTerminals<u8"union">();
+        checkNoStringOrChars<u8"union">();
         ++unions;
         return *this;
     }
 
     auto ItemsCounter::operator+=(item::DotItemType /* unused */) -> ItemsCounter &
     {
-        checkForUnexpectedTerminals(u8"dot item");
-        checkNoStringOrChars(u8"dot item");
+        checkForUnexpectedTerminals<u8"dot item">();
+        checkNoStringOrChars<u8"dot item">();
         ++dot_items;
         return *this;
     }
 
     auto ItemsCounter::operator+=(item::SequenceType /* unused */) -> ItemsCounter &
     {
-        checkForUnexpectedTerminals(u8"sequence");
+        checkForUnexpectedTerminals<u8"sequence">();
         checkAbilityToCreateSequence();
         ++sequences;
         return *this;
@@ -28,7 +29,7 @@ namespace cerb::lex::dot_item
 
     auto ItemsCounter::operator+=(item::StringType /* unused */) -> ItemsCounter &
     {
-        checkForUnexpectedTerminals(u8"string");
+        checkForUnexpectedTerminals<u8"string">();
         checkAbilityToCreateStringOrCharacter();
         --sequences;
         ++strings;
@@ -37,7 +38,7 @@ namespace cerb::lex::dot_item
 
     auto ItemsCounter::operator+=(item::CharacterType /* unused */) -> ItemsCounter &
     {
-        checkForUnexpectedTerminals(u8"character");
+        checkForUnexpectedTerminals<u8"character">();
         checkAbilityToCreateStringOrCharacter();
         --sequences;
         ++characters;
@@ -54,9 +55,10 @@ namespace cerb::lex::dot_item
     auto ItemsCounter::checkAbilityToCreateSequence() -> void
     {
         if (hasStrOrChar() && hasSequences()) {
-            throwItemCreationError(
-                u8"sequence", u8"attempt to create sequence in character/string item",
-                u8"do not declare sequences in string/character item");
+            throwItemCreationError<
+                u8"sequence",
+                u8"attempt to create sequence in character/string item",
+                u8"do not declare sequences in string/character item">();
         }
     }
 
@@ -64,52 +66,63 @@ namespace cerb::lex::dot_item
     {
         if ((characters + strings + dot_items + sequences + unions + terminals) != terminals) {
             terminals = std::max<size_t>(terminals, 1);
-            checkForUnexpectedTerminals(u8"terminal");// just for the same error message
+            checkForUnexpectedTerminals<u8"terminal">();// just for the same error message
         }
     }
 
     auto ItemsCounter::checkAbilityToCreateStringOrCharacter() -> void
     {
-        if (sequences != 1) {
-            throwItemCreationError(
+        if (sequences == 0) {
+            throwItemCreationError<
                 u8"string/character",
-                u8"attempt to create string/character item without sequence",
-                u8"create sequence before creating string/character item");
+                u8"no sequences found",
+                u8"create sequence">();
+        }
+
+        if (sequences > 1) {
+            throwItemCreationError<
+                u8"string/character",
+                u8"too many sequences found",
+                u8"delete sequences or join them">();
         }
 
         if (hasUnions() || hasDotItems()) {
-            throwItemCreationError(
+            throwItemCreationError<
                 u8"string/character",
-                u8"attempt to create string/character item after union/dot item",
-                u8"do not declare strings/characters in item with anything else");
+                u8"Union/DotItem exists in the rule",
+                u8"delete Union/DotItem">();
         }
     }
 
-    auto ItemsCounter::checkForUnexpectedTerminals(std::u8string_view item_name) -> void
+    template<ConstString ItemName>
+    auto ItemsCounter::checkForUnexpectedTerminals() -> void
     {
         if (hasTerminals()) {
-            throwItemCreationError(item_name, u8"terminals cannot coexist with other items");
+            throwItemCreationError<ItemName, u8"terminals cannot coexist with other items", u8"">();
         }
     }
 
-    auto ItemsCounter::checkNoStringOrChars(std::u8string_view item_name) -> void
+    template<ConstString ItemName>
+    auto ItemsCounter::checkNoStringOrChars() -> void
     {
         if (hasStrOrChar()) {
-            throwItemCreationError(
-                item_name, u8"string or characters has been already declared in item",
-                u8"delete strings/characters or do not declare other items");
+            throwItemCreationError<
+                ItemName,
+                u8"string or characters has been already declared in item",
+                u8"delete strings/characters or do not declare other items">();
         }
     }
 
-    auto ItemsCounter::throwItemCreationError(
-        std::u8string_view item_name,
-        std::u8string_view message,
-        std::u8string_view suggestion) -> void
+    template<ConstString ItemName, ConstString Message, ConstString Suggestion>
+    auto ItemsCounter::throwItemCreationError() -> void
     {
-        auto error_message = fmt::format<u8"unable to create {}: {}">(item_name, message);
-        auto error_suggestion = fmt::format<u8"{}">(suggestion);
+        static constexpr auto error_message =
+            fmt::staticFormat<u8"unable to create {}: {}", ItemName, Message>();
+        static constexpr auto error_suggestion = fmt::staticFormat<u8"{}", Suggestion>();
 
-        text_iterator.throwException<DotItemException>(error_message, error_suggestion);
+        text_iterator.throwException<DotItemException>(
+            static_cast<u8string_view>(error_message),
+            static_cast<u8string_view>(error_suggestion));
         throw UnrecoverableError{ "unrecoverable error in DotItemType" };
     }
 }// namespace cerb::lex::dot_item

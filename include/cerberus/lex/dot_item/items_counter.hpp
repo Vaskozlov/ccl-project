@@ -93,13 +93,15 @@ namespace cerb::lex::dot_item
         auto checkAbilityToCreateSequence() -> void;
         auto checkAbilityToCreateTerminal() -> void;
         auto checkAbilityToCreateStringOrCharacter() -> void;
-        auto checkForUnexpectedTerminals(std::u8string_view item_name) -> void;
-        auto checkNoStringOrChars(std::u8string_view item_name) -> void;
 
-        auto throwItemCreationError(
-            std::u8string_view item_name,
-            std::u8string_view message,
-            std::u8string_view suggestion = {}) -> void;
+        template<ConstString ItemName>
+        CERBLIB_INLINE auto checkForUnexpectedTerminals() -> void;
+
+        template<ConstString ItemName>
+        CERBLIB_INLINE auto checkNoStringOrChars() -> void;
+
+        template<ConstString ItemName, ConstString Message, ConstString Suggestion>
+        CERBLIB_INLINE auto throwItemCreationError() -> void;
 
     public:
         size_t strings{};
