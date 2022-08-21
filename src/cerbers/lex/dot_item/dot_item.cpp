@@ -33,7 +33,7 @@ namespace cerb::lex::dot_item
         auto counter = ItemsCounter{ rule_iterator };
         rule_iterator.skipCommentsAndLayout();
 
-        while (movedToTheNextChar(rule_iterator)) {
+        while (hasMovedToTheNextChar(rule_iterator)) {
             recognizeAction(rule_iterator, counter);
             rule_iterator.skipCommentsAndLayout();
         }
@@ -41,7 +41,7 @@ namespace cerb::lex::dot_item
         postCheck(rule_iterator, counter);
     }
 
-    auto DotItem::movedToTheNextChar(TextIterator &rule_iterator) -> bool
+    auto DotItem::hasMovedToTheNextChar(TextIterator &rule_iterator) -> bool
     {
         return not isEoF(rule_iterator.nextRawChar());
     }
@@ -50,18 +50,15 @@ namespace cerb::lex::dot_item
     {
         switch (rule_iterator.getCurrentChar()) {
         case U'[':
-            counter += item::Union;
-            emplaceItem(constructNewUnion(rule_iterator));
+            emplaceItem(constructNewUnion(rule_iterator, counter));
             break;
 
         case U'\"':
-            counter += item::Sequence;
-            emplaceItem(constructNewSequence(rule_iterator));
+            emplaceItem(constructNewSequence(rule_iterator, counter));
             break;
 
         case U'(':
-            counter += item::DotItem;
-            emplaceItem(constructNewItem(rule_iterator));
+            emplaceItem(constructNewItem(rule_iterator, counter));
             break;
 
         case U'\'':
@@ -95,8 +92,14 @@ namespace cerb::lex::dot_item
             break;
 
         case U'c':
-            counter += item::Character;
-            constructString(rule_iterator, true, false);
+            if (rule_iterator.futureRawChar(1) == U'o') {
+                rule_iterator.nextRawChar();
+                constructComment(rule_iterator);
+            } else {
+                counter += item::Character;
+                constructString(rule_iterator, true, false);
+            }
+
             break;
 
         case U's':
@@ -115,30 +118,34 @@ namespace cerb::lex::dot_item
         }
     }
 
-    auto DotItem::constructNewSequence(TextIterator &rule_iterator) -> std::unique_ptr<BasicItem>
+    auto DotItem::constructNewSequence(TextIterator &rule_iterator, ItemsCounter &items_counter)
+        -> std::unique_ptr<BasicItem>
     {
+        items_counter += item::Sequence;
         return std::make_unique<Sequence>(
             Sequence::SequenceFlags{}, u8"\"", rule_iterator, analysis_shared);
     }
 
-    auto DotItem::constructNewUnion(TextIterator &rule_iterator) -> std::unique_ptr<BasicItem>
+    auto DotItem::constructNewUnion(TextIterator &rule_iterator, ItemsCounter &items_counter)
+        -> std::unique_ptr<BasicItem>
     {
+        items_counter += item::Union;
         return std::make_unique<Union>(rule_iterator, analysis_shared);
     }
 
-    auto DotItem::constructNewItem(TextIterator &rule_iterator) -> std::unique_ptr<BasicItem>
+    auto DotItem::constructNewItem(TextIterator &rule_iterator, ItemsCounter &items_counter)
+        -> std::unique_ptr<BasicItem>
     {
+        items_counter += item::DotItem;
+
         auto text = rule_iterator.getRemaining();
         const auto *saved_end = text.end();
-        auto bracket_index = text.openCloseFind(u8'(', u8')');
+        auto bracket_index = findDotItemEnd(rule_iterator, text);
 
-        if (not bracket_index.has_value()) {
-            throwUnterminatedDotItem(rule_iterator);
-        }
-
-        rule_iterator.setEnd(text.begin() + *bracket_index);
+        rule_iterator.setEnd(text.begin() + bracket_index);
 
         auto new_dot_item = std::make_unique<DotItem>(rule_iterator, id, analysis_shared, false);
+
         rule_iterator.setEnd(saved_end);
 
         return new_dot_item;
@@ -166,7 +173,7 @@ namespace cerb::lex::dot_item
     auto DotItem::constructString(TextIterator &rule_iterator, bool is_character, bool is_multiline)
         -> void
     {
-        checkStringConstructionAvailability(rule_iterator);
+        checkThereIsOnlySequence(rule_iterator, u8"char/string");
 
         // usage is safe, because checkStringConstructionAvailability checks that the last item
         // is sequence
@@ -190,13 +197,36 @@ namespace cerb::lex::dot_item
 
     auto DotItem::constructTerminal(TextIterator &rule_iterator) -> void
     {
-        checkSize(
-            rule_iterator, 0, u8"dot item with terminal must be empty", u8"delete other items");
+        checkNotEmpty(
+            rule_iterator, u8"dot item with terminal must be empty", u8"delete other items");
 
         auto &terminals = analysis_shared.terminals;
         auto sequence = Sequence{ {}, u8"\'", rule_iterator, analysis_shared };
 
         terminals.addString(std::move(sequence.getRef()), id);
+    }
+
+    auto DotItem::constructComment(TextIterator &rule_iterator) -> void
+    {
+        checkThereIsOnlySequence(rule_iterator, u8"comment");
+
+        auto *sequence = unsafeGetLastItemAs<Sequence>();
+        auto &string = sequence->getRef();
+        auto column_index = string.find(u8':');
+        auto &[single_line_comment, multiline_begin_comment, multiline_end_comment] =
+            analysis_shared.comment_tokens;
+
+        if (column_index == u8string_view::npos) {
+            single_line_comment = string;
+        } else {
+            auto comment_begin = string.substr(0, column_index);
+            auto comment_end = string.substr(column_index + 1);
+
+            multiline_begin_comment = comment_begin;
+            multiline_end_comment = comment_end;
+        }
+
+        items.pop_back();
     }
 
     auto DotItem::addRepetition(TextIterator &rule_iterator, Repetition new_repetition) -> void
@@ -257,19 +287,36 @@ namespace cerb::lex::dot_item
         }
     }
 
-    auto DotItem::checkStringConstructionAvailability(TextIterator &rule_iterator) -> void
+    auto DotItem::findDotItemEnd(TextIterator &rule_iterator, u8string_view repr) -> size_t
     {
-        if (items.empty() || dynamic_cast<Sequence *>(items.back().get()) == nullptr) {
-            throwUnableToApply(
-                rule_iterator,
-                u8"unable to apply char/string modifier, because there are not "
-                "any items or the last item is not a sequence",
-                u8"create sequence or do not apply string modifier to other items");
+        auto bracket_index = repr.openCloseFind(u8'(', u8')');
+
+        if (not bracket_index.has_value()) {
+            rule_iterator.throwException<DotItemException>(u8"unterminated dot item");
+            throw UnrecoverableError{ "unrecoverable error in DotItemType" };
         }
 
-        checkSize(
-            rule_iterator, 1, u8"dot item with string must contain only one item - sequence",
-            u8"delete other items");
+        return *bracket_index;
+    }
+
+    auto DotItem::checkThereIsOnlySequence(TextIterator &rule_iterator, u8string_view modifier)
+        -> void
+    {
+        if (items.empty() || dynamic_cast<Sequence *>(items.back().get()) == nullptr) {
+            auto message = fmt::format<u8"not sequence found to apply {} modifier">(modifier);
+
+            auto suggestion = fmt::format<
+                u8"create sequence or do not apply {} modifier to "
+                "other items">(modifier);
+
+            throwUnableToApply(rule_iterator, message, suggestion);
+        }
+
+        if (items.size() != 1) {
+            auto message =
+                fmt::format<u8"{} modifier, the number of items is more than 1">(modifier);
+            throwUnableToApply(rule_iterator, message);
+        }
     }
 
     auto DotItem::checkAbilityToCreatePrefixPostfix(TextIterator &rule_iterator) -> void
@@ -300,22 +347,13 @@ namespace cerb::lex::dot_item
         }
     }
 
-    auto DotItem::checkSize(
-        TextIterator &rule_iterator, size_t expected_size, u8string_view message,
-        u8string_view suggestion) -> void
+    auto DotItem::checkNotEmpty(
+        TextIterator &rule_iterator, u8string_view message, u8string_view suggestion) -> void
     {
-        if (items.size() != expected_size) {
-            throwUnexpectedSize(rule_iterator, message, suggestion);
+        if (not items.empty()) {
+            rule_iterator.throwException<DotItemException>(message, suggestion);
+            throw UnrecoverableError{ "unrecoverable error in dot item" };
         }
-    }
-
-    auto DotItem::throwUnexpectedSize(
-        TextIterator &rule_iterator,
-        u8string_view message,
-        u8string_view suggestion) -> void
-    {
-        rule_iterator.throwException<DotItemException>(message, suggestion);
-        throw UnrecoverableError{ "unrecoverable error in dot item" };
     }
 
     auto DotItem::throwUnableToApply(
@@ -327,12 +365,6 @@ namespace cerb::lex::dot_item
         auto converted_suggestion = fmt::format<u8"{}">(suggestion);
 
         rule_iterator.throwException<DotItemException>(message, converted_suggestion);
-        throw UnrecoverableError{ "unrecoverable error in DotItemType" };
-    }
-
-    auto DotItem::throwUnterminatedDotItem(TextIterator &rule_iterator) -> void
-    {
-        rule_iterator.throwException<DotItemException>(u8"unterminated dot item");
         throw UnrecoverableError{ "unrecoverable error in DotItemType" };
     }
 
