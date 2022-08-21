@@ -20,19 +20,7 @@ target_compile_definitions(
 target_precompile_headers(
         libcerberus-catch
         PUBLIC
-        <atomic>
-        <set> <thread>
-        <deque> <list>
-        <bitset> <map>
-        <string_view>
-        <cmath> <utility>
-        <vector> <string>
-        <initializer_list>
-        <algorithm> <array>
-        <numeric> <fmt/format.h>
-        <boost/test/unit_test.hpp>
-        <cerberus/debug/debug_file.hpp>
-        <boost/container/small_vector.hpp>
+        "pch.hpp"
 )
 
 set_source_files_properties(catch/runner.cpp PRIVATE
