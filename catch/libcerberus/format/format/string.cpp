@@ -7,7 +7,7 @@ using namespace std::string_view_literals;
 
 BOOST_AUTO_TEST_CASE(StringFormatting)
 {
-    BOOST_ASSERT(format<u8"{}">("Hello, "s) == u8"Hello, ");
-    BOOST_ASSERT(format<u8"{}">("World!"s) == u8"World!");
-    BOOST_ASSERT(format<u8"{}, {}!">("Hello"s, "World") == u8"Hello, World!");
+    BOOST_ASSERT(format<u8"{}">(u8"Hello, "s) == u8"Hello, ");
+    BOOST_ASSERT(format<u8"{}">(u8"World!"s) == u8"World!");
+    BOOST_ASSERT(format<u8"{}, {}!">(u8"Hello"s, u8"World") == u8"Hello, World!");
 }

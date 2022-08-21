@@ -4,7 +4,7 @@
 using namespace cerb::lex;
 using namespace cerb::text;
 
-BOOST_AUTO_TEST_CASE(LexicalAnalyzerUnion)
+BOOST_AUTO_TEST_CASE(LexicalAnalyzerUnion, *utf::depends_on("DotItemUnion"))
 {
     auto text = TextIterator{ u8R"(20 abz10 10abz)" };
     auto analyzer = LexicalAnalyzer{

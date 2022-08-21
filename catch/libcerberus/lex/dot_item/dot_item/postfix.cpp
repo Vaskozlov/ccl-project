@@ -11,7 +11,7 @@ BOOST_AUTO_TEST_CASE(TwoPostfixes)
 {
     auto shared = AnalysisShared{};
     auto dot_item = DotItem(TextIterator{ u8R"([a-z]+[_]p"test"p)" }, 0, shared);
-    BOOST_ATTRIBUTE_UNUSED auto &items = dot_item.getItems();
+    [[maybe_unused]] auto &items = dot_item.getItems();
 
     BOOST_ASSERT(not items[0]->hasPrefix());
     BOOST_ASSERT(not items[0]->hasPostfix());
@@ -19,7 +19,6 @@ BOOST_AUTO_TEST_CASE(TwoPostfixes)
     BOOST_ASSERT(items[1]->hasPostfix());
     BOOST_ASSERT(items[2]->hasPostfix());
 }
-
 
 BOOST_AUTO_TEST_CASE(WrongPostfixCreation)
 {
