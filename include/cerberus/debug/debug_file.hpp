@@ -5,4 +5,6 @@
 
 #define DEBUG_DECL [[maybe_unused]] auto
 
+namespace utf = boost::unit_test;
+
 #endif /* CERBERUS_PROJECT_DEBUG_FILE_HPP */
