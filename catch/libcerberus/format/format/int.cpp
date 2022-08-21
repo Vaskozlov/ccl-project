@@ -3,22 +3,18 @@
 
 using namespace cerb::fmt;
 
-// NOLINTBEGIN
+BOOST_AUTO_TEST_SUITE(IntFormatting)
 
-STRING_TEST
+BOOST_AUTO_TEST_CASE(OnlyIntFormatting)
 {
-    assertEqual(format<u8"{}">(0), u8"0");
-    assertEqual(format<u8"{}">(10), u8"10");
-    return {};
+    BOOST_ASSERT(format<u8"{}">(0) == u8"0");
+    BOOST_ASSERT(format<u8"{}">(10) == u8"10");
 }
-();
 
-STRING_TEST
+BOOST_AUTO_TEST_CASE(IntFormattingWithString)
 {
-    assertEqual(format<u8"Hello, {} World!">(-10), u8"Hello, -10 World!");
-    assertEqual(format<u8"Hello, {} World! {}">(-10, 100), u8"Hello, -10 World! 100");
-    return {};
+    BOOST_ASSERT(format<u8"Hello, {} World!">(-10) == u8"Hello, -10 World!");
+    BOOST_ASSERT(format<u8"Hello, {} World! {}">(-10, 100) == u8"Hello, -10 World! 100");
 }
-();
 
-// NOLINTEND
+BOOST_AUTO_TEST_SUITE_END()

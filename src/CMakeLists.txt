@@ -14,3 +14,9 @@ target_link_libraries(
         cerberus
         fmt::fmt
 )
+
+target_precompile_headers(
+        cerberus
+        PUBLIC
+        "pch.hpp"
+)

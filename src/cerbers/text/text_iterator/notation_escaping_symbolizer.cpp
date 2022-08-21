@@ -72,7 +72,7 @@ namespace cerb::text
     {
         using namespace std::string_view_literals;
 
-        text_iterator.template throwException<NotationEscapingSymbolizerException>(
+        text_iterator.throwException<NotationEscapingSymbolizerException>(
             u8"character literal overflow"sv);
     }
 
@@ -85,7 +85,7 @@ namespace cerb::text
 
         auto suggestion_message = createSuggestionNotEnoughChars(chars_count);
 
-        text_iterator.template throwException<NotationEscapingSymbolizerException>(
+        text_iterator.throwException<NotationEscapingSymbolizerException>(
             exception_message, suggestion_message);
     }
 

@@ -50,7 +50,7 @@ namespace cerb::lex::dot_item
             parseRule(rule_iterator_);
         }
 
-        [[nodiscard]] auto getId() const -> size_t
+        [[nodiscard]] auto getId() const noexcept -> size_t
         {
             return id;
         }
@@ -80,12 +80,9 @@ namespace cerb::lex::dot_item
         [[nodiscard]] static auto
             scanItem(const BasicItem *item, TextIterator &text_iterator, Token &token) -> bool;
 
-        auto parseRule(TextIterator &rule_iterator) -> void;
+        [[nodiscard]] static auto movedToTheNextChar(TextIterator &rule_iterator) -> bool;
 
-        [[nodiscard]] static auto movedToTheNextChar(TextIterator &rule_iterator) -> bool
-        {
-            return not isEoF(rule_iterator.nextRawChar());
-        }
+        auto parseRule(TextIterator &rule_iterator) -> void;
 
         auto recognizeAction(TextIterator &rule_iterator, ItemsCounter &counter) -> void;
 

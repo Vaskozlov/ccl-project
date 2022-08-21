@@ -3,13 +3,16 @@
 
 using namespace cerb;
 
-static_assert(lor(true) == true);
-static_assert(lor(false) == false);
+BOOST_AUTO_TEST_CASE(LogicalOr)
+{
+    BOOST_STATIC_ASSERT(lor(true));
+    BOOST_STATIC_ASSERT(not lor(false));
 
-static_assert(lor(true, true) == true);
-static_assert(lor(true, false) == true);
-static_assert(lor(false, false) == false);
+    BOOST_STATIC_ASSERT(lor(true, true));
+    BOOST_STATIC_ASSERT(lor(true, false));
+    BOOST_STATIC_ASSERT(not lor(false, false));
 
-static_assert(lor(true, true, true) == true);
-static_assert(lor(true, true, false) == true);
-static_assert(lor(false, false, false) == false);
+    BOOST_STATIC_ASSERT(lor(true, true, true));
+    BOOST_STATIC_ASSERT(lor(true, true, false));
+    BOOST_STATIC_ASSERT(not lor(false, false, false));
+}

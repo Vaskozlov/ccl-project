@@ -6,88 +6,70 @@ using namespace cerb::text;
 using namespace cerb::lex::dot_item;
 
 // NOLINTNEXTLINE
-auto shared = AnalysisShared{};
+static auto shared = AnalysisShared{};
 
-// NOLINTNEXTLINE
-RUNTIME_TEST
-{
-    auto exception_accumulator = TextIterator::ExceptionAccumulator{};
-    auto text_iterator = TextIterator{ u8R"("")", &exception_accumulator };
-    text_iterator.nextRawChar();
+BOOST_AUTO_TEST_SUITE(DotItemSequence)
 
-    auto string_item = Sequence({}, u8"\"", text_iterator, shared);
-    const auto &string = string_item.get();
-
-    assertTrue(string.empty());
-    assertEqual(exception_accumulator.getWarnings().size(), 1_ZU);
-
-    return {};
-}
-();
-
-// NOLINTNEXTLINE
-RUNTIME_TEST
+BOOST_AUTO_TEST_CASE(SequenceWithOneCharBegin)
 {
     auto text_iterator = TextIterator{ u8R"("Hello, \"World\"!")" };
     text_iterator.nextRawChar();
 
     auto string_item = Sequence({}, u8"\"", text_iterator, shared);
-    const auto &string = string_item.get();
+    DEBUG_DECL &&string = string_item.get();
 
-    assertEqual(string, u8R"(Hello, "World"!)");
-
-    return {};
+    BOOST_ASSERT(string == u8R"(Hello, "World"!)");
+    BOOST_ASSERT(cerb::isEoF(text_iterator.nextRawChar()));
 }
-();
 
-// NOLINTNEXTLINE
-RUNTIME_TEST
+BOOST_AUTO_TEST_CASE(SequenceWithTreeCharBegin)
 {
     auto text_iterator = TextIterator{ u8"\"\"\"Hello,\n    \"World\"!\"\"\"" };
     text_iterator.nextRawChar();
 
     auto string_item = Sequence({ .multiline = true }, u8R"(""")", text_iterator, shared);
-    const auto &string = string_item.get();
+    DEBUG_DECL &&string = string_item.get();
 
-    assertEqual(string, u8"Hello,\n    \"World\"!");
-    return {};
+    BOOST_ASSERT(string == u8"Hello,\n    \"World\"!");
+    BOOST_ASSERT(cerb::isEoF(text_iterator.nextRawChar()));
 }
-();
 
-// NOLINTNEXTLINE
-RUNTIME_TEST
+BOOST_AUTO_TEST_CASE(UnterminatedSequence)
 {
     auto text_iterator = TextIterator{ u8R"("Hello, World!)" };
     text_iterator.nextRawChar();
 
-    try {
-        UNUSED_DECL Sequence({}, u8"\"", text_iterator, shared);
-        assertTrue(false);
-    } catch (const SequenceException &exception) {
-        assertEqual(exception.getColumn(), 1_ZU);// NOLINT
-        assertEqual(exception.getMessage(), u8"unterminated sequence");
-    }
-
-    return {};
+    BOOST_CHECK_EXCEPTION(
+        Sequence({}, u8"\"", text_iterator, shared),
+        SequenceException,
+        []([[maybe_unused]] const SequenceException &exception) {
+            {
+                BOOST_ASSERT(exception.getColumn() == 1);
+                BOOST_ASSERT(exception.getMessage() == u8"unterminated sequence");
+                return true;
+            }
+        });
 }
-();
 
-// NOLINTNEXTLINE
-RUNTIME_TEST
+BOOST_AUTO_TEST_CASE(SequenceReachedNewLine)
 {
     auto text_iterator = TextIterator{ u8"\"Hello, World!\n\"" };
     text_iterator.nextRawChar();
 
-    try {
-        UNUSED_DECL Sequence({}, u8"\"", text_iterator, shared);
-        assertTrue(false);
-    } catch (const SequenceException &exception) {
-        assertEqual(exception.getColumn(), 1_ZU);// NOLINT
-        assertEqual(
-            exception.getMessage(), u8"new line is reached, but sequence has not been terminated");
-        assertEqual(exception.getSuggestion(), u8"use multiline sequence or close it with `\"`");
-    }
-
-    return {};
+    BOOST_CHECK_EXCEPTION(
+        Sequence({}, u8"\"", text_iterator, shared),
+        SequenceException,
+        []([[maybe_unused]] const SequenceException &exception) {
+            {
+                BOOST_ASSERT(exception.getColumn() == 1);
+                BOOST_ASSERT(
+                    exception.getMessage() ==
+                    u8"new line is reached, but sequence has not been terminated");
+                BOOST_ASSERT(
+                    exception.getSuggestion() == u8"use multiline sequence or close it with `\"`");
+                return true;
+            }
+        });
 }
-();
+
+BOOST_AUTO_TEST_SUITE_END()

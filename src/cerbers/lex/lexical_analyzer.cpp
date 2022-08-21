@@ -2,26 +2,13 @@
 
 namespace cerb::lex
 {
-    auto LexicalAnalyzer::getTokenizer(TextIterator &text_iterator) const
-        -> coro::Generator<std::optional<Token>>
+    auto LexicalAnalyzer::yield(TextIterator &text_iterator) const -> Token
     {
-        while (true) {
-            co_yield yield(text_iterator);
+        if (text_iterator.isEnd()) {
+            return Token{};
         }
-    }
 
-    LexicalAnalyzer::LexicalAnalyzer(
-        const std::initializer_list<std::pair<size_t, u8string_view>> &rules_,
-        u8string_view filename, CommentTokens comment_tokens_)
-    {
-        for (auto [id, rule] : rules_) {
-            errors += createDotItem(rule, id, comment_tokens_, filename);
-        }
-    }
-
-    auto LexicalAnalyzer::yield(TextIterator &text_iterator) const -> std::optional<Token>
-    {
-        for (const auto &item : items) {
+        for (auto &&item : items) {
             text_iterator.skipCommentsAndLayout();
 
             auto special_token = shared.getSpecialToken(text_iterator);
@@ -39,7 +26,17 @@ namespace cerb::lex
             }
         }
 
-        return std::nullopt;
+        text_iterator.throwException<LexicalAnalysisException>(u8"unrecognizable token");
+        throw UnrecoverableError{ "unrecognizable token" };// TODO: return token with error id
+    }
+
+    LexicalAnalyzer::LexicalAnalyzer(
+        const std::initializer_list<std::pair<size_t, u8string_view>> &rules_,
+        u8string_view filename, CommentTokens comment_tokens_)
+    {
+        for (auto [id, rule] : rules_) {
+            errors += createDotItem(rule, id, comment_tokens_, filename);
+        }
     }
 
     auto LexicalAnalyzer::createDotItem(

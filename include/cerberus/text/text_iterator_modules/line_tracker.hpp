@@ -9,12 +9,12 @@ namespace cerb::text::module
     class LineTracker
     {
     public:
-        CERBLIB_DECL auto get() const -> const u8string_view &
+        CERBLIB_DECL auto get() const noexcept -> const u8string_view &
         {
             return line;
         }
 
-        constexpr auto next(char32_t chr) -> void
+        constexpr auto next(char32_t chr) noexcept -> void
         {
             if (new_line_passed) {
                 updateLine();
@@ -26,15 +26,15 @@ namespace cerb::text::module
             }
         }
 
-        constexpr explicit LineTracker(const u8string_view &text_)
-          : text{ text_ }, line{ text.begin(), std::min(text.size(), text.find('\n')) }
+        constexpr explicit LineTracker(const u8string_view &text_) noexcept
+          : text(text_), line(text.begin(), std::min(text.size(), text.find<UNSAFE>('\n')))
         {}
 
     private:
         constexpr auto updateLine() -> void
         {
             const auto *new_line_begin = std::min(text.end(), line.end() + 1);
-            auto end_offset = std::min(text.size(), text.find(U'\n', new_line_begin));
+            auto end_offset = std::min(text.size(), text.find<UNSAFE>(U'\n', new_line_begin));
 
             line = { new_line_begin, text.begin() + end_offset };
         }

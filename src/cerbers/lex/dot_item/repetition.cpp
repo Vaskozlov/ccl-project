@@ -57,7 +57,7 @@ namespace cerb::lex::dot_item
             u8"the beginning of the repetition ({}) is greater than the end "
             "({})">(from, to);
 
-        text_iterator.template throwException<RepetitionException>(message);
+        text_iterator.throwException<RepetitionException>(message);
         throw UnrecoverableError{ "unrecoverable error in Repetition" };
     }
 
@@ -66,19 +66,19 @@ namespace cerb::lex::dot_item
     {
         auto message = fmt::format<u8"expected a number, but found `{}`">(chr);
 
-        text_iterator.template throwException<RepetitionException>(message);
+        text_iterator.throwException<RepetitionException>(message);
         throw UnrecoverableError{ "unrecoverable error in Repetition" };
     }
 
     auto Repetition::throwUnexpectedTermination(text::TextIterator &text_iterator) -> void
     {
-        text_iterator.template throwException<RepetitionException>(u8"unexpected termination"_sv);
+        text_iterator.throwException<RepetitionException>(u8"unexpected termination"_sv);
         throw UnrecoverableError{ "unrecoverable error in Repetition" };
     }
 
     auto Repetition::throwRangeBeginException(text::TextIterator &text_iterator) -> void
     {
-        text_iterator.template throwException<RepetitionException>(
+        text_iterator.throwException<RepetitionException>(
             u8"expected '{' at the beginning of repetition range"_sv);
         throw UnrecoverableError{ "unrecoverable error in Repetition" };
     }

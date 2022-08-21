@@ -4,16 +4,13 @@
 using namespace cerb;
 using namespace cerb::analysis;
 
-RUNTIME_TEST
+BOOST_AUTO_TEST_CASE(AnalysisExceptionAccumulator)
 {
     auto accumulator = ExceptionAccumulator<CerberusException>{};
 
     addError(&accumulator, CerberusException("CerberusException"));
     addWarning(&accumulator, LogicError("Logic error"));
 
-    assertEqual(accumulator.getErrors().size(), 1_ZU);
-    assertEqual(accumulator.getWarnings().size(), 1_ZU);
-
-    return {};
+    BOOST_CHECK_EQUAL(accumulator.getErrors().size(), 1);
+    BOOST_CHECK_EQUAL(accumulator.getWarnings().size(), 1);
 }
-();

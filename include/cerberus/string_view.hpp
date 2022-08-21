@@ -3,12 +3,13 @@
 
 #include <algorithm>
 #include <cerberus/cerberus.hpp>
+#include <optional>
 #include <string_view>
 
 namespace cerb
 {
     template<CharacterArray T>
-    constexpr auto strlen(const T &str) -> size_t
+    constexpr auto strlen(const T &str) noexcept -> size_t
     {
         if constexpr (std::is_pointer_v<T>) {
             if (str == nullptr) {
@@ -41,68 +42,68 @@ namespace cerb
         using const_iterator = iterator;
         using reverse_iterator = std::reverse_iterator<iterator>;
 
-        CERBLIB_DECL auto size() const -> size_t
+        CERBLIB_DECL auto size() const noexcept -> size_t
         {
             return length;
         }
 
-        CERBLIB_DECL auto empty() const -> bool
+        CERBLIB_DECL auto empty() const noexcept -> bool
         {
             return size() == 0;
         }
 
-        CERBLIB_DECL auto data() const -> pointer
+        CERBLIB_DECL auto data() const noexcept -> pointer
         {
             return begin();
         }
 
-        CERBLIB_DECL auto begin() const -> iterator
+        CERBLIB_DECL auto begin() const noexcept -> iterator
         {
             return string;
         }
 
-        CERBLIB_DECL auto end() const -> iterator
+        CERBLIB_DECL auto end() const noexcept -> iterator
         {
             return string + length;
         }
 
-        CERBLIB_DECL auto cbegin() const -> iterator
+        CERBLIB_DECL auto cbegin() const noexcept -> iterator
         {
             return string;
         }
 
-        CERBLIB_DECL auto cend() const -> iterator
+        CERBLIB_DECL auto cend() const noexcept -> iterator
         {
             return string + length;
         }
 
-        CERBLIB_DECL auto rbegin() const -> reverse_iterator
+        CERBLIB_DECL auto rbegin() const noexcept -> reverse_iterator
         {
             return reverse_iterator{ end() };
         }
 
-        CERBLIB_DECL auto rend() const -> reverse_iterator
+        CERBLIB_DECL auto rend() const noexcept -> reverse_iterator
         {
             return reverse_iterator{ begin() };
         }
 
-        CERBLIB_DECL auto crbegin() const -> reverse_iterator
+        CERBLIB_DECL auto crbegin() const noexcept -> reverse_iterator
         {
             return reverse_iterator{ end() };
         }
 
-        CERBLIB_DECL auto crend() const -> reverse_iterator
+        CERBLIB_DECL auto crend() const noexcept -> reverse_iterator
         {
             return reverse_iterator{ begin() };
         }
 
-        CERBLIB_DECL auto substr(size_t first) const -> BasicStringView
+        CERBLIB_DECL auto substr(size_t first) const noexcept -> BasicStringView
         {
             first = first > size() ? size() : first;
             return { begin() + first, begin() + size() };
         }
 
-        CERBLIB_DECL auto substr(size_t first, size_t len) const -> BasicStringView
+        CERBLIB_DECL auto substr(size_t first, size_t len) const noexcept -> BasicStringView
         {
             auto last = first + len;
             first = first > size() ? size() : first;
@@ -110,7 +111,8 @@ namespace cerb
             return { begin() + first, begin() + last };
         }
 
-        CERBLIB_DECL auto find(CharT chr, size_t offset = 0) const -> size_t
+        CERBLIB_UNSAFE_VERSION
+        CERBLIB_DECL auto find(CharT chr, size_t offset = 0) const noexcept -> size_t
         {
             if (offset >= length) {
                 return npos;
@@ -120,7 +122,20 @@ namespace cerb
             return elem == end() ? npos : distance(begin(), elem);
         }
 
-        CERBLIB_DECL auto find(CharT chr, iterator from) const -> size_t
+        CERBLIB_SAFE_VERSION
+        CERBLIB_DECL auto find(CharT chr, size_t offset = 0) const noexcept -> std::optional<size_t>
+        {
+            auto result = find<UNSAFE>(chr, offset);
+
+            if (result == npos) {
+                return std::nullopt;
+            }
+
+            return result;
+        }
+
+        CERBLIB_UNSAFE_VERSION
+        CERBLIB_DECL auto find(CharT chr, iterator from) const noexcept -> size_t
         {
             if (from >= end()) {
                 return npos;
@@ -130,7 +145,20 @@ namespace cerb
             return elem == end() ? npos : distance(begin(), elem);
         }
 
-        CERBLIB_DECL auto openCloseFind(CharT open, CharT close) const -> size_t
+        CERBLIB_SAFE_VERSION
+        CERBLIB_DECL auto find(CharT chr, iterator from) const noexcept -> std::optional<size_t>
+        {
+            auto result = find<UNSAFE>(chr, from);
+
+            if (result == npos) {
+                return std::nullopt;
+            }
+
+            return result;
+        }
+
+        CERBLIB_UNSAFE_VERSION
+        CERBLIB_DECL auto openCloseFind(CharT open, CharT close) const noexcept -> size_t
         {
             auto passed_pairs = static_cast<size_t>(0);
 
@@ -147,7 +175,21 @@ namespace cerb
             return distance(begin(), elem);
         }
 
-        CERBLIB_DECL auto rfind(CharT chr, size_t offset = 0) const -> size_t
+        CERBLIB_SAFE_VERSION
+        CERBLIB_DECL auto openCloseFind(CharT open, CharT close) const noexcept
+            -> std::optional<size_t>
+        {
+            auto result = openCloseFind<UNSAFE>(open, close);
+
+            if (result == npos) {
+                return std::nullopt;
+            }
+
+            return result;
+        }
+
+        CERBLIB_UNSAFE_VERSION
+        CERBLIB_DECL auto rfind(CharT chr, size_t offset = 0) const noexcept -> size_t
         {
             if (offset >= length) {
                 return npos;
@@ -157,11 +199,28 @@ namespace cerb
             return elem == rend() ? npos : distance(elem, rend()) - 1;
         }
 
-        CERBLIB_DECL auto operator[](size_t index) const -> CharT
+        CERBLIB_SAFE_VERSION
+        CERBLIB_DECL auto rfind(CharT chr, size_t offset = 0) const noexcept
+            -> std::optional<size_t>
+        {
+            auto result = rfind<UNSAFE>(chr, offset);
+
+            if (result == npos) {
+                return std::nullopt;
+            }
+
+            return result;
+        }
+
+        CERBLIB_DECL auto startsWith(const BasicStringView &str) const noexcept -> bool
+        {
+            return substr(0, str.size()) == str;
+        }
+
+        CERBLIB_DECL auto operator[](size_t index) const noexcept -> CharT
         {
             return string[index];
         }
-
 
         CERBLIB_DECL auto at(size_t index) const -> CharT
         {
@@ -177,27 +236,28 @@ namespace cerb
             return { string, length };
         }
 
-        CERBLIB_DECL explicit operator std::basic_string_view<CharT>() const
+        CERBLIB_DECL explicit operator std::basic_string_view<CharT>() const noexcept
         {
             return { string, length };
         }
 
-        CERBLIB_DECL auto operator==(const CharT *other) const -> bool
+        CERBLIB_DECL auto operator==(const CharT *other) const noexcept -> bool
         {
             return this->operator==(BasicStringView{ other });
         }
 
-        CERBLIB_DECL auto operator==(const StringType<CharT> auto &other) const -> bool
+        CERBLIB_DECL auto operator==(const StringType<CharT> auto &other) const noexcept -> bool
         {
             return std::ranges::equal(*this, other);
         }
 
-        CERBLIB_DECL auto operator<=>(const CharT *other) const -> bool
+        CERBLIB_DECL auto operator<=>(const CharT *other) const noexcept -> bool
         {
             return this->operator<=>(BasicStringView{ other });
         }
 
-        CERBLIB_DECL auto operator<=>(const StringType<CharT> auto &other) const -> decltype(auto)
+        CERBLIB_DECL auto operator<=>(const StringType<CharT> auto &other) const noexcept
+            -> std::weak_ordering
         {
             auto max_length = std::min(size(), std::size(other));
 
@@ -213,25 +273,25 @@ namespace cerb
         BasicStringView() = default;
 
         template<size_t N>
-        constexpr explicit BasicStringView(const std::array<CharT, N> &array_)
+        constexpr explicit BasicStringView(const std::array<CharT, N> &array_) noexcept
           : string{ array_.data() }, length{ array_.size() }
         {}
 
-        constexpr BasicStringView(pointer string_, size_t length_)
+        constexpr BasicStringView(pointer string_, size_t length_) noexcept
           : string{ string_ }, length{ length_ }
         {}
 
-        constexpr BasicStringView(iterator first, iterator last)
+        constexpr BasicStringView(iterator first, iterator last) noexcept
           : string{ first }, length{ distance(first, last) }
         {}
 
         // NOLINTNEXTLINE
-        constexpr BasicStringView(const CharacterArray auto &str)
+        constexpr BasicStringView(const CharacterArray auto &str) noexcept
           : string{ str }, length{ strlen(str) }
         {}
 
         // NOLINTNEXTLINE
-        constexpr BasicStringView(const StringType<CharT> auto &str)
+        constexpr BasicStringView(const StringType<CharT> auto &str) noexcept
           : string{ std::data(str) }, length{ std::size(str) }
         {}
 
@@ -239,7 +299,7 @@ namespace cerb
 
     private:
         template<typename T>
-        CERBLIB_DECL static auto distance(T first, T last) -> size_t
+        CERBLIB_DECL static auto distance(T first, T last) noexcept -> size_t
         {
             return static_cast<size_t>(std::distance(first, last));
         }

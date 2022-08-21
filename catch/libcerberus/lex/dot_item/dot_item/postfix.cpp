@@ -5,45 +5,39 @@ using namespace cerb::lex;
 using namespace cerb::text;
 using namespace cerb::lex::dot_item;
 
-// NOLINTNEXTLINE
-RUNTIME_TEST
+BOOST_AUTO_TEST_SUITE(DotItemPostfix)
+
+BOOST_AUTO_TEST_CASE(TwoPostfixes)
 {
     auto shared = AnalysisShared{};
     auto dot_item = DotItem(TextIterator{ u8R"([a-z]+[_]p"test"p)" }, 0, shared);
-    const auto &items = dot_item.getItems();
+    BOOST_ATTRIBUTE_UNUSED auto &items = dot_item.getItems();
 
-    assertTrue(not items[0]->hasPrefix());
-    assertTrue(not items[0]->hasPostfix());
+    BOOST_ASSERT(not items[0]->hasPrefix());
+    BOOST_ASSERT(not items[0]->hasPostfix());
 
-    assertTrue(items[1]->hasPostfix());
-    assertTrue(items[2]->hasPostfix());
-
-    return {};
+    BOOST_ASSERT(items[1]->hasPostfix());
+    BOOST_ASSERT(items[2]->hasPostfix());
 }
-();
 
-// NOLINTNEXTLINE
-RUNTIME_TEST
+
+BOOST_AUTO_TEST_CASE(WrongPostfixCreation)
 {
     auto shared = AnalysisShared{};
 
-    try {
-        auto dot_item = DotItem(TextIterator{ u8R"([a-z]+[_]p"test")" }, 0, shared);
-        assertTrue(false);
-    } catch (const cerb::lex::dot_item::DotItemException &exception) {
-        assertEqual(exception.getColumn(), 16_ZU);// NOLINT
-
-        assertEqual(
-            exception.getMessage(),
-            u8"unable to apply with reason: item without postfix modifier exists after items with "
-            u8"them");
-
-        assertEqual(
-            exception.getSuggestion(),
-            u8"add postfix modifier to the last item\n"
-            u8"[a-z]+[_]p\"test\"p");
-    }
-
-    return {};
+    BOOST_CHECK_EXCEPTION(
+        DotItem(TextIterator{ u8R"([a-z]+[_]p"test")" }, 0, shared), DotItemException,
+        [](const DotItemException &exception) {
+            BOOST_CHECK_EQUAL(exception.getColumn(), 16);
+            BOOST_ASSERT(
+                exception.getMessage() ==
+                u8"unable to apply with "
+                "reason: item without postfix modifier exists after items with them");
+            BOOST_ASSERT(
+                exception.getSuggestion() ==
+                u8"add postfix modifier to the last item\n[a-z]+[_]p\"test\"p");
+            return true;
+        });
 }
-();
+
+BOOST_AUTO_TEST_SUITE_END()

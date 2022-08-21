@@ -109,7 +109,7 @@ namespace cerb::lex::dot_item
         auto error_message = fmt::format<u8"unable to create {}: {}">(item_name, message);
         auto error_suggestion = fmt::format<u8"{}">(suggestion);
 
-        text_iterator.template throwException<DotItemException>(error_message, error_suggestion);
+        text_iterator.throwException<DotItemException>(error_message, error_suggestion);
         throw UnrecoverableError{ "unrecoverable error in DotItemType" };
     }
 }// namespace cerb::lex::dot_item

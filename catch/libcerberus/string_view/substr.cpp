@@ -4,20 +4,13 @@
 using namespace cerb::string_view_literals;
 using namespace std::string_view_literals;
 
-CONSTEXPR_TEST
+BOOST_AUTO_TEST_CASE(StringViewSubstr)
 {
-    auto std_string = "Hello, World!"sv;
-    auto cerb_string = "Hello, World!"_sv;
+    DEBUG_DECL std_string = "Hello, World!"sv;
+    DEBUG_DECL cerb_string = "Hello, World!"_sv;
 
-    // NOLINTBEGIN
-
-    assertTrue(cerb_string.substr(0, 3) == std_string.substr(0, 3));
-    assertTrue(cerb_string.substr(3, 3) == std_string.substr(3, 3));
-    assertTrue(cerb_string.substr(3, 20) == std_string.substr(3, 20));
-    assertTrue(cerb_string.substr(10, 20) == std_string.substr(10, 20));
-
-    // NOLINTEND
-
-    return {};
+    BOOST_ASSERT(cerb_string.substr(0, 3) == std_string.substr(0, 3));
+    BOOST_ASSERT(cerb_string.substr(3, 3) == std_string.substr(3, 3));
+    BOOST_ASSERT(cerb_string.substr(3, 20) == std_string.substr(3, 20));
+    BOOST_ASSERT(cerb_string.substr(10, 20) == std_string.substr(10, 20));
 }
-();

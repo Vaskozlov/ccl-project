@@ -6,7 +6,7 @@ namespace cerb::lex::dot_item
 
     auto DotItem::scanIteration(TextIterator &text_iterator, Token &token) const -> bool
     {
-        for (const auto &item : items) {
+        for (auto &&item : items) {
             if (not scanItem(item.get(), text_iterator, token)) {
                 return false;
             }
@@ -39,6 +39,11 @@ namespace cerb::lex::dot_item
         }
 
         postCheck(rule_iterator, counter);
+    }
+
+    auto DotItem::movedToTheNextChar(TextIterator &rule_iterator) -> bool
+    {
+        return not isEoF(rule_iterator.nextRawChar());
     }
 
     auto DotItem::recognizeAction(TextIterator &rule_iterator, ItemsCounter &counter) -> void
@@ -127,11 +132,11 @@ namespace cerb::lex::dot_item
         const auto *saved_end = text.end();
         auto bracket_index = text.openCloseFind(u8'(', u8')');
 
-        if (bracket_index == u8string_view::npos) {
+        if (not bracket_index.has_value()) {
             throwUnterminatedDotItem(rule_iterator);
         }
 
-        rule_iterator.setEnd(text.begin() + bracket_index);
+        rule_iterator.setEnd(text.begin() + *bracket_index);
 
         auto new_dot_item = std::make_unique<DotItem>(rule_iterator, id, analysis_shared, false);
         rule_iterator.setEnd(saved_end);
@@ -309,7 +314,7 @@ namespace cerb::lex::dot_item
         u8string_view message,
         u8string_view suggestion) -> void
     {
-        rule_iterator.template throwException<DotItemException>(message, suggestion);
+        rule_iterator.throwException<DotItemException>(message, suggestion);
         throw UnrecoverableError{ "unrecoverable error in dot item" };
     }
 
@@ -321,7 +326,7 @@ namespace cerb::lex::dot_item
         auto message = fmt::format<u8"unable to apply with reason: {}">(reason);
         auto converted_suggestion = fmt::format<u8"{}">(suggestion);
 
-        rule_iterator.template throwException<DotItemException>(message, converted_suggestion);
+        rule_iterator.throwException<DotItemException>(message, converted_suggestion);
         throw UnrecoverableError{ "unrecoverable error in DotItemType" };
     }
 
@@ -338,7 +343,7 @@ namespace cerb::lex::dot_item
             u8"Use `\"` for string, `'` for terminal symbol, `[` for unions, `(` for dot "
             "items"_sv;
 
-        rule_iterator.template throwException<DotItemException>(message, suggestion);
+        rule_iterator.throwException<DotItemException>(message, suggestion);
         throw UnrecoverableError{ "unrecoverable error in DotItemType" };
     }
 }// namespace cerb::lex::dot_item

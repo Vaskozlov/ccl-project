@@ -90,13 +90,13 @@ namespace cerb::lex::dot_item
 
     auto Union::throwUnterminatedUnion(TextIterator &rule_iterator) -> void
     {
-        rule_iterator.template throwException<UnionException>(u8"unterminated union item"_sv);
+        rule_iterator.throwException<UnionException>(u8"unterminated union item"_sv);
         throw UnrecoverableError{ "unrecoverable error in UnionType" };
     }
 
     auto Union::throwUnterminatedRangeException(TextIterator &rule_iterator) -> void
     {
-        rule_iterator.template throwException<UnionException>(u8"unterminated range"_sv);
+        rule_iterator.throwException<UnionException>(u8"unterminated range"_sv);
         throw UnrecoverableError{ "unrecoverable error in UnionType" };
     }
 
@@ -106,7 +106,7 @@ namespace cerb::lex::dot_item
             fmt::format<u8"expected `[` at the beginning of union item declaration, got {}">(
                 rule_iterator.getCurrentChar());
 
-        rule_iterator.template throwException<UnionException>(message);
+        rule_iterator.throwException<UnionException>(message);
         throw UnrecoverableError{ "unrecoverable error in UnionType" };
     }
 }// namespace cerb::lex::dot_item

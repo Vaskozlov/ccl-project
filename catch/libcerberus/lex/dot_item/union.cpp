@@ -6,52 +6,48 @@ using namespace cerb::text;
 using namespace cerb::lex::dot_item;
 
 // NOLINTNEXTLINE
-auto shared = AnalysisShared{};
+static auto shared = AnalysisShared{};
 
-// NOLINTNEXTLINE
-RUNTIME_TEST
+BOOST_AUTO_TEST_SUITE(DotItemUnion)
+
+BOOST_AUTO_TEST_CASE(UnionWithOneElem)
 {
     auto text_iterator = TextIterator{ u8"[a]" };
     text_iterator.nextRawChar();
 
     auto union_item = Union(text_iterator, shared);
-    const auto &bitset = union_item.get();
+    DEBUG_DECL &&bitset = union_item.get();
 
     for (char32_t i = 0; i < 127; ++i) {// NOLINT
-        assertEqual(bitset.at(i), i == 'a');
+        BOOST_ASSERT(bitset.at(i) == (i == 'a'));
     }
-
-    return {};
 }
-();
 
-// NOLINTNEXTLINE
-RUNTIME_TEST
+BOOST_AUTO_TEST_CASE(UnionWithMultipleElems)
 {
     auto text_iterator = TextIterator{ u8"[a-z_]" };
     text_iterator.nextRawChar();
 
     auto union_item = Union(text_iterator, shared);
-    const auto &bitset = union_item.get();
+    DEBUG_DECL &&bitset = union_item.get();
 
     for (char32_t i = '\0'; i != '_'; ++i) {
-        assertFalse(bitset.at(i));
+        BOOST_ASSERT(not bitset.at(i));
     }
 
-    assertTrue(bitset.at('_'));
+    BOOST_ASSERT(bitset.at('_'));
 
     for (char32_t i = '_' + 1; i != 'a'; ++i) {
-        assertFalse(bitset.at(i));
+        BOOST_ASSERT(not bitset.at(i));
     }
 
     for (char32_t i = 'a'; i <= 'z'; ++i) {
-        assertTrue(bitset.at(i));
+        BOOST_ASSERT(bitset.at(i));
     }
 
     for (char32_t i = 'z' + 1; i != '\x7F'; ++i) {
-        assertFalse(bitset.at(i));
+        BOOST_ASSERT(not bitset.at(i));
     }
-
-    return {};
 }
-();
+
+BOOST_AUTO_TEST_SUITE_END()

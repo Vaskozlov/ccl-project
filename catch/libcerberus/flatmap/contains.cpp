@@ -1,28 +1,18 @@
 #include <cerberus/debug/debug_file.hpp>
 #include <cerberus/flatmap.hpp>
 
-// NOLINTBEGIN
-
-
-using Flatmap = cerb::Flatmap<int, int, 10>;
-template class cerb::Flatmap<int, int, 10>;
-
-CONSTEXPR_TEST
+BOOST_AUTO_TEST_CASE(FlatmapContains)
 {
-    auto flatmap = Flatmap{ { 10, 20 }, { 20, 30 }, { 30, 40 } };
+    static constexpr auto flatmap =
+        cerb::Flatmap<int, int, 10>{ { 10, 20 }, { 20, 30 }, { 30, 40 } };// NOLINT
 
-    assertEqual(flatmap.size(), 3_ZU);
-    assertEqual(flatmap.capacity(), 10_ZU);
+    BOOST_CHECK_EQUAL(flatmap.size(), 3);
+    BOOST_CHECK_EQUAL(flatmap.capacity(), 10);
 
-    assertTrue(flatmap.contains(10));
-    assertTrue(flatmap.contains(20));
-    assertTrue(flatmap.contains(30));
+    BOOST_ASSERT(flatmap.contains(10));
+    BOOST_ASSERT(flatmap.contains(20));
+    BOOST_ASSERT(flatmap.contains(30));
 
-    assertTrue(!flatmap.contains(0));
-    assertTrue(!flatmap.contains(40));
-
-    return {};
+    BOOST_ASSERT(not flatmap.contains(0));
+    BOOST_ASSERT(not flatmap.contains(40));
 }
-();
-
-// NOLINTEND

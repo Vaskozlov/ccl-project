@@ -4,51 +4,43 @@
 using namespace cerb::text;
 using namespace cerb::lex::dot_item;
 
-// NOLINTBEGIN
+BOOST_AUTO_TEST_SUITE(DotItemRepetition)
 
-RUNTIME_TEST
+BOOST_AUTO_TEST_CASE(RepetitionBasicCase)
 {
     auto text_iterator = TextIterator{ u8"{10, 20}" };
     text_iterator.nextRawChar();
 
-    auto repetition = Repetition{ text_iterator };
-    assertEqual(repetition.from, 10_ZU);
-    assertEqual(repetition.to, 20_ZU);
-
-    return {};
+    DEBUG_DECL repetition = Repetition{ text_iterator };
+    BOOST_ASSERT(repetition.from == 10);
+    BOOST_ASSERT(repetition.to == 20);
 }
-();
 
-RUNTIME_TEST
+BOOST_AUTO_TEST_CASE(RepetitionEmptyFirstArgument)
 {
     auto text_iterator = TextIterator{ u8"{, 1}" };
     text_iterator.nextRawChar();
 
-    auto repetition = Repetition{ text_iterator };
-    assertEqual(repetition.from, 0_ZU);
-    assertEqual(repetition.to, 1_ZU);
-
-    return {};
+    DEBUG_DECL repetition = Repetition{ text_iterator };
+    BOOST_ASSERT(repetition.from == 0);
+    BOOST_ASSERT(repetition.to == 1);
 }
-();
 
-RUNTIME_TEST
+BOOST_AUTO_TEST_CASE(RepetitionFirstArgumentGreaterThanSecond)
 {
     auto text_iterator = TextIterator{ u8"{2, 1}" };
     text_iterator.nextRawChar();
 
-    try {
-        UNUSED_DECL Repetition{ text_iterator };
-        assertTrue(false);
-    } catch (const RepetitionException &exception) {
-        assertEqual(exception.getColumn(), 1_ZU);// NOLINT
-        assertEqual(
-            exception.getMessage(),
-            u8"the beginning of the repetition (2) is greater than the end (1)");
-    }
-
-    return {};
+    BOOST_CHECK_EXCEPTION(
+        Repetition{ text_iterator },
+        RepetitionException,
+        []([[maybe_unused]] const RepetitionException &exception) {
+            BOOST_ASSERT(exception.getColumn() == 1);
+            BOOST_ASSERT(
+                exception.getMessage() ==
+                u8"the beginning of the repetition (2) is greater than the end (1)");
+            return true;
+        });
 }
-();
 
-// NOLINTEND
+BOOST_AUTO_TEST_SUITE_END()

@@ -3,6 +3,7 @@
 
 #include <cerberus/lex/analysis_shared.hpp>
 #include <cerberus/lex/dot_item/repetition.hpp>
+#include <cerberus/lex/exception.hpp>
 #include <cerberus/lex/token.hpp>
 #include <cerberus/text/text_iterator.hpp>
 #include <optional>
@@ -32,22 +33,22 @@ namespace cerb::lex::dot_item
             return reversed;
         }
 
-        [[nodiscard]] auto hasPrefix() const -> bool
+        [[nodiscard]] auto hasPrefix() const noexcept -> bool
         {
             return prefix;
         }
 
-        [[nodiscard]] auto hasPostfix() const -> bool
+        [[nodiscard]] auto hasPostfix() const noexcept -> bool
         {
             return postfix;
         }
 
-        void setPrefix()
+        void setPrefix() noexcept
         {
             prefix = true;
         }
 
-        void setPostfix()
+        void setPostfix() noexcept
         {
             postfix = true;
         }
@@ -84,14 +85,15 @@ namespace cerb::lex::dot_item
             const TextIterator &text_iterator, size_t times, bool main_scan) const -> bool;
 
         auto modifyToken(
-            TextIterator &before_scan_iterator, TextIterator &after_scan_iterator,
+            const TextIterator &before_scan_iterator, const TextIterator &after_scan_iterator,
             Token &token) const -> void;
 
     public:
         auto operator=(const BasicItem &) -> BasicItem & = delete;
         auto operator=(BasicItem &&) noexcept -> BasicItem & = delete;
 
-        explicit BasicItem(AnalysisShared &analysis_shared_) : analysis_shared{ analysis_shared_ }
+        explicit BasicItem(AnalysisShared &analysis_shared_) noexcept
+          : analysis_shared{ analysis_shared_ }
         {}
 
         BasicItem(BasicItem &&) noexcept = default;

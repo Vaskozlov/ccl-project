@@ -1,14 +1,8 @@
 #ifndef CERBERUS_PROJECT_DEBUG_FILE_HPP
 #define CERBERUS_PROJECT_DEBUG_FILE_HPP
 
-#include <cerberus/debug/debug.hpp>
+#include <boost/test/unit_test.hpp>
 
-using namespace cerb::debug;            // NOLINT
-using namespace cerb::integral_literals;// NOLINT
-
-auto main() -> int
-{
-    return 0;
-}
+#define DEBUG_DECL [[maybe_unused]] auto
 
 #endif /* CERBERUS_PROJECT_DEBUG_FILE_HPP */

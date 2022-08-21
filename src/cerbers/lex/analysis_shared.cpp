@@ -21,7 +21,7 @@ namespace cerb::lex
     auto AnalysisShared::basicIsComment(const u8string_view &text, const u8string_view &comment)
         -> bool
     {
-        return not comment.empty() && text.substr(0, comment.size()) == comment;
+        return not comment.empty() && text.startsWith(comment);
     }
 
     auto AnalysisShared::getSpecialToken(text::TextIterator &text_iterator) const
@@ -34,13 +34,13 @@ namespace cerb::lex
             return constructTerminalToken(text_iterator, text, *terminal_match_result);
         }
 
-        auto char_or_string_elem =
-            std::ranges::find_if(strings_and_chars, [text](const auto &elem) {
-                return text.substr(0, elem.str_begin.size()) == elem.str_begin;
+        auto string_or_char_elem =
+            std::ranges::find_if(strings_and_chars, [text](const String &elem) {
+                return text.startsWith(elem.str_begin);
             });
 
-        if (char_or_string_elem != strings_and_chars.end()) {
-            return constructStringToken(text_iterator, *char_or_string_elem);
+        if (string_or_char_elem != strings_and_chars.end()) {
+            return constructStringToken(text_iterator, *string_or_char_elem);
         }
 
         return std::nullopt;
@@ -67,22 +67,34 @@ namespace cerb::lex
         auto empty_shared = AnalysisShared{};
         auto token_attributes = TokenAttributes{ text_iterator };
         const auto *repr_begin = text_iterator.getCarriage();
-        const auto &[str_begin, str_end, id, is_character, is_multiline] = string_elem;
+        auto &[str_begin, str_end, id, is_character, is_multiline] = string_elem;
 
         auto sequence = dot_item::Sequence(
             { .multiline = is_multiline, .no_escaping_symbols = is_multiline }, str_begin, str_end,
             text_iterator, empty_shared);
 
+        auto &sequence_string = sequence.getRef();
+
+        if (string_elem.is_character && sequence_string.empty()) {
+            text_iterator.throwException<LexicalAnalysisException>(u8"empty character definition");
+        }
+
+        if (string_elem.is_character && sequence_string.size() > 1 &&
+            utf8::utfSize(sequence_string[0]) != sequence_string.size()) {
+            text_iterator.throwException<LexicalAnalysisException>(
+                u8"character definition must be a single character");
+        }
+
         return { std::move(token_attributes),
-                 { repr_begin, text_iterator.getCarriage() + 1 },
+                 { repr_begin, text_iterator.getRemainingAsCarriage() },
                  id,
-                 std::move(sequence.getRef()) };
+                 std::move(sequence_string) };
     }
 
     auto AnalysisShared::isStringOrChar(const u8string_view &text) const -> bool
     {
-        return std::ranges::any_of(strings_and_chars, [text](const auto &elem) {
-            return text.substr(0, elem.str_begin.size()) == elem.str_begin;
+        return std::ranges::any_of(strings_and_chars, [text](const String &elem) {
+            return text.startsWith(elem.str_begin);
         });
     }
 }// namespace cerb::lex

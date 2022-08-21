@@ -4,16 +4,13 @@
 using namespace cerb::string_view_literals;
 using namespace std::string_view_literals;
 
-CONSTEXPR_TEST
+BOOST_AUTO_TEST_CASE(StringViewRfind)
 {
-    auto std_string = "Hello, World!"sv;
-    auto cerb_string = "Hello, World!"_sv;
+    DEBUG_DECL std_string = "Hello, World!"sv;
+    DEBUG_DECL cerb_string = "Hello, World!"_sv;
 
-    assertEqual(cerb_string.rfind('H'), std_string.rfind('H'));
-    assertEqual(cerb_string.rfind(','), std_string.rfind(','));
-    assertEqual(cerb_string.rfind('!'), std_string.rfind('!'));
-    assertEqual(cerb_string.rfind('A'), std_string.rfind('A'));
-
-    return {};
+    BOOST_ASSERT(cerb_string.rfind('H').value() == std_string.rfind('H'));
+    BOOST_ASSERT(cerb_string.rfind(',').value() == std_string.rfind(','));
+    BOOST_ASSERT(cerb_string.rfind('!').value() == std_string.rfind('!'));
+    BOOST_ASSERT(not cerb_string.rfind('A').has_value());
 }
-();

@@ -4,18 +4,10 @@
 using namespace cerb::fmt::core;
 using namespace cerb::string_view_literals;
 
-constexpr static auto counterTest(cerb::u8string_view string, size_t n) -> bool
+BOOST_AUTO_TEST_CASE(FormatCountArguments)
 {
-    auto counter = ArgumentsCounter{ string };
-    return counter.get() == n;
+    BOOST_CHECK_EQUAL(ArgumentsCounter{u8""}.get(), 0);
+    BOOST_CHECK_EQUAL(ArgumentsCounter{u8"Hello!{}"}.get(), 1);
+    BOOST_CHECK_EQUAL(ArgumentsCounter{u8"Hello {}, { }!"}.get(), 2);
+    BOOST_CHECK_EQUAL(ArgumentsCounter{u8"Hello {}{{, {}}}!_"}.get(), 2);
 }
-
-CONSTEXPR_TEST
-{
-    assertTrue(counterTest(u8"", 0));
-    assertTrue(counterTest(u8"Hello!{}", 1));
-    assertTrue(counterTest(u8"Hello {}, { }!", 2));
-    assertTrue(counterTest(u8"Hello {}{{, {}}}!_", 2));
-    return {};
-}
-();

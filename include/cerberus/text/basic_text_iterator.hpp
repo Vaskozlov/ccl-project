@@ -23,18 +23,28 @@ namespace cerb::text
             return end;
         }
 
-        CERBLIB_DECL auto getRemaining() const noexcept -> u8string_view
+        CERBLIB_DECL auto getRemainingAsCarriage() const noexcept -> iterator
         {
             if (initialized) {
-                return { std::min(carriage + 1, end), end };
+                return std::min(carriage + 1, end);
             }
 
-            return { carriage, end };
+            return carriage;
+        }
+
+        CERBLIB_DECL auto getRemaining() const noexcept -> u8string_view
+        {
+            return { getRemainingAsCarriage(), end };
         }
 
         CERBLIB_DECL auto getRemainingWithCurrent() const noexcept -> u8string_view
         {
             return { carriage, end };
+        }
+
+        CERBLIB_DECL auto isEnd() const -> bool
+        {
+            return getRemainingAsCarriage() == end;
         }
 
         CERBLIB_DECL auto getFutureRemaining(size_t times) const -> u8string_view
