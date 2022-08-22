@@ -11,6 +11,8 @@ add_executable(
         ${LIBCERBERUS_CATCH}
 )
 
+add_dependencies(libcerberus-catch cerberus)
+
 target_compile_definitions(
         libcerberus-catch
         PRIVATE
