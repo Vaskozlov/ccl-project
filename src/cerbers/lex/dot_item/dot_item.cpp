@@ -67,19 +67,19 @@ namespace cerb::lex::dot_item
             break;
 
         case U'*':
-            addRepetition(rule_iterator, Repetition::star());
+            addRecurrence(rule_iterator, Recurrence::star());
             break;
 
         case U'+':
-            addRepetition(rule_iterator, Repetition::plus());
+            addRecurrence(rule_iterator, Recurrence::plus());
             break;
 
         case U'?':
-            addRepetition(rule_iterator, Repetition::question());
+            addRecurrence(rule_iterator, Recurrence::question());
             break;
 
         case U'{':
-            addRepetition(rule_iterator, Repetition{ rule_iterator });
+            addRecurrence(rule_iterator, Recurrence{ rule_iterator });
             break;
 
         case U'^':
@@ -229,36 +229,36 @@ namespace cerb::lex::dot_item
         items.pop_back();
     }
 
-    auto DotItem::addRepetition(TextIterator &rule_iterator, Repetition new_repetition) -> void
+    auto DotItem::addRecurrence(TextIterator &rule_iterator, Recurrence new_recurrence) -> void
     {
         if (items.empty()) {
-            throwUnableToApply(
-                rule_iterator, u8"no item to apply repetition", u8"set repetition after item");
+            throwUnableToApply<u8"no items found", u8"set recurrence modifier after item">(
+                rule_iterator);
         }
 
         auto &last_item = items.back();
 
-        if (last_item->getRepetition() != Repetition::basic()) {
-            throwUnableToApply(
-                rule_iterator, u8"item already has repetition",
-                u8"do not set repetition more than once");
+        if (last_item->getRecurrence() != Recurrence::basic()) {
+            throwUnableToApply<
+                u8"item already has recurrence", u8"do not set recurrence more than once">(
+                rule_iterator);
         }
 
-        last_item->setRepetition(new_repetition);
+        last_item->setRecurrence(new_recurrence);
     }
 
     auto DotItem::reverseLastItem(TextIterator &rule_iterator) -> void
     {
         if (items.empty()) {
-            throwUnableToApply(
-                rule_iterator, u8"no item to reverse", u8"create item before reversing it");
+            throwUnableToApply<u8"no items to reverse">(rule_iterator);
         }
 
         auto &last_item = items.back();
 
         if (last_item->isReversed()) {
-            throwUnableToApply(
-                rule_iterator, u8"item is already reversed", u8"do not set reverse for item twice");
+            throwUnableToApply<
+                u8"item already has reverse modifier", u8"do not reverse it more than once">(
+                rule_iterator);
         }
 
         last_item->reverse();
@@ -267,9 +267,9 @@ namespace cerb::lex::dot_item
     auto DotItem::postCheck(TextIterator &rule_iterator, const ItemsCounter &counter) -> void
     {
         if (counter.hasStrOrChar() && counter.hasSequences()) {
-            throwUnableToApply(
-                rule_iterator, u8"string or character expected, but got sequence",
-                u8"add string or character modifier to the sequence");
+            throwUnableToApply<
+                u8"string or character expected, but got sequence",
+                u8"add string or character modifier to the sequence">(rule_iterator);
         }
 
         auto postfix_elem =
@@ -282,7 +282,7 @@ namespace cerb::lex::dot_item
             auto suggestion = fmt::format<u8"add postfix modifier to the last item\n{}p">(
                 rule_iterator.getWorkingLine());
             throwUnableToApply(
-                rule_iterator, u8"item without postfix modifier exists after items with them"_sv,
+                rule_iterator, u8"item without postfix modifier exists after items with it"_sv,
                 suggestion);
         }
     }
@@ -322,28 +322,27 @@ namespace cerb::lex::dot_item
     auto DotItem::checkAbilityToCreatePrefixPostfix(TextIterator &rule_iterator) -> void
     {
         if (not main_item) {
-            throwUnableToApply(
-                rule_iterator,
+            throwUnableToApply<
                 u8"you are not allowed to create prefixes or postfixes inside other dot items",
-                u8"create them only in main item");
+                u8"create them only in main item">(rule_iterator);
         }
 
         if (items.empty()) {
-            throwUnableToApply(rule_iterator, u8"there are not any items to apply prefix/postfix");
+            throwUnableToApply<u8"there are not any items to apply prefix/postfix">(rule_iterator);
         }
 
         auto &last_item = items.back();
 
         if (last_item->hasPrefix()) {
-            throwUnableToApply(
-                rule_iterator, u8"item is already has prefix modifier",
-                u8"do not add it more than once");
+            throwUnableToApply<
+                u8"item already has prefix modifier", u8"do not add it more than once">(
+                rule_iterator);
         }
 
         if (last_item->hasPostfix()) {
-            throwUnableToApply(
-                rule_iterator, u8"item is already has postfix modifier",
-                u8"do not add it more than once");
+            throwUnableToApply<
+                u8"item already has postfix modifier", u8"do not add it more than once">(
+                rule_iterator);
         }
     }
 
@@ -356,15 +355,23 @@ namespace cerb::lex::dot_item
         }
     }
 
+    template<ConstString Reason, ConstString Suggestion>
+    auto DotItem::throwUnableToApply(TextIterator &rule_iterator) -> void
+    {
+        static constexpr auto reason = fmt::staticFormat<u8"unable to apply: {}", Reason>();
+
+        rule_iterator.throwException<DotItemException>(reason, Suggestion);
+        throw UnrecoverableError{ "unrecoverable error in DotItemType" };
+    }
+
     auto DotItem::throwUnableToApply(
         TextIterator &rule_iterator,
         u8string_view reason,
         u8string_view suggestion) -> void
     {
-        auto message = fmt::format<u8"unable to apply with reason: {}">(reason);
-        auto converted_suggestion = fmt::format<u8"{}">(suggestion);
+        auto formatted_reason = fmt::format<u8"unable to apply: {}">(reason);
 
-        rule_iterator.throwException<DotItemException>(message, converted_suggestion);
+        rule_iterator.throwException<DotItemException>(formatted_reason, suggestion);
         throw UnrecoverableError{ "unrecoverable error in DotItemType" };
     }
 

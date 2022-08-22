@@ -29,13 +29,7 @@ namespace cerb::lex::dot_item
                 continue;
             }
 
-            if (is_range) {
-                bitset.set(previous_chr, chr, true);
-                is_range = false;
-            } else {
-                bitset.set(chr, true);
-            }
-
+            addCharactersToTheBitset(is_range, previous_chr, chr);
             previous_chr = chr;
         }
 
@@ -66,6 +60,16 @@ namespace cerb::lex::dot_item
         return land(not is_escaping, chr == U']');
     }
 
+    auto Union::addCharactersToTheBitset(bool &is_range, char32_t first, char32_t last) -> void
+    {
+        if (is_range) {
+            bitset.set(first, last, true);
+            is_range = false;
+        } else {
+            bitset.set(first, true);
+        }
+    }
+
     auto Union::checkForUnexpectedEnd(TextIterator &rule_iterator, bool is_escaping, char32_t chr)
         -> void
     {
@@ -91,13 +95,13 @@ namespace cerb::lex::dot_item
     auto Union::throwUnterminatedUnion(TextIterator &rule_iterator) -> void
     {
         rule_iterator.throwException<UnionException>(u8"unterminated union item"_sv);
-        throw UnrecoverableError{ "unrecoverable error in UnionType" };
+        throw UnrecoverableError{ "unrecoverable error in Union" };
     }
 
     auto Union::throwUnterminatedRangeException(TextIterator &rule_iterator) -> void
     {
         rule_iterator.throwException<UnionException>(u8"unterminated range"_sv);
-        throw UnrecoverableError{ "unrecoverable error in UnionType" };
+        throw UnrecoverableError{ "unrecoverable error in Union" };
     }
 
     auto Union::throwUnionBeginException(TextIterator &rule_iterator) -> void
@@ -107,6 +111,6 @@ namespace cerb::lex::dot_item
                 rule_iterator.getCurrentChar());
 
         rule_iterator.throwException<UnionException>(message);
-        throw UnrecoverableError{ "unrecoverable error in UnionType" };
+        throw UnrecoverableError{ "unrecoverable error in Union" };
     }
 }// namespace cerb::lex::dot_item

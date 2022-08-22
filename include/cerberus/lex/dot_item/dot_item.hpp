@@ -15,7 +15,7 @@ namespace cerb::lex::dot_item
         using BasicItem::analysis_shared;
         using BasicItem::canBeOptimized;
         using BasicItem::isNextCharNotForScanning;
-        using BasicItem::repetition;
+        using BasicItem::recurrence;
 
         using typename BasicItem::CommentTokens;
         using typename BasicItem::ExceptionAccumulator;
@@ -109,7 +109,7 @@ namespace cerb::lex::dot_item
 
         auto constructComment(TextIterator &rule_iterator) -> void;
 
-        auto addRepetition(TextIterator &rule_iterator, Repetition new_repetition) -> void;
+        auto addRecurrence(TextIterator &rule_iterator, Recurrence new_recurrence) -> void;
 
         auto reverseLastItem(TextIterator &rule_iterator) -> void;
 
@@ -129,6 +129,9 @@ namespace cerb::lex::dot_item
             TextIterator &rule_iterator,
             u8string_view reason,
             u8string_view suggestion = {}) -> void;
+
+        template<ConstString Reason, ConstString Suggestion = u8"">
+        static auto throwUnableToApply(TextIterator &rule_iterator) -> void;
 
         static auto throwUndefinedAction(TextIterator &rule_iterator) -> void;
 

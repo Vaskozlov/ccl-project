@@ -56,9 +56,8 @@ namespace cerb::lex::dot_item
     {
         if (hasStrOrChar() && hasSequences()) {
             throwItemCreationError<
-                u8"sequence",
-                u8"attempt to create sequence in character/string item",
-                u8"do not declare sequences in string/character item">();
+                u8"sequence", u8"attempt to create sequence in string like item",
+                u8"do not declare sequences in string like item">();
         }
     }
 
@@ -74,22 +73,18 @@ namespace cerb::lex::dot_item
     {
         if (sequences == 0) {
             throwItemCreationError<
-                u8"string/character",
-                u8"no sequences found",
-                u8"create sequence">();
+                u8"string like item", u8"no sequences found", u8"create sequence">();
         }
 
         if (sequences > 1) {
             throwItemCreationError<
-                u8"string/character",
-                u8"too many sequences found",
+                u8"string like item", u8"too many sequences found",
                 u8"delete sequences or join them">();
         }
 
         if (hasUnions() || hasDotItems()) {
             throwItemCreationError<
-                u8"string/character",
-                u8"Union/DotItem exists in the rule",
+                u8"string like item", u8"because non sequence item exists in the rule",
                 u8"delete Union/DotItem">();
         }
     }
@@ -107,22 +102,18 @@ namespace cerb::lex::dot_item
     {
         if (hasStrOrChar()) {
             throwItemCreationError<
-                ItemName,
-                u8"string or characters has been already declared in item",
-                u8"delete strings/characters or do not declare other items">();
+                ItemName, u8"string or characters has been already declared in expression",
+                u8"delete string like items or do not use other items">();
         }
     }
 
     template<ConstString ItemName, ConstString Message, ConstString Suggestion>
     auto ItemsCounter::throwItemCreationError() -> void
     {
-        static constexpr auto error_message =
+        constexpr static auto error_message =
             fmt::staticFormat<u8"unable to create {}: {}", ItemName, Message>();
-        static constexpr auto error_suggestion = fmt::staticFormat<u8"{}", Suggestion>();
 
-        text_iterator.throwException<DotItemException>(
-            static_cast<u8string_view>(error_message),
-            static_cast<u8string_view>(error_suggestion));
+        text_iterator.throwException<DotItemException>(error_message, Suggestion);
         throw UnrecoverableError{ "unrecoverable error in DotItemType" };
     }
 }// namespace cerb::lex::dot_item

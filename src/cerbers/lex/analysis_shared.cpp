@@ -3,6 +3,8 @@
 
 namespace cerb::lex
 {
+    using namespace string_view_literals;
+
     auto AnalysisShared::isNextCharNotForScanning(const text::TextIterator &text_iterator) const
         -> bool
     {
@@ -67,7 +69,7 @@ namespace cerb::lex
         auto empty_shared = AnalysisShared{};
         auto token_attributes = TokenAttributes{ text_iterator };
         const auto *repr_begin = text_iterator.getCarriage();
-        auto &[str_begin, str_end, id, is_character, is_multiline] = string_elem;
+        const auto &[str_begin, str_end, id, is_character, is_multiline] = string_elem;
 
         auto sequence = dot_item::Sequence(
             { .multiline = is_multiline, .no_escaping_symbols = is_multiline }, str_begin, str_end,
@@ -76,13 +78,14 @@ namespace cerb::lex
         auto &sequence_string = sequence.getRef();
 
         if (string_elem.is_character && sequence_string.empty()) {
-            text_iterator.throwException<LexicalAnalysisException>(u8"empty character definition");
+            text_iterator.throwException<LexicalAnalysisException>(
+                u8"empty character definition"_sv);
         }
 
         if (string_elem.is_character && sequence_string.size() > 1 &&
             utf8::utfSize(sequence_string[0]) != sequence_string.size()) {
             text_iterator.throwException<LexicalAnalysisException>(
-                u8"character definition must be a single character");
+                u8"character definition must be a single character"_sv);
         }
 
         return { std::move(token_attributes),

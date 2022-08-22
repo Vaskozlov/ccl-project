@@ -17,7 +17,7 @@ BOOST_AUTO_TEST_CASE(NoSequencesCreated)
             BOOST_CHECK_EQUAL(exception.getColumn(), 1);
             BOOST_ASSERT(
                 exception.getMessage() ==
-                u8"unable to create string/character: no sequences found");
+                u8"unable to create string like item: no sequences found");
             BOOST_ASSERT(exception.getSuggestion() == u8"create sequence");
             return true;
         });

@@ -35,6 +35,8 @@ namespace cerb::lex::dot_item
 
         [[nodiscard]] static auto isUnionEnd(bool is_escaping, char32_t chr) noexcept -> bool;
 
+        auto addCharactersToTheBitset(bool &is_range, char32_t first, char32_t last) -> void;
+
         static auto
             checkForUnexpectedEnd(TextIterator &rule_iterator, bool is_escaping, char32_t chr)
                 -> void;

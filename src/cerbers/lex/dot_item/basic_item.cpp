@@ -21,7 +21,7 @@ namespace cerb::lex::dot_item
         auto local_iterator = text_iterator;
         auto local_token = Token{ token };
 
-        while (times <= repetition.to) {
+        while (times <= recurrence.to) {
             auto token_copy = local_token;
             auto iterator_copy = local_iterator;
 
@@ -49,7 +49,7 @@ namespace cerb::lex::dot_item
     auto BasicItem::successfullyScanned(
         const TextIterator &text_iterator, size_t times, bool main_scan) const -> bool
     {
-        return repetition.inRange(times) &&
+        return recurrence.inRange(times) &&
                (not main_scan || isNextCharNotForScanning(text_iterator));
     }
 
