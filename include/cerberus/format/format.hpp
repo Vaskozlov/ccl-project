@@ -11,6 +11,7 @@
 
 namespace cerb::fmt
 {
+    template<size_t BufferSize = 128>// NOLINT
     struct StaticFormatterFrame
     {
         CERBLIB_DECL operator u8string_view() const// NOLINT
@@ -20,18 +21,16 @@ namespace cerb::fmt
 
         StaticFormatterFrame() = default;
 
-        constexpr explicit StaticFormatterFrame(const std::u8string &string) : size(string.size())
+        constexpr StaticFormatterFrame(const std::u8string &string) : size(string.size())// NOLINT
         {
-            if (string.size() > buffer_size) {
+            if (string.size() > BufferSize) {
                 throw InvalidArgument{ "string is too big" };
             }
 
             std::ranges::copy(string, buffer.begin());
         }
 
-        static constexpr auto buffer_size = static_cast<size_t>(128);
-
-        std::array<char8_t, buffer_size> buffer{};
+        std::array<char8_t, BufferSize> buffer{};
         size_t size{};
     };
 
@@ -141,10 +140,17 @@ namespace cerb::fmt
         return formatter.get();
     }
 
-    template<ConstString String, auto... args>
-    consteval auto staticFormat() -> StaticFormatterFrame
+    template<size_t BufferSize, ConstString String, auto &&...args>
+    consteval auto staticFormat() -> StaticFormatterFrame<BufferSize>
     {
-        return StaticFormatterFrame{ format<String>(args...) };
+        return StaticFormatterFrame<BufferSize>{ format<String>(args...) };
+    }
+
+    template<ConstString String, auto &&...args>
+    consteval auto staticFormat()
+        -> StaticFormatterFrame<staticFormat<8192, String, args...>().size>// NOLINT
+    {
+        return { format<String>(args...) };
     }
 }// namespace cerb::fmt
 
