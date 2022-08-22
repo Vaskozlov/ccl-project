@@ -60,13 +60,14 @@ namespace cerb::lex::dot_item
         return land(not is_escaping, chr == U']');
     }
 
-    auto Union::addCharactersToTheBitset(bool &is_range, char32_t first, char32_t last) -> void
+    auto Union::addCharactersToTheBitset(bool &is_range, char32_t previous_chr, char32_t chr)
+        -> void
     {
         if (is_range) {
-            bitset.set(first, last, true);
+            bitset.set(previous_chr, chr, true);
             is_range = false;
         } else {
-            bitset.set(first, true);
+            bitset.set(chr, true);
         }
     }
 
