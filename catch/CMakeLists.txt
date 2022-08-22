@@ -29,11 +29,6 @@ target_link_libraries(
 
 target_link_libraries(
         libcerberus-catch
-        ${Boost_LIBRARIES}
-)
-
-target_link_libraries(
-        libcerberus-catch
         cerberus
 )
 
