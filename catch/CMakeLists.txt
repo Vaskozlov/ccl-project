@@ -31,7 +31,7 @@ target_link_libraries(
 
 target_link_libraries(
         libcerberus-catch
-        ${Boost_LIBRARIES}
+        ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
 )
 
 target_link_libraries(
