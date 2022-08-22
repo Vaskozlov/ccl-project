@@ -1,6 +1,7 @@
 #ifndef CERBERUS_PROJECT_DEFINES_HPP
 #define CERBERUS_PROJECT_DEFINES_HPP
 
+#include <cassert>
 #include <cstddef>
 #include <version>
 
