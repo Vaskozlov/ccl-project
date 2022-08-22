@@ -27,6 +27,5 @@
 #include <fmt/format.h>
 
 #include <boost/container/small_vector.hpp>
-#include <boost/test/unit_test.hpp>
 
 #endif /* CERBERUS_PROJECT_PCH_HPP */

@@ -1,35 +1,35 @@
-#ifndef CERBERUS_PROJECT_REPETITION_HPP
-#define CERBERUS_PROJECT_REPETITION_HPP
+#ifndef CERBERUS_PROJECT_RECURRENCE_HPP
+#define CERBERUS_PROJECT_RECURRENCE_HPP
 
 #include <cerberus/text/text_iterator.hpp>
 
 namespace cerb::lex::dot_item
 {
-    CERBLIB_EXCEPTION(RepetitionException, text::TextIteratorException);
+    CERBLIB_EXCEPTION(RecurrenceException, text::TextIteratorException);
 
-    struct CERBLIB_TRIVIAL_ABI Repetition
+    struct CERBLIB_TRIVIAL_ABI Recurrence
     {
-        constexpr Repetition(size_t from_, size_t to_) noexcept : from(from_), to(to_)
+        constexpr Recurrence(size_t from_, size_t to_) noexcept : from(from_), to(to_)
         {}
 
-        explicit Repetition(text::TextIterator &text_iterator);
+        explicit Recurrence(text::TextIterator &text_iterator);
 
-        consteval static auto basic() -> Repetition
+        consteval static auto basic() noexcept -> Recurrence
         {
             return { 1, 1 };
         }
 
-        consteval static auto question() -> Repetition
+        consteval static auto question() noexcept -> Recurrence
         {
             return { 0, 1 };
         }
 
-        consteval static auto star() -> Repetition
+        consteval static auto star() noexcept -> Recurrence
         {
             return { 0, std::numeric_limits<size_t>::max() };
         }
 
-        consteval static auto plus() -> Repetition
+        consteval static auto plus() noexcept -> Recurrence
         {
             return { 1, std::numeric_limits<size_t>::max() };
         }
@@ -39,7 +39,7 @@ namespace cerb::lex::dot_item
             return land(value >= from, value <= to);
         }
 
-        [[nodiscard]] auto operator<=>(const Repetition &) const noexcept
+        [[nodiscard]] auto operator<=>(const Recurrence &) const noexcept
             -> std::weak_ordering = default;
 
     private:
@@ -60,4 +60,4 @@ namespace cerb::lex::dot_item
     };
 }// namespace cerb::lex::dot_item
 
-#endif /* CERBERUS_PROJECT_REPETITION_HPP */
+#endif /* CERBERUS_PROJECT_RECURRENCE_HPP */

@@ -15,7 +15,7 @@ namespace cerb::lex::dot_item
         using BasicItem::analysis_shared;
         using BasicItem::canBeOptimized;
         using BasicItem::isNextCharNotForScanning;
-        using BasicItem::repetition;
+        using BasicItem::recurrence;
 
         using typename BasicItem::CommentTokens;
         using typename BasicItem::ExceptionAccumulator;
@@ -80,20 +80,23 @@ namespace cerb::lex::dot_item
         [[nodiscard]] static auto
             scanItem(const BasicItem *item, TextIterator &text_iterator, Token &token) -> bool;
 
-        [[nodiscard]] static auto movedToTheNextChar(TextIterator &rule_iterator) -> bool;
+        [[nodiscard]] static auto hasMovedToTheNextChar(TextIterator &rule_iterator) -> bool;
 
         auto parseRule(TextIterator &rule_iterator) -> void;
 
         auto recognizeAction(TextIterator &rule_iterator, ItemsCounter &counter) -> void;
 
-        [[nodiscard]] auto constructNewSequence(TextIterator &rule_iterator)
-            -> std::unique_ptr<BasicItem>;
+        [[nodiscard]] auto
+            constructNewSequence(TextIterator &rule_iterator, ItemsCounter &items_counter)
+                -> std::unique_ptr<BasicItem>;
 
-        [[nodiscard]] auto constructNewUnion(TextIterator &rule_iterator)
-            -> std::unique_ptr<BasicItem>;
+        [[nodiscard]] auto
+            constructNewUnion(TextIterator &rule_iterator, ItemsCounter &items_counter)
+                -> std::unique_ptr<BasicItem>;
 
-        [[nodiscard]] auto constructNewItem(TextIterator &rule_iterator)
-            -> std::unique_ptr<BasicItem>;
+        [[nodiscard]] auto
+            constructNewItem(TextIterator &rule_iterator, ItemsCounter &items_counter)
+                -> std::unique_ptr<BasicItem>;
 
         auto emplaceItem(std::unique_ptr<BasicItem> &&item) -> void;
 
@@ -104,31 +107,31 @@ namespace cerb::lex::dot_item
 
         auto constructTerminal(TextIterator &rule_iterator) -> void;
 
-        auto addRepetition(TextIterator &rule_iterator, Repetition new_repetition) -> void;
+        auto constructComment(TextIterator &rule_iterator) -> void;
+
+        auto addRecurrence(TextIterator &rule_iterator, Recurrence new_recurrence) -> void;
 
         auto reverseLastItem(TextIterator &rule_iterator) -> void;
 
         auto postCheck(TextIterator &rule_iterator, const ItemsCounter &counter) -> void;
 
-        auto checkStringConstructionAvailability(TextIterator &rule_iterator) -> void;
+        static auto findDotItemEnd(TextIterator &rule_iterator, u8string_view repr) -> size_t;
+
+        auto checkThereIsOnlySequence(TextIterator &rule_iterator, u8string_view modifier) -> void;
 
         auto checkAbilityToCreatePrefixPostfix(TextIterator &rule_iterator) -> void;
 
-        auto checkSize(
-            TextIterator &rule_iterator, size_t expected_size, u8string_view message,
-            u8string_view suggestion = {}) -> void;
-
-        static auto throwUnexpectedSize(
-            TextIterator &rule_iterator,
-            u8string_view message,
-            u8string_view suggestion = {}) -> void;
+        auto checkNotEmpty(
+            TextIterator &rule_iterator, u8string_view message, u8string_view suggestion = {})
+            -> void;
 
         static auto throwUnableToApply(
             TextIterator &rule_iterator,
             u8string_view reason,
             u8string_view suggestion = {}) -> void;
 
-        static auto throwUnterminatedDotItem(TextIterator &rule_iterator) -> void;
+        template<ConstString Reason, ConstString Suggestion = u8"">
+        static auto throwUnableToApply(TextIterator &rule_iterator) -> void;
 
         static auto throwUndefinedAction(TextIterator &rule_iterator) -> void;
 

@@ -13,9 +13,9 @@ namespace cerb::text
 {
     struct CommentTokens
     {
-        u8string_view single_line{};
-        u8string_view multiline_begin{};
-        u8string_view multiline_end{};
+        std::u8string single_line{};
+        std::u8string multiline_begin{};
+        std::u8string multiline_end{};
     };
 
     CERBLIB_EXCEPTION(CommentSkipperException, TextIteratorException);

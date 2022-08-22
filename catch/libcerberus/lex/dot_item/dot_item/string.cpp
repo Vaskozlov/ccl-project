@@ -7,7 +7,23 @@ using namespace cerb::lex::dot_item;
 
 BOOST_AUTO_TEST_SUITE(DotItemStringsAndCharactersCreation)
 
-BOOST_AUTO_TEST_CASE(DotItemCharacterCreation)
+BOOST_AUTO_TEST_CASE(NoSequencesCreated)
+{
+    auto shared = AnalysisShared{};
+
+    BOOST_CHECK_EXCEPTION(
+        DotItem(TextIterator{ u8R"(c)" }, 0, shared), DotItemException,
+        [](const DotItemException &exception) {
+            BOOST_CHECK_EQUAL(exception.getColumn(), 1);
+            BOOST_ASSERT(
+                exception.getMessage() ==
+                u8"unable to create string like item: no sequences found");
+            BOOST_ASSERT(exception.getSuggestion() == u8"create sequence");
+            return true;
+        });
+}
+
+BOOST_AUTO_TEST_CASE(CharacterCreation)
 {
     auto shared = AnalysisShared{};
     auto dot_item = DotItem(TextIterator{ u8R"("\'"c)" }, 0, shared);
@@ -19,7 +35,7 @@ BOOST_AUTO_TEST_CASE(DotItemCharacterCreation)
     BOOST_ASSERT(shared.strings_and_chars[0].is_character);
 }
 
-BOOST_AUTO_TEST_CASE(DotItemRawStringCreation)
+BOOST_AUTO_TEST_CASE(RawStringCreation)
 {
     auto shared = AnalysisShared{};
     auto dot_item = DotItem(TextIterator{ u8R"( "R\"(:)\""m )" }, 0, shared);
@@ -31,7 +47,7 @@ BOOST_AUTO_TEST_CASE(DotItemRawStringCreation)
     BOOST_ASSERT(not shared.strings_and_chars[0].is_character);
 }
 
-BOOST_AUTO_TEST_CASE(DotItemTwoStringCreation)
+BOOST_AUTO_TEST_CASE(TwoStringCreation)
 {
     auto shared = AnalysisShared{};
     auto dot_item = DotItem(TextIterator{ u8R"("\""s "'"s)" }, 0, shared);

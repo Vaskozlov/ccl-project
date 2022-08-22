@@ -9,8 +9,8 @@ BOOST_AUTO_TEST_CASE(BasicTextIteratorRawFuture)
     auto input = u8"Hello, \t\nWorld! \u00FF \uFFFF \U000FFFFF"_sv;
     auto expected = U"Hello, \t\nWorld! \u00FF \uFFFF \U000FFFFF"_sv;
 
-    auto index = static_cast<size_t>(1);
-    auto text_iterator = BasicTextIterator{ input };
+    DEBUG_DECL index = static_cast<size_t>(1);
+    DEBUG_DECL text_iterator = BasicTextIterator{ input };
 
     for (DEBUG_DECL &&chr : expected) {
         BOOST_ASSERT(text_iterator.futureRawChar(index) == chr);

@@ -29,18 +29,16 @@ target_link_libraries(
 
 target_link_libraries(
         libcerberus-catch
-        ${Boost_LIBRARIES}
-)
-
-target_link_libraries(
-        libcerberus-catch
         cerberus
 )
 
-target_precompile_headers(
-        libcerberus-catch
-        PUBLIC
-        "pch.hpp"
-)
+if (${PRECOMPILED_HEADER})
+    target_precompile_headers(
+            libcerberus-catch
+            PUBLIC
+            "pch.hpp"
+            <boost/test/unit_test.hpp>
+    )
+endif ()
 
 add_test(libcerberus-catch-test libcerberus-catch)

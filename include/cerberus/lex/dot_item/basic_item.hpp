@@ -2,7 +2,7 @@
 #define CERBERUS_PROJECT_BASIC_ITEM_HPP
 
 #include <cerberus/lex/analysis_shared.hpp>
-#include <cerberus/lex/dot_item/repetition.hpp>
+#include <cerberus/lex/dot_item/recurrence.hpp>
 #include <cerberus/lex/exception.hpp>
 #include <cerberus/lex/token.hpp>
 #include <cerberus/text/text_iterator.hpp>
@@ -23,9 +23,9 @@ namespace cerb::lex::dot_item
             SUCCESS = true
         };
 
-        [[nodiscard]] auto getRepetition() const noexcept -> Repetition
+        [[nodiscard]] auto getRecurrence() const noexcept -> Recurrence
         {
-            return repetition;
+            return recurrence;
         }
 
         [[nodiscard]] auto isReversed() const noexcept -> bool
@@ -58,14 +58,14 @@ namespace cerb::lex::dot_item
             reversed = !reversed;
         }
 
-        auto setRepetition(Repetition new_repetition) noexcept -> void
+        auto setRecurrence(Recurrence new_recurrence) noexcept -> void
         {
-            repetition = new_repetition;
+            recurrence = new_recurrence;
         }
 
         [[nodiscard]] auto canBeOptimized() const noexcept -> bool
         {
-            return repetition.from == 0 && empty();
+            return recurrence.from == 0 && empty();
         }
 
         [[nodiscard]] virtual auto empty() const noexcept -> bool = 0;
@@ -102,7 +102,7 @@ namespace cerb::lex::dot_item
         virtual ~BasicItem() = default;
 
     protected:
-        Repetition repetition{ Repetition::basic() };
+        Recurrence recurrence{ Recurrence::basic() };
         AnalysisShared &analysis_shared;
         bool reversed{ false };
         bool prefix{};

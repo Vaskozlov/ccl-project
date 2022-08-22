@@ -1,14 +1,14 @@
-#include <cerberus/debug/debug_file.hpp>
 #include <cerberus/const_string.hpp>
+#include <cerberus/debug/debug_file.hpp>
 
 template<cerb::ConstString String>
 static auto testConstString(cerb::u8string_view input) -> bool
 {
-    auto test_string = input;
+    DEBUG_DECL test_string = input;
 
     BOOST_ASSERT(String.empty() == test_string.empty());
     BOOST_ASSERT(String.size() == test_string.size());
-    BOOST_ASSERT(String.strView() == test_string);
+    BOOST_ASSERT(static_cast<cerb::u8string_view>(String) == test_string);
 
     BOOST_ASSERT(std::ranges::equal(String, test_string));
     BOOST_ASSERT(std::equal(String.begin(), String.end(), test_string.begin()));

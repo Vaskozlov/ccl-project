@@ -7,10 +7,10 @@ using namespace cerb::fmt::core;
 template<ConstString String>
 auto testSplitter(const std::initializer_list<u8string_view> &blocks) -> bool
 {
-    auto index = static_cast<size_t>(0);
+    DEBUG_DECL index = static_cast<size_t>(0);
     auto split_string = splitString<String>();
 
-    for (auto &&block : blocks) {
+    for (DEBUG_DECL &&block : blocks) {
         BOOST_ASSERT(block == split_string[index]);
         ++index;
     }

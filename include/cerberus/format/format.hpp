@@ -1,6 +1,7 @@
 #ifndef CERBERUS_PROJECT_FORMAT_HPP
 #define CERBERUS_PROJECT_FORMAT_HPP
 
+#include <array>
 #include <cerberus/const_string.hpp>
 #include <cerberus/format/core/string_splitter.hpp>
 #include <cerberus/format/dumpers/int.hpp>
@@ -10,9 +11,39 @@
 
 namespace cerb::fmt
 {
-    template<ConstString String>
+    struct StaticFormatterFrame
+    {
+        CERBLIB_DECL operator u8string_view() const// NOLINT
+        {
+            return { buffer.data(), size };
+        }
+
+        StaticFormatterFrame() = default;
+
+        constexpr explicit StaticFormatterFrame(const std::u8string &string) : size(string.size())
+        {
+            if (string.size() > buffer_size) {
+                throw InvalidArgument{ "string is too big" };
+            }
+
+            std::ranges::copy(string, buffer.begin());
+        }
+
+        static constexpr auto buffer_size = static_cast<size_t>(128);
+
+        std::array<char8_t, buffer_size> buffer{};
+        size_t size{};
+    };
+
+    template<ConstString String, bool ConstexprFormatting = false>
     class Formatter
     {
+#ifdef __clang__
+        static constexpr auto clang_compiler = true;
+#else
+        static constexpr auto clang_compiler = false;
+#endif
+
     public:
         CERBLIB_DECL auto get() -> std::u8string &
         {
@@ -20,10 +51,22 @@ namespace cerb::fmt
         }
 
         template<typename... Args>
-        constexpr explicit Formatter(Args &&...args)
+        constexpr explicit Formatter(Args &&...args) requires(
+            not ConstexprFormatting || not clang_compiler)
         {
             static_assert(sizeof...(Args) == string_blocks.size() - 1, "Wrong number of arguments");
 
+            formatted_string.reserve(approximate_length);
+            addBlock<0>(std::forward<Args>(args)...);
+        }
+
+        template<typename... Args>
+        constexpr explicit Formatter(Args &&...args) requires(ConstexprFormatting &&clang_compiler)
+          : formatted_string{ u8"needs to be filled to use in constant expression" }
+        {
+            static_assert(sizeof...(Args) == string_blocks.size() - 1, "Wrong number of arguments");
+
+            formatted_string.clear();
             formatted_string.reserve(approximate_length);
             addBlock<0>(std::forward<Args>(args)...);
         }
@@ -83,14 +126,25 @@ namespace cerb::fmt
         constexpr static auto string_blocks = core::splitString<String>();
         constexpr static auto approximate_length = countApproximateLength();
 
-        std::u8string formatted_string{};
+        std::u8string formatted_string;
     };
 
     template<ConstString String, typename... Args>
     CERBLIB_DECL auto format(Args &&...args) -> std::u8string
     {
+        if CERBLIB_COMPILE_TIME_BRANCH {
+            auto formatter = Formatter<String, true>{ std::forward<Args>(args)... };
+            return formatter.get();
+        }
+
         auto formatter = Formatter<String>{ std::forward<Args>(args)... };
         return formatter.get();
+    }
+
+    template<ConstString String, auto... args>
+    consteval auto staticFormat() -> StaticFormatterFrame
+    {
+        return StaticFormatterFrame{ format<String>(args...) };
     }
 }// namespace cerb::fmt
 

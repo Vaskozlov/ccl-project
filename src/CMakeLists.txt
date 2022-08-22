@@ -15,8 +15,10 @@ target_link_libraries(
         fmt::fmt
 )
 
-target_precompile_headers(
-        cerberus
-        PUBLIC
-        "pch.hpp"
-)
+if (${PRECOMPILED_HEADERS})
+    target_precompile_headers(
+            cerberus
+            PUBLIC
+            "pch.hpp"
+    )
+endif ()

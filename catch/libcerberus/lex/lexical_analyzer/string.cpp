@@ -4,7 +4,8 @@
 using namespace cerb::lex;
 using namespace cerb::text;
 
-BOOST_AUTO_TEST_SUITE(LexicalAnalyzerString)
+BOOST_AUTO_TEST_SUITE(
+    LexicalAnalyzerString, *utf::depends_on("DotItemStringsAndCharactersCreation"))
 
 BOOST_AUTO_TEST_CASE(LexicalAnalyzerBasicString)
 {
