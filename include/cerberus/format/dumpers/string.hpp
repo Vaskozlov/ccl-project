@@ -37,7 +37,7 @@ namespace cerb::fmt
     template<size_t N>
     constexpr auto dump(std::u8string &formatting_string, const ConstString<N> &string) -> void
     {
-        dump(formatting_string, u8string_view(string.begin(), string.end()));
+        dump(formatting_string, static_cast<u8string_view>(string));
     }
 }// namespace cerb::fmt
 

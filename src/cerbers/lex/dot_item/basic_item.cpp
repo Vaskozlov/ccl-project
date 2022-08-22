@@ -21,7 +21,7 @@ namespace cerb::lex::dot_item
         auto local_iterator = text_iterator;
         auto local_token = Token{ token };
 
-        while (times <= recurrence.to) {
+        while (times < recurrence.to) {
             auto token_copy = local_token;
             auto iterator_copy = local_iterator;
 
