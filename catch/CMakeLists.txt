@@ -11,8 +11,6 @@ add_executable(
         ${LIBCERBERUS_CATCH}
 )
 
-add_dependencies(libcerberus-catch cerberus)
-
 target_compile_definitions(
         libcerberus-catch
         PRIVATE
@@ -31,7 +29,7 @@ target_link_libraries(
 
 target_link_libraries(
         libcerberus-catch
-        ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
+        ${Boost_LIBRARIES}
 )
 
 target_link_libraries(
