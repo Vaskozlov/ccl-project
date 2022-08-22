@@ -4,7 +4,7 @@
 template<cerb::ConstString String>
 static auto testConstString(cerb::u8string_view input) -> bool
 {
-    auto test_string = input;
+    DEBUG_DECL test_string = input;
 
     BOOST_ASSERT(String.empty() == test_string.empty());
     BOOST_ASSERT(String.size() == test_string.size());
