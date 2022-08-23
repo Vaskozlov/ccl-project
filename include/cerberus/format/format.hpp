@@ -14,11 +14,6 @@ namespace cerb::fmt
     template<size_t BufferSize = 128>// NOLINT
     struct StaticFormatterFrame
     {
-        CERBLIB_DECL operator u8string_view() const// NOLINT
-        {
-            return { buffer.data(), size };
-        }
-
         StaticFormatterFrame() = default;
 
         constexpr StaticFormatterFrame(const std::u8string &string) : size(string.size())// NOLINT
@@ -30,8 +25,35 @@ namespace cerb::fmt
             std::ranges::copy(string, buffer.begin());
         }
 
+        CERBLIB_DECL auto begin() const noexcept
+        {
+            return buffer.begin();
+        }
+
+        CERBLIB_DECL auto end() const noexcept
+        {
+            return buffer.begin() + size;
+        }
+
+        CERBLIB_DECL operator u8string_view() const noexcept// NOLINT
+        {
+            return { buffer.data(), size };
+        }
+
         std::array<char8_t, BufferSize> buffer{};
         size_t size{};
+    };
+
+    template<typename T, size_t N>
+    struct ArrayConvertableToStrView : std::array<T, N>
+    {
+        using Base = std::array<T, N>;
+        using Base::data;
+
+        CERBLIB_DECL operator u8string_view() const noexcept// NOLINT
+        {
+            return { data(), N };
+        }
     };
 
     template<ConstString String, bool ConstexprFormatting = false>
@@ -44,14 +66,14 @@ namespace cerb::fmt
 #endif
 
     public:
-        CERBLIB_DECL auto get() -> std::u8string &
+        CERBLIB_DECL auto get() noexcept -> std::u8string &
         {
             return formatted_string;
         }
 
         template<typename... Args>
-        constexpr explicit Formatter(Args &&...args) requires(
-            not ConstexprFormatting || not clang_compiler)
+        constexpr explicit Formatter(Args &&...args)
+            requires(not ConstexprFormatting || not clang_compiler)
         {
             static_assert(sizeof...(Args) == string_blocks.size() - 1, "Wrong number of arguments");
 
@@ -60,8 +82,9 @@ namespace cerb::fmt
         }
 
         template<typename... Args>
-        constexpr explicit Formatter(Args &&...args) requires(ConstexprFormatting &&clang_compiler)
-          : formatted_string{ u8"needs to be filled to use in constant expression" }
+        constexpr explicit Formatter(Args &&...args)
+            requires(ConstexprFormatting && clang_compiler)
+        : formatted_string{ u8"needs to be filled to use in constant expression" }
         {
             static_assert(sizeof...(Args) == string_blocks.size() - 1, "Wrong number of arguments");
 
@@ -94,7 +117,7 @@ namespace cerb::fmt
         }
 
         template<size_t Index>
-        CERBLIB_DECL static auto isNotEmptyBlock() -> bool
+        CERBLIB_DECL static auto isNotEmptyBlock() noexcept -> bool
         {
             return not string_blocks[Index].empty();
         }
@@ -140,17 +163,24 @@ namespace cerb::fmt
         return formatter.get();
     }
 
-    template<size_t BufferSize, ConstString String, auto &&...args>
-    consteval auto staticFormat() -> StaticFormatterFrame<BufferSize>
+    template<ConstString String, auto... Args>
+    struct StaticFormatter
     {
-        return StaticFormatterFrame<BufferSize>{ format<String>(args...) };
-    }
+        constexpr static auto formatted_string =
+            StaticFormatterFrame<1024>{ format<String>(Args...) };
 
-    template<ConstString String, auto &&...args>
+        constexpr static auto get() -> ArrayConvertableToStrView<char8_t, formatted_string.size>
+        {
+            auto result = ArrayConvertableToStrView<char8_t, formatted_string.size>{};
+            std::ranges::copy(formatted_string, result.begin());
+            return result;
+        }
+    };
+
+    template<ConstString String, auto... Args>
     consteval auto staticFormat()
-        -> StaticFormatterFrame<staticFormat<8192, String, args...>().size>// NOLINT
     {
-        return { format<String>(args...) };
+        return StaticFormatter<String, Args...>{}.get();
     }
 }// namespace cerb::fmt
 
