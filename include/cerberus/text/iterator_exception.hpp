@@ -12,37 +12,37 @@ namespace cerb::text
     class TextIteratorException : public BasicTextIteratorException
     {
     public:
-        [[nodiscard]] auto getLine() const -> size_t
+        [[nodiscard]] auto getLine() const noexcept -> size_t
         {
             return location.getLine();
         }
 
-        [[nodiscard]] auto getColumn() const -> size_t
+        [[nodiscard]] auto getColumn() const noexcept-> size_t
         {
             return location.getColumn();
         }
 
-        [[nodiscard]] auto getLocation() const -> const Location &
+        [[nodiscard]] auto getLocation() const noexcept-> const Location &
         {
             return location;
         }
 
-        [[nodiscard]] auto getWorkingLine() const -> const u8string_view &
+        [[nodiscard]] auto getWorkingLine() const noexcept-> const u8string_view &
         {
             return working_line;
         }
 
-        [[nodiscard]] auto getMessage() const -> u8string_view
+        [[nodiscard]] auto getMessage() const noexcept-> u8string_view
         {
             return message;
         }
 
-        [[nodiscard]] auto getSuggestion() const -> u8string_view
+        [[nodiscard]] auto getSuggestion() const noexcept-> u8string_view
         {
             return suggestion;
         }
 
-        [[nodiscard]] auto hasSuggestion() const -> bool
+        [[nodiscard]] auto hasSuggestion() const noexcept-> bool
         {
             return not suggestion.empty();
         }

@@ -10,12 +10,12 @@ namespace cerb::fmt::core
     class ArgumentsCounter
     {
     public:
-        CERBLIB_DECL auto get() const -> size_t
+        CERBLIB_DECL auto get() const noexcept -> size_t
         {
             return arguments_counter;
         }
 
-        constexpr ArgumentsCounter() = default;
+        constexpr ArgumentsCounter() noexcept = default;
 
         constexpr explicit ArgumentsCounter(const u8string_view &text) : text_iterator{ text }
         {
@@ -46,7 +46,7 @@ namespace cerb::fmt::core
             }
         }
 
-        CERBLIB_DECL auto isUnbalancedBraces() const -> bool
+        CERBLIB_DECL auto isUnbalancedBraces() const noexcept -> bool
         {
             return opened_brackets_counter != 0;
         }

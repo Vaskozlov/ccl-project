@@ -3,53 +3,47 @@
 
 namespace cerb::lex::dot_item
 {
-    auto ItemsCounter::operator+=(item::UnionType /* unused */) -> ItemsCounter &
+    auto ItemsCounter::add(item::UnionType /* unused */) -> void
     {
         checkForUnexpectedTerminals<u8"union">();
         checkNoStringOrChars<u8"union">();
         ++unions;
-        return *this;
     }
 
-    auto ItemsCounter::operator+=(item::DotItemType /* unused */) -> ItemsCounter &
+    auto ItemsCounter::add(item::DotItemType /* unused */) -> void
     {
         checkForUnexpectedTerminals<u8"dot item">();
         checkNoStringOrChars<u8"dot item">();
         ++dot_items;
-        return *this;
     }
 
-    auto ItemsCounter::operator+=(item::SequenceType /* unused */) -> ItemsCounter &
+    auto ItemsCounter::add(item::SequenceType /* unused */) -> void
     {
         checkForUnexpectedTerminals<u8"sequence">();
         checkAbilityToCreateSequence();
         ++sequences;
-        return *this;
     }
 
-    auto ItemsCounter::operator+=(item::StringType /* unused */) -> ItemsCounter &
+    auto ItemsCounter::add(item::StringType /* unused */) -> void
     {
         checkForUnexpectedTerminals<u8"string">();
-        checkAbilityToCreateStringOrCharacter();
+        checkThereIsOneSequence<u8"string like item">();
         --sequences;
         ++strings;
-        return *this;
     }
 
-    auto ItemsCounter::operator+=(item::CharacterType /* unused */) -> ItemsCounter &
+    auto ItemsCounter::add(item::CharacterType /* unused */) -> void
     {
         checkForUnexpectedTerminals<u8"character">();
-        checkAbilityToCreateStringOrCharacter();
+        checkThereIsOneSequence<u8"string like item">();
         --sequences;
         ++characters;
-        return *this;
     }
 
-    auto ItemsCounter::operator+=(item::TerminalType /* unused */) -> ItemsCounter &
+    auto ItemsCounter::add(item::TerminalType /* unused */) -> void
     {
         checkAbilityToCreateTerminal();
         ++terminals;
-        return *this;
     }
 
     auto ItemsCounter::checkAbilityToCreateSequence() -> void
@@ -69,22 +63,21 @@ namespace cerb::lex::dot_item
         }
     }
 
-    auto ItemsCounter::checkAbilityToCreateStringOrCharacter() -> void
+    template<ConstString ItemName>
+    auto ItemsCounter::checkThereIsOneSequence() -> void
     {
         if (sequences == 0) {
-            throwItemCreationError<
-                u8"string like item", u8"no sequences found", u8"create sequence">();
+            throwItemCreationError<ItemName, u8"no sequences found", u8"create sequence">();
         }
 
         if (sequences > 1) {
             throwItemCreationError<
-                u8"string like item", u8"too many sequences found",
-                u8"delete sequences or join them">();
+                ItemName, u8"too many sequences found", u8"delete sequences or join them">();
         }
 
         if (hasUnions() || hasDotItems()) {
             throwItemCreationError<
-                u8"string like item", u8"because non sequence item exists in the rule",
+                ItemName, u8"because non sequence item exists in the rule",
                 u8"delete Union/DotItem">();
         }
     }

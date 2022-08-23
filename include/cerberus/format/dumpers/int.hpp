@@ -77,7 +77,7 @@ namespace cerb::fmt
                 }
             }
 
-            constexpr auto fillBuffer() -> void
+            constexpr auto fillBuffer() noexcept -> void
             {
                 while (number != 0) {
                     conversion_buffer[--buffer_index] =

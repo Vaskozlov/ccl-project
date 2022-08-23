@@ -133,7 +133,7 @@ namespace cerb::fmt
             }
         }
 
-        constexpr static auto countApproximateLength() -> unsigned long
+        constexpr static auto countApproximateLength() noexcept-> unsigned long
         {
             constexpr auto string_size = std::accumulate(
                 string_blocks.begin(), string_blocks.end(), static_cast<size_t>(0),

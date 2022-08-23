@@ -42,37 +42,37 @@ namespace cerb::text
             TextIterator &text_iterator, u16 max_times, u16 notation_power, bool need_all_chars)
             -> char32_t;
 
-        [[nodiscard]] auto getLocation() const -> const Location &
+        [[nodiscard]] auto getLocation() const noexcept -> const Location &
         {
             return location;
         }
 
-        [[nodiscard]] auto getLine() const -> size_t
+        [[nodiscard]] auto getLine() const noexcept -> size_t
         {
             return location.getLine();
         }
 
-        [[nodiscard]] auto getColumn() const -> size_t
+        [[nodiscard]] auto getColumn() const noexcept -> size_t
         {
             return location.getColumn();
         }
 
-        [[nodiscard]] auto getRealColumn() const -> size_t
+        [[nodiscard]] auto getRealColumn() const noexcept -> size_t
         {
             return location.getRealColumn();
         }
 
-        [[nodiscard]] auto getFilename() const -> const u8string_view &
+        [[nodiscard]] auto getFilename() const noexcept -> const u8string_view &
         {
             return location.getFilename();
         }
 
-        [[nodiscard]] auto getWorkingLine() const -> const u8string_view &
+        [[nodiscard]] auto getWorkingLine() const noexcept -> const u8string_view &
         {
             return line_tracker.get();
         }
 
-        [[nodiscard]] auto getTabsAndSpaces() const -> const std::u32string &
+        [[nodiscard]] auto getTabsAndSpaces() const noexcept -> const std::u32string &
         {
             return ts_tracker.get();
         }
@@ -145,7 +145,7 @@ namespace cerb::text
         CommentSkipper(TextIterator &text_iterator_, const CommentTokens &comment_tokens_);
 
     private:
-        [[nodiscard]] auto isComment(const u8string_view &comment) const -> bool;
+        [[nodiscard]] auto isComment(const u8string_view &comment) const noexcept -> bool;
 
         auto skipSingleLine() -> void;
         auto skipMultiline() -> void;
@@ -162,12 +162,12 @@ namespace cerb::text
     class TextIterator::EscapingSymbolizer
     {
     public:
-        [[nodiscard]] auto getExtraSymbols() const -> const extra_symbols_t &
+        [[nodiscard]] auto getExtraSymbols() const noexcept -> const extra_symbols_t &
         {
             return extra_symbols;
         }
 
-        [[nodiscard]] auto match() -> char32_t;
+        [[nodiscard]] auto match() -> char32_t;// TODO: rename function
 
         auto operator=(EscapingSymbolizer &&) -> void = delete;
         auto operator=(const EscapingSymbolizer &) -> void = delete;
@@ -176,7 +176,10 @@ namespace cerb::text
         EscapingSymbolizer(EscapingSymbolizer &&) = delete;
         EscapingSymbolizer(const EscapingSymbolizer &) = delete;
 
-        explicit EscapingSymbolizer(TextIterator &text_iterator_, extra_symbols_t extra_symbols_)
+        explicit EscapingSymbolizer(
+            TextIterator &text_iterator_,
+            extra_symbols_t
+                extra_symbols_) noexcept(std::is_nothrow_move_constructible_v<extra_symbols_t>)
           : extra_symbols{ std::move(extra_symbols_) }, text_iterator{ text_iterator_ }
         {}
 
@@ -193,7 +196,7 @@ namespace cerb::text
     class TextIterator::NotationEscapingSymbolizer
     {
     public:
-        CERBLIB_DECL auto get() const -> char32_t
+        CERBLIB_DECL auto get() const noexcept-> char32_t
         {
             return result;
         }
@@ -207,7 +210,7 @@ namespace cerb::text
 
         NotationEscapingSymbolizer(
             TextIterator &text_iterator_, u16 max_times_, u16 notation_power_,
-            bool need_all_chars_);
+            bool need_all_chars_) noexcept;
 
         ~NotationEscapingSymbolizer() = default;
 

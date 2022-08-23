@@ -9,7 +9,7 @@ namespace cerb
     class UtfSet
     {
     public:
-        auto empty() const -> bool
+        auto empty() const noexcept -> bool
         {
             return storage.empty() && small_storage.none();
         }

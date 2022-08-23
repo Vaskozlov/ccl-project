@@ -130,11 +130,11 @@ namespace cerb::text
         auto operator=(const BasicTextIterator &) -> BasicTextIterator & = default;
         auto operator=(BasicTextIterator &&) noexcept -> BasicTextIterator & = default;
 
-        BasicTextIterator() = default;
+        BasicTextIterator() noexcept = default;
         BasicTextIterator(const BasicTextIterator &) = default;
         BasicTextIterator(BasicTextIterator &&) noexcept = default;
 
-        constexpr explicit BasicTextIterator(u8string_view text_)
+        constexpr explicit BasicTextIterator(u8string_view text_) noexcept
           : carriage{ text_.begin() }, end{ text_.end() }
         {}
 

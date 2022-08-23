@@ -20,42 +20,42 @@ namespace cerb
         using iterator = typename storage_t::iterator;
         using const_iterator = typename storage_t::const_iterator;
 
-        CERBLIB_DECL auto size() const -> size_t
+        CERBLIB_DECL auto size() const noexcept -> size_t
         {
             return occupied;
         }
 
-        CERBLIB_DECL static auto capacity() -> size_t
+        CERBLIB_DECL static auto capacity() noexcept -> size_t
         {
             return Size;
         }
 
-        CERBLIB_DECL auto begin() -> iterator
+        CERBLIB_DECL auto begin() noexcept -> iterator
         {
             return storage.begin();
         }
 
-        CERBLIB_DECL auto end() -> iterator
+        CERBLIB_DECL auto end() noexcept -> iterator
         {
             return storage.begin() + occupied;
         }
 
-        CERBLIB_DECL auto begin() const -> const_iterator
+        CERBLIB_DECL auto begin() const noexcept -> const_iterator
         {
             return storage.begin();
         }
 
-        CERBLIB_DECL auto end() const -> const_iterator
+        CERBLIB_DECL auto end() const noexcept -> const_iterator
         {
             return storage.begin() + occupied;
         }
 
-        CERBLIB_DECL auto cbegin() const -> const_iterator
+        CERBLIB_DECL auto cbegin() const noexcept -> const_iterator
         {
             return storage.cbegin();
         }
 
-        CERBLIB_DECL auto cend() const -> const_iterator
+        CERBLIB_DECL auto cend() const noexcept -> const_iterator
         {
             return storage.cbegin() + occupied;
         }
@@ -111,17 +111,17 @@ namespace cerb
             return at(key);
         }
 
-        CERBLIB_DECL auto contains(const Key &key) const -> bool
+        CERBLIB_DECL auto contains(const Key &key) const noexcept -> bool
         {
             return find(key) != end();
         }
 
-        CERBLIB_DECL auto find(const Key &key) -> iterator
+        CERBLIB_DECL auto find(const Key &key) noexcept -> iterator
         {
             return staticFind(*this, key);
         }
 
-        CERBLIB_DECL auto find(const Key &key) const -> const_iterator
+        CERBLIB_DECL auto find(const Key &key) const noexcept -> const_iterator
         {
             return staticFind(*this, key);
         }
@@ -137,7 +137,7 @@ namespace cerb
 
     private:
         template<typename Self>
-        CERBLIB_DECL static auto staticFind(Self &self, const Key &key)
+        CERBLIB_DECL static auto staticFind(Self &self, const Key &key) noexcept
             -> std::conditional_t<std::is_const_v<Self>, const_iterator, iterator>
         {
             return std::ranges::find_if(

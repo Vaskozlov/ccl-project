@@ -44,55 +44,64 @@ namespace cerb::lex::dot_item
 
     struct ItemsCounter
     {
+        ItemsCounter(ItemsCounter &&) = delete;
+        ItemsCounter(const ItemsCounter &) = delete;
+
         explicit ItemsCounter(text::TextIterator &text_iterator_) : text_iterator(text_iterator_)
         {}
 
-        [[nodiscard]] auto hasStrings() const -> bool
+        ~ItemsCounter() = default;
+
+        auto operator=(ItemsCounter &&) -> void = delete;
+        auto operator=(const ItemsCounter &) -> void = delete;
+
+        [[nodiscard]] auto hasStrings() const noexcept -> bool
         {
             return strings != 0;
         }
 
-        [[nodiscard]] auto hasCharacters() const -> bool
+        [[nodiscard]] auto hasCharacters() const noexcept -> bool
         {
             return characters != 0;
         }
 
-        [[nodiscard]] auto hasUnions() const -> bool
+        [[nodiscard]] auto hasUnions() const noexcept -> bool
         {
             return unions != 0;
         }
 
-        [[nodiscard]] auto hasSequences() const -> bool
+        [[nodiscard]] auto hasSequences() const noexcept -> bool
         {
             return sequences != 0;
         }
 
-        [[nodiscard]] auto hasDotItems() const -> bool
+        [[nodiscard]] auto hasDotItems() const noexcept -> bool
         {
             return dot_items != 0;
         }
 
-        [[nodiscard]] auto hasTerminals() const -> bool
+        [[nodiscard]] auto hasTerminals() const noexcept -> bool
         {
             return terminals != 0;
         }
 
-        [[nodiscard]] auto hasStrOrChar() const -> bool
+        [[nodiscard]] auto hasStrOrChar() const noexcept -> bool
         {
             return lor(hasStrings(), hasCharacters());
         }
-        auto operator+=(item::UnionType /* unused */) -> ItemsCounter &;
-        auto operator+=(item::DotItemType /* unused */) -> ItemsCounter &;
-        auto operator+=(item::SequenceType /* unused */) -> ItemsCounter &;
-        auto operator+=(item::StringType /* unused */) -> ItemsCounter &;
-        auto operator+=(item::CharacterType /* unused */) -> ItemsCounter &;
-
-        auto operator+=(item::TerminalType /* unused */) -> ItemsCounter &;
+        auto add(item::UnionType /* unused */) -> void;
+        auto add(item::DotItemType /* unused */) -> void;
+        auto add(item::SequenceType /* unused */) -> void;
+        auto add(item::StringType /* unused */) -> void;
+        auto add(item::CharacterType /* unused */) -> void;
+        auto add(item::TerminalType /* unused */) -> void;
 
     private:
         auto checkAbilityToCreateSequence() -> void;
         auto checkAbilityToCreateTerminal() -> void;
-        auto checkAbilityToCreateStringOrCharacter() -> void;
+
+        template<ConstString ItemName>
+        auto checkThereIsOneSequence() -> void;
 
         template<ConstString ItemName>
         CERBLIB_INLINE auto checkForUnexpectedTerminals() -> void;

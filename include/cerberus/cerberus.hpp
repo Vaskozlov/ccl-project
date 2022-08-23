@@ -6,7 +6,6 @@
 #endif /* minimum requirements */
 
 #include <cerberus/core/concepts.hpp>
-#include <cerberus/core/conversion.hpp>
 #include <cerberus/core/defines.hpp>
 #include <cerberus/core/enum.hpp>
 #include <cerberus/core/exception.hpp>

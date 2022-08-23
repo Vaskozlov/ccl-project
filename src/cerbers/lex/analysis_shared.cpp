@@ -13,15 +13,15 @@ namespace cerb::lex
         return isComment(text) || isTerminal(text) || isStringOrChar(text);
     }
 
-    auto AnalysisShared::isComment(const u8string_view &text) const -> bool
+    auto AnalysisShared::isComment(const u8string_view &text) const noexcept-> bool
     {
         return basicIsComment(text, comment_tokens.single_line) ||
                basicIsComment(text, comment_tokens.multiline_begin) ||
                basicIsComment(text, comment_tokens.multiline_end);
     }
 
-    auto AnalysisShared::basicIsComment(const u8string_view &text, const u8string_view &comment)
-        -> bool
+    auto AnalysisShared::basicIsComment(
+        const u8string_view &text, const u8string_view &comment) noexcept -> bool
     {
         return not comment.empty() && text.startsWith(comment);
     }
@@ -75,7 +75,7 @@ namespace cerb::lex
             { .multiline = is_multiline, .no_escaping_symbols = is_multiline }, str_begin, str_end,
             text_iterator, empty_shared);
 
-        auto &sequence_string = sequence.getRef();
+        auto &sequence_string = sequence.getByRef();
 
         if (string_elem.is_character && sequence_string.empty()) {
             text_iterator.throwException<LexicalAnalysisException>(
@@ -94,7 +94,7 @@ namespace cerb::lex
                  std::move(sequence_string) };
     }
 
-    auto AnalysisShared::isStringOrChar(const u8string_view &text) const -> bool
+    auto AnalysisShared::isStringOrChar(const u8string_view &text) const noexcept-> bool
     {
         return std::ranges::any_of(strings_and_chars, [text](const String &elem) {
             return text.startsWith(elem.str_begin);

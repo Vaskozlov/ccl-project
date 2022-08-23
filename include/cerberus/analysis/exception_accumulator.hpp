@@ -13,32 +13,32 @@ namespace cerb::analysis
     class ExceptionAccumulator
     {
     public:
-        CERBLIB_DECL auto getErrors() -> std::vector<std::unique_ptr<T>> &
+        CERBLIB_DECL auto getErrors() noexcept -> std::vector<std::unique_ptr<T>> &
         {
             return errors;
         }
 
-        CERBLIB_DECL auto getErrors() const -> const std::vector<std::unique_ptr<T>> &
+        CERBLIB_DECL auto getErrors() const noexcept -> const std::vector<std::unique_ptr<T>> &
         {
             return errors;
         }
 
-        CERBLIB_DECL auto getWarnings() -> std::vector<std::unique_ptr<T>> &
+        CERBLIB_DECL auto getWarnings() noexcept -> std::vector<std::unique_ptr<T>> &
         {
             return warnings;
         }
 
-        CERBLIB_DECL auto getWarnings() const -> const std::vector<std::unique_ptr<T>> &
+        CERBLIB_DECL auto getWarnings() const noexcept -> const std::vector<std::unique_ptr<T>> &
         {
             return warnings;
         }
 
-        constexpr auto clearErrors() -> void
+        constexpr auto clearErrors() noexcept -> void
         {
             errors.clear();
         }
 
-        constexpr auto clearWarnings() -> void
+        constexpr auto clearWarnings() noexcept -> void
         {
             warnings.clear();
         }

@@ -41,9 +41,12 @@ namespace cerb::text
         message.insert(insertion_position, insertion_size, u8'0');
     }
 
+    // NOLINTNEXTLINE method can not be static
     auto TextIterator::NotationEscapingSymbolizer::checkNotation() const -> void
     {
-        assert(land(notation_power > 0, notation_power <= 4));
+        if (not land(notation_power > 0, notation_power <= 4)) {
+            throw InvalidArgument{ "notation power must be in range [1, 4]" };
+        }
     }
 
     auto TextIterator::NotationEscapingSymbolizer::isOutOfNotation(char32_t chr) const -> bool
@@ -93,7 +96,7 @@ namespace cerb::text
         TextIterator &text_iterator_,
         u16 max_times_,
         u16 notation_power_,
-        bool need_all_chars_)
+        bool need_all_chars_) noexcept
       : text_iterator{ text_iterator_ }, max_times{ max_times_ }, notation_power{ notation_power_ },
         need_all_chars{ need_all_chars_ }
     {

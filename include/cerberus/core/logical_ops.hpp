@@ -8,13 +8,13 @@
 namespace cerb
 {
     template<Boolean... Ts>
-    CERBLIB_DECL auto land(Ts &&...args) -> bool
+    CERBLIB_DECL auto land(Ts &&...args) noexcept -> bool
     {
         return (... && std::forward<Ts>(args));
     }
 
     template<Boolean... Ts>
-    CERBLIB_DECL auto lor(Ts &&...args) -> bool
+    CERBLIB_DECL auto lor(Ts &&...args) noexcept -> bool
     {
         return (... || std::forward<Ts>(args));
     }
