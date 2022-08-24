@@ -72,8 +72,8 @@ namespace cerb::fmt
         }
 
         template<typename... Args>
-        constexpr explicit Formatter(Args &&...args)
-            requires(not ConstexprFormatting || not clang_compiler)
+        constexpr explicit Formatter(Args &&...args) requires(
+            not ConstexprFormatting || not clang_compiler)
         {
             static_assert(sizeof...(Args) == string_blocks.size() - 1, "Wrong number of arguments");
 
@@ -82,9 +82,8 @@ namespace cerb::fmt
         }
 
         template<typename... Args>
-        constexpr explicit Formatter(Args &&...args)
-            requires(ConstexprFormatting && clang_compiler)
-        : formatted_string{ u8"needs to be filled to use in constant expression" }
+        constexpr explicit Formatter(Args &&...args) requires(ConstexprFormatting &&clang_compiler)
+          : formatted_string{ u8"needs to be filled to use in constant expression" }
         {
             static_assert(sizeof...(Args) == string_blocks.size() - 1, "Wrong number of arguments");
 
@@ -133,7 +132,7 @@ namespace cerb::fmt
             }
         }
 
-        constexpr static auto countApproximateLength() noexcept-> unsigned long
+        constexpr static auto countApproximateLength() noexcept -> unsigned long
         {
             constexpr auto string_size = std::accumulate(
                 string_blocks.begin(), string_blocks.end(), static_cast<size_t>(0),

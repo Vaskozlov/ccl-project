@@ -33,8 +33,8 @@ namespace cerb
 
     template<typename T, typename CharT>
     concept StringType = std::is_same_v<T, BasicStringView<CharT>> ||
-                         std::is_same_v<T, std::basic_string_view<CharT>> ||
-                         std::is_same_v<T, std::basic_string<CharT>>;
+        std::is_same_v<T, std::basic_string_view<CharT>> ||
+        std::is_same_v<T, std::basic_string<CharT>>;
 
     template<CharacterLiteral CharT>
     struct BasicStringView
