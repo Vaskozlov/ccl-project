@@ -21,7 +21,7 @@ namespace cerb::fmt::core
     public:
         using storage_t = std::array<value_type, blocks_num>;
 
-        CERBLIB_DECL auto get() const -> const storage_t &
+        CERBLIB_DECL auto get() const noexcept -> const storage_t &
         {
             return blocks;
         }
@@ -44,7 +44,7 @@ namespace cerb::fmt::core
         ~StringSplitter() = default;
 
     private:
-        CERBLIB_DECL auto isEveryBlockFilled() const -> bool
+        CERBLIB_DECL auto isEveryBlockFilled() const noexcept -> bool
         {
             return current_block == blocks_num;
         }

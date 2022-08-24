@@ -15,7 +15,6 @@ namespace cerb::lex::dot_item
 
         using typename BasicItem::CommentTokens;
         using typename BasicItem::ExceptionAccumulator;
-        using typename BasicItem::ScanStatus;
         using typename BasicItem::TextIterator;
 
     public:
@@ -40,7 +39,7 @@ namespace cerb::lex::dot_item
             return string;
         }
 
-        [[nodiscard]] auto getRef() noexcept -> std::u8string &
+        [[nodiscard]] auto getByRef() noexcept -> std::u8string &
         {
             return string;
         }

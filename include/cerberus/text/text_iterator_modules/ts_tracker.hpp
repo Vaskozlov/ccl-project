@@ -9,17 +9,17 @@ namespace cerb::text::module
     class TsTracker
     {
     public:
-        CERBLIB_DECL auto size() const -> size_t
+        CERBLIB_DECL auto size() const noexcept -> size_t
         {
             return tabs_and_spaces.size();
         }
 
-        CERBLIB_DECL auto empty() const -> bool
+        CERBLIB_DECL auto empty() const noexcept -> bool
         {
             return tabs_and_spaces.empty();
         }
 
-        CERBLIB_DECL auto get() const -> const std::u32string &
+        CERBLIB_DECL auto get() const noexcept -> const std::u32string &
         {
             return tabs_and_spaces;
         }
@@ -38,7 +38,7 @@ namespace cerb::text::module
         TsTracker() = default;
 
     private:
-        constexpr auto clearIfNeed() -> void
+        constexpr auto clearIfNeed() noexcept -> void
         {
             if (need_to_clear) {
                 tabs_and_spaces.clear();
@@ -46,7 +46,7 @@ namespace cerb::text::module
             }
         }
 
-        CERBLIB_DECL static auto isTabOrSpace(char32_t chr) -> bool
+        CERBLIB_DECL static auto isTabOrSpace(char32_t chr) noexcept -> bool
         {
             return lor(chr == '\t', chr == ' ');
         }

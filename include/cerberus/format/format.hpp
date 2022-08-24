@@ -11,28 +11,49 @@
 
 namespace cerb::fmt
 {
+    template<size_t BufferSize = 128>// NOLINT
     struct StaticFormatterFrame
     {
-        CERBLIB_DECL operator u8string_view() const// NOLINT
-        {
-            return { buffer.data(), size };
-        }
-
         StaticFormatterFrame() = default;
 
-        constexpr explicit StaticFormatterFrame(const std::u8string &string) : size(string.size())
+        constexpr StaticFormatterFrame(const std::u8string &string) : size(string.size())// NOLINT
         {
-            if (string.size() > buffer_size) {
+            if (string.size() > BufferSize) {
                 throw InvalidArgument{ "string is too big" };
             }
 
             std::ranges::copy(string, buffer.begin());
         }
 
-        static constexpr auto buffer_size = static_cast<size_t>(128);
+        CERBLIB_DECL auto begin() const noexcept
+        {
+            return buffer.begin();
+        }
 
-        std::array<char8_t, buffer_size> buffer{};
+        CERBLIB_DECL auto end() const noexcept
+        {
+            return buffer.begin() + size;
+        }
+
+        CERBLIB_DECL operator u8string_view() const noexcept// NOLINT
+        {
+            return { buffer.data(), size };
+        }
+
+        std::array<char8_t, BufferSize> buffer{};
         size_t size{};
+    };
+
+    template<typename T, size_t N>
+    struct ArrayConvertableToStrView : std::array<T, N>
+    {
+        using Base = std::array<T, N>;
+        using Base::data;
+
+        CERBLIB_DECL operator u8string_view() const noexcept// NOLINT
+        {
+            return { data(), N };
+        }
     };
 
     template<ConstString String, bool ConstexprFormatting = false>
@@ -45,7 +66,7 @@ namespace cerb::fmt
 #endif
 
     public:
-        CERBLIB_DECL auto get() -> std::u8string &
+        CERBLIB_DECL auto get() noexcept -> std::u8string &
         {
             return formatted_string;
         }
@@ -95,7 +116,7 @@ namespace cerb::fmt
         }
 
         template<size_t Index>
-        CERBLIB_DECL static auto isNotEmptyBlock() -> bool
+        CERBLIB_DECL static auto isNotEmptyBlock() noexcept -> bool
         {
             return not string_blocks[Index].empty();
         }
@@ -111,7 +132,7 @@ namespace cerb::fmt
             }
         }
 
-        constexpr static auto countApproximateLength() -> unsigned long
+        constexpr static auto countApproximateLength() noexcept -> unsigned long
         {
             constexpr auto string_size = std::accumulate(
                 string_blocks.begin(), string_blocks.end(), static_cast<size_t>(0),
@@ -141,10 +162,24 @@ namespace cerb::fmt
         return formatter.get();
     }
 
-    template<ConstString String, auto... args>
-    consteval auto staticFormat() -> StaticFormatterFrame
+    template<ConstString String, auto... Args>
+    struct StaticFormatter
     {
-        return StaticFormatterFrame{ format<String>(args...) };
+        constexpr static auto formatted_string =
+            StaticFormatterFrame<1024>{ format<String>(Args...) };
+
+        constexpr static auto get() -> ArrayConvertableToStrView<char8_t, formatted_string.size>
+        {
+            auto result = ArrayConvertableToStrView<char8_t, formatted_string.size>{};
+            std::ranges::copy(formatted_string, result.begin());
+            return result;
+        }
+    };
+
+    template<ConstString String, auto... Args>
+    consteval auto staticFormat()
+    {
+        return StaticFormatter<String, Args...>{}.get();
     }
 }// namespace cerb::fmt
 

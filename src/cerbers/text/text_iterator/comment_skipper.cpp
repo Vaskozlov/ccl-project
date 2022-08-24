@@ -17,7 +17,8 @@ namespace cerb::text
         return false;
     }
 
-    auto TextIterator::CommentSkipper::isComment(u8string_view const &comment) const -> bool
+    auto TextIterator::CommentSkipper::isComment(u8string_view const &comment) const noexcept
+        -> bool
     {
         auto text = text_iterator.getRemaining();
         return not comment.empty() && text.startsWith(comment);

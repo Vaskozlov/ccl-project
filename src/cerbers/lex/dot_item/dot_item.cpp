@@ -4,6 +4,12 @@ namespace cerb::lex::dot_item
 {
     using namespace cerb::string_view_literals;
 
+    static auto splitStringByIndex(const std::u8string &string, size_t index)
+        -> std::pair<std::u8string, std::u8string>
+    {
+        return { string.substr(0, index), string.substr(index + 1) };
+    }
+
     auto DotItem::scanIteration(TextIterator &text_iterator, Token &token) const -> bool
     {
         for (auto &&item : items) {
@@ -28,6 +34,7 @@ namespace cerb::lex::dot_item
         return scan_result.has_value();
     }
 
+    // NOLINTNEXTLINE recursive function
     auto DotItem::parseRule(TextIterator &rule_iterator) -> void
     {
         auto counter = ItemsCounter{ rule_iterator };
@@ -38,7 +45,7 @@ namespace cerb::lex::dot_item
             rule_iterator.skipCommentsAndLayout();
         }
 
-        postCheck(rule_iterator, counter);
+        postCreationCheck(rule_iterator, counter);
     }
 
     auto DotItem::hasMovedToTheNextChar(TextIterator &rule_iterator) -> bool
@@ -46,24 +53,24 @@ namespace cerb::lex::dot_item
         return not isEoF(rule_iterator.nextRawChar());
     }
 
-    auto DotItem::recognizeAction(TextIterator &rule_iterator, ItemsCounter &counter) -> void
+    // NOLINTNEXTLINE recursive function
+    auto DotItem::recognizeAction(TextIterator &rule_iterator, ItemsCounter &items_counter) -> void
     {
         switch (rule_iterator.getCurrentChar()) {
         case U'[':
-            emplaceItem(constructNewUnion(rule_iterator, counter));
+            emplaceItem(constructNewUnion(rule_iterator, items_counter));
             break;
 
         case U'\"':
-            emplaceItem(constructNewSequence(rule_iterator, counter));
+            emplaceItem(constructNewSequence(rule_iterator, items_counter));
             break;
 
         case U'(':
-            emplaceItem(constructNewItem(rule_iterator, counter));
+            emplaceItem(constructNewItem(rule_iterator, items_counter));
             break;
 
         case U'\'':
-            counter += item::Terminal;
-            constructTerminal(rule_iterator);
+            constructTerminal(rule_iterator, items_counter);
             break;
 
         case U'*':
@@ -92,24 +99,15 @@ namespace cerb::lex::dot_item
             break;
 
         case U'c':
-            if (rule_iterator.futureRawChar(1) == U'o') {
-                rule_iterator.nextRawChar();
-                constructComment(rule_iterator);
-            } else {
-                counter += item::Character;
-                constructString(rule_iterator, true, false);
-            }
-
+            constructCommentOrCharacter(rule_iterator, items_counter);
             break;
 
         case U's':
-            counter += item::String;
-            constructString(rule_iterator, false, false);
+            constructString(items_counter, false, false);
             break;
 
         case U'm':
-            counter += item::String;
-            constructString(rule_iterator, false, true);
+            constructString(items_counter, false, true);
             break;
 
         default:
@@ -121,7 +119,8 @@ namespace cerb::lex::dot_item
     auto DotItem::constructNewSequence(TextIterator &rule_iterator, ItemsCounter &items_counter)
         -> std::unique_ptr<BasicItem>
     {
-        items_counter += item::Sequence;
+        items_counter.add(item::Sequence);
+
         return std::make_unique<Sequence>(
             Sequence::SequenceFlags{}, u8"\"", rule_iterator, analysis_shared);
     }
@@ -129,26 +128,96 @@ namespace cerb::lex::dot_item
     auto DotItem::constructNewUnion(TextIterator &rule_iterator, ItemsCounter &items_counter)
         -> std::unique_ptr<BasicItem>
     {
-        items_counter += item::Union;
+        items_counter.add(item::Union);
+
         return std::make_unique<Union>(rule_iterator, analysis_shared);
     }
 
+    // NOLINTNEXTLINE (recursive function)
     auto DotItem::constructNewItem(TextIterator &rule_iterator, ItemsCounter &items_counter)
         -> std::unique_ptr<BasicItem>
     {
-        items_counter += item::DotItem;
+        items_counter.add(item::DotItem);
 
         auto text = rule_iterator.getRemaining();
-        const auto *saved_end = text.end();
+        const auto *saved_end = rule_iterator.getEnd();
         auto bracket_index = findDotItemEnd(rule_iterator, text);
 
         rule_iterator.setEnd(text.begin() + bracket_index);
 
         auto new_dot_item = std::make_unique<DotItem>(rule_iterator, id, analysis_shared, false);
-
         rule_iterator.setEnd(saved_end);
 
         return new_dot_item;
+    }
+
+    auto DotItem::constructString(ItemsCounter &items_counter, bool is_character, bool is_multiline)
+        -> void
+    {
+        if (is_character) {
+            items_counter.add(item::Character);
+        } else {
+            items_counter.add(item::String);
+        }
+
+        auto *sequence = unsafeGetLastItemAs<Sequence>();// check is above
+        auto &strings_and_chars = analysis_shared.strings_and_chars;
+        auto &string = sequence->getByRef();
+        auto column_index = string.find(u8':');
+
+        if (column_index == std::u8string::npos) {
+            strings_and_chars.emplace_back(std::move(string), id, is_character, is_multiline);
+        } else {
+            auto [string_begin, string_end] = splitStringByIndex(string, column_index);
+
+            strings_and_chars.emplace_back(
+                std::move(string_begin), std::move(string_end), id, is_character, is_multiline);
+        }
+
+        items.pop_back();
+    }
+
+    auto DotItem::constructTerminal(TextIterator &rule_iterator, ItemsCounter &items_counter)
+        -> void
+    {
+        items_counter.add(item::Terminal);
+
+        auto &terminals = analysis_shared.terminals;
+        auto sequence = Sequence{ {}, u8"\'", rule_iterator, analysis_shared };
+
+        terminals.addString(std::move(sequence.getByRef()), id);
+    }
+
+    auto DotItem::constructComment(ItemsCounter &items_counter) -> void
+    {
+        items_counter.add(item::Comment);
+
+        auto *sequence = unsafeGetLastItemAs<Sequence>();// check is above
+        auto &string = sequence->getByRef();
+        auto column_index = string.find(u8':');
+        auto &[single_line_comment, multiline_begin_comment, multiline_end_comment] =
+            analysis_shared.comment_tokens;
+
+        if (column_index == std::u8string::npos) {
+            single_line_comment = string;
+        } else {
+            auto [comment_begin, comment_end] = splitStringByIndex(string, column_index);
+            multiline_begin_comment = std::move(comment_begin);
+            multiline_end_comment = std::move(comment_end);
+        }
+
+        items.pop_back();
+    }
+
+    auto DotItem::constructCommentOrCharacter(
+        TextIterator &rule_iterator, ItemsCounter &items_counter) -> void
+    {
+        if (rule_iterator.futureRawChar(1) == U'o') {
+            rule_iterator.nextRawChar();
+            constructComment(items_counter);
+        } else {
+            constructString(items_counter, true, false);
+        }
     }
 
     auto DotItem::emplaceItem(std::unique_ptr<BasicItem> &&item) -> void
@@ -170,78 +239,18 @@ namespace cerb::lex::dot_item
         }
     }
 
-    auto DotItem::constructString(TextIterator &rule_iterator, bool is_character, bool is_multiline)
-        -> void
-    {
-        checkThereIsOnlySequence(rule_iterator, u8"char/string");
-
-        // usage is safe, because checkStringConstructionAvailability checks that the last item
-        // is sequence
-        auto *sequence = unsafeGetLastItemAs<Sequence>();
-        auto &strings_and_chars = analysis_shared.strings_and_chars;
-        auto &string = sequence->getRef();
-        auto column_index = string.find(u8':');
-
-        if (column_index == u8string_view::npos) {
-            strings_and_chars.emplace_back(string, id, is_character, is_multiline);
-        } else {
-            auto string_begin = string.substr(0, column_index);
-            auto string_end = string.substr(column_index + 1);
-
-            strings_and_chars.emplace_back(
-                std::move(string_begin), std::move(string_end), id, is_character, is_multiline);
-        }
-
-        items.pop_back();
-    }
-
-    auto DotItem::constructTerminal(TextIterator &rule_iterator) -> void
-    {
-        checkNotEmpty(
-            rule_iterator, u8"dot item with terminal must be empty", u8"delete other items");
-
-        auto &terminals = analysis_shared.terminals;
-        auto sequence = Sequence{ {}, u8"\'", rule_iterator, analysis_shared };
-
-        terminals.addString(std::move(sequence.getRef()), id);
-    }
-
-    auto DotItem::constructComment(TextIterator &rule_iterator) -> void
-    {
-        checkThereIsOnlySequence(rule_iterator, u8"comment");
-
-        auto *sequence = unsafeGetLastItemAs<Sequence>();
-        auto &string = sequence->getRef();
-        auto column_index = string.find(u8':');
-        auto &[single_line_comment, multiline_begin_comment, multiline_end_comment] =
-            analysis_shared.comment_tokens;
-
-        if (column_index == u8string_view::npos) {
-            single_line_comment = string;
-        } else {
-            auto comment_begin = string.substr(0, column_index);
-            auto comment_end = string.substr(column_index + 1);
-
-            multiline_begin_comment = comment_begin;
-            multiline_end_comment = comment_end;
-        }
-
-        items.pop_back();
-    }
-
     auto DotItem::addRecurrence(TextIterator &rule_iterator, Recurrence new_recurrence) -> void
     {
         if (items.empty()) {
-            throwUnableToApply<u8"no items found", u8"set recurrence modifier after item">(
-                rule_iterator);
+            throwUnableToApply<u8"no items found">(
+                rule_iterator, u8"set recurrence modifier after item");
         }
 
         auto &last_item = items.back();
 
         if (last_item->getRecurrence() != Recurrence::basic()) {
-            throwUnableToApply<
-                u8"item already has recurrence", u8"do not set recurrence more than once">(
-                rule_iterator);
+            throwUnableToApply<u8"item already has recurrence">(
+                rule_iterator, u8"do not set recurrence more than once");
         }
 
         last_item->setRecurrence(new_recurrence);
@@ -256,34 +265,33 @@ namespace cerb::lex::dot_item
         auto &last_item = items.back();
 
         if (last_item->isReversed()) {
-            throwUnableToApply<
-                u8"item already has reverse modifier", u8"do not reverse it more than once">(
-                rule_iterator);
+            throwUnableToApply<u8"item already has reverse modifier">(
+                rule_iterator, u8"do not reverse it more than once");
         }
 
         last_item->reverse();
     }
 
-    auto DotItem::postCheck(TextIterator &rule_iterator, const ItemsCounter &counter) -> void
+    auto DotItem::postCreationCheck(TextIterator &rule_iterator, const ItemsCounter &counter)
+        -> void
     {
         if (counter.hasStrOrChar() && counter.hasSequences()) {
-            throwUnableToApply<
-                u8"string or character expected, but got sequence",
-                u8"add string or character modifier to the sequence">(rule_iterator);
+            throwUnableToApply<u8"string or character expected, but got sequence">(
+                rule_iterator, u8"add string or character modifier to the sequence");
         }
 
         auto postfix_elem =
-            std::ranges::find_if(items, [](auto &elem) { return elem->hasPostfix(); });
+            std::ranges::find_if(items, [](const auto &elem) { return elem->hasPostfix(); });
 
-        auto are_postfixes_correct =
-            std::all_of(postfix_elem, items.end(), [](auto &elem) { return elem->hasPostfix(); });
+        auto are_postfixes_correct = std::all_of(
+            postfix_elem, items.end(), [](const auto &elem) { return elem->hasPostfix(); });
 
         if (not are_postfixes_correct) {
             auto suggestion = fmt::format<u8"add postfix modifier to the last item\n{}p">(
                 rule_iterator.getWorkingLine());
-            throwUnableToApply(
-                rule_iterator, u8"item without postfix modifier exists after items with it"_sv,
-                suggestion);
+
+            throwUnableToApply<u8"item without postfix modifier exists after items with it">(
+                rule_iterator, suggestion);
         }
     }
 
@@ -299,32 +307,12 @@ namespace cerb::lex::dot_item
         return *bracket_index;
     }
 
-    auto DotItem::checkThereIsOnlySequence(TextIterator &rule_iterator, u8string_view modifier)
-        -> void
-    {
-        if (items.empty() || dynamic_cast<Sequence *>(items.back().get()) == nullptr) {
-            auto message = fmt::format<u8"not sequence found to apply {} modifier">(modifier);
-
-            auto suggestion = fmt::format<
-                u8"create sequence or do not apply {} modifier to "
-                "other items">(modifier);
-
-            throwUnableToApply(rule_iterator, message, suggestion);
-        }
-
-        if (items.size() != 1) {
-            auto message =
-                fmt::format<u8"{} modifier, the number of items is more than 1">(modifier);
-            throwUnableToApply(rule_iterator, message);
-        }
-    }
-
     auto DotItem::checkAbilityToCreatePrefixPostfix(TextIterator &rule_iterator) -> void
     {
         if (not main_item) {
             throwUnableToApply<
-                u8"you are not allowed to create prefixes or postfixes inside other dot items",
-                u8"create them only in main item">(rule_iterator);
+                u8"you are not allowed to create prefixes or postfixes inside other dot items">(
+                rule_iterator, u8"create them only in main item");
         }
 
         if (items.empty()) {
@@ -334,44 +322,22 @@ namespace cerb::lex::dot_item
         auto &last_item = items.back();
 
         if (last_item->hasPrefix()) {
-            throwUnableToApply<
-                u8"item already has prefix modifier", u8"do not add it more than once">(
-                rule_iterator);
+            throwUnableToApply<u8"item already has prefix modifier">(
+                rule_iterator, u8"do not add it more than once");
         }
 
         if (last_item->hasPostfix()) {
-            throwUnableToApply<
-                u8"item already has postfix modifier", u8"do not add it more than once">(
-                rule_iterator);
+            throwUnableToApply<u8"item already has postfix modifier">(
+                rule_iterator, u8"do not add it more than once");
         }
     }
 
-    auto DotItem::checkNotEmpty(
-        TextIterator &rule_iterator, u8string_view message, u8string_view suggestion) -> void
-    {
-        if (not items.empty()) {
-            rule_iterator.throwException<DotItemException>(message, suggestion);
-            throw UnrecoverableError{ "unrecoverable error in dot item" };
-        }
-    }
-
-    template<ConstString Reason, ConstString Suggestion>
-    auto DotItem::throwUnableToApply(TextIterator &rule_iterator) -> void
+    template<ConstString Reason>
+    auto DotItem::throwUnableToApply(TextIterator &rule_iterator, u8string_view suggestion) -> void
     {
         static constexpr auto reason = fmt::staticFormat<u8"unable to apply: {}", Reason>();
 
-        rule_iterator.throwException<DotItemException>(reason, Suggestion);
-        throw UnrecoverableError{ "unrecoverable error in DotItemType" };
-    }
-
-    auto DotItem::throwUnableToApply(
-        TextIterator &rule_iterator,
-        u8string_view reason,
-        u8string_view suggestion) -> void
-    {
-        auto formatted_reason = fmt::format<u8"unable to apply: {}">(reason);
-
-        rule_iterator.throwException<DotItemException>(formatted_reason, suggestion);
+        rule_iterator.throwException<DotItemException>(reason, suggestion);
         throw UnrecoverableError{ "unrecoverable error in DotItemType" };
     }
 

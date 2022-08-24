@@ -12,6 +12,7 @@
 #include <set>
 #include <string>
 #include <string_view>
+#include <unordered_set>
 #include <variant>
 #include <vector>
 
@@ -20,9 +21,14 @@
 #include <cstddef>
 #include <exception>
 #include <functional>
+#include <iterator>
+#include <memory>
 #include <numeric>
 #include <utility>
 #include <version>
+
+#include <ostream>
+#include <sstream>
 
 #include <fmt/format.h>
 

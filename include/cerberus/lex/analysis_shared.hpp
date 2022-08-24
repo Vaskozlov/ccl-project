@@ -33,23 +33,24 @@ namespace cerb::lex
     {
         using CommentTokens = text::CommentTokens;
 
-        [[nodiscard]] auto isTerminal(const u8string_view &text) const noexcept -> bool
+        [[nodiscard]] auto isTerminal(const u8string_view &text) const -> bool
         {
             return terminals.matches(text);
         }
 
-        [[nodiscard]] auto isComment(const u8string_view &text) const -> bool;
+        [[nodiscard]] auto isComment(const u8string_view &text) const noexcept -> bool;
         [[nodiscard]] auto isNextCharNotForScanning(const text::TextIterator &text_iterator) const
             -> bool;
 
         [[nodiscard]] auto getSpecialToken(text::TextIterator &text_iterator) const
             -> std::optional<Token>;
 
-        [[nodiscard]] auto isStringOrChar(const u8string_view &text) const -> bool;
+        [[nodiscard]] auto isStringOrChar(const u8string_view &text) const noexcept -> bool;
 
     private:
         [[nodiscard]] static auto
-            basicIsComment(const u8string_view &text, const u8string_view &comment) -> bool;
+            basicIsComment(const u8string_view &text, const u8string_view &comment) noexcept
+            -> bool;
 
         [[nodiscard]] static auto constructTerminalToken(
             text::TextIterator &text_iterator,
@@ -59,6 +60,16 @@ namespace cerb::lex
         [[nodiscard]] static auto
             constructStringToken(text::TextIterator &text_iterator, const String &string_elem)
                 -> Token;
+
+        static auto checkForEmptyCharacterDefinition(
+            text::TextIterator &text_iterator,
+            bool is_character,
+            const std::u8string &string_value) -> void;
+
+        static auto checkForMoreCharactersInCharacter(
+            text::TextIterator &text_iterator,
+            bool is_character,
+            const std::u8string &string_value) -> void;
 
     public:
         CommentTokens comment_tokens{};

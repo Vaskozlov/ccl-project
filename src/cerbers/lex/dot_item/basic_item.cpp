@@ -22,17 +22,11 @@ namespace cerb::lex::dot_item
         auto local_token = Token{ token };
 
         while (times < recurrence.to) {
-            auto token_copy = local_token;
-            auto iterator_copy = local_iterator;
-
-            if (scanIteration(iterator_copy, token_copy) ^ reversed) {
+            if (scanIterationCall(local_iterator, local_token)) {
                 ++times;
-                local_iterator = std::move(iterator_copy);
-                local_token = std::move(token_copy);
-                continue;
+            } else {
+                break;
             }
-
-            break;
         }
 
         if (successfullyScanned(local_iterator, times, main_scan)) {
@@ -44,6 +38,21 @@ namespace cerb::lex::dot_item
         }
 
         return std::nullopt;
+    }
+
+    auto BasicItem::scanIterationCall(TextIterator &local_iterator, Token &local_token) const
+        -> bool
+    {
+        auto token_copy = local_token;
+        auto iterator_copy = local_iterator;
+
+        if (scanIteration(iterator_copy, token_copy) ^ reversed) {
+            local_iterator = std::move(iterator_copy);
+            local_token = std::move(token_copy);
+            return true;
+        }
+
+        return false;
     }
 
     auto BasicItem::successfullyScanned(

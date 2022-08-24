@@ -16,57 +16,57 @@ namespace cerb
         using const_iterator = typename storage_t::const_iterator;
         using const_reverse_iterator = typename storage_t::const_reverse_iterator;
 
-        CERBLIB_DECL auto begin() const -> const_iterator
+        CERBLIB_DECL auto begin() const noexcept -> const_iterator
         {
             return string.begin();
         }
 
-        CERBLIB_DECL auto end() const -> const_iterator
+        CERBLIB_DECL auto end() const noexcept -> const_iterator
         {
             return string.begin() + size();
         }
 
-        CERBLIB_DECL auto cbegin() const -> const_iterator
+        CERBLIB_DECL auto cbegin() const noexcept -> const_iterator
         {
             return begin();
         }
 
-        CERBLIB_DECL auto cend() const -> const_iterator
+        CERBLIB_DECL auto cend() const noexcept -> const_iterator
         {
             return end();
         }
 
-        CERBLIB_DECL auto rbegin() const -> const_reverse_iterator
+        CERBLIB_DECL auto rbegin() const noexcept -> const_reverse_iterator
         {
             return const_reverse_iterator{ end() };
         }
 
-        CERBLIB_DECL auto rend() const -> const_reverse_iterator
+        CERBLIB_DECL auto rend() const noexcept -> const_reverse_iterator
         {
             return const_reverse_iterator{ begin() };
         }
 
-        CERBLIB_DECL auto crbegin() const -> const_reverse_iterator
+        CERBLIB_DECL auto crbegin() const noexcept -> const_reverse_iterator
         {
             return rbegin();
         }
 
-        CERBLIB_DECL auto crend() const -> const_reverse_iterator
+        CERBLIB_DECL auto crend() const noexcept -> const_reverse_iterator
         {
             return rend();
         }
 
-        CERBLIB_DECL auto size() const -> size_t
+        CERBLIB_DECL auto size() const noexcept -> size_t
         {
             return string.size() - 1;
         }
 
-        CERBLIB_DECL auto empty() const -> bool
+        CERBLIB_DECL auto empty() const noexcept -> bool
         {
             return size() == 0;
         }
 
-        CERBLIB_DECL operator u8string_view() const  // NOLINT
+        CERBLIB_DECL operator u8string_view() const noexcept// NOLINT
         {
             return { string.data(), size() };
         }
@@ -81,7 +81,7 @@ namespace cerb
             return string[index];
         }
 
-        CERBLIB_DECL auto operator<=>(const ConstString &other) const
+        CERBLIB_DECL auto operator<=>(const ConstString &other) const noexcept
             -> std::weak_ordering = default;
 
         // NOLINTNEXTLINE

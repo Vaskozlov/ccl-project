@@ -36,12 +36,7 @@ namespace cerb
         RawStringMatcher() = default;
 
         RawStringMatcher(
-            const std::initializer_list<std::pair<std::u8string, size_t>> &initial_data)
-        {
-            for (auto &&[string, value] : initial_data) {
-                addString(string, value);
-            }
-        }
+            const std::initializer_list<std::pair<std::u8string, size_t>> &initial_data);
 
     private:
         [[nodiscard]] auto reachable(const u8string_view &string, size_t level) const -> bool;

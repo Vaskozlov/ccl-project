@@ -2,6 +2,15 @@
 
 namespace cerb::lex
 {
+    LexicalAnalyzer::LexicalAnalyzer(
+        const std::initializer_list<std::pair<size_t, u8string_view>> &rules_,
+        u8string_view filename, const CommentTokens &comment_tokens_)
+    {
+        for (const auto &[id, rule] : rules_) {
+            errors += createDotItem(rule, id, comment_tokens_, filename);
+        }
+    }
+
     auto LexicalAnalyzer::yield(TextIterator &text_iterator) const -> Token
     {
         if (text_iterator.isEnd()) {
@@ -28,15 +37,6 @@ namespace cerb::lex
 
         text_iterator.throwException<LexicalAnalysisException>(u8"unrecognizable token");
         throw UnrecoverableError{ "unrecognizable token" };// TODO: return token with error id
-    }
-
-    LexicalAnalyzer::LexicalAnalyzer(
-        const std::initializer_list<std::pair<size_t, u8string_view>> &rules_,
-        u8string_view filename, CommentTokens comment_tokens_)
-    {
-        for (auto [id, rule] : rules_) {
-            errors += createDotItem(rule, id, comment_tokens_, filename);
-        }
     }
 
     auto LexicalAnalyzer::createDotItem(

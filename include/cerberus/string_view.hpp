@@ -2,7 +2,9 @@
 #define CERBERUS_PROJECT_STRING_VIEW_HPP
 
 #include <algorithm>
+#include <array>
 #include <cerberus/cerberus.hpp>
+#include <numeric>
 #include <optional>
 #include <string_view>
 
@@ -270,7 +272,7 @@ namespace cerb
             return size() <=> std::size(other);
         }
 
-        BasicStringView() = default;
+        BasicStringView() noexcept = default;
 
         template<size_t N>
         constexpr explicit BasicStringView(const std::array<CharT, N> &array_) noexcept

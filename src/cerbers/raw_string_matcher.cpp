@@ -2,6 +2,14 @@
 
 namespace cerb
 {
+    RawStringMatcher::RawStringMatcher(
+        const std::initializer_list<std::pair<std::u8string, size_t>> &initial_data)
+    {
+        for (auto &&[string, value] : initial_data) {
+            addString(string, value);
+        }
+    }
+
     auto RawStringMatcher::match(const u8string_view &string) const
         -> std::optional<std::pair<std::u8string, size_t>>
     {
@@ -33,7 +41,7 @@ namespace cerb
 
         for (; reachable(string, index); ++index) {
             auto chr = string[index];
-            auto &level = char_levels[index];
+            const auto &level = char_levels[index];
 
             if (not level.at(chr)) {
                 break;
