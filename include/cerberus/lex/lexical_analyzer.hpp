@@ -15,11 +15,21 @@ namespace cerb::lex
         using ExceptionAccumulator = typename BasicItem::ExceptionAccumulator;
 
     public:
-        auto yield(TextIterator &text_iterator) const -> Token;
-
         LexicalAnalyzer(
             const std::initializer_list<std::pair<size_t, u8string_view>> &rules_,
-            u8string_view filename = {}, CommentTokens comment_tokens_ = { u8"#" });
+            u8string_view filename = {}, const CommentTokens &comment_tokens_ = { u8"#" });
+
+        [[nodiscard]] auto getExceptionAccumulator() -> ExceptionAccumulator &
+        {
+            return exception_accumulator;
+        }
+
+        [[nodiscard]] auto getExceptionAccumulator() const -> const ExceptionAccumulator &
+        {
+            return exception_accumulator;
+        }
+
+        auto yield(TextIterator &text_iterator) const -> Token;
 
     private:
         auto createDotItem(

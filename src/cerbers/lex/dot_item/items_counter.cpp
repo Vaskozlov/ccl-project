@@ -46,9 +46,16 @@ namespace cerb::lex::dot_item
         ++terminals;
     }
 
+    auto ItemsCounter::add(item::CommentType /* unused */) -> void
+    {
+        checkForUnexpectedTerminals<u8"comment">();
+        checkThereIsOneSequence<u8"comment">();
+        --sequences;
+    }
+
     auto ItemsCounter::checkAbilityToCreateSequence() -> void
     {
-        if (hasStrOrChar() && hasSequences()) {
+        if (land(hasStrOrChar(), hasSequences())) {
             throwItemCreationError<
                 u8"sequence", u8"attempt to create sequence in string like item",
                 u8"do not declare sequences in string like item">();
@@ -75,7 +82,7 @@ namespace cerb::lex::dot_item
                 ItemName, u8"too many sequences found", u8"delete sequences or join them">();
         }
 
-        if (hasUnions() || hasDotItems()) {
+        if (lor(hasUnions(), hasDotItems())) {
             throwItemCreationError<
                 ItemName, u8"because non sequence item exists in the rule",
                 u8"delete Union/DotItem">();

@@ -15,7 +15,6 @@ namespace cerb::lex::dot_item
 
         using typename BasicItem::CommentTokens;
         using typename BasicItem::ExceptionAccumulator;
-        using typename BasicItem::ScanStatus;
         using typename BasicItem::TextIterator;
 
     public:

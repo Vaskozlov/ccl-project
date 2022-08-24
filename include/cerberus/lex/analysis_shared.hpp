@@ -61,6 +61,16 @@ namespace cerb::lex
             constructStringToken(text::TextIterator &text_iterator, const String &string_elem)
                 -> Token;
 
+        static auto checkForEmptyCharacterDefinition(
+            text::TextIterator &text_iterator,
+            bool is_character,
+            const std::u8string &string_value) -> void;
+
+        static auto checkForMoreCharactersInCharacter(
+            text::TextIterator &text_iterator,
+            bool is_character,
+            const std::u8string &string_value) -> void;
+
     public:
         CommentTokens comment_tokens{};
         std::vector<String> strings_and_chars{};

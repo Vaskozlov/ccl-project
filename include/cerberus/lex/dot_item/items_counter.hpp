@@ -34,12 +34,17 @@ namespace cerb::lex::dot_item
         {
         };
 
+        struct CommentType : std::true_type
+        {
+        };
+
         constexpr auto Union = UnionType{};
         constexpr auto Sequence = SequenceType{};
         constexpr auto DotItem = DotItemType{};
         constexpr auto String = StringType{};
         constexpr auto Character = CharacterType{};
         constexpr auto Terminal = TerminalType{};
+        constexpr auto Comment = CommentType{};
     }// namespace item
 
     struct ItemsCounter
@@ -47,7 +52,8 @@ namespace cerb::lex::dot_item
         ItemsCounter(ItemsCounter &&) = delete;
         ItemsCounter(const ItemsCounter &) = delete;
 
-        explicit ItemsCounter(text::TextIterator &text_iterator_) : text_iterator(text_iterator_)
+        explicit ItemsCounter(text::TextIterator &text_iterator_) noexcept
+          : text_iterator(text_iterator_)
         {}
 
         ~ItemsCounter() = default;
@@ -95,6 +101,7 @@ namespace cerb::lex::dot_item
         auto add(item::StringType /* unused */) -> void;
         auto add(item::CharacterType /* unused */) -> void;
         auto add(item::TerminalType /* unused */) -> void;
+        auto add(item::CommentType /* unused */) -> void;
 
     private:
         auto checkAbilityToCreateSequence() -> void;

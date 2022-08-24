@@ -34,6 +34,13 @@ namespace cerb::text
         class EscapingSymbolizer;
         class NotationEscapingSymbolizer;
 
+        explicit TextIterator(
+            u8string_view input, ExceptionAccumulator *exception_accumulator_ = {},
+            CommentTokens comment_tokens_ = {}, u8string_view filename = {})
+          : Base(input), location(filename), line_tracker(input), comment_tokens(comment_tokens_),
+            exception_accumulator(exception_accumulator_)
+        {}
+
         [[nodiscard]] static auto
             doEscapeSymbolizing(TextIterator &text_iterator, const extra_symbols_t &extra_symbols_)
                 -> char32_t;
@@ -114,21 +121,6 @@ namespace cerb::text
                 T(getLocation(), getWorkingLine(), std::forward<Ts>(args)...));
         }
 
-        auto operator=(const TextIterator &) -> TextIterator & = default;
-        auto operator=(TextIterator &&) noexcept -> TextIterator & = default;
-
-        TextIterator(const TextIterator &) = default;
-        TextIterator(TextIterator &&) noexcept = default;
-
-        explicit TextIterator(
-            u8string_view input, ExceptionAccumulator *exception_accumulator_ = {},
-            CommentTokens comment_tokens_ = {}, u8string_view filename = {})
-          : Base(input), location(filename), line_tracker(input), comment_tokens(comment_tokens_),
-            exception_accumulator(exception_accumulator_)
-        {}
-
-        ~TextIterator() override = default;
-
     private:
         Location location{};
         module::TsTracker ts_tracker{};
@@ -196,7 +188,7 @@ namespace cerb::text
     class TextIterator::NotationEscapingSymbolizer
     {
     public:
-        CERBLIB_DECL auto get() const noexcept-> char32_t
+        CERBLIB_DECL auto get() const noexcept -> char32_t
         {
             return result;
         }

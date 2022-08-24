@@ -15,7 +15,6 @@ namespace cerb::lex::dot_item
 
         using typename BasicItem::CommentTokens;
         using typename BasicItem::ExceptionAccumulator;
-        using typename BasicItem::ScanStatus;
         using typename BasicItem::TextIterator;
 
         Union(TextIterator &rule_iterator_, AnalysisShared &analysis_shared_);

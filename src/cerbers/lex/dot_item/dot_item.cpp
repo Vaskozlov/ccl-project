@@ -4,6 +4,12 @@ namespace cerb::lex::dot_item
 {
     using namespace cerb::string_view_literals;
 
+    static auto splitStringByIndex(const std::u8string &string, size_t index)
+        -> std::pair<std::u8string, std::u8string>
+    {
+        return { string.substr(0, index), string.substr(index + 1) };
+    }
+
     auto DotItem::scanIteration(TextIterator &text_iterator, Token &token) const -> bool
     {
         for (auto &&item : items) {
@@ -28,6 +34,7 @@ namespace cerb::lex::dot_item
         return scan_result.has_value();
     }
 
+    // NOLINTNEXTLINE recursive function
     auto DotItem::parseRule(TextIterator &rule_iterator) -> void
     {
         auto counter = ItemsCounter{ rule_iterator };
@@ -46,6 +53,7 @@ namespace cerb::lex::dot_item
         return not isEoF(rule_iterator.nextRawChar());
     }
 
+    // NOLINTNEXTLINE recursive function
     auto DotItem::recognizeAction(TextIterator &rule_iterator, ItemsCounter &items_counter) -> void
     {
         switch (rule_iterator.getCurrentChar()) {
@@ -91,13 +99,7 @@ namespace cerb::lex::dot_item
             break;
 
         case U'c':
-            if (rule_iterator.futureRawChar(1) == U'o') {
-                rule_iterator.nextRawChar();
-                constructComment(rule_iterator);
-            } else {
-                constructString(items_counter, true, false);
-            }
-
+            constructCommentOrCharacter(rule_iterator, items_counter);
             break;
 
         case U's':
@@ -138,7 +140,7 @@ namespace cerb::lex::dot_item
         items_counter.add(item::DotItem);
 
         auto text = rule_iterator.getRemaining();
-        const auto *saved_end = text.end();
+        const auto *saved_end = rule_iterator.getEnd();
         auto bracket_index = findDotItemEnd(rule_iterator, text);
 
         rule_iterator.setEnd(text.begin() + bracket_index);
@@ -163,11 +165,10 @@ namespace cerb::lex::dot_item
         auto &string = sequence->getByRef();
         auto column_index = string.find(u8':');
 
-        if (column_index == u8string_view::npos) {
-            strings_and_chars.emplace_back(string, id, is_character, is_multiline);
+        if (column_index == std::u8string::npos) {
+            strings_and_chars.emplace_back(std::move(string), id, is_character, is_multiline);
         } else {
-            auto string_begin = string.substr(0, column_index);
-            auto string_end = string.substr(column_index + 1);
+            auto [string_begin, string_end] = splitStringByIndex(string, column_index);
 
             strings_and_chars.emplace_back(
                 std::move(string_begin), std::move(string_end), id, is_character, is_multiline);
@@ -185,6 +186,38 @@ namespace cerb::lex::dot_item
         auto sequence = Sequence{ {}, u8"\'", rule_iterator, analysis_shared };
 
         terminals.addString(std::move(sequence.getByRef()), id);
+    }
+
+    auto DotItem::constructComment(ItemsCounter &items_counter) -> void
+    {
+        items_counter.add(item::Comment);
+
+        auto *sequence = unsafeGetLastItemAs<Sequence>();// check is above
+        auto &string = sequence->getByRef();
+        auto column_index = string.find(u8':');
+        auto &[single_line_comment, multiline_begin_comment, multiline_end_comment] =
+            analysis_shared.comment_tokens;
+
+        if (column_index == std::u8string::npos) {
+            single_line_comment = string;
+        } else {
+            auto [comment_begin, comment_end] = splitStringByIndex(string, column_index);
+            multiline_begin_comment = std::move(comment_begin);
+            multiline_end_comment = std::move(comment_end);
+        }
+
+        items.pop_back();
+    }
+
+    auto DotItem::constructCommentOrCharacter(
+        TextIterator &rule_iterator, ItemsCounter &items_counter) -> void
+    {
+        if (rule_iterator.futureRawChar(1) == U'o') {
+            rule_iterator.nextRawChar();
+            constructComment(items_counter);
+        } else {
+            constructString(items_counter, true, false);
+        }
     }
 
     auto DotItem::emplaceItem(std::unique_ptr<BasicItem> &&item) -> void
@@ -206,42 +239,18 @@ namespace cerb::lex::dot_item
         }
     }
 
-    auto DotItem::constructComment(TextIterator &rule_iterator) -> void
-    {
-        checkThereIsOnlySequence(rule_iterator, u8"comment");
-
-        auto *sequence = unsafeGetLastItemAs<Sequence>();
-        auto &string = sequence->getByRef();
-        auto column_index = string.find(u8':');
-        auto &[single_line_comment, multiline_begin_comment, multiline_end_comment] =
-            analysis_shared.comment_tokens;
-
-        if (column_index == u8string_view::npos) {
-            single_line_comment = string;
-        } else {
-            auto comment_begin = string.substr(0, column_index);
-            auto comment_end = string.substr(column_index + 1);
-
-            multiline_begin_comment = comment_begin;
-            multiline_end_comment = comment_end;
-        }
-
-        items.pop_back();
-    }
-
     auto DotItem::addRecurrence(TextIterator &rule_iterator, Recurrence new_recurrence) -> void
     {
         if (items.empty()) {
-            throwUnableToApply<u8"no items found", u8"set recurrence modifier after item">(
-                rule_iterator);
+            throwUnableToApply<u8"no items found">(
+                rule_iterator, u8"set recurrence modifier after item");
         }
 
         auto &last_item = items.back();
 
         if (last_item->getRecurrence() != Recurrence::basic()) {
-            throwUnableToApply<
-                u8"item already has recurrence", u8"do not set recurrence more than once">(
-                rule_iterator);
+            throwUnableToApply<u8"item already has recurrence">(
+                rule_iterator, u8"do not set recurrence more than once");
         }
 
         last_item->setRecurrence(new_recurrence);
@@ -256,9 +265,8 @@ namespace cerb::lex::dot_item
         auto &last_item = items.back();
 
         if (last_item->isReversed()) {
-            throwUnableToApply<
-                u8"item already has reverse modifier", u8"do not reverse it more than once">(
-                rule_iterator);
+            throwUnableToApply<u8"item already has reverse modifier">(
+                rule_iterator, u8"do not reverse it more than once");
         }
 
         last_item->reverse();
@@ -268,9 +276,8 @@ namespace cerb::lex::dot_item
         -> void
     {
         if (counter.hasStrOrChar() && counter.hasSequences()) {
-            throwUnableToApply<
-                u8"string or character expected, but got sequence",
-                u8"add string or character modifier to the sequence">(rule_iterator);
+            throwUnableToApply<u8"string or character expected, but got sequence">(
+                rule_iterator, u8"add string or character modifier to the sequence");
         }
 
         auto postfix_elem =
@@ -282,9 +289,9 @@ namespace cerb::lex::dot_item
         if (not are_postfixes_correct) {
             auto suggestion = fmt::format<u8"add postfix modifier to the last item\n{}p">(
                 rule_iterator.getWorkingLine());
-            throwUnableToApply(
-                rule_iterator, u8"item without postfix modifier exists after items with it"_sv,
-                suggestion);
+
+            throwUnableToApply<u8"item without postfix modifier exists after items with it">(
+                rule_iterator, suggestion);
         }
     }
 
@@ -300,33 +307,12 @@ namespace cerb::lex::dot_item
         return *bracket_index;
     }
 
-    // TODO: replace it with items counter checks
-    auto DotItem::checkThereIsOnlySequence(TextIterator &rule_iterator, u8string_view modifier)
-        -> void
-    {
-        if (items.empty() || dynamic_cast<Sequence *>(items.back().get()) == nullptr) {
-            auto message = fmt::format<u8"not sequence found to apply {} modifier">(modifier);
-
-            auto suggestion = fmt::format<
-                u8"create sequence or do not apply {} modifier to "
-                "other items">(modifier);
-
-            throwUnableToApply(rule_iterator, message, suggestion);
-        }
-
-        if (items.size() != 1) {
-            auto message =
-                fmt::format<u8"{} modifier, the number of items is more than 1">(modifier);
-            throwUnableToApply(rule_iterator, message);
-        }
-    }
-
     auto DotItem::checkAbilityToCreatePrefixPostfix(TextIterator &rule_iterator) -> void
     {
         if (not main_item) {
             throwUnableToApply<
-                u8"you are not allowed to create prefixes or postfixes inside other dot items",
-                u8"create them only in main item">(rule_iterator);
+                u8"you are not allowed to create prefixes or postfixes inside other dot items">(
+                rule_iterator, u8"create them only in main item");
         }
 
         if (items.empty()) {
@@ -336,35 +322,22 @@ namespace cerb::lex::dot_item
         auto &last_item = items.back();
 
         if (last_item->hasPrefix()) {
-            throwUnableToApply<
-                u8"item already has prefix modifier", u8"do not add it more than once">(
-                rule_iterator);
+            throwUnableToApply<u8"item already has prefix modifier">(
+                rule_iterator, u8"do not add it more than once");
         }
 
         if (last_item->hasPostfix()) {
-            throwUnableToApply<
-                u8"item already has postfix modifier", u8"do not add it more than once">(
-                rule_iterator);
+            throwUnableToApply<u8"item already has postfix modifier">(
+                rule_iterator, u8"do not add it more than once");
         }
     }
 
-    template<ConstString Reason, ConstString Suggestion>
-    auto DotItem::throwUnableToApply(TextIterator &rule_iterator) -> void
+    template<ConstString Reason>
+    auto DotItem::throwUnableToApply(TextIterator &rule_iterator, u8string_view suggestion) -> void
     {
         static constexpr auto reason = fmt::staticFormat<u8"unable to apply: {}", Reason>();
 
-        rule_iterator.throwException<DotItemException>(reason, Suggestion);
-        throw UnrecoverableError{ "unrecoverable error in DotItemType" };
-    }
-
-    auto DotItem::throwUnableToApply(
-        TextIterator &rule_iterator,
-        u8string_view reason,
-        u8string_view suggestion) -> void
-    {
-        auto formatted_reason = fmt::format<u8"unable to apply: {}">(reason);
-
-        rule_iterator.throwException<DotItemException>(formatted_reason, suggestion);
+        rule_iterator.throwException<DotItemException>(reason, suggestion);
         throw UnrecoverableError{ "unrecoverable error in DotItemType" };
     }
 

@@ -17,11 +17,17 @@ namespace cerb::lex::dot_item
         using CommentTokens = text::CommentTokens;
         using ExceptionAccumulator = analysis::ExceptionAccumulator<text::TextIteratorException>;
 
-        enum struct ScanStatus : bool
-        {
-            FAILURE = false,
-            SUCCESS = true
-        };
+        explicit BasicItem(AnalysisShared &analysis_shared_) noexcept
+          : analysis_shared{ analysis_shared_ }
+        {}
+
+        BasicItem(const BasicItem &) = default;
+        BasicItem(BasicItem &&) noexcept = default;
+
+        virtual ~BasicItem() = default;
+
+        auto operator=(const BasicItem &) -> void = delete;
+        auto operator=(BasicItem &&) noexcept -> void = delete;
 
         [[nodiscard]] auto getRecurrence() const noexcept -> Recurrence
         {
@@ -78,6 +84,9 @@ namespace cerb::lex::dot_item
             -> std::optional<std::pair<TextIterator, Token>>;
 
     private:
+        [[nodiscard]] auto scanIterationCall(TextIterator &local_iterator, Token &local_token) const
+            -> bool;
+
         [[nodiscard]] virtual auto scanIteration(TextIterator &text_iterator, Token &token) const
             -> bool = 0;
 
@@ -87,19 +96,6 @@ namespace cerb::lex::dot_item
         auto modifyToken(
             const TextIterator &before_scan_iterator, const TextIterator &after_scan_iterator,
             Token &token) const -> void;
-
-    public:
-        auto operator=(const BasicItem &) -> BasicItem & = delete;
-        auto operator=(BasicItem &&) noexcept -> BasicItem & = delete;
-
-        explicit BasicItem(AnalysisShared &analysis_shared_) noexcept
-          : analysis_shared{ analysis_shared_ }
-        {}
-
-        BasicItem(BasicItem &&) noexcept = default;
-        BasicItem(const BasicItem &) = default;
-
-        virtual ~BasicItem() = default;
 
     protected:
         Recurrence recurrence{ Recurrence::basic() };

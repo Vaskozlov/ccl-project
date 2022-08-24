@@ -5,6 +5,8 @@ namespace cerb::lex
 {
     using namespace string_view_literals;
 
+    static auto EmptyShared = AnalysisShared{};
+
     auto AnalysisShared::isNextCharNotForScanning(const text::TextIterator &text_iterator) const
         -> bool
     {
@@ -13,7 +15,7 @@ namespace cerb::lex
         return isComment(text) || isTerminal(text) || isStringOrChar(text);
     }
 
-    auto AnalysisShared::isComment(const u8string_view &text) const noexcept-> bool
+    auto AnalysisShared::isComment(const u8string_view &text) const noexcept -> bool
     {
         return basicIsComment(text, comment_tokens.single_line) ||
                basicIsComment(text, comment_tokens.multiline_begin) ||
@@ -66,38 +68,50 @@ namespace cerb::lex
     {
         text_iterator.nextRawChar();
 
-        auto empty_shared = AnalysisShared{};
         auto token_attributes = TokenAttributes{ text_iterator };
         const auto *repr_begin = text_iterator.getCarriage();
         const auto &[str_begin, str_end, id, is_character, is_multiline] = string_elem;
 
         auto sequence = dot_item::Sequence(
             { .multiline = is_multiline, .no_escaping_symbols = is_multiline }, str_begin, str_end,
-            text_iterator, empty_shared);
+            text_iterator, EmptyShared);
 
-        auto &sequence_string = sequence.getByRef();
+        auto &sequence_value = sequence.getByRef();
 
-        if (string_elem.is_character && sequence_string.empty()) {
-            text_iterator.throwException<LexicalAnalysisException>(
-                u8"empty character definition"_sv);
-        }
-
-        if (string_elem.is_character && sequence_string.size() > 1 &&
-            utf8::utfSize(sequence_string[0]) != sequence_string.size()) {
-            text_iterator.throwException<LexicalAnalysisException>(
-                u8"character definition must be a single character"_sv);
-        }
+        checkForEmptyCharacterDefinition(text_iterator, is_character, sequence_value);
+        checkForMoreCharactersInCharacter(text_iterator, is_character, sequence_value);
 
         return { std::move(token_attributes),
                  { repr_begin, text_iterator.getRemainingAsCarriage() },
                  id,
-                 std::move(sequence_string) };
+                 std::move(sequence_value) };
     }
 
-    auto AnalysisShared::isStringOrChar(const u8string_view &text) const noexcept-> bool
+    auto AnalysisShared::isStringOrChar(const u8string_view &text) const noexcept -> bool
     {
         return std::ranges::any_of(strings_and_chars, [text](const String &elem) {
             return text.startsWith(elem.str_begin);
         });
+    }
+
+    auto AnalysisShared::checkForEmptyCharacterDefinition(
+        text::TextIterator &text_iterator, bool is_character, const std::u8string &string_value)
+        -> void
+    {
+        if (is_character && string_value.empty()) {
+            text_iterator.throwException<LexicalAnalysisException>(
+                u8"empty character definition"_sv);
+        }
+    }
+
+    auto AnalysisShared::checkForMoreCharactersInCharacter(
+        text::TextIterator &text_iterator, bool is_character, const std::u8string &string_value)
+        -> void
+    {
+        if (is_character && string_value.size() > 1 &&
+            utf8::utfSize(string_value[0]) != string_value.size()) {
+            text_iterator.throwException<LexicalAnalysisException>(
+                u8"character definition must be a single character"_sv);
+        }
     }
 }// namespace cerb::lex
