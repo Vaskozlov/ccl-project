@@ -40,8 +40,7 @@ namespace cerb::text
         text_iterator.skip(comment_tokens.multiline_begin.size());
         const auto comment_begin = text_iterator;
 
-        while (not isComment(comment_tokens.multiline_end) &&
-               not isEoF(text_iterator.next())) {
+        while (not isComment(comment_tokens.multiline_end) && not isEoF(text_iterator.next())) {
             // empty loop
         }
 

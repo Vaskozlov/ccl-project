@@ -5,7 +5,8 @@ using namespace cerb::lex;
 using namespace cerb::text;
 
 BOOST_AUTO_TEST_SUITE(
-    LexicalAnalyzerCharacter, *utf::depends_on("DotItemStringsAndCharactersCreation"))
+    LexicalAnalyzerCharacter,
+    *utf::depends_on("DotItemStringsAndCharactersCreation"))
 
 BOOST_AUTO_TEST_CASE(LexicalAnalyzerCharacterMatching)
 {
