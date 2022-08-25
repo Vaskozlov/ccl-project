@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.20.0)
 
-project(cerberus-project VERSION 0.0.1.0 LANGUAGES CXX)
+project(ccl-project VERSION 0.0.1.0 LANGUAGES CXX)
 
 include(cmake/project-options.cmake)
 include(cmake/compile-options.cmake)

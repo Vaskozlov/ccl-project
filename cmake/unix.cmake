@@ -4,7 +4,7 @@ add_compile_options(
         -Wformat=2 -Wuninitialized -Wfloat-conversion -std=c++2b
 )
 
-if (CERBERUS_STRICT_COMPILATION)
+if (STRICT_COMPILATION)
     add_compile_options(-Werror)
 endif ()
 

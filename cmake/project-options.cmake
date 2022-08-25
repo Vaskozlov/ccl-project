@@ -4,7 +4,7 @@ option(STRICT_COMPILATION "Enable -Werror strict compilation" ON)
 option(PRECOMPILED_HEADERS "Use precompiled headers" ON)
 option(USE_ADDRESS_SANITIZER "Use address sanitizers" OFF)
 option(USE_THREAD_SANITIZER "Use thread sanitizers" OFF)
-option(CREATE_STATIC_LIBRARY "Create static version of cerberus " OFF)
+option(CREATE_STATIC_LIBRARY "Create static version of library " OFF)
 
 message(STATUS "CC " ${CMAKE_C_COMPILER})
 message(STATUS "CXX " ${CMAKE_CXX_COMPILER})

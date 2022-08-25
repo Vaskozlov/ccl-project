@@ -1,3 +1,3 @@
-# cerberus-project
+# CCL-project
 
-Cerberus project
+CCL project

@@ -1,23 +1,23 @@
 file(
         GLOB_RECURSE
-        LIBCERBERUS_OBJS
+        CCL_OBJECTS
         "src/*.cpp"
 )
 
 if (CREATE_STATIC_LIBRARY)
-    add_library(cerberus STATIC ${LIBCERBERUS_OBJS})
+    add_library(ccl STATIC ${CCL_OBJECTS})
 else ()
-    add_library(cerberus SHARED ${LIBCERBERUS_OBJS})
+    add_library(ccl SHARED ${CCL_OBJECTS})
 endif ()
 
 target_link_libraries(
-        cerberus
+        ccl
         fmt::fmt
 )
 
 if (${PRECOMPILED_HEADERS})
     target_precompile_headers(
-            cerberus
+            ccl
             PUBLIC
             "pch.hpp"
     )
