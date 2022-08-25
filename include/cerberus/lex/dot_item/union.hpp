@@ -11,8 +11,6 @@ namespace cerb::lex::dot_item
     class Union : public BasicItem
     {
     public:
-        using BasicItem::isNextCharNotForScanning;
-
         using typename BasicItem::CommentTokens;
         using typename BasicItem::ExceptionAccumulator;
         using typename BasicItem::TextIterator;

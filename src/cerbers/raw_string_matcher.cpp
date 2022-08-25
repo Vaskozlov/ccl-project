@@ -16,7 +16,8 @@ namespace cerb
         auto matching_str = getMatchingPart(string);
 
         if (map.contains(matching_str)) {
-            return std::make_pair(std::move(matching_str), map.at(matching_str));
+            return std::optional<std::pair<std::u8string, size_t>>(
+                std::in_place, std::move(matching_str), map.at(matching_str));
         }
 
         return std::nullopt;

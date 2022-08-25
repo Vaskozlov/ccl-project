@@ -18,8 +18,10 @@ namespace cerb::lex
             is_character(is_character_), is_multiline(is_multiline_)
         {}
 
-        String(const std::u8string &str_begin_, size_t id_, bool is_character_, bool is_multiline_)
-          : String(str_begin_, str_begin_, id_, is_character_, is_multiline_)
+        CERBLIB_PERFECT_FORWARDING(T, std::u8string)
+        String(T &&str_begin_, size_t id_, bool is_character_, bool is_multiline_)
+          : str_begin(std::forward<T>(str_begin_)), str_end(str_begin), id(id_),
+            is_character(is_character_), is_multiline(is_multiline_)
         {}
 
         std::u8string str_begin{};
@@ -52,14 +54,16 @@ namespace cerb::lex
             basicIsComment(const u8string_view &text, const u8string_view &comment) noexcept
             -> bool;
 
+        // always contains token, but optional for RVO
         [[nodiscard]] static auto constructTerminalToken(
             text::TextIterator &text_iterator,
             const u8string_view &remaining_text,
-            std::pair<std::u8string, size_t> &terminal_match) -> Token;
+            std::pair<std::u8string, size_t> &terminal_match) -> std::optional<Token>;
 
+        // always contains token, but optional for RVO
         [[nodiscard]] static auto
             constructStringToken(text::TextIterator &text_iterator, const String &string_elem)
-                -> Token;
+                -> std::optional<Token>;
 
         static auto checkForEmptyCharacterDefinition(
             text::TextIterator &text_iterator,

@@ -13,7 +13,7 @@ BOOST_AUTO_TEST_SUITE(DotItemUnion)
 BOOST_AUTO_TEST_CASE(UnionWithOneElem)
 {
     auto text_iterator = TextIterator{ u8"[a]" };
-    text_iterator.nextRawChar();
+    text_iterator.next();
 
     auto union_item = Union(text_iterator, shared);
     DEBUG_DECL &&bitset = union_item.get();
@@ -26,7 +26,7 @@ BOOST_AUTO_TEST_CASE(UnionWithOneElem)
 BOOST_AUTO_TEST_CASE(UnionWithMultipleElems)
 {
     auto text_iterator = TextIterator{ u8"[a-z_]" };
-    text_iterator.nextRawChar();
+    text_iterator.next();
 
     auto union_item = Union(text_iterator, shared);
     DEBUG_DECL &&bitset = union_item.get();

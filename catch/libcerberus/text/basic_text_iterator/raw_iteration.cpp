@@ -11,7 +11,7 @@ BOOST_AUTO_TEST_CASE(BasicTextIteratorRawIteration)
     auto text_iterator = BasicTextIterator{ input };
 
     for (DEBUG_DECL &&chr : expected) {
-        DEBUG_DECL sym = text_iterator.nextRawChar();
+        DEBUG_DECL sym = text_iterator.next();
 
         BOOST_ASSERT(sym == chr);
         BOOST_ASSERT(text_iterator.getCurrentChar() == chr);

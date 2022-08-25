@@ -5,14 +5,15 @@ namespace cerb::lex
 {
     using namespace string_view_literals;
 
-    static auto EmptyShared = AnalysisShared{};
+    static auto EmptyShared = AnalysisShared{};// NOLINT
 
     auto AnalysisShared::isNextCharNotForScanning(const text::TextIterator &text_iterator) const
         -> bool
     {
+        auto chr = text_iterator.futureRawChar(1);
         auto text = text_iterator.getFutureRemaining(1);
 
-        return isComment(text) || isTerminal(text) || isStringOrChar(text);
+        return isLayoutOrEoF(chr) || isComment(text) || isTerminal(text) || isStringOrChar(text);
     }
 
     auto AnalysisShared::isComment(const u8string_view &text) const noexcept -> bool
@@ -52,21 +53,22 @@ namespace cerb::lex
 
     auto AnalysisShared::constructTerminalToken(
         text::TextIterator &text_iterator, const u8string_view &remaining_text,
-        std::pair<std::u8string, size_t> &terminal_match) -> Token
+        std::pair<std::u8string, size_t> &terminal_match) -> std::optional<Token>
     {
         auto &[token_value, id] = terminal_match;
         auto repr = remaining_text.substr(0, token_value.size());
         auto token_attributes = TokenAttributes{ text_iterator };
 
-        text_iterator.rawSkip(token_value.size());
+        text_iterator.skip(token_value.size());
 
-        return { std::move(token_attributes), repr, id, std::move(token_value) };
+        return std::optional<Token>(
+            std::in_place, std::move(token_attributes), repr, id, std::move(token_value));
     }
 
     auto AnalysisShared::constructStringToken(
-        text::TextIterator &text_iterator, const String &string_elem) -> Token
+        text::TextIterator &text_iterator, const String &string_elem) -> std::optional<Token>
     {
-        text_iterator.nextRawChar();
+        text_iterator.next();
 
         auto token_attributes = TokenAttributes{ text_iterator };
         const auto *repr_begin = text_iterator.getCarriage();
@@ -81,10 +83,10 @@ namespace cerb::lex
         checkForEmptyCharacterDefinition(text_iterator, is_character, sequence_value);
         checkForMoreCharactersInCharacter(text_iterator, is_character, sequence_value);
 
-        return { std::move(token_attributes),
-                 { repr_begin, text_iterator.getRemainingAsCarriage() },
-                 id,
-                 std::move(sequence_value) };
+        return std::optional<Token>(
+            std::in_place, std::move(token_attributes),
+            u8string_view{ repr_begin, text_iterator.getRemainingAsCarriage() }, id,
+            std::move(sequence_value));
     }
 
     auto AnalysisShared::isStringOrChar(const u8string_view &text) const noexcept -> bool

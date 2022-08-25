@@ -26,27 +26,27 @@ namespace cerb::text
 
     auto TextIterator::CommentSkipper::skipSingleLine() -> void
     {
-        text_iterator.rawSkip(comment_tokens.single_line.size());
+        text_iterator.skip(comment_tokens.single_line.size());
 
-        auto chr = text_iterator.nextRawChar();
+        auto chr = text_iterator.next();
 
         while (land(chr != 0, chr != U'\n')) {
-            chr = text_iterator.nextRawChar();
+            chr = text_iterator.next();
         }
     }
 
     auto TextIterator::CommentSkipper::skipMultiline() -> void
     {
-        text_iterator.rawSkip(comment_tokens.multiline_begin.size());
+        text_iterator.skip(comment_tokens.multiline_begin.size());
         const auto comment_begin = text_iterator;
 
         while (not isComment(comment_tokens.multiline_end) &&
-               not isEoF(text_iterator.nextRawChar())) {
+               not isEoF(text_iterator.next())) {
             // empty loop
         }
 
         checkCommentTermination(comment_begin);
-        text_iterator.rawSkip(comment_tokens.multiline_end.size());
+        text_iterator.skip(comment_tokens.multiline_end.size());
     }
 
     auto TextIterator::CommentSkipper::checkCommentTermination(

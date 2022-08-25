@@ -36,7 +36,7 @@ namespace cerb::text
 
         explicit TextIterator(
             u8string_view input, ExceptionAccumulator *exception_accumulator_ = {},
-            CommentTokens comment_tokens_ = {}, u8string_view filename = {})
+            const CommentTokens &comment_tokens_ = {}, u8string_view filename = {})
           : Base(input), location(filename), line_tracker(input), comment_tokens(comment_tokens_),
             exception_accumulator(exception_accumulator_)
         {}
@@ -91,6 +91,7 @@ namespace cerb::text
         auto onCharacter(char32_t chr) -> void override;
         auto onUtfError(char8_t chr) -> void override;
 
+        auto skipComments() -> bool;
         auto skipCommentsAndLayout() -> void;
 
         template<Exception T>

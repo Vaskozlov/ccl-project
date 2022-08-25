@@ -9,7 +9,7 @@ BOOST_AUTO_TEST_SUITE(DotItemRecurrence)
 BOOST_AUTO_TEST_CASE(RecurrenceBasicCase)
 {
     auto text_iterator = TextIterator{ u8"{10, 20}" };
-    text_iterator.nextRawChar();
+    text_iterator.next();
 
     DEBUG_DECL recurrence = Recurrence{ text_iterator };
     BOOST_ASSERT(recurrence.from == 10);
@@ -19,7 +19,7 @@ BOOST_AUTO_TEST_CASE(RecurrenceBasicCase)
 BOOST_AUTO_TEST_CASE(RecurrenceEmptyFirstArgument)
 {
     auto text_iterator = TextIterator{ u8"{, 1}" };
-    text_iterator.nextRawChar();
+    text_iterator.next();
 
     DEBUG_DECL recurrence = Recurrence{ text_iterator };
 
@@ -30,7 +30,7 @@ BOOST_AUTO_TEST_CASE(RecurrenceEmptyFirstArgument)
 BOOST_AUTO_TEST_CASE(RecurrenceFirstArgumentGreaterThanSecond)
 {
     auto text_iterator = TextIterator{ u8"{2, 1}" };
-    text_iterator.nextRawChar();
+    text_iterator.next();
 
     BOOST_CHECK_EXCEPTION(
         Recurrence{ text_iterator },

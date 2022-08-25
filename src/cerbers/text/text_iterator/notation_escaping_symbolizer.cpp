@@ -7,7 +7,7 @@ namespace cerb::text
         u16 chars_count = 0;
 
         for (; chars_count != max_times; ++chars_count) {
-            auto chr = text_iterator.nextRawChar();
+            auto chr = text_iterator.next();
 
             if (lor(isEoF(chr), isOutOfNotation(chr))) {
                 break;

@@ -11,8 +11,6 @@ namespace cerb::lex::dot_item
     class Sequence : public BasicItem
     {
     private:
-        using BasicItem::isNextCharNotForScanning;
-
         using typename BasicItem::CommentTokens;
         using typename BasicItem::ExceptionAccumulator;
         using typename BasicItem::TextIterator;
@@ -36,12 +34,12 @@ namespace cerb::lex::dot_item
 
         [[nodiscard]] auto get() const noexcept -> const std::u8string &
         {
-            return string;
+            return sequence_value;
         }
 
         [[nodiscard]] auto getByRef() noexcept -> std::u8string &
         {
-            return string;
+            return sequence_value;
         }
 
         [[nodiscard]] auto empty() const noexcept -> bool override;
@@ -69,7 +67,7 @@ namespace cerb::lex::dot_item
 
         u8string_view str_begin{};
         u8string_view str_end{};
-        std::u8string string{};
+        std::u8string sequence_value{};
         SequenceFlags sequence_flags{};
     };
 }// namespace cerb::lex::dot_item
