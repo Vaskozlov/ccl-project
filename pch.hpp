@@ -1,5 +1,4 @@
-#ifndef CERBERUS_PROJECT_PCH_HPP
-#define CERBERUS_PROJECT_PCH_HPP
+#pragma once
 
 #include <array>
 #include <bitset>
@@ -33,5 +32,3 @@
 #include <fmt/format.h>
 
 #include <boost/container/small_vector.hpp>
-
-#endif /* CERBERUS_PROJECT_PCH_HPP */

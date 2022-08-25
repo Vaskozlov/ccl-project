@@ -53,7 +53,7 @@ namespace cerb::fmt::core
         {
             auto text = static_cast<u8string_view>(String);
 
-            while (text_iterator.nextRawChar() != 0) {
+            while (text_iterator.next() != 0) {
                 processState();
             }
 

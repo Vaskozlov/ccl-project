@@ -23,7 +23,7 @@ namespace cerb::lex::dot_item
 
         text_iterator.skipCommentsAndLayout();
 
-        while (text_iterator.nextRawChar() != terminator) {
+        while (text_iterator.next() != terminator) {
             auto chr = text_iterator.getCurrentChar();
 
             if (isDigit(chr)) {

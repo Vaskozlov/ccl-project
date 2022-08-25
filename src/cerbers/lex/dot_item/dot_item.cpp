@@ -50,7 +50,7 @@ namespace cerb::lex::dot_item
 
     auto DotItem::hasMovedToTheNextChar(TextIterator &rule_iterator) -> bool
     {
-        return not isEoF(rule_iterator.nextRawChar());
+        return not isEoF(rule_iterator.next());
     }
 
     // NOLINTNEXTLINE recursive function
@@ -213,7 +213,7 @@ namespace cerb::lex::dot_item
         TextIterator &rule_iterator, ItemsCounter &items_counter) -> void
     {
         if (rule_iterator.futureRawChar(1) == U'o') {
-            rule_iterator.nextRawChar();
+            rule_iterator.next();
             constructComment(items_counter);
         } else {
             constructString(items_counter, true, false);

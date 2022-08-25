@@ -43,7 +43,7 @@ namespace cerb::lex::dot_item
 
     auto Union::scanIteration(TextIterator &text_iterator, Token & /* unused */) const -> bool
     {
-        return bitset.at(text_iterator.nextRawChar());
+        return bitset.at(text_iterator.next());
     }
 
     auto Union::isRange(bool is_escaping, char32_t chr) noexcept -> bool

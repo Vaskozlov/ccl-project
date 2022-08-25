@@ -9,9 +9,10 @@ BOOST_AUTO_TEST_SUITE(
 
 BOOST_AUTO_TEST_CASE(LexicalAnalyzerCharacterMatching)
 {
-    auto text = TextIterator{ u8R"('A')" };
     auto analyzer = LexicalAnalyzer{ { 1, u8R"("\'"c)" } };
-    auto token = analyzer.yield(text);
+    auto tokenizer = analyzer.getTokenizer(u8R"('A')");
+
+    auto token = tokenizer.yield();
 
     BOOST_ASSERT(token.getId() == 1);
     BOOST_ASSERT(token.getRepr() == u8"'A'");
@@ -22,9 +23,10 @@ BOOST_AUTO_TEST_CASE(LexicalAnalyzerCharacterMatching)
 
 BOOST_AUTO_TEST_CASE(LexicalAnalyzerUtfCharacterMatching)
 {
-    auto text = TextIterator{ u8R"('\uFFFF')" };
     auto analyzer = LexicalAnalyzer{ { 1, u8R"("\'"c)" } };
-    auto token = analyzer.yield(text);
+    auto tokenizer = analyzer.getTokenizer(u8R"('\uFFFF')");
+
+    auto token = tokenizer.yield();
 
     BOOST_ASSERT(token.getId() == 1);
     BOOST_ASSERT(token.getRepr() == u8"'\\uFFFF'");
@@ -35,26 +37,29 @@ BOOST_AUTO_TEST_CASE(LexicalAnalyzerUtfCharacterMatching)
 
 BOOST_AUTO_TEST_CASE(LexicalAnalyzerEmptyCharacter)
 {
-    auto text = TextIterator{ u8R"('')" };
     auto analyzer = LexicalAnalyzer{ { 1, u8R"("\'"c)" } };
+    auto tokenizer = analyzer.getTokenizer(u8R"('')");
 
-    BOOST_CHECK_EXCEPTION(
-        analyzer.yield(text), LexicalAnalysisException,
-        [](const LexicalAnalysisException &exception) {
-            return exception.getMessage() == u8"empty character definition";
-        });
+    auto token = tokenizer.yield();
+
+    BOOST_ASSERT(token.getId() == ReservedTokenType::BAD_TOKEN);
+    BOOST_ASSERT(
+        analyzer.getExceptionAccumulator().getErrors()[0]->getMessage() ==
+        u8"empty character definition");
 }
 
 BOOST_AUTO_TEST_CASE(LexicalAnalyzerTwoCharacters)
 {
-    auto text = TextIterator{ u8R"('AA')" };
     auto analyzer = LexicalAnalyzer{ { 1, u8R"("\'"c)" } };
+    auto tokenizer = analyzer.getTokenizer(u8R"('AA')");
 
-    BOOST_CHECK_EXCEPTION(
-        analyzer.yield(text), LexicalAnalysisException,
-        [](const LexicalAnalysisException &exception) {
-            return exception.getMessage() == u8"character definition must be a single character";
-        });
+    auto token = tokenizer.yield();
+
+    BOOST_ASSERT(token.getId() == ReservedTokenType::BAD_TOKEN);
+
+    BOOST_ASSERT(
+        analyzer.getExceptionAccumulator().getErrors()[0]->getMessage() ==
+        u8"character definition must be a single character");
 }
 
 BOOST_AUTO_TEST_SUITE_END()

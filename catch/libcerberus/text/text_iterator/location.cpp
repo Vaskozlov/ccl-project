@@ -11,12 +11,12 @@ BOOST_AUTO_TEST_CASE(TextIteratorLocationTrackingOnEmptyInput)
     BOOST_ASSERT(text_iterator.getLine() == 1);
     BOOST_ASSERT(text_iterator.getColumn() == 0);
 
-    text_iterator.nextRawChar();
+    text_iterator.next();
 
     BOOST_ASSERT(text_iterator.getLine() == 1);
     BOOST_ASSERT(text_iterator.getColumn() == 0);
 
-    text_iterator.nextRawChar();
+    text_iterator.next();
 
     BOOST_ASSERT(text_iterator.getLine() == 1);
     BOOST_ASSERT(text_iterator.getColumn() == 0);
@@ -30,31 +30,31 @@ BOOST_AUTO_TEST_CASE(TextIteratorLocationTrackingWithUtfSymbols)
     BOOST_ASSERT(text_iterator.getColumn() == 0);
     BOOST_ASSERT(text_iterator.getRealColumn() == 0);
 
-    BOOST_ASSERT(text_iterator.nextRawChar() == U'H');
+    BOOST_ASSERT(text_iterator.next() == U'H');
 
     BOOST_ASSERT(text_iterator.getLine() == 1);
     BOOST_ASSERT(text_iterator.getColumn() == 1);
     BOOST_ASSERT(text_iterator.getRealColumn() == 1);
 
-    BOOST_ASSERT(text_iterator.nextRawChar() == U'i');
+    BOOST_ASSERT(text_iterator.next() == U'i');
 
     BOOST_ASSERT(text_iterator.getLine() == 1);
     BOOST_ASSERT(text_iterator.getColumn() == 2);
     BOOST_ASSERT(text_iterator.getRealColumn() == 2);
 
-    BOOST_ASSERT(text_iterator.nextRawChar() == U'\n');
+    BOOST_ASSERT(text_iterator.next() == U'\n');
 
     BOOST_ASSERT(text_iterator.getLine() == 2);
     BOOST_ASSERT(text_iterator.getColumn() == 0);
     BOOST_ASSERT(text_iterator.getRealColumn() == 0);
 
-    BOOST_ASSERT(text_iterator.nextRawChar() == U'\U0001f000');
+    BOOST_ASSERT(text_iterator.next() == U'\U0001f000');
 
     BOOST_ASSERT(text_iterator.getLine() == 2);
     BOOST_ASSERT(text_iterator.getColumn() == 1);
     BOOST_ASSERT(text_iterator.getRealColumn() == 4);
 
-    BOOST_ASSERT(text_iterator.nextRawChar() == U'W');
+    BOOST_ASSERT(text_iterator.next() == U'W');
 
     BOOST_ASSERT(text_iterator.getLine() == 2);
     BOOST_ASSERT(text_iterator.getColumn() == 2);

@@ -8,7 +8,7 @@ namespace cerb::text
             throw LogicError("called EscapingSymbolizer::match() without preceding `\\`");
         }
 
-        auto chr = text_iterator.nextRawChar();
+        auto chr = text_iterator.next();
 
         switch (chr) {
         case U'\\':

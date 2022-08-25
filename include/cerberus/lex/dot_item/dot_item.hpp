@@ -14,7 +14,6 @@ namespace cerb::lex::dot_item
     private:
         using BasicItem::analysis_shared;
         using BasicItem::canBeOptimized;
-        using BasicItem::isNextCharNotForScanning;
         using BasicItem::recurrence;
 
         using typename BasicItem::CommentTokens;

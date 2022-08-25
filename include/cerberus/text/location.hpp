@@ -10,6 +10,14 @@ namespace cerb::text
     class Location
     {
     public:
+        Location() noexcept = default;
+
+        constexpr explicit Location(
+            u8string_view filename_, size_t line_ = 1, size_t column_ = 0,
+            size_t real_column_ = 0) noexcept
+          : filename(filename_), line(line_), column(column_), real_column(real_column_)
+        {}
+
         CERBLIB_DECL auto getLine() const noexcept -> size_t
         {
             return line;
@@ -32,7 +40,7 @@ namespace cerb::text
 
         constexpr auto intermediateNext(char8_t chr) noexcept -> void
         {
-            if (land(not isEoF(chr), chr != '\n')) {
+            if (land(not isEoF(chr), chr != u8'\n')) {
                 ++real_column;
             }
         }
@@ -46,14 +54,6 @@ namespace cerb::text
                 ++column;
             }
         }
-
-        Location() noexcept = default;
-
-        constexpr explicit Location(
-            u8string_view filename_, size_t line_ = 1, size_t column_ = 0,
-            size_t real_column_ = 0) noexcept
-          : filename(filename_), line(line_), column(column_), real_column(real_column_)
-        {}
 
     private:
         u8string_view filename{};

@@ -8,6 +8,9 @@
 
 namespace cerb::lex
 {
+    // NOLINTNEXTLINE
+    CERBLIB_ENUM(ReservedTokenType, u32, END_OF_INPUT = 0, BAD_TOKEN = 1);
+
     struct TokenAttributes
     {
         TokenAttributes() = default;

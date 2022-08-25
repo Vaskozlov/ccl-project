@@ -23,7 +23,7 @@ BOOST_AUTO_TEST_CASE(TextIteratorMultilineCommentSkipping)
     auto text_iterator = TextIterator{ u8"/**/Hi!", nullptr, { u8"//", u8"/*", u8"*/" } };
     text_iterator.skipCommentsAndLayout();
 
-    BOOST_ASSERT(text_iterator.nextRawChar() == U'H');
+    BOOST_ASSERT(text_iterator.next() == U'H');
 }
 
 BOOST_AUTO_TEST_CASE(TextIteratorMultilineCommentSkippingWithMultilineSymbols)
@@ -32,7 +32,7 @@ BOOST_AUTO_TEST_CASE(TextIteratorMultilineCommentSkippingWithMultilineSymbols)
         TextIterator{ u8"/*1521\n\n151t*/\nHi!", nullptr, { u8"//", u8"/*", u8"*/" } };
     text_iterator.skipCommentsAndLayout();
 
-    BOOST_ASSERT(text_iterator.nextRawChar() == U'H');
+    BOOST_ASSERT(text_iterator.next() == U'H');
 }
 
 BOOST_AUTO_TEST_CASE(TextIteratorMultilineTwoCommentSkipping)
@@ -41,7 +41,7 @@ BOOST_AUTO_TEST_CASE(TextIteratorMultilineTwoCommentSkipping)
         TextIterator{ u8"/*1521\n\n151t*/\n/* */ Hi!", nullptr, { u8"//", u8"/*", u8"*/" } };
     text_iterator.skipCommentsAndLayout();
 
-    BOOST_ASSERT(text_iterator.nextRawChar() == U'H');
+    BOOST_ASSERT(text_iterator.next() == U'H');
 }
 
 BOOST_AUTO_TEST_SUITE_END()

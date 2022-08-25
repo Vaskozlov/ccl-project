@@ -17,11 +17,11 @@ namespace cerb::lex::dot_item
         skipStringDefinition(rule_iterator);
 
         while (true) {
+            auto chr = U'\0';
             auto is_escaping = false;
-            auto chr = char32_t{};
 
             if (sequence_flags.no_escaping_symbols) {
-                chr = rule_iterator.nextRawChar();
+                chr = rule_iterator.next();
             } else {
                 auto [escaping, character] = rule_iterator.nextRawCharWithEscapingSymbols();
                 is_escaping = escaping;
@@ -31,25 +31,25 @@ namespace cerb::lex::dot_item
             checkForUnexpectedEnd(begin_iterator_state, is_escaping, chr);
 
             if (isStringEnd(rule_iterator, is_escaping)) {
-                rule_iterator.rawSkip(str_end.size() - 1);
+                rule_iterator.skip(str_end.size() - 1);
                 break;
             }
 
-            utf8::appendUtf32ToUtf8Container(string, chr);
+            utf8::appendUtf32ToUtf8Container(sequence_value, chr);
         }
     }
 
     auto Sequence::empty() const noexcept -> bool
     {
-        return string.empty();
+        return sequence_value.empty();
     }
 
     auto Sequence::scanIteration(TextIterator &text_iterator, Token & /* unused */) const -> bool
     {
         auto future_text = text_iterator.getFutureRemaining(1);
 
-        if (future_text.startsWith(string)) {
-            text_iterator.rawSkip(string.size());
+        if (future_text.startsWith(sequence_value)) {
+            text_iterator.skip(sequence_value.size());
             return true;
         }
 
@@ -88,7 +88,7 @@ namespace cerb::lex::dot_item
 
     auto Sequence::skipStringDefinition(TextIterator &rule_iterator) const -> void
     {
-        rule_iterator.rawSkip(str_begin.size() - 1);
+        rule_iterator.skip(str_begin.size() - 1);
     }
 
     auto Sequence::checkSequenceArguments(TextIterator &rule_iterator) const -> void

@@ -9,10 +9,25 @@ namespace cerb::text
 {
     class BasicTextIterator
     {
-    private:
-        using iterator = typename u8string_view ::iterator;
-
     public:
+        using iterator = typename u8string_view::iterator;
+
+        BasicTextIterator() noexcept = default;
+        BasicTextIterator(BasicTextIterator &&) noexcept = default;
+        BasicTextIterator(const BasicTextIterator &) noexcept = default;
+
+        constexpr explicit BasicTextIterator(u8string_view text_) noexcept
+          : carriage{ text_.begin() }, end{ text_.end() }
+        {}
+
+        constexpr virtual ~BasicTextIterator(){};// NOLINT gcc says, that destructor is used before
+                                                 // its definition
+
+
+        auto operator=(BasicTextIterator &&) noexcept -> BasicTextIterator & = default;
+        auto operator=(const BasicTextIterator &) noexcept -> BasicTextIterator & = default;
+
+
         CERBLIB_DECL auto getCarriage() const noexcept -> iterator
         {
             return carriage;
@@ -50,7 +65,7 @@ namespace cerb::text
         CERBLIB_DECL auto getFutureRemaining(size_t times) const -> u8string_view
         {
             auto fork = *this;
-            fork.rawSymbolsSkip(times);
+            fork.symbolsSkip(times);
             return fork.getRemainingWithCurrent();
         }
 
@@ -73,28 +88,28 @@ namespace cerb::text
             end = new_end;
         }
 
-        constexpr auto rawSkip(size_t n) -> void
+        constexpr auto skip(size_t n) -> void
         {
             for (size_t i = 0; i != n; ++i) {
                 moveCarriage();
             }
         }
 
-        constexpr auto rawSymbolsSkip(size_t n) -> void
+        constexpr auto symbolsSkip(size_t n) -> void
         {
             for (size_t i = 0; i != n; ++i) {
-                nextRawChar();
+                next();
             }
         }
 
         constexpr auto moveToCleanChar() -> void
         {
             while (isLayout(futureRawChar(1))) {
-                nextRawChar();
+                next();
             }
         }
 
-        constexpr auto nextRawChar() -> char32_t
+        constexpr auto next() -> char32_t
         {
             do {
                 moveCarriage();
@@ -108,7 +123,7 @@ namespace cerb::text
             auto forked = *this;
 
             for (size_t i = 0; i != times; ++i) {
-                forked.nextRawChar();
+                forked.next();
             }
 
             return forked.getCurrentChar();
@@ -126,20 +141,6 @@ namespace cerb::text
 
             throw utf8::Utf8ConvertionError{ "unable to convert character to utf8"sv };
         }
-
-        auto operator=(const BasicTextIterator &) -> BasicTextIterator & = default;
-        auto operator=(BasicTextIterator &&) noexcept -> BasicTextIterator & = default;
-
-        BasicTextIterator() noexcept = default;
-        BasicTextIterator(const BasicTextIterator &) = default;
-        BasicTextIterator(BasicTextIterator &&) noexcept = default;
-
-        constexpr explicit BasicTextIterator(u8string_view text_) noexcept
-          : carriage{ text_.begin() }, end{ text_.end() }
-        {}
-
-        constexpr virtual ~BasicTextIterator(){};// NOLINT gcc says, that destructor is used before
-                                                 // its definition
 
     private:
         constexpr auto moveCarriage() -> char8_t
@@ -173,20 +174,9 @@ namespace cerb::text
             onMove(chr);
 
             if (remaining_to_finish_utf != 0) {
-                if (not utf8::isTrailingCharacter(chr)) {
-                    onUtfError(chr);
-                }
-
-                current_char <<= utf8::TrailingSize;
-                current_char |= chr & static_cast<char8_t>(~utf8::ContinuationMask);
+                trailingCharacterMove(chr);
             } else {
-                remaining_to_finish_utf = utf8::utfSize(chr);
-
-                if (remaining_to_finish_utf == 0) {
-                    onUtfError(chr);
-                }
-
-                current_char = chr & static_cast<char8_t>(~utf8::getMask(remaining_to_finish_utf));
+                newCharacterMove(chr);
             }
 
             --remaining_to_finish_utf;
@@ -194,6 +184,27 @@ namespace cerb::text
             if (remaining_to_finish_utf == 0) {
                 onCharacter(current_char);
             }
+        }
+
+        constexpr auto trailingCharacterMove(char8_t chr) -> void
+        {
+            if (not utf8::isTrailingCharacter(chr)) {
+                onUtfError(chr);
+            }
+
+            current_char <<= utf8::TrailingSize;
+            current_char |= chr & static_cast<char8_t>(~utf8::ContinuationMask);
+        }
+
+        constexpr auto newCharacterMove(char8_t chr) -> void
+        {
+            remaining_to_finish_utf = utf8::utfSize(chr);
+
+            if (remaining_to_finish_utf == 0) {
+                onUtfError(chr);
+            }
+
+            current_char = chr & static_cast<char8_t>(~utf8::getMask(remaining_to_finish_utf));
         }
 
         constexpr auto skipBadUtf() -> void

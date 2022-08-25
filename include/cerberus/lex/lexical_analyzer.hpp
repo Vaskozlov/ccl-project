@@ -8,16 +8,38 @@ namespace cerb::lex
 {
     class LexicalAnalyzer
     {
+    public:
         using DotItem = dot_item::DotItem;
         using BasicItem = dot_item::BasicItem;
         using TextIterator = typename BasicItem::TextIterator;
         using CommentTokens = typename BasicItem::CommentTokens;
         using ExceptionAccumulator = typename BasicItem::ExceptionAccumulator;
 
-    public:
+        struct Tokenizer
+        {
+            Tokenizer(LexicalAnalyzer &lexical_analyzer_, u8string_view text)
+              : lexical_analyzer(lexical_analyzer_),
+                text_iterator(
+                    text, &lexical_analyzer_.exception_accumulator,
+                    lexical_analyzer_.shared.comment_tokens)
+            {}
+
+            [[nodiscard]] auto yield() -> Token;
+            [[nodiscard]] auto constructBadToken() -> Token;
+
+        private:
+            const LexicalAnalyzer &lexical_analyzer;
+            TextIterator text_iterator;
+        };
+
         LexicalAnalyzer(
             const std::initializer_list<std::pair<size_t, u8string_view>> &rules_,
             u8string_view filename = {}, const CommentTokens &comment_tokens_ = { u8"#" });
+
+        [[nodiscard]] auto getTokenizer(u8string_view text) -> Tokenizer
+        {
+            return { *this, text };
+        }
 
         [[nodiscard]] auto getExceptionAccumulator() -> ExceptionAccumulator &
         {
@@ -28,8 +50,6 @@ namespace cerb::lex
         {
             return exception_accumulator;
         }
-
-        auto yield(TextIterator &text_iterator) const -> Token;
 
     private:
         auto createDotItem(

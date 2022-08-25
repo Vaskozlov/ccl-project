@@ -29,7 +29,7 @@ namespace cerb::fmt::core
     private:
         constexpr auto count() -> void
         {
-            while (text_iterator.nextRawChar() != 0) {
+            while (text_iterator.next() != 0) {
                 processState();
             }
         }
@@ -42,7 +42,7 @@ namespace cerb::fmt::core
             } else if (bracket::isClosed(text_iterator)) {
                 --opened_brackets_counter;
             } else if (bracket::needToSkip(text_iterator)) {
-                text_iterator.nextRawChar();
+                text_iterator.next();
             }
         }
 

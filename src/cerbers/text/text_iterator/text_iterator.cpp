@@ -20,6 +20,11 @@ namespace cerb::text
         throw UnrecoverableError{ "unable to recover, because of invalid utf symbol" };
     }
 
+    auto TextIterator::skipComments() -> bool
+    {
+        return CommentSkipper{ *this, comment_tokens }.skip();
+    }
+
     auto TextIterator::skipCommentsAndLayout() -> void
     {
         auto comment_skipper = CommentSkipper{ *this, comment_tokens };
@@ -33,7 +38,7 @@ namespace cerb::text
         TextIterator::extra_symbols_t const &extra_symbols) -> Pair<bool, char32_t>
     {
         auto escaping = false;
-        auto chr = nextRawChar();
+        auto chr = next();
 
         if (chr == U'\\') {
             escaping = true;

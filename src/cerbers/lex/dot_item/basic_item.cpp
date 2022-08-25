@@ -2,17 +2,6 @@
 
 namespace cerb::lex::dot_item
 {
-    auto BasicItem::isNextCharNotForScanning(const TextIterator &text_iterator) const -> bool
-    {
-        auto chr = text_iterator.futureRawChar(1);
-
-        if (isLayoutOrEoF(chr)) {
-            return true;
-        }
-
-        return analysis_shared.isNextCharNotForScanning(text_iterator);
-    }
-
     auto
         BasicItem::scan(const TextIterator &text_iterator, const Token &token, bool main_scan) const
         -> std::optional<std::pair<TextIterator, Token>>
@@ -34,7 +23,8 @@ namespace cerb::lex::dot_item
                 modifyToken(text_iterator, local_iterator, local_token);
             }
 
-            return std::make_pair(local_iterator, local_token);
+            return std::optional<std::pair<TextIterator, Token>>(
+                std::in_place, local_iterator, local_token);
         }
 
         return std::nullopt;
@@ -59,7 +49,7 @@ namespace cerb::lex::dot_item
         const TextIterator &text_iterator, size_t times, bool main_scan) const -> bool
     {
         return recurrence.inRange(times) &&
-               (not main_scan || isNextCharNotForScanning(text_iterator));
+               (not main_scan || analysis_shared.isNextCharNotForScanning(text_iterator));
     }
 
     auto BasicItem::modifyToken(
