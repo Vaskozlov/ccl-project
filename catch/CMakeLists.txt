@@ -2,17 +2,17 @@ enable_testing()
 
 file(
         GLOB_RECURSE
-        LIBCERBERUS_CATCH
+        CCL_CATCH_OBJECTS
         "catch/*.cpp"
 )
 
 add_executable(
-        libcerberus-catch
-        ${LIBCERBERUS_CATCH}
+        ccl-catch
+        ${CCL_CATCH_OBJECTS}
 )
 
 target_compile_definitions(
-        libcerberus-catch
+        ccl-catch
         PRIVATE
         "BOOST_TEST_DYN_LINK"
 )
@@ -23,22 +23,22 @@ set_source_files_properties(
 )
 
 target_link_libraries(
-        libcerberus-catch
+        ccl-catch
         fmt::fmt
 )
 
 target_link_libraries(
-        libcerberus-catch
-        cerberus
+        ccl-catch
+        ccl
 )
 
 if (${PRECOMPILED_HEADER})
     target_precompile_headers(
-            libcerberus-catch
+            ccl-catch
             PUBLIC
             "pch.hpp"
             <boost/test/unit_test.hpp>
     )
 endif ()
 
-add_test(libcerberus-catch-test libcerberus-catch)
+add_test(ccl-catch-test ccl-catch)
