@@ -31,7 +31,9 @@ BOOST_AUTO_TEST_CASE(LexTest)
     auto token = tokenizer.yield();
 
     while (token) {
-        ::fmt::print("{}: {}\n", token.getId(), convert(token.getRepr()));
+        ::fmt::print(
+            "{} {}: {}\n", token.getId(), token.getTabsAndSpaces().size(),
+            convert(token.getRepr()));
         token = tokenizer.yield();
     }
 }

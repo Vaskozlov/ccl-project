@@ -84,6 +84,11 @@ namespace ccl::lex
             return postfixes;
         }
 
+        [[nodiscard]] auto getTabsAndSpaces() const noexcept -> const std::u32string &
+        {
+            return attributes.tabs_and_spaces;
+        }
+
         auto setEnd(typename u8string_view::iterator end_) noexcept -> void
         {
             repr = { repr.begin(), end_ };

@@ -23,10 +23,8 @@ namespace ccl::text
         constexpr virtual ~BasicTextIterator(){};// NOLINT gcc says, that destructor is used before
                                                  // its definition
 
-
         auto operator=(BasicTextIterator &&) noexcept -> BasicTextIterator & = default;
         auto operator=(const BasicTextIterator &) noexcept -> BasicTextIterator & = default;
-
 
         CCL_DECL auto getCarriage() const noexcept -> iterator
         {

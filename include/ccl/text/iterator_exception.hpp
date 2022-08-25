@@ -1,7 +1,6 @@
 #ifndef CCL_PROJECT_TIM_EXCEPTION_HPP
 #define CCL_PROJECT_TIM_EXCEPTION_HPP
 
-#include <ccl/ccl.hpp>
 #include <ccl/format/format.hpp>
 #include <string>
 

@@ -70,8 +70,8 @@ namespace ccl::lex
     {
         text_iterator.next();
 
+        auto repr_begin = text_iterator.getCarriage();
         auto token_attributes = TokenAttributes{ text_iterator };
-        const auto *repr_begin = text_iterator.getCarriage();
         const auto &[str_begin, str_end, id, is_character, is_multiline] = string_elem;
 
         auto sequence = dot_item::Sequence(

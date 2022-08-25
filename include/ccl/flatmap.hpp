@@ -1,8 +1,6 @@
 #ifndef CCL_PROJECT_FLATMAP_HPP
 #define CCL_PROJECT_FLATMAP_HPP
 
-#include <algorithm>
-#include <array>
 #include <ccl/ccl.hpp>
 #include <initializer_list>
 #include <utility>

@@ -1,4 +1,3 @@
-#include <ccl/ccl.hpp>
 #include <ccl/debug/debug_file.hpp>
 
 using namespace ccl;

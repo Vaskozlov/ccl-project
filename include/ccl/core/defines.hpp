@@ -7,10 +7,6 @@
 
 #define CCL_DECL [[nodiscard]] constexpr
 
-#define CCL_CONCATENATE(x, y) x##y
-#define CCL_FORCE_EXPAND(x, y) CCL_CONCATENATE(x, y)
-#define CCL_UNIQUE_IDENT CCL_FORCE_EXPAND(_cerblib_uid, __COUNTER__)
-
 #define CCL_PERFECT_FORWARDING(Repr, Type)                                                         \
     template<typename Repr = Type>                                                                 \
     requires std::is_convertible_v<Repr, Type>
@@ -48,21 +44,5 @@
 #else
 #    define CCL_TRIVIAL_ABI
 #endif /* CCL_TRIVIAL_ABI */
-
-#define CCL_HAS_CONSTEXPR_STRING                                                                   \
-    __cpp_lib_constexpr_string >= 201907L && (!__clang__ || __clang_major__ >= 15)
-
-#define CCL_HAS_CONSTEXPR_VECTOR                                                                   \
-    __cpp_lib_constexpr_vector >= 201907L && (!__clang__ || __clang_major__ >= 15)
-
-// NOLINTBEGIN
-#define CCL_DERIVED_CONSTRUCTORS(Class)                                                            \
-    Class() = default;                                                                             \
-    Class(const Class &) = default;                                                                \
-    Class(Class &&) noexcept = default;                                                            \
-    ~Class() = default;                                                                            \
-    auto operator=(const Class &)->Class & = default;                                              \
-    auto operator=(Class &&) noexcept->Class & = default
-// NOLINTEND
 
 #endif /* CCL_PROJECT_DEFINES_HPP */

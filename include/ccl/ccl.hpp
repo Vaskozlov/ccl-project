@@ -5,6 +5,9 @@
 #    error CCL requires at least C++2b
 #endif /* minimum requirements */
 
+#include <algorithm>
+#include <array>
+
 #include <ccl/core/concepts.hpp>
 #include <ccl/core/defines.hpp>
 #include <ccl/core/enum.hpp>

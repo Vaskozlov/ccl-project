@@ -41,8 +41,8 @@ namespace ccl::text::module
         constexpr auto clearIfNeed() noexcept -> void
         {
             if (need_to_clear) {
-                tabs_and_spaces.clear();
                 need_to_clear = false;
+                tabs_and_spaces.clear();
             }
         }
 

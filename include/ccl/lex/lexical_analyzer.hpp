@@ -24,6 +24,13 @@ namespace ccl::lex
                     lexical_analyzer_.shared.comment_tokens)
             {}
 
+            Tokenizer(
+                LexicalAnalyzer &lexical_analyzer_, u8string_view text,
+                ExceptionAccumulator *exception_accumulator_)
+              : lexical_analyzer(lexical_analyzer_),
+                text_iterator(text, exception_accumulator_, lexical_analyzer_.shared.comment_tokens)
+            {}
+
             [[nodiscard]] auto yield() -> Token;
             [[nodiscard]] auto constructBadToken() -> Token;
 
@@ -39,6 +46,12 @@ namespace ccl::lex
         [[nodiscard]] auto getTokenizer(u8string_view text) -> Tokenizer
         {
             return { *this, text };
+        }
+
+        [[nodiscard]] auto getTokenizer(u8string_view text, ExceptionAccumulator *accumulator)
+            -> Tokenizer
+        {
+            return { *this, text, accumulator };
         }
 
         [[nodiscard]] auto getExceptionAccumulator() -> ExceptionAccumulator &

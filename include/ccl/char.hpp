@@ -1,7 +1,6 @@
 #ifndef CCL_PROJECT_CHAR_HPP
 #define CCL_PROJECT_CHAR_HPP
 
-#include <ccl/ccl.hpp>
 #include <ccl/flatmap.hpp>
 
 namespace ccl
