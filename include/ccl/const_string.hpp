@@ -63,7 +63,7 @@ namespace ccl
             return size() == 0;
         }
 
-        CCL_DECL operator u8string_view() const noexcept// NOLINT
+        CCL_DECL operator u8string_view() const noexcept// NOLINT implicit conversion
         {
             return { string.data(), size() };
         }
@@ -73,7 +73,7 @@ namespace ccl
             return string.at(index);
         }
 
-        CCL_DECL auto operator[](size_t index) const -> char8_t
+        CCL_DECL auto operator[](size_t index) const noexcept -> char8_t
         {
             return string[index];
         }

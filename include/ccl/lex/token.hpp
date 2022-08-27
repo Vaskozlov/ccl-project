@@ -1,6 +1,7 @@
 #ifndef CCL_PROJECT_TOKEN_HPP
 #define CCL_PROJECT_TOKEN_HPP
 
+#include <boost/container/small_vector.hpp>
 #include <ccl/text/text_iterator.hpp>
 #include <string>
 #include <utility>
@@ -74,14 +75,12 @@ namespace ccl::lex
             return value;
         }
 
-        [[nodiscard]] auto getPrefixes() const noexcept
-            -> const boost::container::small_vector<u8string_view, 1> &
+        [[nodiscard]] auto getPrefixes() const noexcept -> const std::vector<u8string_view> &
         {
             return prefixes;
         }
 
-        [[nodiscard]] auto getPostfixes() const noexcept
-            -> const boost::container::small_vector<u8string_view, 1> &
+        [[nodiscard]] auto getPostfixes() const noexcept -> const std::vector<u8string_view> &
         {
             return postfixes;
         }
@@ -107,9 +106,9 @@ namespace ccl::lex
         }
 
     private:
+        std::vector<u8string_view> prefixes{};
+        std::vector<u8string_view> postfixes{};
         TokenAttributes attributes{};
-        boost::container::small_vector<u8string_view, 1> prefixes{};
-        boost::container::small_vector<u8string_view, 1> postfixes{};
         std::u8string value{};
         u8string_view repr{};
         size_t id{};

@@ -2,10 +2,10 @@
 
 namespace ccl::text
 {
-    auto TextIterator::EscapingSymbolizer::match() -> char32_t
+    auto TextIterator::EscapingSymbolizer::matchNextChar() -> char32_t
     {
         if (text_iterator.getCurrentChar() != '\\') {
-            throw LogicError("called EscapingSymbolizer::match() without preceding `\\`");
+            throw LogicError("called EscapingSymbolizer::matchNextChar() without preceding `\\`");
         }
 
         auto chr = text_iterator.next();
@@ -73,9 +73,7 @@ namespace ccl::text
 
     auto TextIterator::EscapingSymbolizer::throwMatchException() -> void
     {
-        text_iterator.throwException(TextIteratorException(
-            text_iterator.getLocation(),
-            text_iterator.getWorkingLine(),
-            u8"unable to match any escaping symbol"));
+        text_iterator.throwException<TextIteratorException>(
+            u8"unable to matchNextChar any escaping symbol");
     }
 }// namespace ccl::text

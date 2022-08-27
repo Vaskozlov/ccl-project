@@ -53,7 +53,7 @@ namespace ccl
         return matching_str;
     }
 
-    auto RawStringMatcher::mapStringToLevels(const std::u8string &string) -> void
+    auto RawStringMatcher::mapStringToLevels(u8string_view string) -> void
     {
         auto level = static_cast<size_t>(0);
         resizeLevels(string.size());

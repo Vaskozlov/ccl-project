@@ -14,7 +14,7 @@ namespace ccl::text
         line_tracker.next(chr);
     }
 
-    auto TextIterator::onUtfError(char8_t /* chr */) -> void
+    auto TextIterator::utfError(char8_t /* chr */) -> void
     {
         throwException<TextIteratorException>(u8"invalid utf symbol");
         throw UnrecoverableError{ "unable to recover, because of invalid utf symbol" };
@@ -54,7 +54,7 @@ namespace ccl::text
         -> char32_t
     {
         auto symbolizer = EscapingSymbolizer{ text_iterator, extra_symbols_ };
-        return symbolizer.match();
+        return symbolizer.matchNextChar();
     }
 
     auto TextIterator::calculateNotationEscapeSymbol(

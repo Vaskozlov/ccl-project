@@ -7,24 +7,78 @@
 
 namespace ccl::text
 {
-    class BasicTextIterator
+    struct CrtpForkType : std::true_type
+    {
+    };
+
+    constexpr auto CrtpFork = CrtpForkType{};
+
+    template<typename CRTP>
+    class CrtpBasicTextIterator
     {
     public:
         using iterator = typename u8string_view::iterator;
 
-        BasicTextIterator() noexcept = default;
-        BasicTextIterator(BasicTextIterator &&) noexcept = default;
-        BasicTextIterator(const BasicTextIterator &) noexcept = default;
+        struct alignas(32) ForkedTextIterator// NOLINT size of ForkedTextIterator
+          : public CrtpBasicTextIterator<ForkedTextIterator>
+        {
+            ForkedTextIterator() noexcept = default;
 
-        constexpr explicit BasicTextIterator(u8string_view text_) noexcept
+            constexpr explicit ForkedTextIterator(u8string_view text_) noexcept
+              : CrtpBasicTextIterator<ForkedTextIterator>(text_)
+            {}
+
+            template<typename T>
+            constexpr explicit ForkedTextIterator(CrtpForkType /* unused */, T &other) noexcept
+              : CrtpBasicTextIterator<ForkedTextIterator>(CrtpFork, other)
+            {}
+
+            constexpr static auto onMove(char8_t /* chr */) noexcept -> void
+            {}
+
+            constexpr static auto onCharacter(char32_t /* chr */) noexcept -> void
+            {}
+
+            auto utfError(char8_t /* chr */) noexcept -> void
+            {
+                error_detected = true;
+            }
+
+            bool error_detected{ false };
+        };
+
+        static constexpr auto noexcept_carriage_move = std::is_same_v<CRTP, ForkedTextIterator>;
+
+        CrtpBasicTextIterator() noexcept = default;
+        CrtpBasicTextIterator(CrtpBasicTextIterator &&) noexcept = default;
+        CrtpBasicTextIterator(const CrtpBasicTextIterator &) noexcept = default;
+
+        constexpr explicit CrtpBasicTextIterator(u8string_view text_) noexcept
           : carriage{ text_.begin() }, end{ text_.end() }
         {}
 
-        constexpr virtual ~BasicTextIterator(){};// NOLINT gcc says, that destructor is used before
-                                                 // its definition
+        template<typename T>
+        constexpr explicit CrtpBasicTextIterator(CrtpForkType /* unused */, T &from) noexcept
+          : carriage(from.getCarriage()), end(from.getEnd()), current_char(from.getCurrentChar()),
+            remaining_to_finish_utf(from.getRemainingToFinishUtf()),
+            initialized(from.isInitialized())
+        {}
 
-        auto operator=(BasicTextIterator &&) noexcept -> BasicTextIterator & = default;
-        auto operator=(const BasicTextIterator &) noexcept -> BasicTextIterator & = default;
+        constexpr virtual ~CrtpBasicTextIterator(){};// NOLINT gcc says, that destructor is used
+                                                     // before its definition
+
+        auto operator=(CrtpBasicTextIterator &&) noexcept -> CrtpBasicTextIterator & = default;
+        auto operator=(const CrtpBasicTextIterator &) noexcept -> CrtpBasicTextIterator & = default;
+
+        CCL_DECL auto isInitialized() const noexcept -> bool
+        {
+            return initialized;
+        }
+
+        CCL_DECL auto getRemainingToFinishUtf() const noexcept -> u16
+        {
+            return remaining_to_finish_utf;
+        }
 
         CCL_DECL auto getCarriage() const noexcept -> iterator
         {
@@ -50,7 +104,7 @@ namespace ccl::text
             const auto *it = getRemainingAsCarriage();
 
             if (it == end) {
-                return 0;
+                return {};
             }
 
             return *it;
@@ -66,13 +120,13 @@ namespace ccl::text
             return { carriage, end };
         }
 
-        CCL_DECL auto isEnd() const -> bool
+        CCL_DECL auto isEnd() const noexcept -> bool
         {
             return getRemainingAsCarriage() == end;
         }
 
         template<char32_t Chr>
-        CCL_DECL auto isNextCharacterEqual() const -> bool
+        CCL_DECL auto isNextCharacterEqual() const noexcept(noexcept_carriage_move) -> bool
         {
             if constexpr (Chr <= utf8::OneByteMax) {
                 return Chr == getNextCarriageValue();
@@ -81,10 +135,15 @@ namespace ccl::text
             }
         }
 
-        CCL_DECL auto getFutureRemaining(size_t times) const -> u8string_view
+        CCL_DECL auto getFutureRemaining(size_t times) const noexcept -> u8string_view
         {
-            auto fork = *this;
+            auto fork = ForkedTextIterator{ CrtpFork, *this };
             fork.skipCharacters(times);
+
+            if (fork.error_detected) {
+                return {};
+            }
+
             return fork.getRemainingWithCurrent();
         }
 
@@ -107,28 +166,28 @@ namespace ccl::text
             end = new_end;
         }
 
-        constexpr auto skip(size_t n) -> void
+        constexpr auto skip(size_t n) noexcept(noexcept_carriage_move) -> void
         {
             for (size_t i = 0; i != n; ++i) {
                 moveCarriage();
             }
         }
 
-        constexpr auto skipCharacters(size_t n) -> void
+        constexpr auto skipCharacters(size_t n) noexcept(noexcept_carriage_move) -> void
         {
             for (size_t i = 0; i != n; ++i) {
                 next();
             }
         }
 
-        constexpr auto moveToCleanChar() -> void
+        constexpr auto moveToCleanChar() noexcept(noexcept_carriage_move) -> void
         {
             while (isLayout(futureChar(1))) {
                 next();
             }
         }
 
-        constexpr auto next() -> char32_t
+        constexpr auto next() noexcept(noexcept_carriage_move) -> char32_t
         {
             do {
                 moveCarriage();
@@ -137,28 +196,35 @@ namespace ccl::text
             return current_char;
         }
 
-        CCL_DECL auto futureChar(size_t times) const -> char32_t
+        CCL_DECL auto futureChar(size_t times) const noexcept -> char32_t
         {
-            auto forked = *this;
-            forked.skipCharacters(times);
-            return forked.getCurrentChar();
+            auto fork = ForkedTextIterator{ CrtpFork, *this };
+            fork.skipCharacters(times);
+
+            if (fork.error_detected) {
+                return {};
+            }
+
+            return fork.getCurrentChar();
         }
 
-        constexpr virtual auto onMove(char8_t /* chr */) -> void
-        {}
-
-        constexpr virtual auto onCharacter(char32_t /* chr */) -> void
-        {}
-
-        virtual auto onUtfError(char8_t /* chr */) -> void
+        constexpr auto onCarriageMove(char8_t chr) -> void
         {
-            using namespace std::string_view_literals;
+            static_cast<CRTP &>(*this).onMove(chr);
+        }
 
-            throw utf8::Utf8ConvertionError{ "unable to convert character to utf8"sv };
+        constexpr auto onNextCharacter(char32_t chr) -> void
+        {
+            static_cast<CRTP &>(*this).onCharacter(chr);
+        }
+
+        auto onUtfError(char8_t chr) noexcept(noexcept_carriage_move) -> void
+        {
+            static_cast<CRTP &>(*this).utfError(chr);
         }
 
     private:
-        constexpr auto moveCarriage() -> char8_t
+        constexpr auto moveCarriage() noexcept(noexcept_carriage_move) -> char8_t
         {
             if (not initialized) {
                 if (carriage == end) {
@@ -181,12 +247,12 @@ namespace ccl::text
             return *carriage;
         }
 
-        constexpr auto modifyCurrentChar() -> void
+        constexpr auto modifyCurrentChar() noexcept(noexcept_carriage_move) -> void
         {
             using namespace std::string_view_literals;
 
             auto chr = *carriage;
-            onMove(chr);
+            onCarriageMove(chr);
 
             if (remaining_to_finish_utf != 0) {
                 trailingCharacterMove(chr);
@@ -197,11 +263,11 @@ namespace ccl::text
             --remaining_to_finish_utf;
 
             if (remaining_to_finish_utf == 0) {
-                onCharacter(current_char);
+                onNextCharacter(current_char);
             }
         }
 
-        constexpr auto trailingCharacterMove(char8_t chr) -> void
+        constexpr auto trailingCharacterMove(char8_t chr) noexcept(noexcept_carriage_move) -> void
         {
             if (not utf8::isTrailingCharacter(chr)) {
                 onUtfError(chr);
@@ -211,7 +277,7 @@ namespace ccl::text
             current_char |= chr & static_cast<char8_t>(~utf8::ContinuationMask);
         }
 
-        constexpr auto newCharacterMove(char8_t chr) -> void
+        constexpr auto newCharacterMove(char8_t chr) noexcept(noexcept_carriage_move) -> void
         {
             remaining_to_finish_utf = utf8::utfSize(chr);
 
@@ -222,26 +288,35 @@ namespace ccl::text
             current_char = chr & static_cast<char8_t>(~utf8::getMask(remaining_to_finish_utf));
         }
 
-        constexpr auto skipBadUtf() -> void
-        {
-            auto fork = *this;
-
-            while (true) {
-                auto chr = fork.moveCarriage();
-
-                if (utf8::utfSize(chr) != 0) {
-                    break;
-                }
-
-                moveCarriage();
-            }
-        }
-
         iterator carriage{};
         iterator end{};
         char32_t current_char{};
         u16 remaining_to_finish_utf{};
         bool initialized{};
+    };
+
+    struct BasicTextIterator : public CrtpBasicTextIterator<BasicTextIterator>
+    {
+        using Base = CrtpBasicTextIterator<BasicTextIterator>;
+
+        BasicTextIterator() noexcept = default;
+
+        constexpr explicit BasicTextIterator(u8string_view text_) noexcept
+          : CrtpBasicTextIterator<BasicTextIterator>(text_)
+        {}
+
+        constexpr static auto onMove(char8_t /* chr */) noexcept -> void
+        {}
+
+        constexpr static auto onCharacter(char32_t /* chr */) noexcept -> void
+        {}
+
+        static auto utfError(char8_t /* chr */) -> void
+        {
+            using namespace std::string_view_literals;
+
+            throw utf8::Utf8ConvertionError{ "unable to convert character to utf8"sv };
+        }
     };
 }// namespace ccl::text
 

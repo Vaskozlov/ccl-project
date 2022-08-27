@@ -2,8 +2,7 @@
 #define CCL_PROJECT_LEXICAL_ANALYZER_HPP
 
 #include <ccl/lex/dot_item/dot_item.hpp>
-#include <deque>
-#include <queue>
+#include <set>
 
 namespace ccl::lex
 {
@@ -45,6 +44,12 @@ namespace ccl::lex
             auto throwError(Args &&...args) -> void
             {
                 text_iterator.throwException<T>(std::forward<Args>(args)...);
+            }
+
+            template<Exception T, typename... Args>
+            auto throwWarning(Args &&...args) -> void
+            {
+                text_iterator.throwWarning<T>(std::forward<Args>(args)...);
             }
 
             [[nodiscard]] auto yield() -> Token;

@@ -21,10 +21,10 @@ namespace ccl::text
     CCL_EXCEPTION(CommentSkipperException, TextIteratorException);
     CCL_EXCEPTION(NotationEscapingSymbolizerException, TextIteratorException);
 
-    class TextIterator : public BasicTextIterator
+    class TextIterator : public CrtpBasicTextIterator<TextIterator>
     {
     private:
-        using Base = BasicTextIterator;
+        using Base = CrtpBasicTextIterator<TextIterator>;
         using extra_symbols_t = std::basic_string<Pair<char32_t, char32_t>>;
 
     public:
@@ -36,8 +36,9 @@ namespace ccl::text
 
         explicit TextIterator(
             u8string_view input, ExceptionAccumulator *exception_accumulator_ = {},
-            const CommentTokens &comment_tokens_ = {}, u8string_view filename = {})
-          : Base(input), location(filename), line_tracker(input), comment_tokens(comment_tokens_),
+            CommentTokens comment_tokens_ = {}, u8string_view filename = {})
+          : Base(input), location(filename), line_tracker(input),
+            comment_tokens(std::move(comment_tokens_)),
             exception_accumulator(exception_accumulator_)
         {}
 
@@ -87,9 +88,9 @@ namespace ccl::text
         auto nextRawCharWithEscapingSymbols(const extra_symbols_t &extra_symbols = {})
             -> Pair<bool, char32_t>;
 
-        auto onMove(char8_t chr) -> void override;
-        auto onCharacter(char32_t chr) -> void override;
-        auto onUtfError(char8_t chr) -> void override;
+        auto onMove(char8_t chr) -> void;
+        auto onCharacter(char32_t chr) -> void;
+        auto utfError(char8_t chr) -> void;
 
         auto skipComments() -> bool;
         auto skipCommentsAndLayout() -> void;
@@ -160,7 +161,7 @@ namespace ccl::text
             return extra_symbols;
         }
 
-        [[nodiscard]] auto match() -> char32_t;// TODO: rename function
+        [[nodiscard]] auto matchNextChar() -> char32_t;// TODO: rename function
 
         auto operator=(EscapingSymbolizer &&) -> void = delete;
         auto operator=(const EscapingSymbolizer &) -> void = delete;

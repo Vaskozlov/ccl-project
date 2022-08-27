@@ -43,7 +43,7 @@ namespace ccl
         [[nodiscard]] auto getMatchingPart(const u8string_view &string) const -> std::u8string;
 
         auto resizeLevels(size_t new_size) -> void;
-        auto mapStringToLevels(const std::u8string &string) -> void;
+        auto mapStringToLevels(u8string_view string) -> void;
 
         Map map{};
         CharLevels char_levels = CharLevels(4);
