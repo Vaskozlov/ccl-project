@@ -57,18 +57,12 @@ namespace ccl::text
             working_line(working_line_)
         {}
 
+        CCL_PERFECT_FORWARDING_2(T1, std::u8string, T2, std::u8string)
         TextIteratorException(
-            const Location &location_, const u8string_view &working_line_,
-            const std::u8string &message_, const std::u8string &suggestion_ = {})
-          : TextIteratorException{ location_, working_line_, u8string_view{ message_ },
-                                   u8string_view{ suggestion_ } }
-        {}
-
-        TextIteratorException(
-            const Location &location_, const u8string_view &working_line_, const char8_t *message_,
-            const char8_t *suggestion_ = nullptr)
-          : TextIteratorException(
-                location_, working_line_, u8string_view{ message_ }, u8string_view{ suggestion_ })
+            const Location &location_, const u8string_view &working_line_, T1 &&message_,
+            T2 &&suggestion_ = {})
+          : location(location_), message(std::forward<T1>(message_)),
+            suggestion(std::forward<T2>(suggestion_)), working_line(working_line_)
         {}
 
         [[nodiscard]] auto createFullMessage() const -> std::u8string;

@@ -161,7 +161,7 @@ namespace ccl::text
             return extra_symbols;
         }
 
-        [[nodiscard]] auto matchNextChar() -> char32_t;// TODO: rename function
+        [[nodiscard]] auto matchNextChar() -> char32_t;
 
         auto operator=(EscapingSymbolizer &&) -> void = delete;
         auto operator=(const EscapingSymbolizer &) -> void = delete;

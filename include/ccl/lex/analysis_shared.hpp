@@ -12,7 +12,7 @@ namespace ccl::lex
 {
     struct String
     {
-        CCL_PERFECT_FORWARDING_2(T1, T2, std::u8string, std::u8string)
+        CCL_PERFECT_FORWARDING_2(T1, std::u8string, T2, std::u8string)
         String(T1 &&str_begin_, T2 &&str_end_, size_t id_, bool is_character_, bool is_multiline_)
           : str_begin(std::forward<T1>(str_begin_)), str_end(std::forward<T2>(str_end_)), id(id_),
             is_character(is_character_), is_multiline(is_multiline_)
