@@ -29,7 +29,7 @@ namespace ccl::fmt
                 u16 notation_ = Notation::DECIMAL)
               : formatting_string{ formatting_string_ }, number{ number_ }, notation{ notation_ }
             {
-                if (land(notation > Notation::HEXADECIMAL, notation < Notation::BINARY)) {
+                if (lor(notation > Notation::HEXADECIMAL, notation < Notation::BINARY)) {
                     throw IntegralConverterException{ "Notation is out of range" };
                 }
 
@@ -59,7 +59,7 @@ namespace ccl::fmt
                 constexpr auto upper_limit = std::numeric_limits<char8_t>::max();
                 constexpr auto lower_limit = std::numeric_limits<char8_t>::min();
 
-                if (number >= lower_limit && number <= upper_limit) {
+                if (land(number >= lower_limit, number <= upper_limit)) {
                     formatting_string.push_back(static_cast<char8_t>(number));
                 } else {
                     formatting_string.push_back(u8'?');

@@ -10,10 +10,10 @@ namespace ccl::lex
     auto AnalysisShared::isNextCharNotForScanning(const text::TextIterator &text_iterator) const
         -> bool
     {
-        auto chr = text_iterator.futureRawChar(1);
         auto text = text_iterator.getFutureRemaining(1);
 
-        return isLayoutOrEoF(chr) || isComment(text) || isTerminal(text) || isStringOrChar(text);
+        return isLayoutOrEoF(text_iterator.getNextCarriageValue()) || isComment(text) ||
+               isTerminal(text) || isStringOrChar(text);
     }
 
     auto AnalysisShared::isComment(const u8string_view &text) const noexcept -> bool
@@ -33,10 +33,10 @@ namespace ccl::lex
         -> std::optional<Token>
     {
         auto text = text_iterator.getFutureRemaining(1);
-        auto terminal_match_result = terminals.match(text);
+        auto special_match_result = special_tokens.match(text);
 
-        if (terminal_match_result.has_value()) {
-            return constructTerminalToken(text_iterator, text, *terminal_match_result);
+        if (special_match_result.has_value()) {
+            return constructTerminalToken(text_iterator, text, *special_match_result);
         }
 
         auto string_or_char_elem =
@@ -53,9 +53,9 @@ namespace ccl::lex
 
     auto AnalysisShared::constructTerminalToken(
         text::TextIterator &text_iterator, const u8string_view &remaining_text,
-        std::pair<std::u8string, size_t> &terminal_match) -> std::optional<Token>
+        std::pair<std::u8string, size_t> &special_symbols_matcher) -> std::optional<Token>
     {
-        auto &[token_value, id] = terminal_match;
+        auto &[token_value, id] = special_symbols_matcher;
         auto repr = remaining_text.substr(0, token_value.size());
         auto token_attributes = TokenAttributes{ text_iterator };
 

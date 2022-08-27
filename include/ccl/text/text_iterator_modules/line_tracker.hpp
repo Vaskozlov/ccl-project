@@ -21,9 +21,7 @@ namespace ccl::text::module
                 new_line_passed = false;
             }
 
-            if (chr == U'\n') {
-                new_line_passed = true;
-            }
+            new_line_passed = chr == U'\n';
         }
 
         constexpr explicit LineTracker(const u8string_view &text_) noexcept

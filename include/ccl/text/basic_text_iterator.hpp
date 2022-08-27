@@ -45,6 +45,17 @@ namespace ccl::text
             return carriage;
         }
 
+        CCL_DECL auto getNextCarriageValue() const noexcept -> char8_t
+        {
+            const auto *it = getRemainingAsCarriage();
+
+            if (it == end) {
+                return 0;
+            }
+
+            return *it;
+        }
+
         CCL_DECL auto getRemaining() const noexcept -> u8string_view
         {
             return { getRemainingAsCarriage(), end };
@@ -60,10 +71,20 @@ namespace ccl::text
             return getRemainingAsCarriage() == end;
         }
 
+        template<char32_t Chr>
+        CCL_DECL auto isNextCharacterEqual() const -> bool
+        {
+            if constexpr (Chr <= utf8::OneByteMax) {
+                return Chr == getNextCarriageValue();
+            } else {
+                return Chr == futureChar(1);
+            }
+        }
+
         CCL_DECL auto getFutureRemaining(size_t times) const -> u8string_view
         {
             auto fork = *this;
-            fork.symbolsSkip(times);
+            fork.skipCharacters(times);
             return fork.getRemainingWithCurrent();
         }
 
@@ -93,7 +114,7 @@ namespace ccl::text
             }
         }
 
-        constexpr auto symbolsSkip(size_t n) -> void
+        constexpr auto skipCharacters(size_t n) -> void
         {
             for (size_t i = 0; i != n; ++i) {
                 next();
@@ -102,7 +123,7 @@ namespace ccl::text
 
         constexpr auto moveToCleanChar() -> void
         {
-            while (isLayout(futureRawChar(1))) {
+            while (isLayout(futureChar(1))) {
                 next();
             }
         }
@@ -116,14 +137,10 @@ namespace ccl::text
             return current_char;
         }
 
-        CCL_DECL auto futureRawChar(size_t times) const -> char32_t
+        CCL_DECL auto futureChar(size_t times) const -> char32_t
         {
             auto forked = *this;
-
-            for (size_t i = 0; i != times; ++i) {
-                forked.next();
-            }
-
+            forked.skipCharacters(times);
             return forked.getCurrentChar();
         }
 

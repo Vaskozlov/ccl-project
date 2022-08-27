@@ -6,7 +6,7 @@ using namespace lex;
 using namespace text;
 using namespace string_view_literals;
 
-static auto convert(ccl::u8string_view str) -> std::string_view
+[[maybe_unused]] static auto convert(ccl::u8string_view str) -> std::string_view
 {
     return { reinterpret_cast<const char *>(str.begin()), str.size() };// NOLINT
 }
@@ -31,9 +31,9 @@ BOOST_AUTO_TEST_CASE(LexTest)
     auto token = tokenizer.yield();
 
     while (token) {
-        ::fmt::print(
+        /*::fmt::print(
             "{} {}: {}\n", token.getId(), token.getTabsAndSpaces().size(),
-            convert(token.getRepr()));
+            convert(token.getRepr()));*/
         token = tokenizer.yield();
     }
 }

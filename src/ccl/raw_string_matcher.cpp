@@ -23,7 +23,6 @@ namespace ccl
         return std::nullopt;
     }
 
-
     auto RawStringMatcher::matches(const u8string_view &string) const -> bool
     {
         auto matching_str = getMatchingPart(string);

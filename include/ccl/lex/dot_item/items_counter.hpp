@@ -88,7 +88,7 @@ namespace ccl::lex::dot_item
 
         [[nodiscard]] auto hasTerminals() const noexcept -> bool
         {
-            return terminals != 0;
+            return special_tokens != 0;
         }
 
         [[nodiscard]] auto hasStrOrChar() const noexcept -> bool
@@ -111,7 +111,7 @@ namespace ccl::lex::dot_item
         auto checkThereIsOneSequence() -> void;
 
         template<ConstString ItemName>
-        CCL_INLINE auto checkForUnexpectedTerminals() -> void;
+        CCL_INLINE auto checkForUnexpectedSpecialSymbols() -> void;
 
         template<ConstString ItemName>
         CCL_INLINE auto checkNoStringOrChars() -> void;
@@ -125,7 +125,7 @@ namespace ccl::lex::dot_item
         size_t unions{};
         size_t sequences{};
         size_t dot_items{};
-        size_t terminals{};
+        size_t special_tokens{};
 
     private:
         text::TextIterator &text_iterator;

@@ -8,14 +8,14 @@ using namespace text;
 BOOST_AUTO_TEST_CASE(LexicalAnalyzerUnion, *utf::depends_on("DotItemUnion"))
 {
     auto analyzer = LexicalAnalyzer{
-        { 1, u8R"([a-z]p*[0-9]+)" },
+        { 1, u8R"([a-z]p+[0-9]+)" },
         { 2, u8R"([0-9]+[a-z]p*)" },
     };
     auto tokenizer = analyzer.getTokenizer(u8R"(20 abz10 10abz)");
 
     auto token = tokenizer.yield();
 
-    BOOST_ASSERT(token.getId() == 1);
+    BOOST_ASSERT(token.getId() == 2);
     BOOST_ASSERT(token.getRepr() == u8"20");
     BOOST_ASSERT(token.getValue() == u8"20");
     BOOST_ASSERT(token.getPrefixes().empty());

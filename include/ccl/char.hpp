@@ -38,25 +38,6 @@ namespace ccl
         return land(chr >= '0', chr <= '9');
     }
 
-    CCL_DECL auto isUcLetter(CharacterLiteral auto chr) noexcept -> bool
-    {
-        return land(chr >= 'A', chr <= 'Z');
-    }
-
-    CCL_DECL auto isLcLetter(CharacterLiteral auto chr) noexcept -> bool
-    {
-        return land(chr >= 'a', chr <= 'z');
-    }
-
-    CCL_DECL auto isLetter(CharacterLiteral auto chr) noexcept -> bool
-    {
-        return lor(isUcLetter(chr), isLcLetter(chr));
-    }
-
-    CCL_DECL auto isLetterOrDigit(CharacterLiteral auto chr) noexcept -> bool
-    {
-        return lor(isLetter(chr), isDigit(chr));
-    }
 }// namespace ccl
 
 #endif /* CCL_PROJECT_CHAR_HPP */

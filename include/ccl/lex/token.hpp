@@ -9,7 +9,7 @@
 namespace ccl::lex
 {
     // NOLINTNEXTLINE
-    CCL_ENUM(ReservedTokenType, u32, END_OF_INPUT = 0, BAD_TOKEN = 1);
+    CCL_ENUM(ReservedTokenType, u32, EOI = 0, BAD_TOKEN = 1);
 
     struct TokenAttributes
     {
@@ -74,12 +74,14 @@ namespace ccl::lex
             return value;
         }
 
-        [[nodiscard]] auto getPrefixes() const noexcept -> const std::vector<u8string_view> &
+        [[nodiscard]] auto getPrefixes() const noexcept
+            -> const boost::container::small_vector<u8string_view, 1> &
         {
             return prefixes;
         }
 
-        [[nodiscard]] auto getPostfixes() const noexcept -> const std::vector<u8string_view> &
+        [[nodiscard]] auto getPostfixes() const noexcept
+            -> const boost::container::small_vector<u8string_view, 1> &
         {
             return postfixes;
         }
@@ -106,8 +108,8 @@ namespace ccl::lex
 
     private:
         TokenAttributes attributes{};
-        std::vector<u8string_view> prefixes{};
-        std::vector<u8string_view> postfixes{};
+        boost::container::small_vector<u8string_view, 1> prefixes{};
+        boost::container::small_vector<u8string_view, 1> postfixes{};
         std::u8string value{};
         u8string_view repr{};
         size_t id{};

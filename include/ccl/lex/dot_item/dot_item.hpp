@@ -48,6 +48,16 @@ namespace ccl::lex::dot_item
             parseRule(rule_iterator_);
         }
 
+        [[nodiscard]] auto operator==(const DotItem &other) const noexcept
+        {
+            return id == other.id;
+        }
+
+        [[nodiscard]] auto operator<=>(const DotItem &other) const noexcept
+        {
+            return id <=> other.id;
+        }
+
         [[nodiscard]] auto getId() const noexcept -> size_t
         {
             return id;
@@ -65,7 +75,7 @@ namespace ccl::lex::dot_item
 
     private:
         template<typename T>
-        requires std::is_base_of_v<BasicItem, T>
+            requires std::is_base_of_v<BasicItem, T>
         auto unsafeGetLastItemAs() noexcept -> T *
         {
             // NOLINTNEXTLINE unsafe cast to increase performance

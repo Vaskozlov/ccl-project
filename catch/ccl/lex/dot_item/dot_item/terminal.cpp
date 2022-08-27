@@ -13,9 +13,9 @@ BOOST_AUTO_TEST_CASE(DotItemTerminalCreation)
     auto shared = AnalysisShared{};
     auto dot_item = DotItem(TextIterator{ u8R"('+' '-')" }, 0, shared);
 
-    BOOST_ASSERT(shared.terminals.size() == 2);
-    BOOST_ASSERT(shared.terminals.matches(u8"+"));
-    BOOST_ASSERT(shared.terminals.matches(u8"-"));
+    BOOST_ASSERT(shared.special_tokens.size() == 2);
+    BOOST_ASSERT(shared.special_tokens.matches(u8"+"));
+    BOOST_ASSERT(shared.special_tokens.matches(u8"-"));
 }
 
 BOOST_AUTO_TEST_CASE(DotItemWrongTerminalCreationAfterUnion)
@@ -28,7 +28,7 @@ BOOST_AUTO_TEST_CASE(DotItemWrongTerminalCreationAfterUnion)
             BOOST_CHECK_EQUAL(exception.getColumn(), 4);
             BOOST_ASSERT(
                 exception.getMessage() ==
-                u8"unable to create terminal: terminals cannot coexist with other items");
+                u8"unable to create special symbol: special symbols cannot coexist with other items");
             return true;
         });
 }
@@ -43,7 +43,7 @@ BOOST_AUTO_TEST_CASE(DotItemWrongTerminalCreationBeforeUnion)
             BOOST_CHECK_EQUAL(exception.getColumn(), 5);
             BOOST_ASSERT(
                 exception.getMessage() ==
-                u8"unable to create union: terminals cannot coexist with other items");
+                u8"unable to create union: special symbols cannot coexist with other items");
             return true;
         });
 }

@@ -182,10 +182,10 @@ namespace ccl::lex::dot_item
     {
         items_counter.add(item::Terminal);
 
-        auto &terminals = analysis_shared.terminals;
+        auto &special_tokens = analysis_shared.special_tokens;
         auto sequence = Sequence{ {}, u8"\'", rule_iterator, analysis_shared };
 
-        terminals.addString(std::move(sequence.getByRef()), id);
+        special_tokens.addString(std::move(sequence.getByRef()), id);
     }
 
     auto DotItem::constructComment(ItemsCounter &items_counter) -> void
@@ -212,7 +212,7 @@ namespace ccl::lex::dot_item
     auto DotItem::constructCommentOrCharacter(
         TextIterator &rule_iterator, ItemsCounter &items_counter) -> void
     {
-        if (rule_iterator.futureRawChar(1) == U'o') {
+        if (rule_iterator.isNextCharacterEqual<U'o'>()) {
             rule_iterator.next();
             constructComment(items_counter);
         } else {
@@ -345,7 +345,7 @@ namespace ccl::lex::dot_item
     {
         auto message = u8"undefined action"_sv;
         auto suggestion =
-            u8"Use `\"` for string, `'` for terminal symbol, `[` for unions, `(` for dot "
+            u8"Use `\"` for string, `'` for special symbol, `[` for unions, `(` for dot "
             "items"_sv;
 
         rule_iterator.throwException<DotItemException>(message, suggestion);

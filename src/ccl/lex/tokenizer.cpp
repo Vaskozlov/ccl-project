@@ -10,7 +10,7 @@ namespace ccl::lex
         text_iterator.skipComments();
 
         if (text_iterator.isEnd()) {
-            return Token{ { text_iterator }, ReservedTokenType::END_OF_INPUT, u8"$"s };
+            return Token{ { text_iterator }, ReservedTokenType::EOI, u8"$"s };
         }
 
         if (auto special_token = lexical_analyzer.shared.getSpecialToken(text_iterator);
@@ -28,7 +28,7 @@ namespace ccl::lex
             }
         }
 
-        if (isLayout(text_iterator.futureRawChar(1))) {
+        if (isLayout(text_iterator.getNextCarriageValue())) {
             text_iterator.next();
             return yield();
         }

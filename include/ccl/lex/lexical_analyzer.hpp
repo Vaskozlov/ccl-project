@@ -3,6 +3,7 @@
 
 #include <ccl/lex/dot_item/dot_item.hpp>
 #include <deque>
+#include <queue>
 
 namespace ccl::lex
 {
@@ -17,41 +18,58 @@ namespace ccl::lex
 
         struct Tokenizer
         {
-            Tokenizer(LexicalAnalyzer &lexical_analyzer_, u8string_view text)
-              : lexical_analyzer(lexical_analyzer_),
-                text_iterator(
+            Tokenizer(
+                LexicalAnalyzer &lexical_analyzer_, u8string_view text,
+                u8string_view filename_ = {})
+              : text_iterator(
                     text, &lexical_analyzer_.exception_accumulator,
-                    lexical_analyzer_.shared.comment_tokens)
+                    lexical_analyzer_.shared.comment_tokens, filename_),
+                lexical_analyzer(lexical_analyzer_)
             {}
 
             Tokenizer(
-                LexicalAnalyzer &lexical_analyzer_, u8string_view text,
+                LexicalAnalyzer &lexical_analyzer_, u8string_view text, u8string_view filename_,
                 ExceptionAccumulator *exception_accumulator_)
-              : lexical_analyzer(lexical_analyzer_),
-                text_iterator(text, exception_accumulator_, lexical_analyzer_.shared.comment_tokens)
+              : text_iterator(
+                    text, exception_accumulator_, lexical_analyzer_.shared.comment_tokens,
+                    filename_),
+                lexical_analyzer(lexical_analyzer_)
             {}
+
+            [[nodiscard]] auto getErrors() -> decltype(auto)
+            {
+                return lexical_analyzer.getExceptionAccumulator().getErrors();
+            }
+
+            template<Exception T, typename... Args>
+            auto throwError(Args &&...args) -> void
+            {
+                text_iterator.throwException<T>(std::forward<Args>(args)...);
+            }
 
             [[nodiscard]] auto yield() -> Token;
             [[nodiscard]] auto constructBadToken() -> Token;
 
         private:
-            const LexicalAnalyzer &lexical_analyzer;
             TextIterator text_iterator;
+            const LexicalAnalyzer &lexical_analyzer;
         };
 
         LexicalAnalyzer(
             const std::initializer_list<std::pair<size_t, u8string_view>> &rules_,
             u8string_view filename = {}, const CommentTokens &comment_tokens_ = { u8"#" });
 
-        [[nodiscard]] auto getTokenizer(u8string_view text) -> Tokenizer
-        {
-            return { *this, text };
-        }
-
-        [[nodiscard]] auto getTokenizer(u8string_view text, ExceptionAccumulator *accumulator)
+        [[nodiscard]] auto getTokenizer(u8string_view text, u8string_view filename = {})
             -> Tokenizer
         {
-            return { *this, text, accumulator };
+            return { *this, text, filename };
+        }
+
+        [[nodiscard]] auto getTokenizer(
+            u8string_view text, u8string_view filename, ExceptionAccumulator *accumulator)
+            -> Tokenizer
+        {
+            return { *this, text, filename, accumulator };
         }
 
         [[nodiscard]] auto getExceptionAccumulator() -> ExceptionAccumulator &
@@ -69,7 +87,7 @@ namespace ccl::lex
             u8string_view rule, size_t id, const CommentTokens &comment_tokens,
             u8string_view filename) -> size_t;
 
-        std::deque<DotItem> items{};
+        std::set<DotItem, std::greater<>> items;
         AnalysisShared shared{};
         ExceptionAccumulator exception_accumulator{};
         size_t errors{};

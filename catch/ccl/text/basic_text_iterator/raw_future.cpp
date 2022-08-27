@@ -14,7 +14,7 @@ BOOST_AUTO_TEST_CASE(BasicTextIteratorRawFuture)
     DEBUG_VAR text_iterator = BasicTextIterator{ input };
 
     for (DEBUG_VAR &&chr : expected) {
-        BOOST_ASSERT(text_iterator.futureRawChar(index) == chr);
+        BOOST_ASSERT(text_iterator.futureChar(index) == chr);
         ++index;
     }
 }

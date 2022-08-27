@@ -5,28 +5,28 @@ namespace ccl::lex::dot_item
 {
     auto ItemsCounter::add(item::UnionType /* unused */) -> void
     {
-        checkForUnexpectedTerminals<u8"union">();
+        checkForUnexpectedSpecialSymbols<u8"union">();
         checkNoStringOrChars<u8"union">();
         ++unions;
     }
 
     auto ItemsCounter::add(item::DotItemType /* unused */) -> void
     {
-        checkForUnexpectedTerminals<u8"dot item">();
+        checkForUnexpectedSpecialSymbols<u8"dot item">();
         checkNoStringOrChars<u8"dot item">();
         ++dot_items;
     }
 
     auto ItemsCounter::add(item::SequenceType /* unused */) -> void
     {
-        checkForUnexpectedTerminals<u8"sequence">();
+        checkForUnexpectedSpecialSymbols<u8"sequence">();
         checkAbilityToCreateSequence();
         ++sequences;
     }
 
     auto ItemsCounter::add(item::StringType /* unused */) -> void
     {
-        checkForUnexpectedTerminals<u8"string">();
+        checkForUnexpectedSpecialSymbols<u8"string">();
         checkThereIsOneSequence<u8"string like item">();
         --sequences;
         ++strings;
@@ -34,7 +34,7 @@ namespace ccl::lex::dot_item
 
     auto ItemsCounter::add(item::CharacterType /* unused */) -> void
     {
-        checkForUnexpectedTerminals<u8"character">();
+        checkForUnexpectedSpecialSymbols<u8"character">();
         checkThereIsOneSequence<u8"string like item">();
         --sequences;
         ++characters;
@@ -43,12 +43,12 @@ namespace ccl::lex::dot_item
     auto ItemsCounter::add(item::TerminalType /* unused */) -> void
     {
         checkAbilityToCreateTerminal();
-        ++terminals;
+        ++special_tokens;
     }
 
     auto ItemsCounter::add(item::CommentType /* unused */) -> void
     {
-        checkForUnexpectedTerminals<u8"comment">();
+        checkForUnexpectedSpecialSymbols<u8"comment">();
         checkThereIsOneSequence<u8"comment">();
         --sequences;
     }
@@ -64,9 +64,10 @@ namespace ccl::lex::dot_item
 
     auto ItemsCounter::checkAbilityToCreateTerminal() -> void
     {
-        if ((characters + strings + dot_items + sequences + unions + terminals) != terminals) {
-            terminals = std::max<size_t>(terminals, 1);
-            checkForUnexpectedTerminals<u8"terminal">();// just for the same error message
+        if ((characters + strings + dot_items + sequences + unions + special_tokens) !=
+            special_tokens) {
+            special_tokens = std::max<size_t>(special_tokens, 1);
+            checkForUnexpectedSpecialSymbols<u8"special symbol">();// just for the same error message
         }
     }
 
@@ -90,10 +91,10 @@ namespace ccl::lex::dot_item
     }
 
     template<ConstString ItemName>
-    auto ItemsCounter::checkForUnexpectedTerminals() -> void
+    auto ItemsCounter::checkForUnexpectedSpecialSymbols() -> void
     {
         if (hasTerminals()) {
-            throwItemCreationError<ItemName, u8"terminals cannot coexist with other items", u8"">();
+            throwItemCreationError<ItemName, u8"special symbols cannot coexist with other items", u8"">();
         }
     }
 

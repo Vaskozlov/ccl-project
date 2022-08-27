@@ -37,7 +37,7 @@ namespace ccl::lex
 
         [[nodiscard]] auto isTerminal(const u8string_view &text) const -> bool
         {
-            return terminals.matches(text);
+            return special_tokens.matches(text);
         }
 
         [[nodiscard]] auto isComment(const u8string_view &text) const noexcept -> bool;
@@ -58,7 +58,7 @@ namespace ccl::lex
         [[nodiscard]] static auto constructTerminalToken(
             text::TextIterator &text_iterator,
             const u8string_view &remaining_text,
-            std::pair<std::u8string, size_t> &terminal_match) -> std::optional<Token>;
+            std::pair<std::u8string, size_t> &special_symbols_matcher) -> std::optional<Token>;
 
         // always contains token, but optional for RVO
         [[nodiscard]] static auto
@@ -77,8 +77,8 @@ namespace ccl::lex
 
     public:
         CommentTokens comment_tokens{};
-        std::vector<String> strings_and_chars{};
-        RawStringMatcher terminals{};
+        boost::container::small_vector<String, 4> strings_and_chars{};
+        RawStringMatcher special_tokens{};
     };
 }// namespace ccl::lex
 
