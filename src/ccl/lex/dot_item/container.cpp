@@ -1,4 +1,4 @@
-#include <ccl/lex/dot_item/dot_item.hpp>
+#include <ccl/lex/dot_item/container.hpp>
 
 namespace ccl::lex::dot_item
 {
@@ -10,7 +10,7 @@ namespace ccl::lex::dot_item
         return { string.substr(0, index), string.substr(index + 1) };
     }
 
-    auto DotItem::scanIteration(TextIterator &text_iterator, Token &token) const -> bool
+    auto Container::scanIteration(TextIterator &text_iterator, Token &token) const -> bool
     {
         for (auto &&item : items) {
             if (not scanItem(item.get(), text_iterator, token)) {
@@ -21,7 +21,8 @@ namespace ccl::lex::dot_item
         return true;
     }
 
-    auto DotItem::scanItem(const BasicItem *item, TextIterator &text_iterator, Token &token) -> bool
+    auto Container::scanItem(const BasicItem *item, TextIterator &text_iterator, Token &token)
+        -> bool
     {
         auto scan_result = item->scan(text_iterator, token);
 
@@ -35,7 +36,7 @@ namespace ccl::lex::dot_item
     }
 
     // NOLINTNEXTLINE recursive function
-    auto DotItem::parseRule(TextIterator &rule_iterator) -> void
+    auto Container::parseRule(TextIterator &rule_iterator) -> void
     {
         auto counter = ItemsCounter{ rule_iterator };
         rule_iterator.skipCommentsAndLayout();
@@ -48,13 +49,14 @@ namespace ccl::lex::dot_item
         postCreationCheck(rule_iterator, counter);
     }
 
-    auto DotItem::hasMovedToTheNextChar(TextIterator &rule_iterator) -> bool
+    auto Container::hasMovedToTheNextChar(TextIterator &rule_iterator) -> bool
     {
         return not isEoF(rule_iterator.next());
     }
 
     // NOLINTNEXTLINE recursive function
-    auto DotItem::recognizeAction(TextIterator &rule_iterator, ItemsCounter &items_counter) -> void
+    auto Container::recognizeAction(TextIterator &rule_iterator, ItemsCounter &items_counter)
+        -> void
     {
         switch (rule_iterator.getCurrentChar()) {
         case U'[':
@@ -116,7 +118,7 @@ namespace ccl::lex::dot_item
         }
     }
 
-    auto DotItem::constructNewSequence(TextIterator &rule_iterator, ItemsCounter &items_counter)
+    auto Container::constructNewSequence(TextIterator &rule_iterator, ItemsCounter &items_counter)
         -> std::unique_ptr<BasicItem>
     {
         items_counter.add(item::Sequence);
@@ -125,7 +127,7 @@ namespace ccl::lex::dot_item
             Sequence::SequenceFlags{}, u8"\"", rule_iterator, analysis_shared);
     }
 
-    auto DotItem::constructNewUnion(TextIterator &rule_iterator, ItemsCounter &items_counter)
+    auto Container::constructNewUnion(TextIterator &rule_iterator, ItemsCounter &items_counter)
         -> std::unique_ptr<BasicItem>
     {
         items_counter.add(item::Union);
@@ -134,25 +136,25 @@ namespace ccl::lex::dot_item
     }
 
     // NOLINTNEXTLINE (recursive function)
-    auto DotItem::constructNewItem(TextIterator &rule_iterator, ItemsCounter &items_counter)
+    auto Container::constructNewItem(TextIterator &rule_iterator, ItemsCounter &items_counter)
         -> std::unique_ptr<BasicItem>
     {
-        items_counter.add(item::DotItem);
+        items_counter.add(item::Container);
 
         auto text = rule_iterator.getRemaining();
         const auto *saved_end = rule_iterator.getEnd();
-        auto bracket_index = findDotItemEnd(rule_iterator, text);
+        auto bracket_index = findContainerEnd(rule_iterator, text);
 
         rule_iterator.setEnd(text.begin() + bracket_index);
 
-        auto new_dot_item = std::make_unique<DotItem>(rule_iterator, id, analysis_shared, false);
+        auto new_container = std::make_unique<Container>(rule_iterator, id, analysis_shared, false);
         rule_iterator.setEnd(saved_end);
 
-        return new_dot_item;
+        return new_container;
     }
 
-    auto DotItem::constructString(ItemsCounter &items_counter, bool is_character, bool is_multiline)
-        -> void
+    auto Container::constructString(
+        ItemsCounter &items_counter, bool is_character, bool is_multiline) -> void
     {
         if (is_character) {
             items_counter.add(item::Character);
@@ -177,7 +179,7 @@ namespace ccl::lex::dot_item
         items.pop_back();
     }
 
-    auto DotItem::constructTerminal(TextIterator &rule_iterator, ItemsCounter &items_counter)
+    auto Container::constructTerminal(TextIterator &rule_iterator, ItemsCounter &items_counter)
         -> void
     {
         items_counter.add(item::Terminal);
@@ -188,7 +190,7 @@ namespace ccl::lex::dot_item
         special_tokens.addString(std::move(sequence.getByRef()), id);
     }
 
-    auto DotItem::constructComment(ItemsCounter &items_counter) -> void
+    auto Container::constructComment(ItemsCounter &items_counter) -> void
     {
         items_counter.add(item::Comment);
 
@@ -209,7 +211,7 @@ namespace ccl::lex::dot_item
         items.pop_back();
     }
 
-    auto DotItem::constructCommentOrCharacter(
+    auto Container::constructCommentOrCharacter(
         TextIterator &rule_iterator, ItemsCounter &items_counter) -> void
     {
         if (rule_iterator.isNextCharacterEqual<U'o'>()) {
@@ -220,14 +222,14 @@ namespace ccl::lex::dot_item
         }
     }
 
-    auto DotItem::emplaceItem(std::unique_ptr<BasicItem> &&item) -> void
+    auto Container::emplaceItem(std::unique_ptr<BasicItem> &&item) -> void
     {
         if (not canBeOptimized()) {
             items.emplace_back(std::move(item));
         }
     }
 
-    auto DotItem::addPrefixPostfix() -> void
+    auto Container::addPrefixPostfix() -> void
     {
         auto &last_item = items.back();
         auto is_prefix = items.size() == 1 || items[items.size() - 2]->hasPrefix();
@@ -239,7 +241,7 @@ namespace ccl::lex::dot_item
         }
     }
 
-    auto DotItem::addRecurrence(TextIterator &rule_iterator, Recurrence new_recurrence) -> void
+    auto Container::addRecurrence(TextIterator &rule_iterator, Recurrence new_recurrence) -> void
     {
         if (items.empty()) {
             throwUnableToApply<u8"no items found">(
@@ -256,7 +258,7 @@ namespace ccl::lex::dot_item
         last_item->setRecurrence(new_recurrence);
     }
 
-    auto DotItem::reverseLastItem(TextIterator &rule_iterator) -> void
+    auto Container::reverseLastItem(TextIterator &rule_iterator) -> void
     {
         if (items.empty()) {
             throwUnableToApply<u8"no items to reverse">(rule_iterator);
@@ -272,7 +274,7 @@ namespace ccl::lex::dot_item
         last_item->reverse();
     }
 
-    auto DotItem::postCreationCheck(TextIterator &rule_iterator, const ItemsCounter &counter)
+    auto Container::postCreationCheck(TextIterator &rule_iterator, const ItemsCounter &counter)
         -> void
     {
         if (counter.hasStrOrChar() && counter.hasSequences()) {
@@ -295,19 +297,19 @@ namespace ccl::lex::dot_item
         }
     }
 
-    auto DotItem::findDotItemEnd(TextIterator &rule_iterator, u8string_view repr) -> size_t
+    auto Container::findContainerEnd(TextIterator &rule_iterator, u8string_view repr) -> size_t
     {
         auto bracket_index = repr.openCloseFind(u8'(', u8')');
 
         if (not bracket_index.has_value()) {
-            rule_iterator.throwException<DotItemException>(u8"unterminated dot item");
-            throw UnrecoverableError{ "unrecoverable error in DotItemType" };
+            rule_iterator.throwException<ContainerException>(u8"unterminated dot item");
+            throw UnrecoverableError{ "unrecoverable error in ContainerType" };
         }
 
         return *bracket_index;
     }
 
-    auto DotItem::checkAbilityToCreatePrefixPostfix(TextIterator &rule_iterator) -> void
+    auto Container::checkAbilityToCreatePrefixPostfix(TextIterator &rule_iterator) -> void
     {
         if (not main_item) {
             throwUnableToApply<
@@ -333,22 +335,23 @@ namespace ccl::lex::dot_item
     }
 
     template<ConstString Reason>
-    auto DotItem::throwUnableToApply(TextIterator &rule_iterator, u8string_view suggestion) -> void
+    auto Container::throwUnableToApply(TextIterator &rule_iterator, u8string_view suggestion)
+        -> void
     {
         static constexpr auto reason = fmt::staticFormat<u8"unable to apply: {}", Reason>();
 
-        rule_iterator.throwException<DotItemException>(reason, suggestion);
-        throw UnrecoverableError{ "unrecoverable error in DotItemType" };
+        rule_iterator.throwException<ContainerException>(reason, suggestion);
+        throw UnrecoverableError{ "unrecoverable error in ContainerType" };
     }
 
-    auto DotItem::throwUndefinedAction(TextIterator &rule_iterator) -> void
+    auto Container::throwUndefinedAction(TextIterator &rule_iterator) -> void
     {
         auto message = u8"undefined action"_sv;
         auto suggestion =
             u8"Use `\"` for string, `'` for special symbol, `[` for unions, `(` for dot "
             "items"_sv;
 
-        rule_iterator.throwException<DotItemException>(message, suggestion);
-        throw UnrecoverableError{ "unrecoverable error in DotItemType" };
+        rule_iterator.throwException<ContainerException>(message, suggestion);
+        throw UnrecoverableError{ "unrecoverable error in ContainerType" };
     }
 }// namespace ccl::lex::dot_item

@@ -1,20 +1,20 @@
+#include <ccl/lex/dot_item/container.hpp>
 #include <ccl/debug/debug_file.hpp>
-#include <ccl/lex/dot_item/dot_item.hpp>
 
 using namespace ccl;
 using namespace lex;
 using namespace text;
 using namespace dot_item;
 
-BOOST_AUTO_TEST_SUITE(DotItemStringsAndCharactersCreation)
+BOOST_AUTO_TEST_SUITE(ContainerStringsAndCharactersCreation)
 
 BOOST_AUTO_TEST_CASE(NoSequencesCreated)
 {
     auto shared = AnalysisShared{};
 
     BOOST_CHECK_EXCEPTION(
-        DotItem(TextIterator{ u8R"(c)" }, 0, shared), DotItemException,
-        [](const DotItemException &exception) {
+        Container(TextIterator{ u8R"(c)" }, 0, shared), ContainerException,
+        [](const ContainerException &exception) {
             BOOST_CHECK_EQUAL(exception.getColumn(), 1);
             BOOST_ASSERT(
                 exception.getMessage() ==
@@ -27,7 +27,7 @@ BOOST_AUTO_TEST_CASE(NoSequencesCreated)
 BOOST_AUTO_TEST_CASE(CharacterCreation)
 {
     auto shared = AnalysisShared{};
-    auto dot_item = DotItem(TextIterator{ u8R"("\'"c)" }, 0, shared);
+    auto container = Container(TextIterator{ u8R"("\'"c)" }, 0, shared);
 
     BOOST_ASSERT(shared.strings_and_chars.size() == 1);
     BOOST_ASSERT(shared.strings_and_chars[0].str_begin == u8R"(')");
@@ -39,7 +39,7 @@ BOOST_AUTO_TEST_CASE(CharacterCreation)
 BOOST_AUTO_TEST_CASE(RawStringCreation)
 {
     auto shared = AnalysisShared{};
-    auto dot_item = DotItem(TextIterator{ u8R"( "R\"(:)\""m )" }, 0, shared);
+    auto container = Container(TextIterator{ u8R"( "R\"(:)\""m )" }, 0, shared);
 
     BOOST_ASSERT(shared.strings_and_chars.size() == 1);
     BOOST_ASSERT(shared.strings_and_chars[0].str_begin == u8R"(R"()");
@@ -51,7 +51,7 @@ BOOST_AUTO_TEST_CASE(RawStringCreation)
 BOOST_AUTO_TEST_CASE(TwoStringCreation)
 {
     auto shared = AnalysisShared{};
-    auto dot_item = DotItem(TextIterator{ u8R"("\""s "'"s)" }, 0, shared);
+    auto container = Container(TextIterator{ u8R"("\""s "'"s)" }, 0, shared);
 
     BOOST_ASSERT(shared.strings_and_chars.size() == 2);
 

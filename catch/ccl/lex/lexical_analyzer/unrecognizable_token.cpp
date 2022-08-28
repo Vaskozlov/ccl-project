@@ -12,9 +12,7 @@ BOOST_AUTO_TEST_CASE(LexicalAnalyzerUnrecognizableTokenError)
     auto token = tokenizer.yield();
 
     BOOST_ASSERT(token.getId() == ReservedTokenType::BAD_TOKEN);
-    BOOST_ASSERT(
-        analyzer.getExceptionAccumulator().getErrors()[0]->getMessage() ==
-        u8"unrecognizable token");
+    BOOST_ASSERT(tokenizer.getErrors()[0]->getMessage() == u8"unrecognizable token");
 }
 
 BOOST_AUTO_TEST_CASE(LexicalAnalyzerUnrecognizableToken)

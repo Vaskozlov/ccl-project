@@ -7,7 +7,7 @@ using namespace text;
 
 BOOST_AUTO_TEST_SUITE(
     LexicalAnalyzerCharacter,
-    *utf::depends_on("DotItemStringsAndCharactersCreation"))
+    *utf::depends_on("ContainerStringsAndCharactersCreation"))
 
 BOOST_AUTO_TEST_CASE(LexicalAnalyzerCharacterMatching)
 {
@@ -45,9 +45,7 @@ BOOST_AUTO_TEST_CASE(LexicalAnalyzerEmptyCharacter)
     DEBUG_VAR token = tokenizer.yield();
 
     BOOST_ASSERT(token.getId() == ReservedTokenType::BAD_TOKEN);
-    BOOST_ASSERT(
-        analyzer.getExceptionAccumulator().getErrors()[0]->getMessage() ==
-        u8"empty character definition");
+    BOOST_ASSERT(tokenizer.getErrors()[0]->getMessage() == u8"empty character definition");
 }
 
 BOOST_AUTO_TEST_CASE(LexicalAnalyzerTwoCharacters)
@@ -60,7 +58,7 @@ BOOST_AUTO_TEST_CASE(LexicalAnalyzerTwoCharacters)
     BOOST_ASSERT(token.getId() == ReservedTokenType::BAD_TOKEN);
 
     BOOST_ASSERT(
-        analyzer.getExceptionAccumulator().getErrors()[0]->getMessage() ==
+        tokenizer.getErrors()[0]->getMessage() ==
         u8"character definition must be a single character");
 }
 

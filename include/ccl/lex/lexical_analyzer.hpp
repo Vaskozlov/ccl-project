@@ -1,7 +1,7 @@
 #ifndef CCL_PROJECT_LEXICAL_ANALYZER_HPP
 #define CCL_PROJECT_LEXICAL_ANALYZER_HPP
 
-#include <ccl/lex/dot_item/dot_item.hpp>
+#include <ccl/lex/dot_item/container.hpp>
 #include <set>
 
 namespace ccl::lex
@@ -9,7 +9,7 @@ namespace ccl::lex
     class LexicalAnalyzer
     {
     public:
-        using DotItem = dot_item::DotItem;
+        using Container = dot_item::Container;
         using BasicItem = dot_item::BasicItem;
         using TextIterator = typename BasicItem::TextIterator;
         using CommentTokens = typename BasicItem::CommentTokens;
@@ -21,8 +21,8 @@ namespace ccl::lex
                 LexicalAnalyzer &lexical_analyzer_, u8string_view text,
                 u8string_view filename_ = {})
               : text_iterator(
-                    text, &lexical_analyzer_.exception_accumulator,
-                    lexical_analyzer_.shared.comment_tokens, filename_),
+                    text, &exception_accumulator, lexical_analyzer_.shared.comment_tokens,
+                    filename_),
                 lexical_analyzer(lexical_analyzer_)
             {}
 
@@ -37,7 +37,12 @@ namespace ccl::lex
 
             [[nodiscard]] auto getErrors() -> decltype(auto)
             {
-                return lexical_analyzer.getExceptionAccumulator().getErrors();
+                return exception_accumulator.getErrors();
+            }
+
+            [[nodiscard]] auto getWarnings() -> decltype(auto)
+            {
+                return exception_accumulator.getWarnings();
             }
 
             template<Exception T, typename... Args>
@@ -57,6 +62,7 @@ namespace ccl::lex
 
         private:
             TextIterator text_iterator;
+            ExceptionAccumulator exception_accumulator{};
             const LexicalAnalyzer &lexical_analyzer;
         };
 
@@ -77,22 +83,22 @@ namespace ccl::lex
             return { *this, text, filename, accumulator };
         }
 
-        [[nodiscard]] auto getExceptionAccumulator() -> ExceptionAccumulator &
+        [[nodiscard]] auto getExceptionAccumulator() noexcept -> ExceptionAccumulator &
         {
             return exception_accumulator;
         }
 
-        [[nodiscard]] auto getExceptionAccumulator() const -> const ExceptionAccumulator &
+        [[nodiscard]] auto getExceptionAccumulator() const noexcept -> const ExceptionAccumulator &
         {
             return exception_accumulator;
         }
 
     private:
-        auto createDotItem(
+        auto createContainer(
             u8string_view rule, size_t id, const CommentTokens &comment_tokens,
-            u8string_view filename) -> size_t;
+            u8string_view filename) -> void;
 
-        std::set<DotItem, std::greater<>> items;
+        std::set<Container> items;
         AnalysisShared shared{};
         ExceptionAccumulator exception_accumulator{};
         size_t errors{};

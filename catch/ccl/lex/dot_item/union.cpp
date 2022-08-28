@@ -9,7 +9,7 @@ using namespace dot_item;
 // NOLINTNEXTLINE
 static auto shared = AnalysisShared{};
 
-BOOST_AUTO_TEST_SUITE(DotItemUnion)
+BOOST_AUTO_TEST_SUITE(ContainerUnion)
 
 BOOST_AUTO_TEST_CASE(UnionWithOneElem)
 {

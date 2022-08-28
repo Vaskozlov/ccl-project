@@ -6,7 +6,7 @@
 
 namespace ccl::lex::dot_item
 {
-    CCL_EXCEPTION(DotItemException, text::TextIteratorException);
+    CCL_EXCEPTION(ContainerException, text::TextIteratorException);
 
     namespace item
     {
@@ -18,7 +18,7 @@ namespace ccl::lex::dot_item
         {
         };
 
-        struct DotItemType : std::true_type
+        struct ContainerType : std::true_type
         {
         };
 
@@ -40,7 +40,7 @@ namespace ccl::lex::dot_item
 
         constexpr auto Union = UnionType{};
         constexpr auto Sequence = SequenceType{};
-        constexpr auto DotItem = DotItemType{};
+        constexpr auto Container = ContainerType{};
         constexpr auto String = StringType{};
         constexpr auto Character = CharacterType{};
         constexpr auto Terminal = TerminalType{};
@@ -81,9 +81,9 @@ namespace ccl::lex::dot_item
             return sequences != 0;
         }
 
-        [[nodiscard]] auto hasDotItems() const noexcept -> bool
+        [[nodiscard]] auto hasContainers() const noexcept -> bool
         {
-            return dot_items != 0;
+            return containers != 0;
         }
 
         [[nodiscard]] auto hasTerminals() const noexcept -> bool
@@ -96,7 +96,7 @@ namespace ccl::lex::dot_item
             return lor(hasStrings(), hasCharacters());
         }
         auto add(item::UnionType /* unused */) -> void;
-        auto add(item::DotItemType /* unused */) -> void;
+        auto add(item::ContainerType /* unused */) -> void;
         auto add(item::SequenceType /* unused */) -> void;
         auto add(item::StringType /* unused */) -> void;
         auto add(item::CharacterType /* unused */) -> void;
@@ -108,7 +108,7 @@ namespace ccl::lex::dot_item
         auto checkAbilityToCreateTerminal() -> void;
 
         template<ConstString ItemName>
-        auto checkThereIsOneSequence() -> void;
+        CCL_INLINE auto checkThereIsOneSequence() -> void;
 
         template<ConstString ItemName>
         CCL_INLINE auto checkForUnexpectedSpecialSymbols() -> void;
@@ -124,7 +124,7 @@ namespace ccl::lex::dot_item
         size_t characters{};
         size_t unions{};
         size_t sequences{};
-        size_t dot_items{};
+        size_t containers{};
         size_t special_tokens{};
 
     private:

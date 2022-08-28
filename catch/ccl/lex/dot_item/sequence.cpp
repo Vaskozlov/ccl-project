@@ -9,7 +9,7 @@ using namespace dot_item;
 // NOLINTNEXTLINE
 static auto shared = AnalysisShared{};
 
-BOOST_AUTO_TEST_SUITE(DotItemSequence)
+BOOST_AUTO_TEST_SUITE(ContainerSequence)
 
 BOOST_AUTO_TEST_CASE(SequenceWithOneCharBegin)
 {

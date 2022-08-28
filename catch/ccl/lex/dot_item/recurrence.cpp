@@ -1,11 +1,11 @@
+#include <ccl/lex/dot_item/container.hpp>
 #include <ccl/debug/debug_file.hpp>
-#include <ccl/lex/dot_item/dot_item.hpp>
 
 using namespace ccl;
 using namespace text;
 using namespace lex::dot_item;
 
-BOOST_AUTO_TEST_SUITE(DotItemRecurrence)
+BOOST_AUTO_TEST_SUITE(ContainerRecurrence)
 
 BOOST_AUTO_TEST_CASE(RecurrenceBasicCase)
 {

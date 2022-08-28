@@ -5,7 +5,7 @@ using namespace ccl;
 using namespace lex;
 using namespace text;
 
-BOOST_AUTO_TEST_CASE(LexicalAnalyzerUnion, *utf::depends_on("DotItemUnion"))
+BOOST_AUTO_TEST_CASE(LexicalAnalyzerUnion, *utf::depends_on("ContainerUnion"))
 {
     auto analyzer = LexicalAnalyzer{
         { 1, u8R"([a-z]p+[0-9]+)" },

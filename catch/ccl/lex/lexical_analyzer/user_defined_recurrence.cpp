@@ -6,7 +6,7 @@ using namespace lex;
 using namespace text;
 
 BOOST_AUTO_TEST_CASE(
-    UserDefinedRecurrence, *utf::depends_on("DotItemUnion") * utf::depends_on("DotItemRecurrence"))
+    UserDefinedRecurrence, *utf::depends_on("ContainerUnion") * utf::depends_on("ContainerRecurrence"))
 {
     auto analyzer = LexicalAnalyzer{
         { 1, u8R"([a-z]{1, 3}[a-z])" },

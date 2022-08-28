@@ -6,7 +6,7 @@ using namespace lex;
 using namespace text;
 
 BOOST_AUTO_TEST_SUITE(
-    LexicalAnalyzerString, *utf::depends_on("DotItemStringsAndCharactersCreation"))
+    LexicalAnalyzerString, *utf::depends_on("ContainerStringsAndCharactersCreation"))
 
 BOOST_AUTO_TEST_CASE(LexicalAnalyzerBasicString)
 {

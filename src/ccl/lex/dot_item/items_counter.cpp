@@ -10,11 +10,11 @@ namespace ccl::lex::dot_item
         ++unions;
     }
 
-    auto ItemsCounter::add(item::DotItemType /* unused */) -> void
+    auto ItemsCounter::add(item::ContainerType /* unused */) -> void
     {
         checkForUnexpectedSpecialSymbols<u8"dot item">();
         checkNoStringOrChars<u8"dot item">();
-        ++dot_items;
+        ++containers;
     }
 
     auto ItemsCounter::add(item::SequenceType /* unused */) -> void
@@ -64,7 +64,7 @@ namespace ccl::lex::dot_item
 
     auto ItemsCounter::checkAbilityToCreateTerminal() -> void
     {
-        if ((characters + strings + dot_items + sequences + unions + special_tokens) !=
+        if ((characters + strings + containers + sequences + unions + special_tokens) !=
             special_tokens) {
             special_tokens = std::max<size_t>(special_tokens, 1);
             checkForUnexpectedSpecialSymbols<u8"special symbol">();// just for the same error message
@@ -83,10 +83,10 @@ namespace ccl::lex::dot_item
                 ItemName, u8"too many sequences found", u8"delete sequences or join them">();
         }
 
-        if (lor(hasUnions(), hasDotItems())) {
+        if (lor(hasUnions(), hasContainers())) {
             throwItemCreationError<
                 ItemName, u8"because non sequence item exists in the rule",
-                u8"delete Union/DotItem">();
+                u8"delete Union/Container">();
         }
     }
 
@@ -114,7 +114,7 @@ namespace ccl::lex::dot_item
         constexpr static auto error_message =
             fmt::staticFormat<u8"unable to create {}: {}", ItemName, Message>();
 
-        text_iterator.throwException<DotItemException>(error_message, Suggestion);
-        throw UnrecoverableError{ "unrecoverable error in DotItemType" };
+        text_iterator.throwException<ContainerException>(error_message, Suggestion);
+        throw UnrecoverableError{ "unrecoverable error in ContainerType" };
     }
 }// namespace ccl::lex::dot_item

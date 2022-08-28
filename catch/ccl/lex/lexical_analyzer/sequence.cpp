@@ -5,7 +5,7 @@ using namespace ccl;
 using namespace lex;
 using namespace text;
 
-BOOST_AUTO_TEST_CASE(LexicalAnalyzerSequence, *utf::depends_on("DotItemSequence"))
+BOOST_AUTO_TEST_CASE(LexicalAnalyzerSequence, *utf::depends_on("ContainerSequence"))
 {
     auto analyzer = LexicalAnalyzer{ { 1, u8R"("abz"p"10")" }, { 2, u8R"("10""abz"p)" } };
     auto tokenizer = analyzer.getTokenizer(u8R"(abz10 10abz)");
