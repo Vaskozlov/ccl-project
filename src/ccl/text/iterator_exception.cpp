@@ -6,14 +6,13 @@ namespace ccl::text
 
     auto TextIteratorException::what() const noexcept -> const char *
     {
-        return reinterpret_cast<const char *>(message.data());// NOLINT at least ascii
-                                                              // characters will be displayed
+        return message.c_str();
     }
 
-    auto TextIteratorException::createFullMessage() const -> std::u8string
+    auto TextIteratorException::createFullMessage() const -> std::string
     {
-        auto full_message = fmt::format<u8"Error occurred at: {}, message: {}\n{}\n">(
-            location, message, working_line);
+        auto full_message = ::fmt::format(
+            "Error occurred at: {}, message: {}\n{}\n", location, message, working_line);
 
         addArrowToError(full_message);
         addSuggestion(full_message);
@@ -21,18 +20,18 @@ namespace ccl::text
         return full_message;
     }
 
-    auto TextIteratorException::addArrowToError(std::u8string &full_message) const -> void
+    auto TextIteratorException::addArrowToError(std::string &full_message) const -> void
     {
         auto column_pos = location.getColumn();
         auto new_message_size = full_message.size() + (column_pos > 0 ? column_pos - 1 : 0);
-        full_message.resize(new_message_size, u8' ');
-        full_message.push_back(u8'^');
+        full_message.resize(new_message_size, ' ');
+        full_message.push_back('^');
     }
 
-    auto TextIteratorException::addSuggestion(std::u8string &full_message) const -> void
+    auto TextIteratorException::addSuggestion(std::string &full_message) const -> void
     {
         if (not suggestion.empty()) {
-            full_message.append(fmt::format<u8"\nSuggestion: {}">(suggestion));
+            full_message.append(::fmt::format("\nSuggestion: {}", suggestion));
         }
     }
 }// namespace ccl::text

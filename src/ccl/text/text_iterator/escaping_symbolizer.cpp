@@ -73,7 +73,7 @@ namespace ccl::text
 
     auto TextIterator::EscapingSymbolizer::throwMatchException() -> void
     {
-        text_iterator.throwException<TextIteratorException>(
-            u8"unable to matchNextChar any escaping symbol");
+        text_iterator.throwError<TextIteratorException>(
+            "unable to matchNextChar any escaping symbol");
     }
 }// namespace ccl::text

@@ -17,14 +17,14 @@ namespace ccl::text
     class CrtpBasicTextIterator
     {
     public:
-        using iterator = typename u8string_view::iterator;
+        using iterator = typename string_view::iterator;
 
         struct alignas(32) ForkedTextIterator// NOLINT size of ForkedTextIterator
           : public CrtpBasicTextIterator<ForkedTextIterator>
         {
             ForkedTextIterator() noexcept = default;
 
-            constexpr explicit ForkedTextIterator(u8string_view text_) noexcept
+            constexpr explicit ForkedTextIterator(string_view text_) noexcept
               : CrtpBasicTextIterator<ForkedTextIterator>(text_)
             {}
 
@@ -33,13 +33,16 @@ namespace ccl::text
               : CrtpBasicTextIterator<ForkedTextIterator>(CrtpFork, other)
             {}
 
-            constexpr static auto onMove(char8_t /* chr */) noexcept -> void
+            virtual constexpr ~ForkedTextIterator()// NOLINT (for GCC)
+            {}
+
+            constexpr static auto onMove(char /* chr */) noexcept -> void
             {}
 
             constexpr static auto onCharacter(char32_t /* chr */) noexcept -> void
             {}
 
-            auto utfError(char8_t /* chr */) noexcept -> void
+            auto utfError(char /* chr */) noexcept -> void
             {
                 error_detected = true;
             }
@@ -53,7 +56,7 @@ namespace ccl::text
         CrtpBasicTextIterator(CrtpBasicTextIterator &&) noexcept = default;
         CrtpBasicTextIterator(const CrtpBasicTextIterator &) noexcept = default;
 
-        constexpr explicit CrtpBasicTextIterator(u8string_view text_) noexcept
+        constexpr explicit CrtpBasicTextIterator(string_view text_) noexcept
           : carriage{ text_.begin() }, end{ text_.end() }
         {}
 
@@ -99,7 +102,7 @@ namespace ccl::text
             return carriage;
         }
 
-        CCL_DECL auto getNextCarriageValue() const noexcept -> char8_t
+        CCL_DECL auto getNextCarriageValue() const noexcept -> char
         {
             const auto *it = getRemainingAsCarriage();
 
@@ -110,12 +113,12 @@ namespace ccl::text
             return *it;
         }
 
-        CCL_DECL auto getRemaining() const noexcept -> u8string_view
+        CCL_DECL auto getRemaining() const noexcept -> string_view
         {
             return { getRemainingAsCarriage(), end };
         }
 
-        CCL_DECL auto getRemainingWithCurrent() const noexcept -> u8string_view
+        CCL_DECL auto getRemainingWithCurrent() const noexcept -> string_view
         {
             return { carriage, end };
         }
@@ -135,7 +138,7 @@ namespace ccl::text
             }
         }
 
-        CCL_DECL auto getFutureRemaining(size_t times) const noexcept -> u8string_view
+        CCL_DECL auto getFutureRemaining(size_t times) const noexcept -> string_view
         {
             auto fork = ForkedTextIterator{ CrtpFork, *this };
             fork.skipCharacters(times);
@@ -208,7 +211,7 @@ namespace ccl::text
             return fork.getCurrentChar();
         }
 
-        constexpr auto onCarriageMove(char8_t chr) -> void
+        constexpr auto onCarriageMove(char chr) -> void
         {
             static_cast<CRTP &>(*this).onMove(chr);
         }
@@ -218,13 +221,13 @@ namespace ccl::text
             static_cast<CRTP &>(*this).onCharacter(chr);
         }
 
-        auto onUtfError(char8_t chr) noexcept(noexcept_carriage_move) -> void
+        auto onUtfError(char chr) noexcept(noexcept_carriage_move) -> void
         {
             static_cast<CRTP &>(*this).utfError(chr);
         }
 
     private:
-        constexpr auto moveCarriage() noexcept(noexcept_carriage_move) -> char8_t
+        constexpr auto moveCarriage() noexcept(noexcept_carriage_move) -> char
         {
             if (not initialized) {
                 if (carriage == end) {
@@ -267,17 +270,17 @@ namespace ccl::text
             }
         }
 
-        constexpr auto trailingCharacterMove(char8_t chr) noexcept(noexcept_carriage_move) -> void
+        constexpr auto trailingCharacterMove(char chr) noexcept(noexcept_carriage_move) -> void
         {
             if (not utf8::isTrailingCharacter(chr)) {
                 onUtfError(chr);
             }
 
             current_char <<= utf8::TrailingSize;
-            current_char |= chr & static_cast<char8_t>(~utf8::ContinuationMask);
+            current_char |= chr & static_cast<char>(~utf8::ContinuationMask);
         }
 
-        constexpr auto newCharacterMove(char8_t chr) noexcept(noexcept_carriage_move) -> void
+        constexpr auto newCharacterMove(char chr) noexcept(noexcept_carriage_move) -> void
         {
             remaining_to_finish_utf = utf8::utfSize(chr);
 
@@ -285,7 +288,8 @@ namespace ccl::text
                 onUtfError(chr);
             }
 
-            current_char = chr & static_cast<char8_t>(~utf8::getMask(remaining_to_finish_utf));
+            current_char = std::bit_cast<unsigned>(
+                chr & static_cast<char>(~utf8::getMask(remaining_to_finish_utf)));
         }
 
         iterator carriage{};
@@ -301,17 +305,26 @@ namespace ccl::text
 
         BasicTextIterator() noexcept = default;
 
-        constexpr explicit BasicTextIterator(u8string_view text_) noexcept
+        BasicTextIterator(BasicTextIterator &&) noexcept = default;
+        BasicTextIterator(const BasicTextIterator &) noexcept = default;
+
+        constexpr explicit BasicTextIterator(string_view text_) noexcept
           : CrtpBasicTextIterator<BasicTextIterator>(text_)
         {}
 
-        constexpr static auto onMove(char8_t /* chr */) noexcept -> void
+        virtual constexpr ~BasicTextIterator()// NOLINT (for GCC)
+        {}
+
+        auto operator=(BasicTextIterator &&) noexcept -> BasicTextIterator & = default;
+        auto operator=(const BasicTextIterator &) noexcept -> BasicTextIterator & = default;
+
+        constexpr static auto onMove(char /* chr */) noexcept -> void
         {}
 
         constexpr static auto onCharacter(char32_t /* chr */) noexcept -> void
         {}
 
-        static auto utfError(char8_t /* chr */) -> void
+        static auto utfError(char /* chr */) -> void
         {
             using namespace std::string_view_literals;
 

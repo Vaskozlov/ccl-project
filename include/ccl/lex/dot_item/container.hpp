@@ -17,7 +17,6 @@ namespace ccl::lex::dot_item
         using BasicItem::recurrence;
 
         using typename BasicItem::CommentTokens;
-        using typename BasicItem::ExceptionAccumulator;
         using typename BasicItem::TextIterator;
 
         using storage_t = boost::container::small_vector<std::unique_ptr<BasicItem>, 4>;
@@ -75,7 +74,7 @@ namespace ccl::lex::dot_item
 
     private:
         template<typename T>
-            requires std::is_base_of_v<BasicItem, T>
+        requires std::is_base_of_v<BasicItem, T>
         auto unsafeGetLastItemAs() noexcept -> T *
         {
             // NOLINTNEXTLINE unsafe cast to increase performance
@@ -126,13 +125,12 @@ namespace ccl::lex::dot_item
 
         auto postCreationCheck(TextIterator &rule_iterator, const ItemsCounter &counter) -> void;
 
-        static auto findContainerEnd(TextIterator &rule_iterator, u8string_view repr) -> size_t;
+        static auto findContainerEnd(TextIterator &rule_iterator, string_view repr) -> size_t;
 
         auto checkAbilityToCreatePrefixPostfix(TextIterator &rule_iterator) -> void;
 
-        template<ConstString Reason>
-        CCL_INLINE static auto
-            throwUnableToApply(TextIterator &rule_iterator, u8string_view suggestion = {}) -> void;
+        static auto throwUnableToApply(
+            TextIterator &rule_iterator, string_view reason, string_view suggestion = {}) -> void;
 
         static auto throwUndefinedAction(TextIterator &rule_iterator) -> void;
 

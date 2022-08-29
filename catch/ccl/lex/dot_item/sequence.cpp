@@ -13,40 +13,40 @@ BOOST_AUTO_TEST_SUITE(ContainerSequence)
 
 BOOST_AUTO_TEST_CASE(SequenceWithOneCharBegin)
 {
-    auto text_iterator = TextIterator{ u8R"("Hello, \"World\"!")" };
+    auto text_iterator = TextIterator{ R"("Hello, \"World\"!")" };
     text_iterator.next();
 
-    auto string_item = Sequence({}, u8"\"", text_iterator, shared);
+    auto string_item = Sequence({}, "\"", text_iterator, shared);
     DEBUG_VAR &&string = string_item.get();
 
-    BOOST_ASSERT(string == u8R"(Hello, "World"!)");
+    BOOST_ASSERT(string == R"(Hello, "World"!)");
     BOOST_ASSERT(ccl::isEoF(text_iterator.next()));
 }
 
 BOOST_AUTO_TEST_CASE(SequenceWithTreeCharBegin)
 {
-    auto text_iterator = TextIterator{ u8"\"\"\"Hello,\n    \"World\"!\"\"\"" };
+    auto text_iterator = TextIterator{ "\"\"\"Hello,\n    \"World\"!\"\"\"" };
     text_iterator.next();
 
-    auto string_item = Sequence({ .multiline = true }, u8R"(""")", text_iterator, shared);
+    auto string_item = Sequence({ .multiline = true }, R"(""")", text_iterator, shared);
     DEBUG_VAR &&string = string_item.get();
 
-    BOOST_ASSERT(string == u8"Hello,\n    \"World\"!");
+    BOOST_ASSERT(string == "Hello,\n    \"World\"!");
     BOOST_ASSERT(ccl::isEoF(text_iterator.next()));
 }
 
 BOOST_AUTO_TEST_CASE(UnterminatedSequence)
 {
-    auto text_iterator = TextIterator{ u8R"("Hello, World!)" };
+    auto text_iterator = TextIterator{ R"("Hello, World!)" };
     text_iterator.next();
 
     BOOST_CHECK_EXCEPTION(
-        Sequence({}, u8"\"", text_iterator, shared),
-        SequenceException,
-        []([[maybe_unused]] const SequenceException &exception) {
+        Sequence({}, "\"", text_iterator, shared),
+        text::TextIteratorException,
+        []([[maybe_unused]] const text::TextIteratorException &exception) {
             {
                 BOOST_ASSERT(exception.getColumn() == 1);
-                BOOST_ASSERT(exception.getMessage() == u8"unterminated sequence");
+                BOOST_ASSERT(exception.getMessage() == "unterminated sequence");
                 return true;
             }
         });
@@ -54,20 +54,20 @@ BOOST_AUTO_TEST_CASE(UnterminatedSequence)
 
 BOOST_AUTO_TEST_CASE(SequenceReachedNewLine)
 {
-    auto text_iterator = TextIterator{ u8"\"Hello, World!\n\"" };
+    auto text_iterator = TextIterator{ "\"Hello, World!\n\"" };
     text_iterator.next();
 
     BOOST_CHECK_EXCEPTION(
-        Sequence({}, u8"\"", text_iterator, shared),
-        SequenceException,
-        []([[maybe_unused]] const SequenceException &exception) {
+        Sequence({}, "\"", text_iterator, shared),
+        text::TextIteratorException,
+        []([[maybe_unused]] const text::TextIteratorException &exception) {
             {
                 BOOST_ASSERT(exception.getColumn() == 1);
                 BOOST_ASSERT(
                     exception.getMessage() ==
-                    u8"new line is reached, but sequence has not been terminated");
+                    "new line is reached, but sequence has not been terminated");
                 BOOST_ASSERT(
-                    exception.getSuggestion() == u8"use multiline sequence or close it with `\"`");
+                    exception.getSuggestion() == "use multiline sequence or close it with `\"`");
                 return true;
             }
         });

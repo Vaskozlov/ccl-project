@@ -10,7 +10,7 @@ namespace ccl::lex
         text_iterator.skipComments();
 
         if (text_iterator.isEnd()) {
-            return Token{ { text_iterator }, ReservedTokenType::EOI, u8"$"s };
+            return Token{ { text_iterator }, ReservedTokenType::EOI, "$"s };
         }
 
         if (auto special_token = lexical_analyzer.shared.getSpecialToken(text_iterator);
@@ -33,7 +33,6 @@ namespace ccl::lex
             return yield();
         }
 
-        text_iterator.throwException<LexicalAnalysisException>(u8"unrecognizable token");
         return constructBadToken();
     }
 

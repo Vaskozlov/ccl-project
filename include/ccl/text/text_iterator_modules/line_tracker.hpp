@@ -9,7 +9,7 @@ namespace ccl::text::module
     class LineTracker
     {
     public:
-        CCL_DECL auto get() const noexcept -> const u8string_view &
+        CCL_DECL auto get() const noexcept -> const string_view &
         {
             return line;
         }
@@ -24,7 +24,7 @@ namespace ccl::text::module
             new_line_passed = chr == U'\n';
         }
 
-        constexpr explicit LineTracker(const u8string_view &text_) noexcept
+        constexpr explicit LineTracker(const string_view &text_) noexcept
           : text(text_), line(text.begin(), std::min(text.size(), text.find<UNSAFE>('\n')))
         {}
 
@@ -37,8 +37,8 @@ namespace ccl::text::module
             line = { new_line_begin, text.begin() + end_offset };
         }
 
-        u8string_view text{};
-        u8string_view line{};
+        string_view text{};
+        string_view line{};
         bool new_line_passed{ false };
     };
 }// namespace ccl::text::module

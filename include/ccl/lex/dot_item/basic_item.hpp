@@ -3,7 +3,6 @@
 
 #include <ccl/lex/analysis_shared.hpp>
 #include <ccl/lex/dot_item/recurrence.hpp>
-#include <ccl/lex/exception.hpp>
 #include <ccl/lex/token.hpp>
 #include <ccl/text/text_iterator.hpp>
 #include <optional>
@@ -15,7 +14,6 @@ namespace ccl::lex::dot_item
     public:
         using TextIterator = text::TextIterator;
         using CommentTokens = text::CommentTokens;
-        using ExceptionAccumulator = analysis::ExceptionAccumulator<text::TextIteratorException>;
 
         explicit BasicItem(AnalysisShared &analysis_shared_) noexcept
           : analysis_shared{ analysis_shared_ }

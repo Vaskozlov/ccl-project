@@ -11,7 +11,7 @@ namespace ccl::lex::dot_item
         auto local_token = Token{ token };
 
         while (times < recurrence.to) {
-            if (scanIterationCall(local_iterator, local_token)) {
+            if (not local_iterator.isEnd() && scanIterationCall(local_iterator, local_token)) {
                 ++times;
             } else {
                 break;

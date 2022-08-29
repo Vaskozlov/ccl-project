@@ -17,8 +17,7 @@ namespace ccl::text
         return false;
     }
 
-    auto TextIterator::CommentSkipper::isComment(u8string_view const &comment) const noexcept
-        -> bool
+    auto TextIterator::CommentSkipper::isComment(string_view const &comment) const noexcept -> bool
     {
         auto text = text_iterator.getRemaining();
         return not comment.empty() && text.startsWith(comment);
@@ -61,10 +60,10 @@ namespace ccl::text
     {
         using namespace std::string_view_literals;
 
-        text_iterator.throwException(CommentSkipperException(
+        text_iterator.throwError(CommentSkipperException(
             comment_begin.getLocation(),
             comment_begin.getWorkingLine(),
-            u8"unterminated multiline comment"sv));
+            "unterminated multiline comment"sv));
     }
 
     TextIterator::CommentSkipper::CommentSkipper(

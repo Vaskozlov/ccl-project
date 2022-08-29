@@ -6,13 +6,13 @@ using namespace text;
 using namespace text::module;
 using namespace string_view_literals;
 
-constexpr static auto Input = u8"Hello, World!\nIt's a \nTest!\nOf line tracker\n "_sv;
+constexpr static auto Input = "Hello, World!\nIt's a \nTest!\nOf line tracker\n "_sv;
 
 [[maybe_unused]] constexpr static auto ExpectedLines =
-    std::array{ u8"Hello, World!", u8"It's a ", u8"Test!",
-                u8"Of line "
-                u8"tracker",
-                u8" " };
+    std::array{ "Hello, World!", "It's a ", "Test!",
+                "Of line "
+                "tracker",
+                " " };
 
 BOOST_AUTO_TEST_CASE(LineTrackig)
 {
@@ -20,7 +20,7 @@ BOOST_AUTO_TEST_CASE(LineTrackig)
     DEBUG_VAR line_tracker = LineTracker{ Input };
 
     for (auto chr : Input) {
-        line_tracker.next(chr);
+        line_tracker.next(static_cast<char32_t>(chr));
 
         if (chr == '\n') {
             BOOST_ASSERT(ExpectedLines.at(current_line) == line_tracker.get());

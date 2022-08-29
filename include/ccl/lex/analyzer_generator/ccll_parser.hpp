@@ -15,13 +15,13 @@ namespace ccl::lex::parser
         {
             Rule() = default;
 
-            Rule(u8string_view block_, u8string_view name_, u8string_view definition_)
+            Rule(string_view block_, string_view name_, string_view definition_)
               : block(block_), name(name_), definition(definition_)
             {}
 
-            u8string_view block;
-            u8string_view name;
-            u8string_view definition;
+            string_view block;
+            string_view name;
+            string_view definition;
             size_t id{};
         };
 
@@ -43,12 +43,12 @@ namespace ccl::lex::parser
 
         auto completeBlock() -> void;
 
-        auto parsingError(u8string_view expected_types, GenToken given_token) -> void;
+        auto parsingError(string_view expected_types, GenToken given_token) -> void;
 
         std::stack<Token> token_stack{};
-        std::vector<std::pair<u8string_view, u8string_view>> directives{};
+        std::vector<std::pair<string_view, string_view>> directives{};
         std::vector<Rule> rules{};
-        u8string_view current_block = u8"NONE";
+        string_view current_block = "NONE";
         Tokenizer &tokenizer;
     };
 }// namespace ccl::lex::parser

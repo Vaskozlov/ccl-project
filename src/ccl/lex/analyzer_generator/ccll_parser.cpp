@@ -1,4 +1,5 @@
 #include <ccl/lex/analyzer_generator/ccll_parser.hpp>
+#include <fmt/format.h>
 
 namespace ccl::lex::parser
 {
@@ -32,7 +33,7 @@ namespace ccl::lex::parser
                 return true;
 
             default:
-                parsingError(u8"identifier or angle opening (`[`)", token_id);
+                parsingError("identifier or angle opening (`[`)", token_id);
                 return false;
             }
         }
@@ -51,7 +52,7 @@ namespace ccl::lex::parser
             return parseDirectiveDeclaration();
 
         default:
-            parsingError(u8"column (`:`) or assign (`=`)", token_id);
+            parsingError("column (`:`) or assign (`=`)", token_id);
             return false;
         }
     }
@@ -72,7 +73,7 @@ namespace ccl::lex::parser
                 break;
 
             default:
-                parsingError(u8"regular expression", token_id);
+                parsingError("regular expression", token_id);
                 return false;
             }
         }
@@ -94,7 +95,7 @@ namespace ccl::lex::parser
                 break;
 
             default:
-                parsingError(u8"identifier", token_id);
+                parsingError("identifier", token_id);
                 return false;
             }
         }
@@ -132,7 +133,7 @@ namespace ccl::lex::parser
             return parseBlockEnding();
         }
 
-        parsingError(u8"identifier", token_id);
+        parsingError("identifier", token_id);
         return false;
     }
 
@@ -146,7 +147,7 @@ namespace ccl::lex::parser
             return true;
         }
 
-        parsingError(u8"angle closing (`]`)", token_id);
+        parsingError("angle closing (`]`)", token_id);
         return false;
     }
 
@@ -158,10 +159,10 @@ namespace ccl::lex::parser
         current_block = block_name.getValue();
     }
 
-    auto CcllParser::parsingError(u8string_view expected_types, GenToken given_token) -> void
+    auto CcllParser::parsingError(string_view expected_types, GenToken given_token) -> void
     {
-        auto error_message =
-            fmt::format<u8"Expect: {}, but got: {}">(expected_types, GenTokenNames.at(given_token));
-        tokenizer.throwError<RuleParsingException>(error_message);
+        auto error_message = ::fmt::format(
+            "expected {}, but got: {}", expected_types, GenTokenNames.at(given_token));
+        tokenizer.throwError(error_message);
     }
 }// namespace ccl::lex::parser

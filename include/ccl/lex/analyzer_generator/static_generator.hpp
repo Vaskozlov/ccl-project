@@ -20,9 +20,9 @@ namespace ccl::lex::gen
     private:
         auto generateHeader() -> void;
 
-        std::map<std::u8string, std::u8string> rules{};
+        std::map<std::string, std::string> rules{};
         std::stack<Token> token_stack{};
-        std::u8string generated_header{};
+        std::string generated_header{};
         Tokenizer &tokenizer;
     };
 }// namespace ccl::lex::gen

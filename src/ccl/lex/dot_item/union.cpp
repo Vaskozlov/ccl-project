@@ -95,23 +95,25 @@ namespace ccl::lex::dot_item
 
     auto Union::throwUnterminatedUnion(TextIterator &rule_iterator) -> void
     {
-        rule_iterator.throwException<UnionException>(u8"unterminated union item"_sv);
+        rule_iterator.throwError("unterminated union item"_sv);
         throw UnrecoverableError{ "unrecoverable error in Union" };
     }
 
     auto Union::throwUnterminatedRangeException(TextIterator &rule_iterator) -> void
     {
-        rule_iterator.throwException<UnionException>(u8"unterminated range"_sv);
+        rule_iterator.throwError("unterminated range"_sv);
         throw UnrecoverableError{ "unrecoverable error in Union" };
     }
 
     auto Union::throwUnionBeginException(TextIterator &rule_iterator) -> void
     {
-        auto message =
-            fmt::format<u8"expected `[` at the beginning of union item declaration, got {}">(
-                rule_iterator.getCurrentChar());
+        auto buffer = std::string{};
+        utf8::appendUtf32ToUtf8Container(buffer, rule_iterator.getCurrentChar());
 
-        rule_iterator.throwException<UnionException>(message);
+        auto message = ::fmt::format(
+            "expected `[` at the beginning of union item declaration, got {}", buffer);
+
+        rule_iterator.throwError(message);
         throw UnrecoverableError{ "unrecoverable error in Union" };
     }
 }// namespace ccl::lex::dot_item

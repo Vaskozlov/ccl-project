@@ -2,7 +2,7 @@
 
 namespace ccl::text
 {
-    auto TextIterator::onMove(char8_t chr) -> void
+    auto TextIterator::onMove(char chr) -> void
     {
         location.intermediateNext(chr);
     }
@@ -14,9 +14,9 @@ namespace ccl::text
         line_tracker.next(chr);
     }
 
-    auto TextIterator::utfError(char8_t /* chr */) -> void
+    auto TextIterator::utfError(char /* chr */) -> void
     {
-        throwException<TextIteratorException>(u8"invalid utf symbol");
+        throwError<TextIteratorException>("invalid utf symbol");
         throw UnrecoverableError{ "unable to recover, because of invalid utf symbol" };
     }
 

@@ -1,21 +1,23 @@
-#include <ccl/lex/lexical_analyzer.hpp>
+#include <ccl/handler/cmd_handler.hpp>
 #include <ccl/lex/analyzer_generator/analyzer_generator.hpp>
 #include <ccl/lex/analyzer_generator/static_generator.hpp>
+#include <ccl/lex/lexical_analyzer.hpp>
 #include <fstream>
 #include <sstream>
 
 namespace ccl::lex
 {
     // NOLINTNEXTLINE global variable
-    auto AnalyzerGenerator::LexForGenerator = LexicalAnalyzer{
-        { GenToken::IDENTIFIER, u8"[a-zA-Z_]+[a-zA-Z0-9_]*" },
-        { GenToken::INTEGER, u8"[0-9]+" },
-        { GenToken::RAW_DATA, u8R"([\t\n=[[ ]^+[\n]*^)" },
-        { GenToken::NEW_LINE, u8R"('\n')" },
-        { GenToken::COLUMN, u8R"(':')" },
-        { GenToken::ASSIGN, u8R"('=')" },
-        { GenToken::ANGLE_OPENING, u8R"('[')" },
-        { GenToken::ANGLE_CLOSING, u8R"(']')" },
+    LexicalAnalyzer AnalyzerGenerator::LexForGenerator{
+        handler::Cmd::instance(),
+        { { GenToken::IDENTIFIER, "[a-zA-Z_]+[a-zA-Z0-9_]*" },
+          { GenToken::INTEGER, "[0-9]+" },
+          { GenToken::RAW_DATA, R"([\t\n=[[ ]^+[\n]*^)" },
+          { GenToken::NEW_LINE, R"('\n')" },
+          { GenToken::COLUMN, R"(':')" },
+          { GenToken::ASSIGN, R"('=')" },
+          { GenToken::ANGLE_OPENING, R"('[')" },
+          { GenToken::ANGLE_CLOSING, R"(']')" } }
     };
 
     static auto readFile(const std::filesystem::path &path) -> std::string
@@ -23,7 +25,7 @@ namespace ccl::lex
         auto stream = std::ifstream(path);
 
         if (!stream.is_open()) {
-            throw InvalidArgument("Failed to open file: " + path.string());
+            throw InvalidArgument("Failed to open file");
         }
 
         auto buffer = std::stringstream{};
@@ -34,20 +36,13 @@ namespace ccl::lex
 
     auto AnalyzerGenerator::generateStaticVersion(const std::filesystem::path &path) -> void
     {
-        auto filename = path.filename().string();
-        auto casted_filename =// NOLINTNEXTLINE reinterpret_cast
-            u8string_view{ reinterpret_cast<const char8_t *>(filename.c_str()), filename.size() };
-
+        auto filename = path.string();
         auto file_content = readFile(path);
-        auto casted_file_content =// NOLINTNEXTLINE reinterpret_cast
-            u8string_view{ reinterpret_cast<const char8_t *>(file_content.data()),
-                           file_content.size() };
 
-        generateStaticVersion(casted_file_content, casted_filename);
+        generateStaticVersion(filename, file_content);
     }
 
-    auto AnalyzerGenerator::generateStaticVersion(u8string_view text, u8string_view filename)
-        -> void
+    auto AnalyzerGenerator::generateStaticVersion(string_view filename, string_view text) -> void
     {
         auto tokenizer = LexForGenerator.getTokenizer(text, filename);
         auto static_generator = gen::StaticGenerator{ tokenizer };

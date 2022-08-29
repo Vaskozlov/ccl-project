@@ -2,5 +2,5 @@ CLASS_NAME = Test
 
 [ARITHMETIC_OPERATOR]
 ADD: '+'
-SUB: '-'
+SUB: '-
 MUL '*'

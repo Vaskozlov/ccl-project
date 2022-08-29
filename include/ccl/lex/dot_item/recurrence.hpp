@@ -5,8 +5,6 @@
 
 namespace ccl::lex::dot_item
 {
-    CCL_EXCEPTION(RecurrenceException, text::TextIteratorException);
-
     struct CCL_TRIVIAL_ABI Recurrence
     {
         constexpr Recurrence(size_t from_, size_t to_) noexcept : from(from_), to(to_)

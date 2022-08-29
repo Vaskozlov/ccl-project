@@ -31,8 +31,8 @@ namespace ccl
 
     template<typename T, typename CharT>
     concept StringLike = std::is_same_v<T, BasicStringView<CharT>> ||
-        std::is_same_v<T, std::basic_string_view<CharT>> ||
-        std::is_same_v<T, std::basic_string<CharT>>;
+                         std::is_same_v<T, std::basic_string_view<CharT>> ||
+                         std::is_same_v<T, std::basic_string<CharT>>;
 
     template<CharacterLiteral CharT>
     struct BasicStringView
@@ -338,5 +338,21 @@ namespace ccl
         }
     }// namespace string_view_literals
 }// namespace ccl
+
+template<>
+class fmt::formatter<ccl::string_view>
+{
+public:
+    constexpr static auto parse(format_parse_context &ctx)
+    {
+        return ctx.begin();
+    }
+
+    template<typename FmtContext>
+    constexpr auto format(const ccl::string_view &str, FmtContext &ctx) const
+    {
+        return format_to(ctx.out(), "{}", static_cast<std::string_view>(str));
+    }
+};
 
 #endif /* CCL_PROJECT_STRING_VIEW_HPP*/

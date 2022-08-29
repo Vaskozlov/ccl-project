@@ -6,13 +6,10 @@
 
 namespace ccl::lex::dot_item
 {
-    CCL_EXCEPTION(UnionException, text::TextIteratorException);
-
     class Union : public BasicItem
     {
     public:
         using typename BasicItem::CommentTokens;
-        using typename BasicItem::ExceptionAccumulator;
         using typename BasicItem::TextIterator;
 
         Union(TextIterator &rule_iterator_, AnalysisShared &analysis_shared_);

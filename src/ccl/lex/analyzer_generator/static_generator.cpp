@@ -4,11 +4,6 @@
 
 namespace ccl::lex::gen
 {
-    [[maybe_unused]] static auto convert(ccl::u8string_view str) -> std::string_view
-    {
-        return { reinterpret_cast<const char *>(str.begin()), str.size() };// NOLINT
-    }
-
     auto StaticGenerator::generateHeader() -> void
     {
         auto parser = parser::CcllParser{ tokenizer };

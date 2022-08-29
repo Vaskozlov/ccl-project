@@ -1,13 +1,11 @@
 #ifndef CCL_PROJECT_ITEMS_COUNTER_HPP
 #define CCL_PROJECT_ITEMS_COUNTER_HPP
 
-#include <ccl/format/format.hpp>
+#include <ccl/const_string.hpp>
 #include <ccl/text/text_iterator.hpp>
 
 namespace ccl::lex::dot_item
 {
-    CCL_EXCEPTION(ContainerException, text::TextIteratorException);
-
     namespace item
     {
         struct UnionType : std::true_type
@@ -116,8 +114,10 @@ namespace ccl::lex::dot_item
         template<ConstString ItemName>
         CCL_INLINE auto checkNoStringOrChars() -> void;
 
-        template<ConstString ItemName, ConstString Message, ConstString Suggestion>
-        CCL_INLINE auto throwItemCreationError() -> void;
+        auto throwItemCreationError(
+            string_view item_name,
+            string_view message,
+            string_view suggestion) -> void;
 
     public:
         size_t strings{};

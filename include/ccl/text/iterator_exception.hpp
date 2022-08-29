@@ -1,7 +1,7 @@
 #ifndef CCL_PROJECT_TIM_EXCEPTION_HPP
 #define CCL_PROJECT_TIM_EXCEPTION_HPP
 
-#include <ccl/format/format.hpp>
+#include <ccl/text/location.hpp>
 #include <string>
 
 namespace ccl::text
@@ -21,22 +21,27 @@ namespace ccl::text
             return location.getColumn();
         }
 
+        [[nodiscard]] auto getFilename() const noexcept -> const string_view &
+        {
+            return location.getFilename();
+        }
+
         [[nodiscard]] auto getLocation() const noexcept -> const Location &
         {
             return location;
         }
 
-        [[nodiscard]] auto getWorkingLine() const noexcept -> const u8string_view &
+        [[nodiscard]] auto getWorkingLine() const noexcept -> const string_view &
         {
             return working_line;
         }
 
-        [[nodiscard]] auto getMessage() const noexcept -> u8string_view
+        [[nodiscard]] auto getMessage() const noexcept -> string_view
         {
             return message;
         }
 
-        [[nodiscard]] auto getSuggestion() const noexcept -> u8string_view
+        [[nodiscard]] auto getSuggestion() const noexcept -> string_view
         {
             return suggestion;
         }
@@ -51,30 +56,30 @@ namespace ccl::text
         TextIteratorException() = default;
 
         TextIteratorException(
-            const Location &location_, const u8string_view &working_line_,
-            const u8string_view &message_, const u8string_view &suggestion_ = {})
+            const Location &location_, const string_view &working_line_,
+            const string_view &message_, const string_view &suggestion_ = {})
           : location(location_), message(message_), suggestion(suggestion_),
             working_line(working_line_)
         {}
 
-        CCL_PERFECT_FORWARDING_2(T1, std::u8string, T2, std::u8string)
+        CCL_PERFECT_FORWARDING_2(T1, std::string, T2, std::string)
         TextIteratorException(
-            const Location &location_, const u8string_view &working_line_, T1 &&message_,
+            const Location &location_, const string_view &working_line_, T1 &&message_,
             T2 &&suggestion_ = {})
           : location(location_), message(std::forward<T1>(message_)),
             suggestion(std::forward<T2>(suggestion_)), working_line(working_line_)
         {}
 
-        [[nodiscard]] auto createFullMessage() const -> std::u8string;
+        [[nodiscard]] auto createFullMessage() const -> std::string;
 
     private:
-        auto addSuggestion(std::u8string &full_message) const -> void;
-        auto addArrowToError(std::u8string &full_message) const -> void;
+        auto addSuggestion(std::string &full_message) const -> void;
+        auto addArrowToError(std::string &full_message) const -> void;
 
         Location location{};
-        std::u8string message{};
-        std::u8string suggestion{};
-        u8string_view working_line{};
+        std::string message{};
+        std::string suggestion{};
+        string_view working_line{};
     };
 }// namespace ccl::text
 

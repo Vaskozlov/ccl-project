@@ -1,7 +1,8 @@
 #ifndef CCL_PROJECT_TEXT_ITERATOR_HPP
 #define CCL_PROJECT_TEXT_ITERATOR_HPP
 
-#include <ccl/analysis/exception_accumulator.hpp>
+#include "basic_text_iterator.hpp"
+#include <ccl/handler/exception_handler.hpp>
 #include <ccl/pair.hpp>
 #include <ccl/text/iterator_exception.hpp>
 #include <ccl/text/location.hpp>
@@ -13,9 +14,9 @@ namespace ccl::text
 {
     struct CommentTokens
     {
-        std::u8string single_line{};
-        std::u8string multiline_begin{};
-        std::u8string multiline_end{};
+        std::string single_line{};
+        std::string multiline_begin{};
+        std::string multiline_end{};
     };
 
     CCL_EXCEPTION(CommentSkipperException, TextIteratorException);
@@ -28,18 +29,15 @@ namespace ccl::text
         using extra_symbols_t = std::basic_string<Pair<char32_t, char32_t>>;
 
     public:
-        using ExceptionAccumulator = analysis::ExceptionAccumulator<TextIteratorException>;
-
         class CommentSkipper;
         class EscapingSymbolizer;
         class NotationEscapingSymbolizer;
 
         explicit TextIterator(
-            u8string_view input, ExceptionAccumulator *exception_accumulator_ = {},
-            CommentTokens comment_tokens_ = {}, u8string_view filename = {})
+            string_view input, ExceptionHandler &exception_handler_ = ExceptionHandler::instance(),
+            CommentTokens comment_tokens_ = {}, string_view filename = {})
           : Base(input), location(filename), line_tracker(input),
-            comment_tokens(std::move(comment_tokens_)),
-            exception_accumulator(exception_accumulator_)
+            comment_tokens(std::move(comment_tokens_)), exception_handler(&exception_handler_)
         {}
 
         [[nodiscard]] static auto
@@ -70,12 +68,12 @@ namespace ccl::text
             return location.getRealColumn();
         }
 
-        [[nodiscard]] auto getFilename() const noexcept -> const u8string_view &
+        [[nodiscard]] auto getFilename() const noexcept -> const string_view &
         {
             return location.getFilename();
         }
 
-        [[nodiscard]] auto getWorkingLine() const noexcept -> const u8string_view &
+        [[nodiscard]] auto getWorkingLine() const noexcept -> const string_view &
         {
             return line_tracker.get();
         }
@@ -88,39 +86,41 @@ namespace ccl::text
         auto nextRawCharWithEscapingSymbols(const extra_symbols_t &extra_symbols = {})
             -> Pair<bool, char32_t>;
 
-        auto onMove(char8_t chr) -> void;
+        auto onMove(char chr) -> void;
         auto onCharacter(char32_t chr) -> void;
-        auto utfError(char8_t chr) -> void;
+        auto utfError(char chr) -> void;
 
         auto skipComments() -> bool;
         auto skipCommentsAndLayout() -> void;
 
         template<Exception T>
-        auto throwException(T &&exception) -> void
+        auto throwError(T &&exception) -> void
         {
-            addError(exception_accumulator, std::forward<T>(exception));
+            if (exception_handler == nullptr) {
+                std::terminate();
+            }
+
+            exception_handler->handleError(std::forward<T>(exception));
         }
 
-        template<Exception T, typename... Ts>
-        auto throwException(Ts &&...args) -> void
+        template<Exception T = TextIteratorException, typename... Ts>
+        auto throwError(Ts &&...args) -> void
         {
-            addError(
-                exception_accumulator,
-                T(getLocation(), getWorkingLine(), std::forward<Ts>(args)...));
+            throwError(T{ getLocation(), getWorkingLine(), std::forward<Ts>(args)... });
         }
 
         template<Exception T>
         auto throwWarning(T &&exception) -> void
         {
-            addWarning(exception_accumulator, std::forward<T>(exception));
+            if (exception_handler != nullptr) {
+                exception_handler->handleWarning(std::forward<T>(exception));
+            }
         }
 
         template<Exception T, typename... Ts>
         auto throwWarning(Ts &&...args) -> void
         {
-            addWarning(
-                exception_accumulator,
-                T(getLocation(), getWorkingLine(), std::forward<Ts>(args)...));
+            throwWarning(T{ getLocation(), getWorkingLine(), std::forward<Ts>(args)... });
         }
 
     private:
@@ -128,7 +128,7 @@ namespace ccl::text
         module::TsTracker ts_tracker{};
         module::LineTracker line_tracker;
         CommentTokens comment_tokens{};
-        ExceptionAccumulator *exception_accumulator{};
+        ExceptionHandler *exception_handler{};
     };
 
     class TextIterator::CommentSkipper
@@ -139,7 +139,7 @@ namespace ccl::text
         CommentSkipper(TextIterator &text_iterator_, const CommentTokens &comment_tokens_);
 
     private:
-        [[nodiscard]] auto isComment(const u8string_view &comment) const noexcept -> bool;
+        [[nodiscard]] auto isComment(const string_view &comment) const noexcept -> bool;
 
         auto skipSingleLine() -> void;
         auto skipMultiline() -> void;
@@ -220,9 +220,9 @@ namespace ccl::text
         auto throwCharacterOverflow() const -> void;
         auto throwNotEnoughCharsException(u16 chars_count) const -> void;
 
-        [[nodiscard]] auto createSuggestionNotEnoughChars(u16 chars_count) const -> std::u8string;
+        [[nodiscard]] auto createSuggestionNotEnoughChars(u16 chars_count) const -> std::string;
 
-        auto insertExtraZerosToNotEnoughMessage(u16 chars_count, std::u8string &message) const
+        auto insertExtraZerosToNotEnoughMessage(u16 chars_count, std::string &message) const
             -> void;
 
         TextIterator &text_iterator;

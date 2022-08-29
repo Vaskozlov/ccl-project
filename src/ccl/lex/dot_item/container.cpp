@@ -4,8 +4,8 @@ namespace ccl::lex::dot_item
 {
     using namespace ccl::string_view_literals;
 
-    static auto splitStringByIndex(const std::u8string &string, size_t index)
-        -> std::pair<std::u8string, std::u8string>
+    static auto splitStringByIndex(const std::string &string, size_t index)
+        -> std::pair<std::string, std::string>
     {
         return { string.substr(0, index), string.substr(index + 1) };
     }
@@ -124,7 +124,7 @@ namespace ccl::lex::dot_item
         items_counter.add(item::Sequence);
 
         return std::make_unique<Sequence>(
-            Sequence::SequenceFlags{}, u8"\"", rule_iterator, analysis_shared);
+            Sequence::SequenceFlags{}, "\"", rule_iterator, analysis_shared);
     }
 
     auto Container::constructNewUnion(TextIterator &rule_iterator, ItemsCounter &items_counter)
@@ -154,7 +154,9 @@ namespace ccl::lex::dot_item
     }
 
     auto Container::constructString(
-        ItemsCounter &items_counter, bool is_character, bool is_multiline) -> void
+        ItemsCounter &items_counter,
+        bool is_character,
+        bool is_multiline) -> void
     {
         if (is_character) {
             items_counter.add(item::Character);
@@ -165,9 +167,9 @@ namespace ccl::lex::dot_item
         auto *sequence = unsafeGetLastItemAs<Sequence>();// check is above
         auto &strings_and_chars = analysis_shared.strings_and_chars;
         auto &string = sequence->getByRef();
-        auto column_index = string.find(u8':');
+        auto column_index = string.find(':');
 
-        if (column_index == std::u8string::npos) {
+        if (column_index == std::string::npos) {
             strings_and_chars.emplace_back(std::move(string), id, is_character, is_multiline);
         } else {
             auto [string_begin, string_end] = splitStringByIndex(string, column_index);
@@ -185,7 +187,7 @@ namespace ccl::lex::dot_item
         items_counter.add(item::Terminal);
 
         auto &special_tokens = analysis_shared.special_tokens;
-        auto sequence = Sequence{ {}, u8"\'", rule_iterator, analysis_shared };
+        auto sequence = Sequence{ {}, "\'", rule_iterator, analysis_shared };
 
         special_tokens.addString(std::move(sequence.getByRef()), id);
     }
@@ -196,11 +198,11 @@ namespace ccl::lex::dot_item
 
         auto *sequence = unsafeGetLastItemAs<Sequence>();// check is above
         auto &string = sequence->getByRef();
-        auto column_index = string.find(u8':');
+        auto column_index = string.find(':');
         auto &[single_line_comment, multiline_begin_comment, multiline_end_comment] =
             analysis_shared.comment_tokens;
 
-        if (column_index == std::u8string::npos) {
+        if (column_index == std::string::npos) {
             single_line_comment = string;
         } else {
             auto [comment_begin, comment_end] = splitStringByIndex(string, column_index);
@@ -212,7 +214,8 @@ namespace ccl::lex::dot_item
     }
 
     auto Container::constructCommentOrCharacter(
-        TextIterator &rule_iterator, ItemsCounter &items_counter) -> void
+        TextIterator &rule_iterator,
+        ItemsCounter &items_counter) -> void
     {
         if (rule_iterator.isNextCharacterEqual<U'o'>()) {
             rule_iterator.next();
@@ -244,15 +247,17 @@ namespace ccl::lex::dot_item
     auto Container::addRecurrence(TextIterator &rule_iterator, Recurrence new_recurrence) -> void
     {
         if (items.empty()) {
-            throwUnableToApply<u8"no items found">(
-                rule_iterator, u8"set recurrence modifier after item");
+            throwUnableToApply(
+                rule_iterator, "no items found", "set recurrence modifier after item");
         }
 
         auto &last_item = items.back();
 
         if (last_item->getRecurrence() != Recurrence::basic()) {
-            throwUnableToApply<u8"item already has recurrence">(
-                rule_iterator, u8"do not set recurrence more than once");
+            throwUnableToApply(
+                rule_iterator,
+                "item already has recurrence",
+                "do not set recurrence more than once");
         }
 
         last_item->setRecurrence(new_recurrence);
@@ -261,14 +266,16 @@ namespace ccl::lex::dot_item
     auto Container::reverseLastItem(TextIterator &rule_iterator) -> void
     {
         if (items.empty()) {
-            throwUnableToApply<u8"no items to reverse">(rule_iterator);
+            throwUnableToApply(rule_iterator, "no items to reverse");
         }
 
         auto &last_item = items.back();
 
         if (last_item->isReversed()) {
-            throwUnableToApply<u8"item already has reverse modifier">(
-                rule_iterator, u8"do not reverse it more than once");
+            throwUnableToApply(
+                rule_iterator,
+                "item already has reverse modifier",
+                "do not reverse it more than once");
         }
 
         last_item->reverse();
@@ -278,8 +285,10 @@ namespace ccl::lex::dot_item
         -> void
     {
         if (counter.hasStrOrChar() && counter.hasSequences()) {
-            throwUnableToApply<u8"string or character expected, but got sequence">(
-                rule_iterator, u8"add string or character modifier to the sequence");
+            throwUnableToApply(
+                rule_iterator,
+                "string or character expected, but got sequence",
+                "add string or character modifier to the sequence");
         }
 
         auto postfix_elem =
@@ -289,20 +298,22 @@ namespace ccl::lex::dot_item
             postfix_elem, items.end(), [](const auto &elem) { return elem->hasPostfix(); });
 
         if (not are_postfixes_correct) {
-            auto suggestion = fmt::format<u8"add postfix modifier to the last item\n{}p">(
-                rule_iterator.getWorkingLine());
+            auto suggestion = ::fmt::format(
+                "add postfix modifier to the last item\n{}p", rule_iterator.getWorkingLine());
 
-            throwUnableToApply<u8"item without postfix modifier exists after items with it">(
-                rule_iterator, suggestion);
+            throwUnableToApply(
+                rule_iterator,
+                "item without postfix modifier exists after items with it",
+                suggestion);
         }
     }
 
-    auto Container::findContainerEnd(TextIterator &rule_iterator, u8string_view repr) -> size_t
+    auto Container::findContainerEnd(TextIterator &rule_iterator, string_view repr) -> size_t
     {
-        auto bracket_index = repr.openCloseFind(u8'(', u8')');
+        auto bracket_index = repr.openCloseFind('(', ')');
 
         if (not bracket_index.has_value()) {
-            rule_iterator.throwException<ContainerException>(u8"unterminated dot item");
+            rule_iterator.throwError("unterminated dot item");
             throw UnrecoverableError{ "unrecoverable error in ContainerType" };
         }
 
@@ -312,46 +323,50 @@ namespace ccl::lex::dot_item
     auto Container::checkAbilityToCreatePrefixPostfix(TextIterator &rule_iterator) -> void
     {
         if (not main_item) {
-            throwUnableToApply<
-                u8"you are not allowed to create prefixes or postfixes inside other dot items">(
-                rule_iterator, u8"create them only in main item");
+            throwUnableToApply(
+                rule_iterator,
+                "you are not allowed to create prefixes or postfixes inside other dot items",
+                "create them only in main item");
         }
 
         if (items.empty()) {
-            throwUnableToApply<u8"there are not any items to apply prefix/postfix">(rule_iterator);
+            throwUnableToApply(rule_iterator, "there are not any items to apply prefix/postfix");
         }
 
         auto &last_item = items.back();
 
         if (last_item->hasPrefix()) {
-            throwUnableToApply<u8"item already has prefix modifier">(
-                rule_iterator, u8"do not add it more than once");
+            throwUnableToApply(
+                rule_iterator, "item already has prefix modifier", "do not add it more than once");
         }
 
         if (last_item->hasPostfix()) {
-            throwUnableToApply<u8"item already has postfix modifier">(
-                rule_iterator, u8"do not add it more than once");
+            throwUnableToApply(
+                rule_iterator, "item already has postfix modifier", "do not add it more than once");
         }
     }
 
-    template<ConstString Reason>
-    auto Container::throwUnableToApply(TextIterator &rule_iterator, u8string_view suggestion)
-        -> void
+    auto Container::throwUnableToApply(
+        TextIterator &rule_iterator,
+        string_view reason,
+        string_view suggestion) -> void
     {
-        static constexpr auto reason = fmt::staticFormat<u8"unable to apply: {}", Reason>();
+        using namespace fmt::literals;
 
-        rule_iterator.throwException<ContainerException>(reason, suggestion);
+        auto message = fmt::format("unable to apply: {}", reason);
+
+        rule_iterator.throwError(message, suggestion);
         throw UnrecoverableError{ "unrecoverable error in ContainerType" };
     }
 
     auto Container::throwUndefinedAction(TextIterator &rule_iterator) -> void
     {
-        auto message = u8"undefined action"_sv;
+        auto message = "undefined action"_sv;
         auto suggestion =
-            u8"Use `\"` for string, `'` for special symbol, `[` for unions, `(` for dot "
+            "Use `\"` for string, `'` for special symbol, `[` for unions, `(` for dot "
             "items"_sv;
 
-        rule_iterator.throwException<ContainerException>(message, suggestion);
+        rule_iterator.throwError(message, suggestion);
         throw UnrecoverableError{ "unrecoverable error in ContainerType" };
     }
 }// namespace ccl::lex::dot_item
