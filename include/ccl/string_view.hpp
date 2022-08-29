@@ -339,19 +339,13 @@ namespace ccl
     }// namespace string_view_literals
 }// namespace ccl
 
-template<>
-class fmt::formatter<ccl::string_view>
-{
-public:
-    constexpr static auto parse(format_parse_context &ctx)
-    {
-        return ctx.begin();
-    }
 
-    template<typename FmtContext>
-    constexpr auto format(const ccl::string_view &str, FmtContext &ctx) const
+template<>
+struct fmt::formatter<ccl::string_view> : fmt::formatter<std::string_view>
+{
+    auto format(const ccl::string_view &str, format_context &ctx)
     {
-        return format_to(ctx.out(), "{}", static_cast<std::string_view>(str));
+        return formatter<std::string_view>::format(static_cast<std::string_view>(str), ctx);
     }
 };
 

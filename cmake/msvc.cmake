@@ -1,4 +1,4 @@
-add_compile_options(/W4 /Zc:__cplusplus)
+add_compile_options(/W4 /Zc:__cplusplus /utf-8)
 
 if (STRICT_COMPILATION)
     add_compile_options(/WX)

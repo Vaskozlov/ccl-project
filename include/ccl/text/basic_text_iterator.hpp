@@ -19,7 +19,7 @@ namespace ccl::text
     public:
         using iterator = typename string_view::iterator;
 
-        struct alignas(32) ForkedTextIterator// NOLINT size of ForkedTextIterator
+        struct ForkedTextIterator
           : public CrtpBasicTextIterator<ForkedTextIterator>
         {
             ForkedTextIterator() noexcept = default;

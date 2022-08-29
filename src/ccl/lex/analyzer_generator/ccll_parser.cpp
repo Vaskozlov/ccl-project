@@ -128,7 +128,7 @@ namespace ccl::lex::parser
         auto token = tokenizer.yield();
         auto token_id = token.getId();
 
-        if (GenToken::IDENTIFIER) {
+        if (token_id == GenToken::IDENTIFIER) {
             token_stack.push(std::move(token));
             return parseBlockEnding();
         }

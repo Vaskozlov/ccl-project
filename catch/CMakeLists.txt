@@ -27,6 +27,8 @@ target_link_libraries(
         fmt::fmt
 )
 
+target_link_libraries(ccl-catch ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+
 target_link_libraries(
         ccl-catch
         ccl
