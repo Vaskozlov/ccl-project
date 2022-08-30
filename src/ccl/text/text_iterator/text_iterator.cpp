@@ -16,7 +16,7 @@ namespace ccl::text
 
     auto TextIterator::utfError(char /* chr */) -> void
     {
-        throwError<TextIteratorException>("invalid utf symbol");
+        throwPanicError("invalid utf symbol");
         throw UnrecoverableError{ "unable to recover, because of invalid utf symbol" };
     }
 

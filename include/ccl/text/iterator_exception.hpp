@@ -4,10 +4,23 @@
 #include <ccl/text/location.hpp>
 #include <string>
 
-namespace ccl::text
+namespace ccl
 {
     CCL_EXCEPTION(BasicTextIteratorException, CclException);
 
+    CCL_ENUM(// NOLINTNEXTLINE
+        ExceptionCriticality, u32, NONE = 0, SUGGESTION = 1, WARNING = 2, UNCRITICAL = 3,
+        CRITICAL = 4, PANIC = 5);
+
+    // NOLINTNEXTLINE
+    CCL_ENUM(AnalysationStage, u32, NONE = 0, LEXICAL_ANALYSIS = 1, PARSING = 2);
+
+    auto ExceptionCriticalityDescription(ExceptionCriticality criticality) noexcept
+        -> std::string_view;
+}// namespace ccl
+
+namespace ccl::text
+{
     class TextIteratorException : public BasicTextIteratorException
     {
     public:
@@ -46,6 +59,21 @@ namespace ccl::text
             return suggestion;
         }
 
+        [[nodiscard]] auto getCriticality() const noexcept -> ExceptionCriticality
+        {
+            return criticality;
+        }
+
+        [[nodiscard]] auto getCriticalityDescription() const noexcept -> string_view
+        {
+            return ExceptionCriticalityDescription(criticality);
+        }
+
+        [[nodiscard]] auto getStage() const noexcept -> AnalysationStage
+        {
+            return stage;
+        }
+
         [[nodiscard]] auto hasSuggestion() const noexcept -> bool
         {
             return not suggestion.empty();
@@ -56,18 +84,20 @@ namespace ccl::text
         TextIteratorException() = default;
 
         TextIteratorException(
-            const Location &location_, const string_view &working_line_,
-            const string_view &message_, const string_view &suggestion_ = {})
+            ExceptionCriticality criticality_, const Location &location_,
+            const string_view &working_line_, const string_view &message_,
+            const string_view &suggestion_ = {})
           : location(location_), message(message_), suggestion(suggestion_),
-            working_line(working_line_)
+            working_line(working_line_), criticality(criticality_)
         {}
 
         CCL_PERFECT_FORWARDING_2(T1, std::string, T2, std::string)
         TextIteratorException(
-            const Location &location_, const string_view &working_line_, T1 &&message_,
-            T2 &&suggestion_ = {})
+            ExceptionCriticality criticality_, const Location &location_,
+            const string_view &working_line_, T1 &&message_, T2 &&suggestion_ = {})
           : location(location_), message(std::forward<T1>(message_)),
-            suggestion(std::forward<T2>(suggestion_)), working_line(working_line_)
+            suggestion(std::forward<T2>(suggestion_)), working_line(working_line_),
+            criticality(criticality_)
         {}
 
         [[nodiscard]] auto createFullMessage() const -> std::string;
@@ -80,6 +110,8 @@ namespace ccl::text
         std::string message{};
         std::string suggestion{};
         string_view working_line{};
+        ExceptionCriticality criticality{};
+        AnalysationStage stage{};
     };
 }// namespace ccl::text
 

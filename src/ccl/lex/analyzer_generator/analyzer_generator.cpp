@@ -2,7 +2,6 @@
 #include <ccl/lex/analyzer_generator/analyzer_generator.hpp>
 #include <ccl/lex/analyzer_generator/static_generator.hpp>
 #include <ccl/lex/lexical_analyzer.hpp>
-#include <fstream>
 #include <sstream>
 
 namespace ccl::lex
@@ -12,7 +11,7 @@ namespace ccl::lex
         handler::Cmd::instance(),
         { { GenToken::IDENTIFIER, "[a-zA-Z_]+[a-zA-Z0-9_]*" },
           { GenToken::INTEGER, "[0-9]+" },
-          { GenToken::RAW_DATA, R"([\t\n=[[ ]^+[\n]*^)" },
+          { GenToken::RULE_DECLARATION, R"([\t\n=[[ ]^+[\n]*^)" },
           { GenToken::NEW_LINE, R"('\n')" },
           { GenToken::COLUMN, R"(':')" },
           { GenToken::ASSIGN, R"('=')" },
@@ -25,6 +24,8 @@ namespace ccl::lex
         auto stream = std::ifstream(path);
 
         if (!stream.is_open()) {
+            fmt::print("Error: cannot open file {}\n", path);
+            std::cout.flush();
             throw InvalidArgument("Failed to open file");
         }
 

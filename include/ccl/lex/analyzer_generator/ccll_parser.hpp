@@ -38,16 +38,20 @@ namespace ccl::lex::parser
         auto completeRuleDeclaration() -> void;
         auto completeDirectiveDeclaration() -> void;
 
+        auto checkRule(text::TextIterator &rule) -> void;
+
         auto parseBlockDefinition() -> bool;
         auto parseBlockEnding() -> bool;
 
         auto completeBlock() -> void;
 
-        auto parsingError(string_view expected_types, GenToken given_token) -> void;
+        auto parsingError(
+            string_view expected_types, GenToken given_token, string_view suggestion = {}) -> void;
 
         std::stack<Token> token_stack{};
         std::vector<std::pair<string_view, string_view>> directives{};
         std::vector<Rule> rules{};
+        AnalysisShared analysis_shared{};
         string_view current_block = "NONE";
         Tokenizer &tokenizer;
     };

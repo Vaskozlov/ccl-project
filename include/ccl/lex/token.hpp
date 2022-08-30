@@ -60,6 +60,31 @@ namespace ccl::lex
             return getId() != 0;
         }
 
+        [[nodiscard]] auto getLocation() const noexcept -> const text::Location &
+        {
+            return attributes.location;
+        }
+
+        [[nodiscard]] auto getLine() const noexcept -> size_t
+        {
+            return attributes.location.getLine();
+        }
+
+        [[nodiscard]] auto getColumn() const noexcept -> size_t
+        {
+            return attributes.location.getColumn();
+        }
+
+        [[nodiscard]] auto getRealColumn() const noexcept -> size_t
+        {
+            return attributes.location.getRealColumn();
+        }
+
+        [[nodiscard]] auto getFilename() const noexcept -> const string_view &
+        {
+            return attributes.location.getFilename();
+        }
+
         [[nodiscard]] auto getRepr() const noexcept -> string_view
         {
             return repr;

@@ -86,22 +86,22 @@ namespace ccl::lex::dot_item
         }
     }
 
-    auto Union::checkForClosedRange(TextIterator &rule_iterator, bool is_open) -> void
+    auto Union::checkForClosedRange(TextIterator &rule_iterator, bool is_ranged_opened) -> void
     {
-        if (is_open) {
+        if (is_ranged_opened) {
             throwUnterminatedRangeException(rule_iterator);
         }
     }
 
     auto Union::throwUnterminatedUnion(TextIterator &rule_iterator) -> void
     {
-        rule_iterator.throwError("unterminated union item"_sv);
+        rule_iterator.throwPanicError("unterminated union item"_sv);
         throw UnrecoverableError{ "unrecoverable error in Union" };
     }
 
     auto Union::throwUnterminatedRangeException(TextIterator &rule_iterator) -> void
     {
-        rule_iterator.throwError("unterminated range"_sv);
+        rule_iterator.throwPanicError("unterminated range"_sv);
         throw UnrecoverableError{ "unrecoverable error in Union" };
     }
 
@@ -110,10 +110,10 @@ namespace ccl::lex::dot_item
         auto buffer = std::string{};
         utf8::appendUtf32ToUtf8Container(buffer, rule_iterator.getCurrentChar());
 
-        auto message = ::fmt::format(
-            "expected `[` at the beginning of union item declaration, got {}", buffer);
+        auto message =
+            fmt::format("expected `[` at the beginning of union item declaration, got {}", buffer);
 
-        rule_iterator.throwError(message);
+        rule_iterator.throwPanicError(message);
         throw UnrecoverableError{ "unrecoverable error in Union" };
     }
 }// namespace ccl::lex::dot_item

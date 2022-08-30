@@ -20,7 +20,8 @@ namespace ccl::lex
                 LexicalAnalyzer &lexical_analyzer_, string_view text, string_view filename_ = {})
               : lexical_analyzer(lexical_analyzer_),
                 text_iterator(
-                    text, exception_handler, lexical_analyzer_.shared.comment_tokens, filename_)
+                    text, lexical_analyzer_.exception_handler,
+                    lexical_analyzer_.shared.comment_tokens, filename_)
             {}
 
             Tokenizer(
@@ -31,16 +32,21 @@ namespace ccl::lex
                     text, exception_handler_, lexical_analyzer_.shared.comment_tokens, filename_)
             {}
 
-            template<Exception T = text::TextIteratorException, typename... Args>
-            auto throwError(Args &&...args) -> void
+            [[nodiscard]] auto getIterator() const -> const TextIterator &
             {
-                text_iterator.throwError<T>(std::forward<Args>(args)...);
+                return text_iterator;
             }
 
-            template<Exception T = text::TextIteratorException, typename... Args>
-            auto throwWarning(Args &&...args) -> void
+            [[nodiscard]] auto getExceptionHandler() -> ExceptionHandler &
             {
-                text_iterator.throwWarning<T>(std::forward<Args>(args)...);
+                return text_iterator.getExceptionHandler();
+            }
+
+            auto throwException(
+                ExceptionCriticality criticality, string_view message, string_view suggestion = {})
+                -> void
+            {
+                text_iterator.throwToHandle(text_iterator, criticality, message, suggestion);
             }
 
             [[nodiscard]] auto yield() -> Token;
@@ -48,7 +54,6 @@ namespace ccl::lex
 
         private:
             LexicalAnalyzer &lexical_analyzer;
-            ExceptionHandler &exception_handler{ lexical_analyzer.exception_handler };
             TextIterator text_iterator;
         };
 

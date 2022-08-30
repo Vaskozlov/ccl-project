@@ -19,8 +19,7 @@ namespace ccl::text
     public:
         using iterator = typename string_view::iterator;
 
-        struct ForkedTextIterator
-          : public CrtpBasicTextIterator<ForkedTextIterator>
+        struct ForkedTextIterator : public CrtpBasicTextIterator<ForkedTextIterator>
         {
             ForkedTextIterator() noexcept = default;
 

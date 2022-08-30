@@ -73,8 +73,7 @@ namespace ccl::lex::dot_item
         }
 
     private:
-        template<typename T>
-        requires std::is_base_of_v<BasicItem, T>
+        template<std::derived_from<BasicItem> T>
         auto unsafeGetLastItemAs() noexcept -> T *
         {
             // NOLINTNEXTLINE unsafe cast to increase performance

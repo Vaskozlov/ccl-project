@@ -36,7 +36,7 @@ namespace ccl::lex::dot_item
                 -> void;
 
         static auto checkUnionBegin(TextIterator &rule_iterator) -> void;
-        static auto checkForClosedRange(TextIterator &rule_iterator, bool is_open) -> void;
+        static auto checkForClosedRange(TextIterator &rule_iterator, bool is_ranged_opened) -> void;
 
         static auto throwUnterminatedUnion(TextIterator &rule_iterator) -> void;
         static auto throwUnterminatedRangeException(TextIterator &rule_iterator) -> void;

@@ -27,13 +27,13 @@ namespace ccl::lex
         STRING = 12,
         MULTILE_STRING = 13,
         CHARACTER = 14,
-        RAW_DATA = 100);
+        RULE_DECLARATION = 100);
 
     // NOLINTNEXTLINE
     const inline std::map<GenToken, string_view> GenTokenNames{
         { GenToken::EOI, "EOI" },
         { GenToken::BAD_TOKEN, "BAD TOKEN" },
-        { GenToken::RAW_DATA, "RAW DATA" },
+        { GenToken::RULE_DECLARATION, "RULE DECLARATION" },
         { GenToken::IDENTIFIER, "IDENTIFIER" },
         { GenToken::INTEGER, "INTEGER" },
         { GenToken::NEW_LINE, "NEW LINE" },

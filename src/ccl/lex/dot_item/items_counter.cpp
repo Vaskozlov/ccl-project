@@ -115,9 +115,9 @@ namespace ccl::lex::dot_item
         string_view message,
         string_view suggestion) -> void
     {
-        auto error_message = ::fmt::format("unable to create {}: {}", item_name, message);
+        auto error_message = fmt::format("unable to create {}: {}", item_name, message);
 
-        text_iterator.throwError(error_message, suggestion);
+        text_iterator.throwPanicError(error_message, suggestion);
         throw UnrecoverableError{ "unrecoverable error in ContainerType" };
     }
 }// namespace ccl::lex::dot_item

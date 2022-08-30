@@ -298,7 +298,7 @@ namespace ccl::lex::dot_item
             postfix_elem, items.end(), [](const auto &elem) { return elem->hasPostfix(); });
 
         if (not are_postfixes_correct) {
-            auto suggestion = ::fmt::format(
+            auto suggestion = fmt::format(
                 "add postfix modifier to the last item\n{}p", rule_iterator.getWorkingLine());
 
             throwUnableToApply(
@@ -313,7 +313,7 @@ namespace ccl::lex::dot_item
         auto bracket_index = repr.openCloseFind('(', ')');
 
         if (not bracket_index.has_value()) {
-            rule_iterator.throwError("unterminated dot item");
+            rule_iterator.throwPanicError("unterminated dot item");
             throw UnrecoverableError{ "unrecoverable error in ContainerType" };
         }
 
@@ -355,7 +355,7 @@ namespace ccl::lex::dot_item
 
         auto message = fmt::format("unable to apply: {}", reason);
 
-        rule_iterator.throwError(message, suggestion);
+        rule_iterator.throwCriticalError(message, suggestion);
         throw UnrecoverableError{ "unrecoverable error in ContainerType" };
     }
 
@@ -366,7 +366,7 @@ namespace ccl::lex::dot_item
             "Use `\"` for string, `'` for special symbol, `[` for unions, `(` for dot "
             "items"_sv;
 
-        rule_iterator.throwError(message, suggestion);
+        rule_iterator.throwPanicError(message, suggestion);
         throw UnrecoverableError{ "unrecoverable error in ContainerType" };
     }
 }// namespace ccl::lex::dot_item

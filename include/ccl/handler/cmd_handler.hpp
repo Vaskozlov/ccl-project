@@ -17,12 +17,10 @@ namespace ccl::handler
 
         static auto instance() -> Cmd &;
 
-        auto handleError(const ExceptionT *error) -> void override;
-        auto handleWarning(const ExceptionT *warning) -> void override;
-        auto handleSuggestion(const ExceptionT *suggestion) -> void override;
-
     private:
-        template<::fmt::color Color, typename HandleType>
+        auto onHandle(const ExceptionT *instance) -> void override;
+
+        template<fmt::color Color, typename HandleType>
         auto formatAndPrint(const ExceptionT *value, HandleType &&handle_type) -> void;
     };
 }// namespace ccl::handler

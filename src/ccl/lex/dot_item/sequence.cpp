@@ -79,8 +79,7 @@ namespace ccl::lex::dot_item
 
         if (land(chr == '\n', not sequence_flags.multiline)) {
             auto message = "new line is reached, but sequence has not been terminated"_sv;
-            auto suggestion =
-                ::fmt::format("use multiline sequence or close it with `{}`", str_end);
+            auto suggestion = fmt::format("use multiline sequence or close it with `{}`", str_end);
 
             throwUnterminatedString(rule_iterator, message, suggestion);
         }
@@ -110,14 +109,14 @@ namespace ccl::lex::dot_item
 
     auto Sequence::throwEmptyStringBegin(TextIterator &rule_iterator) -> void
     {
-        rule_iterator.throwError("sequence item begin cannot be empty"_sv);
-        throw UnrecoverableError{ "unreachable error in SequenceType" };
+        rule_iterator.throwPanicError("sequence item begin cannot be empty"_sv);
+        throw UnrecoverableError{ "unrecoverable error in SequenceType" };
     }
 
     auto Sequence::throwEmptyStringEnd(TextIterator &rule_iterator) -> void
     {
-        rule_iterator.throwError("sequence item end cannot be empty"_sv);
-        throw UnrecoverableError{ "unreachable error in SequenceType" };
+        rule_iterator.throwPanicError("sequence item end cannot be empty"_sv);
+        throw UnrecoverableError{ "unrecoverable error in SequenceType" };
     }
 
     auto Sequence::throwUnterminatedString(
@@ -125,15 +124,15 @@ namespace ccl::lex::dot_item
         string_view message,
         string_view suggestion) -> void
     {
-        rule_iterator.throwError(message, suggestion);
-        throw UnrecoverableError{ "unreachable error in SequenceType" };
+        rule_iterator.throwPanicError(message, suggestion);
+        throw UnrecoverableError{ "unrecoverable error in SequenceType" };
     }
 
     auto Sequence::throwStringBeginException(TextIterator &rule_iterator) const -> void
     {
-        auto message = ::fmt::format("string literal must begin with {}", str_begin);
+        auto message = fmt::format("string literal must begin with {}", str_begin);
 
-        rule_iterator.throwError(message);
-        throw UnrecoverableError{ "unreachable error in SequenceType" };
+        rule_iterator.throwPanicError(message);
+        throw UnrecoverableError{ "unrecoverable error in SequenceType" };
     }
 }// namespace ccl::lex::dot_item

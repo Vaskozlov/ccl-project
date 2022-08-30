@@ -53,13 +53,12 @@ namespace ccl::lex::dot_item
 
     auto Recurrence::throwBadValues(text::TextIterator &text_iterator) const -> void
     {
-        auto message = ::fmt::format(
+        auto message = fmt::format(
             "the beginning of the recurrence ({}) is greater than the end "
             "({})",
             from, to);
 
-        text_iterator.throwError(message);
-        throw UnrecoverableError{ "unrecoverable error in Recurrence" };
+        text_iterator.throwCriticalError(message);
     }
 
     auto Recurrence::throwUnexpectedCharacter(text::TextIterator &text_iterator, char32_t chr)
@@ -68,21 +67,21 @@ namespace ccl::lex::dot_item
         auto buffer = std::string{};
         utf8::appendUtf32ToUtf8Container(buffer, chr);
 
-        auto message = ::fmt::format("expected a number, but found `{}`", buffer);
+        auto message = fmt::format("expected a number, but found `{}`", buffer);
 
-        text_iterator.throwError(message);
+        text_iterator.throwPanicError(message);
         throw UnrecoverableError{ "unrecoverable error in Recurrence" };
     }
 
     auto Recurrence::throwUnexpectedTermination(text::TextIterator &text_iterator) -> void
     {
-        text_iterator.throwError("unexpected termination"_sv);
+        text_iterator.throwPanicError("unexpected termination"_sv);
         throw UnrecoverableError{ "unrecoverable error in Recurrence" };
     }
 
     auto Recurrence::throwRangeBeginException(text::TextIterator &text_iterator) -> void
     {
-        text_iterator.throwError("expected '{' at the beginning of recurrence range"_sv);
+        text_iterator.throwPanicError("expected '{' at the beginning of recurrence range"_sv);
         throw UnrecoverableError{ "unrecoverable error in Recurrence" };
     }
 }// namespace ccl::lex::dot_item

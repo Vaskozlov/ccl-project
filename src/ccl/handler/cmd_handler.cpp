@@ -4,26 +4,28 @@ namespace ccl::handler
 {
     auto Cmd::instance() -> Cmd &
     {
-        static auto cmd_handler = Cmd{};
-        return cmd_handler;
+        static auto handler = Cmd{};
+        return handler;
     }
 
-    auto Cmd::handleError(const ExceptionT *error) -> void
+    auto Cmd::onHandle(const ExceptionT *instance) -> void
     {
-        formatAndPrint<::fmt::color::red>(error, " error: ");
+        switch (instance->getCriticality()) {
+        case ExceptionCriticality::SUGGESTION:
+            formatAndPrint<fmt::color::white>(instance, " suggestion: ");
+            break;
+
+        case ExceptionCriticality::WARNING:
+            formatAndPrint<fmt::color::medium_violet_red>(instance, " warning: ");
+            break;
+
+        default:
+            formatAndPrint<fmt::color::red>(instance, " error: ");
+            break;
+        }
     }
 
-    auto Cmd::handleWarning(const ExceptionT *warning) -> void
-    {
-        formatAndPrint<::fmt::color::medium_violet_red>(warning, " warning: ");
-    }
-
-    auto Cmd::handleSuggestion(const ExceptionT *suggestion) -> void
-    {
-        formatAndPrint<::fmt::color::white>(suggestion, " suggestion: ");
-    }
-
-    template<::fmt::color Color, typename HandleType>
+    template<fmt::color Color, typename HandleType>
     auto Cmd::formatAndPrint(const ExceptionT *value, HandleType &&handle_type) -> void
     {
         auto line = value->getLine();
@@ -35,24 +37,25 @@ namespace ccl::handler
 
         auto result = std::string{};
 
-        ::fmt::format_to(
+        fmt::format_to(
             std::back_inserter(result),
-            ::fmt::emphasis::underline | ::fmt::fg(::fmt::color::cornflower_blue), "{}:{}:{}",
-            filename, line, column);
+            fmt::emphasis::underline | fmt::fg(fmt::color::cornflower_blue), "{}:{}:{}", filename,
+            line, column);
 
-        ::fmt::format_to(std::back_inserter(result), ::fmt::fg(::fmt::color::cornflower_blue), ":");
+        fmt::format_to(std::back_inserter(result), fmt::fg(fmt::color::cornflower_blue), ":");
 
-        ::fmt::format_to(std::back_inserter(result), ::fmt::fg(Color), handle_type);
-        ::fmt::format_to(std::back_inserter(result), "{}\n", message);
+        fmt::format_to(std::back_inserter(result), fmt::fg(Color), handle_type);
+        fmt::format_to(std::back_inserter(result), "{}\n", message);
 
-        ::fmt::format_to(std::back_inserter(result), ::fmt::emphasis::italic, "{}\n", working_line);
-        ::fmt::format_to(std::back_inserter(result), "{:>{}}\n", "^", column);
+        fmt::format_to(std::back_inserter(result), fmt::emphasis::italic, "{}\n", working_line);
+        fmt::format_to(
+            std::back_inserter(result), fmt::fg(fmt::color::light_green), "{:>{}}\n", "^", column);
 
         if (value->hasSuggestion()) {
-            ::fmt::format_to(std::back_inserter(result), "suggestion: {}\n", suggestion);
+            fmt::format_to(std::back_inserter(result), "suggestion: {}\n", suggestion);
         }
 
-        ::fmt::print("{}", result);
+        fmt::print("{}", result);
         std::cout.flush();
     }
 }// namespace ccl::handler

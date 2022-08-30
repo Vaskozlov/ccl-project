@@ -83,6 +83,11 @@ namespace ccl::text
             return ts_tracker.get();
         }
 
+        [[nodiscard]] auto getExceptionHandler() noexcept -> ExceptionHandler &
+        {
+            return *exception_handler;
+        }
+
         auto nextRawCharWithEscapingSymbols(const extra_symbols_t &extra_symbols = {})
             -> Pair<bool, char32_t>;
 
@@ -93,34 +98,79 @@ namespace ccl::text
         auto skipComments() -> bool;
         auto skipCommentsAndLayout() -> void;
 
-        template<Exception T>
-        auto throwError(T &&exception) -> void
+        auto throwSuggestion(
+            const TextIterator &iterator_location, string_view message, string_view suggestion = {})
+            -> void
         {
+            throwToHandle(iterator_location, ExceptionCriticality::SUGGESTION, message, suggestion);
+        }
+
+        auto throwWarning(
+            const TextIterator &iterator_location, string_view message, string_view suggestion = {})
+            -> void
+        {
+            throwToHandle(iterator_location, ExceptionCriticality::WARNING, message, suggestion);
+        }
+
+        auto throwUncriticalError(
+            const TextIterator &iterator_location, string_view message, string_view suggestion = {})
+            -> void
+        {
+            throwToHandle(iterator_location, ExceptionCriticality::SUGGESTION, message, suggestion);
+        }
+
+        auto throwCriticalError(
+            const TextIterator &iterator_location, string_view message, string_view suggestion = {})
+            -> void
+        {
+            throwToHandle(iterator_location, ExceptionCriticality::CRITICAL, message, suggestion);
+        }
+
+        auto throwPanicError(
+            const TextIterator &iterator_location, string_view message, string_view suggestion = {})
+            -> void
+        {
+            throwToHandle(iterator_location, ExceptionCriticality::PANIC, message, suggestion);
+        }
+
+        auto throwSuggestion(string_view message, string_view suggestion = {}) -> void
+        {
+            throwToHandle(*this, ExceptionCriticality::SUGGESTION, message, suggestion);
+        }
+
+        auto throwWarning(string_view message, string_view suggestion = {}) -> void
+        {
+            throwToHandle(*this, ExceptionCriticality::WARNING, message, suggestion);
+        }
+
+        auto throwUncriticalError(string_view message, string_view suggestion = {}) -> void
+        {
+            throwToHandle(*this, ExceptionCriticality::SUGGESTION, message, suggestion);
+        }
+
+        auto throwCriticalError(string_view message, string_view suggestion = {}) -> void
+        {
+            throwToHandle(*this, ExceptionCriticality::CRITICAL, message, suggestion);
+        }
+
+        auto throwPanicError(string_view message, string_view suggestion = {}) -> void
+        {
+            throwToHandle(*this, ExceptionCriticality::PANIC, message, suggestion);
+        }
+
+        auto throwToHandle(
+            const TextIterator &iterator_location, ExceptionCriticality criticality,
+            string_view message, string_view suggestion = {}) -> void
+        {
+            auto exception = TextIteratorException(
+                criticality, iterator_location.getLocation(), iterator_location.getWorkingLine(),
+                message, suggestion);
+
             if (exception_handler == nullptr) {
-                std::terminate();
+                throw exception;
+            } else {
+                exception_handler->handle(exception);
             }
-
-            exception_handler->handleError(std::forward<T>(exception));
-        }
-
-        template<Exception T = TextIteratorException, typename... Ts>
-        auto throwError(Ts &&...args) -> void
-        {
-            throwError(T{ getLocation(), getWorkingLine(), std::forward<Ts>(args)... });
-        }
-
-        template<Exception T>
-        auto throwWarning(T &&exception) -> void
-        {
-            if (exception_handler != nullptr) {
-                exception_handler->handleWarning(std::forward<T>(exception));
-            }
-        }
-
-        template<Exception T, typename... Ts>
-        auto throwWarning(Ts &&...args) -> void
-        {
-            throwWarning(T{ getLocation(), getWorkingLine(), std::forward<Ts>(args)... });
         }
 
     private:
@@ -151,7 +201,6 @@ namespace ccl::text
         const CommentTokens &comment_tokens;// MAYBE: copy comment tokens into StrViews
         TextIterator &text_iterator;
     };
-
 
     class TextIterator::EscapingSymbolizer
     {
@@ -214,10 +263,8 @@ namespace ccl::text
         [[nodiscard]] auto isOutOfNotation(char32_t chr) const -> bool;
 
         auto checkNotation() const -> void;
-        auto checkCharacterOverflow() const -> void;
         auto checkAllCharsUsage(u16 chars_count) const -> void;
 
-        auto throwCharacterOverflow() const -> void;
         auto throwNotEnoughCharsException(u16 chars_count) const -> void;
 
         [[nodiscard]] auto createSuggestionNotEnoughChars(u16 chars_count) const -> std::string;

@@ -56,14 +56,9 @@ namespace ccl::text
     }
 
     auto TextIterator::CommentSkipper::throwUnterminatedCommentError(
-        TextIterator const &comment_begin) const -> void
+        const TextIterator &comment_begin) const -> void
     {
-        using namespace std::string_view_literals;
-
-        text_iterator.throwError(CommentSkipperException(
-            comment_begin.getLocation(),
-            comment_begin.getWorkingLine(),
-            "unterminated multiline comment"sv));
+        text_iterator.throwPanicError(comment_begin, "unterminated multiline comment");
     }
 
     TextIterator::CommentSkipper::CommentSkipper(

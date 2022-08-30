@@ -8,6 +8,11 @@
 #include <algorithm>
 #include <array>
 
+#include <fmt/color.h>
+#include <fmt/compile.h>
+#include <fmt/format.h>
+#include <fmt/std.h>
+
 #include <ccl/core/concepts.hpp>
 #include <ccl/core/defines.hpp>
 #include <ccl/core/enum.hpp>

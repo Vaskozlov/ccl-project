@@ -22,58 +22,30 @@ namespace ccl
         auto operator=(const ExceptionHandler &) -> ExceptionHandler & = default;
         auto operator=(ExceptionHandler &&) noexcept -> ExceptionHandler & = default;
 
-        static auto instance() -> ExceptionHandler &
-        {
-            static auto handler = ExceptionHandler{};
-            return handler;
-        }
+        static auto instance() -> ExceptionHandler &;
 
-        virtual auto handleError(const ExceptionT *error) -> void
-        {
-            throw ExceptionT(*error);
-        }
-
-        virtual auto handleWarning(const ExceptionT * /* warning */) -> void
-        {}
-
-        virtual auto handleSuggestion(const ExceptionT * /* suggestion */) -> void
-        {}
+        auto handle(const ExceptionT *error) -> void;
 
         template<DerivedFromTextIteratorException T>
-        auto handleError(const T *error)
+        auto handle(const T *error)
         {
-            handleError(static_cast<const text::TextIteratorException *>(error));
+            handle(static_cast<const text::TextIteratorException *>(error));
         }
 
         template<DerivedFromTextIteratorException T>
-        auto handleWarning(const T *warning) -> void
+        auto handle(const T &error)
         {
-            handleWarning(static_cast<const text::TextIteratorException *>(warning));
+            handle(static_cast<const text::TextIteratorException *>(&error));
         }
 
-        template<DerivedFromTextIteratorException T>
-        auto handleSuggestion(const T *suggestion) -> void
-        {
-            handleSuggestion(static_cast<const text::TextIteratorException *>(suggestion));
-        }
+    private:
+        virtual auto onHandle(const ExceptionT *error) -> void;
 
-        template<DerivedFromTextIteratorException T>
-        auto handleError(const T &error)
-        {
-            handleError(static_cast<const text::TextIteratorException *>(&error));
-        }
-
-        template<DerivedFromTextIteratorException T>
-        auto handleWarning(const T &warning) -> void
-        {
-            handleWarning(static_cast<const text::TextIteratorException *>(&warning));
-        }
-
-        template<DerivedFromTextIteratorException T>
-        auto handleSuggestion(const T &suggestion) -> void
-        {
-            handleSuggestion(static_cast<const text::TextIteratorException *>(&suggestion));
-        }
+        size_t suggestion_count{};
+        size_t warnings_count{};
+        size_t uncritical_errors_count{};
+        size_t critical_errors_count{};
+        size_t panic_error_count{};
     };
 }// namespace ccl
 

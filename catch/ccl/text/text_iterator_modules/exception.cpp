@@ -10,7 +10,8 @@ BOOST_AUTO_TEST_CASE(TextIteratorExceptionConstruction)
     auto text_iterator = TextIterator(
         "Hello, World!\nIt's a test string!", ExceptionHandler::instance(), {}, "builtin");
     auto exception = TextIteratorException(
-        text_iterator.getLocation(), text_iterator.getWorkingLine(), "some message");
+        ExceptionCriticality::UNCRITICAL, text_iterator.getLocation(),
+        text_iterator.getWorkingLine(), "some message");
 
     BOOST_ASSERT(exception.getColumn() == 0);
     BOOST_ASSERT(exception.getMessage() == "some message");
