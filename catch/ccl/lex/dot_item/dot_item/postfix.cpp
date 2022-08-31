@@ -11,7 +11,7 @@ BOOST_AUTO_TEST_SUITE(ContainerPostfix)
 BOOST_AUTO_TEST_CASE(TwoPostfixes)
 {
     auto shared = AnalysisShared{};
-    auto container = Container(TextIterator{ R"([a-z]+[_]p"test"p)" }, 0, shared);
+    auto container = Container(TextIterator{ R"([a-z]+[_]p"test"p)" }, 2, shared);
     DEBUG_VAR &items = container.getItems();
 
     BOOST_ASSERT(not items[0]->hasPrefix());
@@ -26,7 +26,7 @@ BOOST_AUTO_TEST_CASE(WrongPostfixCreation)
     auto shared = AnalysisShared{};
 
     BOOST_CHECK_EXCEPTION(
-        Container(TextIterator{ R"([a-z]+[_]p"test")" }, 0, shared), text::TextIteratorException,
+        Container(TextIterator{ R"([a-z]+[_]p"test")" }, 2, shared), text::TextIteratorException,
         [](const text::TextIteratorException &exception) {
             BOOST_CHECK_EQUAL(exception.getColumn(), 16);
             BOOST_ASSERT(

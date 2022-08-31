@@ -13,7 +13,7 @@ BOOST_AUTO_TEST_CASE(NoSequencesCreated)
     auto shared = AnalysisShared{};
 
     BOOST_CHECK_EXCEPTION(
-        Container(TextIterator{ R"(c)" }, 0, shared), text::TextIteratorException,
+        Container(TextIterator{ R"(c)" }, 2, shared), text::TextIteratorException,
         [](const text::TextIteratorException &exception) {
             BOOST_CHECK_EQUAL(exception.getColumn(), 1);
             BOOST_ASSERT(
@@ -26,7 +26,7 @@ BOOST_AUTO_TEST_CASE(NoSequencesCreated)
 BOOST_AUTO_TEST_CASE(CharacterCreation)
 {
     auto shared = AnalysisShared{};
-    DEBUG_VAR container = Container(TextIterator{ R"("\'"c)" }, 0, shared);
+    DEBUG_VAR container = Container(TextIterator{ R"("\'"c)" }, 2, shared);
 
     BOOST_ASSERT(shared.strings_and_chars.size() == 1);
     BOOST_ASSERT(shared.strings_and_chars[0].str_begin == R"(')");
@@ -38,7 +38,7 @@ BOOST_AUTO_TEST_CASE(CharacterCreation)
 BOOST_AUTO_TEST_CASE(RawStringCreation)
 {
     auto shared = AnalysisShared{};
-    DEBUG_VAR container = Container(TextIterator{ R"( "R\"(:)\""m )" }, 0, shared);
+    DEBUG_VAR container = Container(TextIterator{ R"( "R\"(:)\""m )" }, 2, shared);
 
     BOOST_ASSERT(shared.strings_and_chars.size() == 1);
     BOOST_ASSERT(shared.strings_and_chars[0].str_begin == R"(R"()");
@@ -50,7 +50,7 @@ BOOST_AUTO_TEST_CASE(RawStringCreation)
 BOOST_AUTO_TEST_CASE(TwoStringCreation)
 {
     auto shared = AnalysisShared{};
-    auto container = Container(TextIterator{ R"("\""s "'"s)" }, 0, shared);
+    auto container = Container(TextIterator{ R"("\""s "'"s)" }, 2, shared);
 
     BOOST_ASSERT(shared.strings_and_chars.size() == 2);
 

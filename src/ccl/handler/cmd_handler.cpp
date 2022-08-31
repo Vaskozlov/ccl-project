@@ -52,10 +52,10 @@ namespace ccl::handler
             std::back_inserter(result), fmt::fg(fmt::color::light_green), "{:>{}}\n", "^", column);
 
         if (value->hasSuggestion()) {
-            fmt::format_to(std::back_inserter(result), "suggestion: {}\n", suggestion);
+            fmt::format_to(std::back_inserter(result), "Suggest to {}\n", suggestion);
         }
 
-        fmt::print("{}", result);
+        fmt::print("{}\n", result);
         std::cout.flush();
     }
 }// namespace ccl::handler

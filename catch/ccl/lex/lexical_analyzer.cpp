@@ -15,18 +15,17 @@ BOOST_AUTO_TEST_CASE(LexTest)
         i + 10; // test
         auto _ = "Hello, World!" + "test")"_sv;
 
-
     // NOLINTBEGIN
     auto analyzer = LexicalAnalyzer(
         handler::Cmd::instance(),
-        { { 1, R"([a-zA-Z_]+)" },
-          { 2, "[0-9]+" },
-          { 3, R"( '+')" },
-          { 4, R"(';')" },
-          { 5, R"('=')" },
-          { 6, R"("\""s)" },
-          { 7, R"('\n')" },
-          { 0, R"("//"co)" } });
+        { { 2, R"([a-zA-Z_]+)" },
+          { 3, "[0-9]+" },
+          { 4, R"( '+')" },
+          { 5, R"(';')" },
+          { 6, R"('=')" },
+          { 7, R"("\""s)" },
+          { 8, R"('\n')" },
+          { 9, R"("//"co)" } });
 
     auto tokenizer = analyzer.getTokenizer(text);
     // NOLINTEND

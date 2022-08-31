@@ -69,8 +69,11 @@ namespace ccl::lex::dot_item
 
         [[nodiscard]] auto canBeOptimized() const noexcept -> bool
         {
-            return recurrence.from == 0 && empty();
+            return not reversed && recurrence.from == 0 && empty();
         }
+
+        static auto alwaysRecognizedSuggestion(TextIterator &text_iterator, bool condition) -> void;
+        static auto neverRecognizedSuggestion(TextIterator &text_iterator, bool condition) -> void;
 
         [[nodiscard]] virtual auto empty() const noexcept -> bool = 0;
 

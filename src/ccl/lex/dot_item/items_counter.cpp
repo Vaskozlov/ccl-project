@@ -1,5 +1,4 @@
 #include <ccl/lex/dot_item/items_counter.hpp>
-#include <fmt/compile.h>
 
 namespace ccl::lex::dot_item
 {
@@ -51,6 +50,7 @@ namespace ccl::lex::dot_item
         checkForUnexpectedSpecialSymbols<"comment">();
         checkThereIsOneSequence<"comment">();
         --sequences;
+        ++comments;
     }
 
     auto ItemsCounter::checkAbilityToCreateSequence() -> void
@@ -65,8 +65,7 @@ namespace ccl::lex::dot_item
 
     auto ItemsCounter::checkAbilityToCreateTerminal() -> void
     {
-        if ((characters + strings + containers + sequences + unions + special_tokens) !=
-            special_tokens) {
+        if (sumAll() != special_tokens) {
             special_tokens = std::max<size_t>(special_tokens, 1);
             checkForUnexpectedSpecialSymbols<"special symbol">();// just for the same error message
         }
@@ -108,7 +107,6 @@ namespace ccl::lex::dot_item
                 "delete string like items or do not use other items");
         }
     }
-
 
     auto ItemsCounter::throwItemCreationError(
         string_view item_name,

@@ -38,6 +38,8 @@ namespace ccl::lex::dot_item
     // NOLINTNEXTLINE recursive function
     auto Container::parseRule(TextIterator &rule_iterator) -> void
     {
+        checkId();
+
         auto counter = ItemsCounter{ rule_iterator };
         rule_iterator.skipCommentsAndLayout();
 
@@ -60,15 +62,15 @@ namespace ccl::lex::dot_item
     {
         switch (rule_iterator.getCurrentChar()) {
         case U'[':
-            emplaceItem(constructNewUnion(rule_iterator, items_counter));
+            emplaceItem(rule_iterator, constructNewUnion(rule_iterator, items_counter));
             break;
 
         case U'\"':
-            emplaceItem(constructNewSequence(rule_iterator, items_counter));
+            emplaceItem(rule_iterator, constructNewSequence(rule_iterator, items_counter));
             break;
 
         case U'(':
-            emplaceItem(constructNewItem(rule_iterator, items_counter));
+            emplaceItem(rule_iterator, constructNewItem(rule_iterator, items_counter));
             break;
 
         case U'\'':
@@ -225,9 +227,17 @@ namespace ccl::lex::dot_item
         }
     }
 
-    auto Container::emplaceItem(std::unique_ptr<BasicItem> &&item) -> void
+    auto Container::emplaceItem(TextIterator &rule_iterator, std::unique_ptr<BasicItem> &&item)
+        -> void
     {
         if (not canBeOptimized()) {
+            auto item_recurrence = item->getRecurrence();
+
+            BasicItem::neverRecognizedSuggestion(
+                rule_iterator, item_recurrence.from == 0 && not reversed && not item->empty());
+
+            BasicItem::alwaysRecognizedSuggestion(rule_iterator, not reversed && item->empty());
+
             items.emplace_back(std::move(item));
         }
     }
@@ -249,6 +259,7 @@ namespace ccl::lex::dot_item
         if (items.empty()) {
             throwUnableToApply(
                 rule_iterator, "no items found", "set recurrence modifier after item");
+            return;
         }
 
         auto &last_item = items.back();
@@ -258,6 +269,7 @@ namespace ccl::lex::dot_item
                 rule_iterator,
                 "item already has recurrence",
                 "do not set recurrence more than once");
+            return;
         }
 
         last_item->setRecurrence(new_recurrence);
@@ -267,6 +279,7 @@ namespace ccl::lex::dot_item
     {
         if (items.empty()) {
             throwUnableToApply(rule_iterator, "no items to reverse");
+            return;
         }
 
         auto &last_item = items.back();
@@ -276,6 +289,7 @@ namespace ccl::lex::dot_item
                 rule_iterator,
                 "item already has reverse modifier",
                 "do not reverse it more than once");
+            return;
         }
 
         last_item->reverse();
@@ -289,6 +303,7 @@ namespace ccl::lex::dot_item
                 rule_iterator,
                 "string or character expected, but got sequence",
                 "add string or character modifier to the sequence");
+            return;
         }
 
         auto postfix_elem =
@@ -305,7 +320,12 @@ namespace ccl::lex::dot_item
                 rule_iterator,
                 "item without postfix modifier exists after items with it",
                 suggestion);
+            return;
         }
+
+        BasicItem::neverRecognizedSuggestion(rule_iterator, not counter.hasAny() && not reversed);
+
+        BasicItem::alwaysRecognizedSuggestion(rule_iterator, not counter.hasAny() && reversed);
     }
 
     auto Container::findContainerEnd(TextIterator &rule_iterator, string_view repr) -> size_t
@@ -320,6 +340,15 @@ namespace ccl::lex::dot_item
         return *bracket_index;
     }
 
+    auto Container::checkId() const -> void
+    {
+        if (ReservedTokenType::contains(id)) {
+            throw UnrecoverableError{
+                "reserved token type (0 and 1 are reserved for EOI and BAD TOKEN)"
+            };
+        }
+    }
+
     auto Container::checkAbilityToCreatePrefixPostfix(TextIterator &rule_iterator) -> void
     {
         if (not main_item) {
@@ -327,10 +356,12 @@ namespace ccl::lex::dot_item
                 rule_iterator,
                 "you are not allowed to create prefixes or postfixes inside other dot items",
                 "create them only in main item");
+            return;
         }
 
         if (items.empty()) {
             throwUnableToApply(rule_iterator, "there are not any items to apply prefix/postfix");
+            return;
         }
 
         auto &last_item = items.back();
@@ -338,11 +369,13 @@ namespace ccl::lex::dot_item
         if (last_item->hasPrefix()) {
             throwUnableToApply(
                 rule_iterator, "item already has prefix modifier", "do not add it more than once");
+            return;
         }
 
         if (last_item->hasPostfix()) {
             throwUnableToApply(
                 rule_iterator, "item already has postfix modifier", "do not add it more than once");
+            return;
         }
     }
 

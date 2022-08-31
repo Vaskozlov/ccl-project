@@ -3,13 +3,15 @@
 
 using namespace ccl::string_view_literals;
 
-auto C_RULE = R"(
+constexpr auto C_RULE = R"(
 CLASS_NAME = Test
 
-[ARITHMETIC_OPERATOR]
+{ARITHMETIC_OPERATOR}
 ADD: '+'
 SUB: '-
 MUL '*'
+IDENTIFIER: ""
+TEST: []
 
 )"_sv;
 

@@ -8,12 +8,12 @@ using namespace text;
 BOOST_AUTO_TEST_CASE(LexicalAnalyzerSequence, *utf::depends_on("ContainerSequence"))
 {
     auto analyzer = LexicalAnalyzer(
-        ExceptionHandler::instance(), { { 1, R"("abz"p"10")" }, { 2, R"("10""abz"p)" } });
+        ExceptionHandler::instance(), { { 2, R"("abz"p"10")" }, { 3, R"("10""abz"p)" } });
 
     auto tokenizer = analyzer.getTokenizer(R"(abz10 10abz)");
     auto token = tokenizer.yield();
 
-    BOOST_ASSERT(token.getId() == 1);
+    BOOST_ASSERT(token.getId() == 2);
     BOOST_ASSERT(token.getRepr() == R"(abz10)");
     BOOST_ASSERT(token.getValue() == "abz10");
     BOOST_ASSERT(token.getPrefixes().size() == 1);
@@ -21,7 +21,7 @@ BOOST_AUTO_TEST_CASE(LexicalAnalyzerSequence, *utf::depends_on("ContainerSequenc
 
     token = tokenizer.yield();
 
-    BOOST_ASSERT(token.getId() == 2);
+    BOOST_ASSERT(token.getId() == 3);
     BOOST_ASSERT(token.getRepr() == R"(10abz)");
     BOOST_ASSERT(token.getValue() == "10abz");
     BOOST_ASSERT(token.getPostfixes().size() == 1);

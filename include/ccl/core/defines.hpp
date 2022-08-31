@@ -7,6 +7,8 @@
 
 #define CCL_DECL [[nodiscard]] constexpr
 
+// NOLINTBEGIN
+
 #define CCL_PERFECT_FORWARDING(Repr, Type)                                                         \
     template<typename Repr = Type>                                                                 \
     requires std::is_convertible_v<Repr, Type>
@@ -19,6 +21,14 @@
     template<typename Repr1 = Type1, typename Repr2 = Type2, typename Repr3 = Type3>               \
     requires std::is_convertible_v<Repr1, Type1> && std::is_convertible_v<Repr2, Type2> &&         \
         std::is_convertible_v<Repr3, Type3>
+
+// NOLINTEND
+
+#define CCL_STRX(x) #x
+#define CCL_STR(x) CCL_STRX(x)
+#define CCL_JOIN_STR(x, y) CCL_STR(x##y)
+#define CCL_FORCE_EXPAND(x, y) CCL_CONCATENATE(x, y)
+#define CCL_CONCATENATE(x, y) x##y
 
 #if INTPTR_MAX == INT32_MAX
 #    define CCL_64BIT false

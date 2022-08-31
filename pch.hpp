@@ -29,6 +29,6 @@
 #include <ostream>
 #include <sstream>
 
-#include <fmt/format.h>
+#include "include/ccl/ccl.hpp"
 
 #include <boost/container/small_vector.hpp>

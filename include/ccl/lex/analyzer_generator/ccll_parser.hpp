@@ -45,6 +45,10 @@ namespace ccl::lex::parser
 
         auto completeBlock() -> void;
 
+        auto exceptRuleEnd() -> void;
+
+        auto recoverFromError() -> void;
+
         auto parsingError(
             string_view expected_types, GenToken given_token, string_view suggestion = {}) -> void;
 

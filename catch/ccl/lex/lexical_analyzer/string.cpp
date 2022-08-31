@@ -10,11 +10,10 @@ BOOST_AUTO_TEST_SUITE(
 
 BOOST_AUTO_TEST_CASE(LexicalAnalyzerBasicString)
 {
-    auto analyzer = LexicalAnalyzer{ ExceptionHandler::instance(), { { 1, R"("\""s)" } } };
+    auto analyzer = LexicalAnalyzer{ ExceptionHandler::instance(), { { 2, R"("\""s)" } } };
     auto tokenizer = analyzer.getTokenizer(R"("some string")");
     auto token = tokenizer.yield();
 
-    BOOST_ASSERT(token.getId() == 1);
     BOOST_ASSERT(token.getRepr() == R"("some string")");
     BOOST_ASSERT(token.getValue() == "some string");
     BOOST_ASSERT(token.getPrefixes().empty());
@@ -23,11 +22,10 @@ BOOST_AUTO_TEST_CASE(LexicalAnalyzerBasicString)
 
 BOOST_AUTO_TEST_CASE(LexicalAnalyzerRawString)
 {
-    auto analyzer = LexicalAnalyzer{ ExceptionHandler::instance(), { { 1, R"( "R\"(:)\""m )" } } };
+    auto analyzer = LexicalAnalyzer{ ExceptionHandler::instance(), { { 2, R"( "R\"(:)\""m )" } } };
     auto tokenizer = analyzer.getTokenizer("R\"(some\nstring)\"");
     auto token = tokenizer.yield();
 
-    BOOST_ASSERT(token.getId() == 1);
     BOOST_ASSERT(token.getRepr() == "R\"(some\nstring)\"");
     BOOST_ASSERT(token.getValue() == "some\nstring");
     BOOST_ASSERT(token.getPrefixes().empty());

@@ -93,6 +93,12 @@ namespace ccl::lex::dot_item
         {
             return lor(hasStrings(), hasCharacters());
         }
+
+        [[nodiscard]] auto hasAny() const noexcept -> bool
+        {
+            return sumAll() != 0;
+        }
+
         auto add(item::UnionType /* unused */) -> void;
         auto add(item::ContainerType /* unused */) -> void;
         auto add(item::SequenceType /* unused */) -> void;
@@ -102,6 +108,12 @@ namespace ccl::lex::dot_item
         auto add(item::CommentType /* unused */) -> void;
 
     private:
+        auto sumAll() const noexcept -> size_t
+        {
+            return strings + characters + unions + sequences + containers + special_tokens +
+                   comments;
+        }
+
         auto checkAbilityToCreateSequence() -> void;
         auto checkAbilityToCreateTerminal() -> void;
 
@@ -126,6 +138,7 @@ namespace ccl::lex::dot_item
         size_t sequences{};
         size_t containers{};
         size_t special_tokens{};
+        size_t comments{};
 
     private:
         text::TextIterator &text_iterator;

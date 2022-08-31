@@ -24,12 +24,17 @@ namespace ccl::lex::dot_item
 
         consteval static auto star() noexcept -> Recurrence
         {
-            return { 0, std::numeric_limits<size_t>::max() };
+            return { 0, max() };
         }
 
         consteval static auto plus() noexcept -> Recurrence
         {
-            return { 1, std::numeric_limits<size_t>::max() };
+            return { 1, max() };
+        }
+
+        consteval static auto max() noexcept -> size_t
+        {
+            return std::numeric_limits<size_t>::max();
         }
 
         [[nodiscard]] auto inRange(size_t value) const noexcept

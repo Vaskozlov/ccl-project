@@ -1,5 +1,5 @@
 #include <ccl/lex/analyzer_generator/ccll_parser.hpp>
-#include <fmt/format.h>
+#include <iostream>
 
 namespace ccl::lex::parser
 {
@@ -14,14 +14,14 @@ namespace ccl::lex::parser
                 token_stack.push(std::move(token));
 
                 if (not parseDeclaration()) {
-                    return false;
+                    recoverFromError();
                 }
 
                 break;
 
-            case GenToken::ANGLE_OPENING:
+            case GenToken::CURLY_OPENING:
                 if (not parseBlockDefinition()) {
-                    return false;
+                    recoverFromError();
                 }
 
                 break;
@@ -115,6 +115,8 @@ namespace ccl::lex::parser
         token_stack.pop();
 
         rules.emplace_back(current_block, name.getValue(), rule.getValue());
+
+        exceptRuleEnd();
     }
 
     auto CcllParser::completeDirectiveDeclaration() -> void
@@ -126,12 +128,14 @@ namespace ccl::lex::parser
         token_stack.pop();
 
         directives.emplace_back(directive.getValue(), directive_value.getValue());
+
+        exceptRuleEnd();
     }
 
     auto CcllParser::checkRule(text::TextIterator &rule) -> void
     {
         try {
-            auto container = dot_item::Container{ std::move(rule), 0xFF, analysis_shared };
+            auto container = dot_item::Container{ std::move(rule), 2, analysis_shared };
         } catch (const UnrecoverableError & /* unused */) {}
     }
 
@@ -154,7 +158,7 @@ namespace ccl::lex::parser
         auto token = tokenizer.yield();
         auto token_id = token.getId();
 
-        if (token_id == GenToken::ANGLE_CLOSING) {
+        if (token_id == GenToken::CURLY_CLOSING) {
             completeBlock();
             return true;
         }
@@ -169,6 +173,39 @@ namespace ccl::lex::parser
         token_stack.pop();
 
         current_block = block_name.getValue();
+
+        exceptRuleEnd();
+    }
+
+    auto CcllParser::exceptRuleEnd() -> void
+    {
+        auto token = tokenizer.yield();
+        auto token_id = token.getId();
+
+        switch (token_id) {
+        case GenToken::EOI:
+        case GenToken::NEW_LINE:
+            break;
+        default:
+            parsingError("new line or end of input", token_id);
+        }
+    }
+
+    auto CcllParser::recoverFromError() -> void
+    {
+        while (true) {
+            auto token = tokenizer.yield();
+            auto token_id = token.getId();
+
+            switch (token_id) {
+            case GenToken::EOI:
+            case GenToken::NEW_LINE:
+                return;
+
+            default:
+                break;
+            }
+        }
     }
 
     auto CcllParser::parsingError(

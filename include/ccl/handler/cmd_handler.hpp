@@ -3,8 +3,6 @@
 
 #include <ccl/handler/exception_handler.hpp>
 #include <ccl/text/text_iterator.hpp>
-#include <fmt/color.h>
-#include <fmt/format.h>
 #include <iostream>
 
 namespace ccl::handler

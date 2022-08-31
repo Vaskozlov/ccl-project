@@ -114,7 +114,7 @@ namespace ccl::lex::dot_item
         auto constructCommentOrCharacter(TextIterator &rule_iterator, ItemsCounter &items_counter)
             -> void;
 
-        auto emplaceItem(std::unique_ptr<BasicItem> &&item) -> void;
+        auto emplaceItem(TextIterator &rule_iterator, std::unique_ptr<BasicItem> &&item) -> void;
 
         auto addPrefixPostfix() -> void;
 
@@ -125,6 +125,8 @@ namespace ccl::lex::dot_item
         auto postCreationCheck(TextIterator &rule_iterator, const ItemsCounter &counter) -> void;
 
         static auto findContainerEnd(TextIterator &rule_iterator, string_view repr) -> size_t;
+
+        auto checkId() const -> void;
 
         auto checkAbilityToCreatePrefixPostfix(TextIterator &rule_iterator) -> void;
 

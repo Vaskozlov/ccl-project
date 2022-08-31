@@ -2,7 +2,6 @@
 #define CCL_PROJECT_CONTAINER_STRING_HPP
 
 #include <ccl/lex/dot_item/basic_item.hpp>
-#include <fmt/format.h>
 
 namespace ccl::lex::dot_item
 {
@@ -52,6 +51,7 @@ namespace ccl::lex::dot_item
         auto
             checkForUnexpectedEnd(TextIterator &rule_iterator, bool is_escaping, char32_t chr) const
             -> void;
+
         auto checkSequenceArguments(TextIterator &rule_iterator) const -> void;
 
         static auto throwEmptyStringEnd(TextIterator &rule_iterator) -> void;

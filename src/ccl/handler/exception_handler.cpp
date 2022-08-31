@@ -1,3 +1,4 @@
+#include <ccl/handler/cmd_handler.hpp>
 #include <ccl/handler/exception_handler.hpp>
 
 namespace ccl
@@ -38,11 +39,16 @@ namespace ccl
         onHandle(error);
     }
 
+    // NOLINTNEXTLINE recursive call
     auto ExceptionHandler::onHandle(const ExceptionT *error) -> void
     {
+        static auto cmd_handler = handler::Cmd{};
+
         if (error->getCriticality() >= ExceptionCriticality::CRITICAL) {
             throw ExceptionT(*error);
         }
+
+        cmd_handler.handle(error);
     }
 
 }// namespace ccl

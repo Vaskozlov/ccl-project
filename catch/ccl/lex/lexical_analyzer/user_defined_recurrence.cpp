@@ -11,12 +11,12 @@ BOOST_AUTO_TEST_CASE(
 {
     auto analyzer = LexicalAnalyzer{
         ExceptionHandler::instance(),
-        { { 1, R"([a-z]{1, 3}[a-z])" } },
+        { { 2, R"([a-z]{1, 3}[a-z])" } },
     };
     auto tokenizer = analyzer.getTokenizer(R"(abcd)");
 
     DEBUG_VAR token = tokenizer.yield();
 
-    BOOST_ASSERT(token.getId() == 1);
+    BOOST_ASSERT(token.getId() == 2);
     BOOST_ASSERT(token.getRepr() == "abcd");
 }

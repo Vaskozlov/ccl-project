@@ -168,9 +168,9 @@ namespace ccl::text
 
             if (exception_handler == nullptr) {
                 throw exception;
-            } else {
-                exception_handler->handle(exception);
             }
+
+            exception_handler->handle(exception);
         }
 
     private:

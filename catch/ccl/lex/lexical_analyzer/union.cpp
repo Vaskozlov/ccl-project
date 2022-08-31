@@ -9,14 +9,14 @@ BOOST_AUTO_TEST_CASE(LexicalAnalyzerUnion, *utf::depends_on("ContainerUnion"))
 {
     auto analyzer = LexicalAnalyzer{
         ExceptionHandler::instance(),
-        { { 1, R"([a-z]p+[0-9]+)" }, { 2, R"([0-9]+[a-z]p*)" } },
+        { { 2, R"([a-z]p+[0-9]+)" }, { 3, R"([0-9]+[a-z]p*)" } },
     };
 
     auto tokenizer = analyzer.getTokenizer(R"(20 abz10 10abz)");
 
     auto token = tokenizer.yield();
 
-    BOOST_ASSERT(token.getId() == 2);
+    BOOST_ASSERT(token.getId() == 3);
     BOOST_ASSERT(token.getRepr() == "20");
     BOOST_ASSERT(token.getValue() == "20");
     BOOST_ASSERT(token.getPrefixes().empty());
@@ -24,7 +24,7 @@ BOOST_AUTO_TEST_CASE(LexicalAnalyzerUnion, *utf::depends_on("ContainerUnion"))
 
     token = tokenizer.yield();
 
-    BOOST_ASSERT(token.getId() == 1);
+    BOOST_ASSERT(token.getId() == 2);
     BOOST_ASSERT(token.getRepr() == R"(abz10)");
     BOOST_ASSERT(token.getValue() == "abz10");
     BOOST_ASSERT(token.getPrefixes().size() == 1);
@@ -33,7 +33,7 @@ BOOST_AUTO_TEST_CASE(LexicalAnalyzerUnion, *utf::depends_on("ContainerUnion"))
 
     token = tokenizer.yield();
 
-    BOOST_ASSERT(token.getId() == 2);
+    BOOST_ASSERT(token.getId() == 3);
     BOOST_ASSERT(token.getRepr() == R"(10abz)");
     BOOST_ASSERT(token.getValue() == "10abz");
     BOOST_ASSERT(token.getPrefixes().empty());

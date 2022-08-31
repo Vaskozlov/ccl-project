@@ -11,12 +11,12 @@ namespace ccl::lex
         handler::Cmd::instance(),
         { { GenToken::IDENTIFIER, "[a-zA-Z_]+[a-zA-Z0-9_]*" },
           { GenToken::INTEGER, "[0-9]+" },
-          { GenToken::RULE_DECLARATION, R"([\t\n=[[ ]^+[\n]*^)" },
+          { GenToken::RULE_DECLARATION, R"(["'([]+[\n]*^)" },
           { GenToken::NEW_LINE, R"('\n')" },
           { GenToken::COLUMN, R"(':')" },
           { GenToken::ASSIGN, R"('=')" },
-          { GenToken::ANGLE_OPENING, R"('[')" },
-          { GenToken::ANGLE_CLOSING, R"(']')" } }
+          { GenToken::CURLY_OPENING, R"('{')" },
+          { GenToken::CURLY_CLOSING, R"('}')" } }
     };
 
     static auto readFile(const std::filesystem::path &path) -> std::string

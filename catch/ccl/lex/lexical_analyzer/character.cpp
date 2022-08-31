@@ -11,12 +11,11 @@ BOOST_AUTO_TEST_SUITE(
 
 BOOST_AUTO_TEST_CASE(LexicalAnalyzerCharacterMatching)
 {
-    auto analyzer = LexicalAnalyzer{ ExceptionHandler::instance(), { { 1, R"("\'"c)" } } };
+    auto analyzer = LexicalAnalyzer{ ExceptionHandler::instance(), { { 2, R"("\'"c)" } } };
     auto tokenizer = analyzer.getTokenizer(R"('A')");
 
     DEBUG_VAR token = tokenizer.yield();
 
-    BOOST_ASSERT(token.getId() == 1);
     BOOST_ASSERT(token.getRepr() == "'A'");
     BOOST_ASSERT(token.getValue() == "A");
     BOOST_ASSERT(token.getPrefixes().empty());
@@ -25,12 +24,11 @@ BOOST_AUTO_TEST_CASE(LexicalAnalyzerCharacterMatching)
 
 BOOST_AUTO_TEST_CASE(LexicalAnalyzerUtfCharacterMatching)
 {
-    auto analyzer = LexicalAnalyzer{ ExceptionHandler::instance(), { { 1, R"("\'"c)" } } };
+    auto analyzer = LexicalAnalyzer{ ExceptionHandler::instance(), { { 2, R"("\'"c)" } } };
     auto tokenizer = analyzer.getTokenizer(R"('\uFFFF')");
 
     DEBUG_VAR token = tokenizer.yield();
 
-    BOOST_ASSERT(token.getId() == 1);
     BOOST_ASSERT(token.getRepr() == "'\\uFFFF'");
     BOOST_ASSERT(token.getValue() == "\uFFFF");
     BOOST_ASSERT(token.getPrefixes().empty());
@@ -39,7 +37,7 @@ BOOST_AUTO_TEST_CASE(LexicalAnalyzerUtfCharacterMatching)
 
 BOOST_AUTO_TEST_CASE(LexicalAnalyzerEmptyCharacter)
 {
-    auto analyzer = LexicalAnalyzer{ ExceptionHandler::instance(), { { 1, R"("\'"c)" } } };
+    auto analyzer = LexicalAnalyzer{ ExceptionHandler::instance(), { { 2, R"("\'"c)" } } };
     auto tokenizer = analyzer.getTokenizer(R"('')");
 
     DEBUG_VAR token = tokenizer.yield();
@@ -49,7 +47,7 @@ BOOST_AUTO_TEST_CASE(LexicalAnalyzerEmptyCharacter)
 
 BOOST_AUTO_TEST_CASE(LexicalAnalyzerTwoCharacters)
 {
-    auto analyzer = LexicalAnalyzer{ ExceptionHandler::instance(), { { 1, R"("\'"c)" } } };
+    auto analyzer = LexicalAnalyzer{ ExceptionHandler::instance(), { { 2, R"("\'"c)" } } };
     auto tokenizer = analyzer.getTokenizer(R"('AA')");
 
     DEBUG_VAR token = tokenizer.yield();

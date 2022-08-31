@@ -10,7 +10,7 @@
 namespace ccl::lex
 {
     // NOLINTNEXTLINE
-    CCL_ENUM(ReservedTokenType, u32, EOI = 0, BAD_TOKEN = 1);
+    CCL_ENUM(ReservedTokenType, size_t, EOI = 0, BAD_TOKEN = 1);
 
     struct TokenAttributes
     {
