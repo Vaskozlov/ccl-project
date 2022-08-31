@@ -31,8 +31,8 @@ namespace ccl
 
     template<typename T, typename CharT>
     concept StringLike = std::is_same_v<T, BasicStringView<CharT>> ||
-                         std::is_same_v<T, std::basic_string_view<CharT>> ||
-                         std::is_same_v<T, std::basic_string<CharT>>;
+        std::is_same_v<T, std::basic_string_view<CharT>> ||
+        std::is_same_v<T, std::basic_string<CharT>>;
 
     template<CharacterLiteral CharT>
     struct BasicStringView
