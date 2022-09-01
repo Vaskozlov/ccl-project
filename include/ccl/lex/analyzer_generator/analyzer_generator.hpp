@@ -33,16 +33,16 @@ namespace ccl::lex
     const inline std::map<GenToken, string_view> GenTokenNames{
         { GenToken::EOI, "EOI" },
         { GenToken::BAD_TOKEN, "BAD TOKEN" },
-        { GenToken::RULE_DECLARATION, "RULE DECLARATION" },
-        { GenToken::IDENTIFIER, "IDENTIFIER" },
-        { GenToken::INTEGER, "INTEGER" },
-        { GenToken::NEW_LINE, "NEW LINE" },
-        { GenToken::COLUMN, "COLUMN" },
-        { GenToken::ASSIGN, "ASSIGN" },
-        { GenToken::CURLY_OPENING, "CURLY OPENING" },
-        { GenToken::CURLY_CLOSING, "CURLY CLOSING" },
-        { GenToken::SEQUENCE, "SEQUENCE" },
-        { GenToken::UNION, "UNION" },
+        { GenToken::RULE_DECLARATION, "rule declaration" },
+        { GenToken::IDENTIFIER, "identifier" },
+        { GenToken::INTEGER, "integer" },
+        { GenToken::NEW_LINE, "new line" },
+        { GenToken::COLUMN, "column" },
+        { GenToken::ASSIGN, "assign" },
+        { GenToken::CURLY_OPENING, "curly opening" },
+        { GenToken::CURLY_CLOSING, "curly closing" },
+        { GenToken::SEQUENCE, "sequence" },
+        { GenToken::UNION, "union" },
     };
 
     class AnalyzerGenerator

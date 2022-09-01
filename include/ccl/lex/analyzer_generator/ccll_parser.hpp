@@ -45,7 +45,7 @@ namespace ccl::lex::parser
 
         auto completeBlock() -> void;
 
-        auto exceptRuleEnd() -> void;
+        auto expectRuleEnd() -> void;
 
         auto recoverFromError() -> void;
 

@@ -2,6 +2,7 @@
 #include <ccl/lex/analyzer_generator/analyzer_generator.hpp>
 #include <ccl/lex/analyzer_generator/static_generator.hpp>
 #include <ccl/lex/lexical_analyzer.hpp>
+#include <fstream>
 #include <sstream>
 
 namespace ccl::lex
@@ -24,7 +25,7 @@ namespace ccl::lex
         auto stream = std::ifstream(path);
 
         if (!stream.is_open()) {
-            fmt::print("Error: cannot open file {}\n", path);
+            fmt::print("Error: cannot open file {}\n", path.string());
             std::cout.flush();
             throw InvalidArgument("Failed to open file");
         }

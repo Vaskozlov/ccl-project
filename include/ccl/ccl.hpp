@@ -11,7 +11,6 @@
 #include <fmt/color.h>
 #include <fmt/compile.h>
 #include <fmt/format.h>
-#include <fmt/std.h>
 
 #include <ccl/core/concepts.hpp>
 #include <ccl/core/defines.hpp>

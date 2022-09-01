@@ -6,7 +6,7 @@
 namespace ccl
 {
     template<CharacterLiteral CharT>
-    constexpr auto HexadecimalCharsToInt =
+    constexpr inline auto HexadecimalCharsToInt =
         Flatmap<CharT, u16, 22>{ { '0', 0 },  { '1', 1 },  { '2', 2 },  { '3', 3 },  { '4', 4 },
                                  { '5', 5 },  { '6', 6 },  { '7', 7 },  { '8', 8 },  { '9', 9 },
                                  { 'a', 10 }, { 'b', 11 }, { 'c', 12 }, { 'd', 13 }, { 'e', 14 },
@@ -14,7 +14,7 @@ namespace ccl
                                  { 'E', 14 }, { 'F', 15 } };
 
     template<CharacterLiteral CharT>
-    constexpr auto IntToHexadecimalChars =
+    constexpr inline auto IntToHexadecimalChars =
         std::array<CharT, 16>{ '0', '1', '2', '3', '4', '5', '6', '7',
                                '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 

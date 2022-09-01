@@ -65,4 +65,19 @@ namespace ccl::text
             NotationEscapingSymbolizer{ text_iterator, max_times, notation_power, need_all_chars };
         return notation_escape_symbolizer.get();
     }
+
+    auto TextIterator::throwToHandle(
+        const TextIterator &iterator_location, ExceptionCriticality criticality,
+        string_view message, string_view suggestion) -> void
+    {
+        auto exception = TextIteratorException(
+            criticality, iterator_location.getLocation(), iterator_location.getWorkingLine(),
+            message, suggestion);
+
+        if (exception_handler == nullptr) {
+            throw std::move(exception);
+        }
+
+        exception_handler->handle(exception);
+    }
 }// namespace ccl::text

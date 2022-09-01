@@ -33,8 +33,9 @@ namespace ccl::lex::parser
                 return true;
 
             default:
-                parsingError("identifier or angle opening (`[`)", token_id);
-                return false;
+                parsingError("identifier or block definition (`{`)", token_id);
+                recoverFromError();
+                break;
             }
         }
     }
@@ -59,51 +60,37 @@ namespace ccl::lex::parser
 
     auto CcllParser::parseRuleDeclaration() -> bool
     {
-        while (true) {
-            auto iterator_copy = tokenizer.getIterator();
-            auto token = tokenizer.yield();
-            auto token_id = token.getId();
+        auto iterator_copy = tokenizer.getIterator();
+        auto token = tokenizer.yield();
+        auto token_id = token.getId();
 
-            switch (token_id) {
-            case GenToken::RULE_DECLARATION:
-                iterator_copy.setEnd(token.getRepr().end());
-                checkRule(iterator_copy);
+        if (token_id == GenToken::RULE_DECLARATION) {
+            iterator_copy.setEnd(token.getRepr().end());
+            checkRule(iterator_copy);
 
-                token_stack.push(std::move(token));
-                completeRuleDeclaration();
+            token_stack.push(std::move(token));
+            completeRuleDeclaration();
 
-                return true;
-
-            case GenToken::NEW_LINE:
-                break;
-
-            default:
-                parsingError("regular expression", token_id);
-                return false;
-            }
+            return true;
         }
+
+        parsingError("regular expression", token_id);
+        return false;
     }
 
     auto CcllParser::parseDirectiveDeclaration() -> bool
     {
-        while (true) {
-            auto token = tokenizer.yield();
-            auto token_id = token.getId();
+        auto token = tokenizer.yield();
+        auto token_id = token.getId();
 
-            switch (token_id) {
-            case GenToken::IDENTIFIER:
-                token_stack.push(std::move(token));
-                completeDirectiveDeclaration();
-                return true;
-
-            case GenToken::NEW_LINE:
-                break;
-
-            default:
-                parsingError("identifier", token_id);
-                return false;
-            }
+        if (token_id == GenToken::IDENTIFIER) {
+            token_stack.push(std::move(token));
+            completeDirectiveDeclaration();
+            return true;
         }
+
+        parsingError("identifier", token_id);
+        return false;
     }
 
     auto CcllParser::completeRuleDeclaration() -> void
@@ -116,7 +103,7 @@ namespace ccl::lex::parser
 
         rules.emplace_back(current_block, name.getValue(), rule.getValue());
 
-        exceptRuleEnd();
+        expectRuleEnd();
     }
 
     auto CcllParser::completeDirectiveDeclaration() -> void
@@ -129,7 +116,7 @@ namespace ccl::lex::parser
 
         directives.emplace_back(directive.getValue(), directive_value.getValue());
 
-        exceptRuleEnd();
+        expectRuleEnd();
     }
 
     auto CcllParser::checkRule(text::TextIterator &rule) -> void
@@ -163,7 +150,7 @@ namespace ccl::lex::parser
             return true;
         }
 
-        parsingError("angle closing (`]`)", token_id);
+        parsingError("expected block end (`}`)", token_id);
         return false;
     }
 
@@ -174,10 +161,10 @@ namespace ccl::lex::parser
 
         current_block = block_name.getValue();
 
-        exceptRuleEnd();
+        expectRuleEnd();
     }
 
-    auto CcllParser::exceptRuleEnd() -> void
+    auto CcllParser::expectRuleEnd() -> void
     {
         auto token = tokenizer.yield();
         auto token_id = token.getId();
@@ -213,6 +200,7 @@ namespace ccl::lex::parser
     {
         auto error_message =
             fmt::format("expected {}, got {}", expected_types, GenTokenNames.at(given_token));
+
         tokenizer.throwException(ExceptionCriticality::PANIC, error_message, suggestion);
     }
 }// namespace ccl::lex::parser

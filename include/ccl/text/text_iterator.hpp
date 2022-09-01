@@ -19,9 +19,6 @@ namespace ccl::text
         std::string multiline_end{};
     };
 
-    CCL_EXCEPTION(CommentSkipperException, TextIteratorException);
-    CCL_EXCEPTION(NotationEscapingSymbolizerException, TextIteratorException);
-
     class TextIterator : public CrtpBasicTextIterator<TextIterator>
     {
     private:
@@ -33,13 +30,6 @@ namespace ccl::text
         class EscapingSymbolizer;
         class NotationEscapingSymbolizer;
 
-        explicit TextIterator(
-            string_view input, ExceptionHandler &exception_handler_ = ExceptionHandler::instance(),
-            CommentTokens comment_tokens_ = {}, string_view filename = {})
-          : Base(input), location(filename), line_tracker(input),
-            comment_tokens(std::move(comment_tokens_)), exception_handler(&exception_handler_)
-        {}
-
         [[nodiscard]] static auto
             doEscapeSymbolizing(TextIterator &text_iterator, const extra_symbols_t &extra_symbols_)
                 -> char32_t;
@@ -47,6 +37,14 @@ namespace ccl::text
         [[nodiscard]] static auto calculateNotationEscapeSymbol(
             TextIterator &text_iterator, u16 max_times, u16 notation_power, bool need_all_chars)
             -> char32_t;
+
+
+        explicit TextIterator(
+            string_view input, ExceptionHandler &exception_handler_ = ExceptionHandler::instance(),
+            CommentTokens comment_tokens_ = {}, string_view filename = {})
+          : Base(input), location(filename), line_tracker(input),
+            comment_tokens(std::move(comment_tokens_)), exception_handler(&exception_handler_)
+        {}
 
         [[nodiscard]] auto getLocation() const noexcept -> const Location &
         {
@@ -160,18 +158,7 @@ namespace ccl::text
 
         auto throwToHandle(
             const TextIterator &iterator_location, ExceptionCriticality criticality,
-            string_view message, string_view suggestion = {}) -> void
-        {
-            auto exception = TextIteratorException(
-                criticality, iterator_location.getLocation(), iterator_location.getWorkingLine(),
-                message, suggestion);
-
-            if (exception_handler == nullptr) {
-                throw exception;
-            }
-
-            exception_handler->handle(exception);
-        }
+            string_view message, string_view suggestion = {}) -> void;
 
     private:
         Location location{};

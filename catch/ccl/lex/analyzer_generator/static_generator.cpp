@@ -7,6 +7,7 @@ constexpr auto C_RULE = R"(
 CLASS_NAME = Test
 
 {ARITHMETIC_OPERATOR}
+[]
 ADD: '+'
 SUB: '-
 MUL '*'
@@ -17,5 +18,5 @@ TEST: []
 
 BOOST_AUTO_TEST_CASE(StaticGeneration)
 {
-    ccl::lex::AnalyzerGenerator::generateStaticVersion("C.rule", C_RULE);
+    ccl::lex::AnalyzerGenerator::generateStaticVersion(__FILE__, C_RULE);
 }
