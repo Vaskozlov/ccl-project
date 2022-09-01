@@ -16,7 +16,7 @@ namespace ccl
 
         auto at(char32_t chr) const noexcept -> bool
         {
-            if (chr < small_character_optimization_size) {
+            if (chr < small_storage_size) {
                 return small_storage.test(chr);
             }
 
@@ -25,7 +25,7 @@ namespace ccl
 
         auto set(char32_t chr, bool value = true) -> void
         {
-            if (chr < small_character_optimization_size) {
+            if (chr < small_storage_size) {
                 small_storage.set(chr, value);
             } else {
                 if (value) {
@@ -46,9 +46,9 @@ namespace ccl
         UtfSet() = default;
 
     private:
-        static constexpr auto small_character_optimization_size = static_cast<size_t>(128);
+        static constexpr auto small_storage_size = static_cast<size_t>(128);
 
-        std::bitset<small_character_optimization_size> small_storage{};
+        std::bitset<small_storage_size> small_storage{};
         std::unordered_set<char32_t> storage{};
     };
 }// namespace ccl

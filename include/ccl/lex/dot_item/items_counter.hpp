@@ -1,13 +1,11 @@
 #ifndef CCL_PROJECT_ITEMS_COUNTER_HPP
 #define CCL_PROJECT_ITEMS_COUNTER_HPP
 
-#include <ccl/format/format.hpp>
+#include <ccl/const_string.hpp>
 #include <ccl/text/text_iterator.hpp>
 
 namespace ccl::lex::dot_item
 {
-    CCL_EXCEPTION(DotItemException, text::TextIteratorException);
-
     namespace item
     {
         struct UnionType : std::true_type
@@ -18,7 +16,7 @@ namespace ccl::lex::dot_item
         {
         };
 
-        struct DotItemType : std::true_type
+        struct ContainerType : std::true_type
         {
         };
 
@@ -40,7 +38,7 @@ namespace ccl::lex::dot_item
 
         constexpr auto Union = UnionType{};
         constexpr auto Sequence = SequenceType{};
-        constexpr auto DotItem = DotItemType{};
+        constexpr auto Container = ContainerType{};
         constexpr auto String = StringType{};
         constexpr auto Character = CharacterType{};
         constexpr auto Terminal = TerminalType{};
@@ -81,22 +79,28 @@ namespace ccl::lex::dot_item
             return sequences != 0;
         }
 
-        [[nodiscard]] auto hasDotItems() const noexcept -> bool
+        [[nodiscard]] auto hasContainers() const noexcept -> bool
         {
-            return dot_items != 0;
+            return containers != 0;
         }
 
         [[nodiscard]] auto hasTerminals() const noexcept -> bool
         {
-            return terminals != 0;
+            return special_tokens != 0;
         }
 
         [[nodiscard]] auto hasStrOrChar() const noexcept -> bool
         {
             return lor(hasStrings(), hasCharacters());
         }
+
+        [[nodiscard]] auto hasAny() const noexcept -> bool
+        {
+            return sumAll() != 0;
+        }
+
         auto add(item::UnionType /* unused */) -> void;
-        auto add(item::DotItemType /* unused */) -> void;
+        auto add(item::ContainerType /* unused */) -> void;
         auto add(item::SequenceType /* unused */) -> void;
         auto add(item::StringType /* unused */) -> void;
         auto add(item::CharacterType /* unused */) -> void;
@@ -104,28 +108,37 @@ namespace ccl::lex::dot_item
         auto add(item::CommentType /* unused */) -> void;
 
     private:
+        auto sumAll() const noexcept -> size_t
+        {
+            return strings + characters + unions + sequences + containers + special_tokens +
+                   comments;
+        }
+
         auto checkAbilityToCreateSequence() -> void;
         auto checkAbilityToCreateTerminal() -> void;
 
         template<ConstString ItemName>
-        auto checkThereIsOneSequence() -> void;
+        CCL_INLINE auto checkThereIsOneSequence() -> void;
 
         template<ConstString ItemName>
-        CCL_INLINE auto checkForUnexpectedTerminals() -> void;
+        CCL_INLINE auto checkForUnexpectedSpecialSymbols() -> void;
 
         template<ConstString ItemName>
         CCL_INLINE auto checkNoStringOrChars() -> void;
 
-        template<ConstString ItemName, ConstString Message, ConstString Suggestion>
-        CCL_INLINE auto throwItemCreationError() -> void;
+        auto throwItemCreationError(
+            string_view item_name,
+            string_view message,
+            string_view suggestion) -> void;
 
     public:
         size_t strings{};
         size_t characters{};
         size_t unions{};
         size_t sequences{};
-        size_t dot_items{};
-        size_t terminals{};
+        size_t containers{};
+        size_t special_tokens{};
+        size_t comments{};
 
     private:
         text::TextIterator &text_iterator;

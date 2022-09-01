@@ -2,7 +2,7 @@
 
 namespace ccl::text
 {
-    auto TextIterator::onMove(char8_t chr) -> void
+    auto TextIterator::onMove(char chr) -> void
     {
         location.intermediateNext(chr);
     }
@@ -14,9 +14,9 @@ namespace ccl::text
         line_tracker.next(chr);
     }
 
-    auto TextIterator::onUtfError(char8_t /* chr */) -> void
+    auto TextIterator::utfError(char /* chr */) -> void
     {
-        throwException<TextIteratorException>(u8"invalid utf symbol");
+        throwPanicError("invalid utf symbol");
         throw UnrecoverableError{ "unable to recover, because of invalid utf symbol" };
     }
 
@@ -54,7 +54,7 @@ namespace ccl::text
         -> char32_t
     {
         auto symbolizer = EscapingSymbolizer{ text_iterator, extra_symbols_ };
-        return symbolizer.match();
+        return symbolizer.matchNextChar();
     }
 
     auto TextIterator::calculateNotationEscapeSymbol(
@@ -64,5 +64,20 @@ namespace ccl::text
         auto notation_escape_symbolizer =
             NotationEscapingSymbolizer{ text_iterator, max_times, notation_power, need_all_chars };
         return notation_escape_symbolizer.get();
+    }
+
+    auto TextIterator::throwToHandle(
+        const TextIterator &iterator_location, ExceptionCriticality criticality,
+        string_view message, string_view suggestion) -> void
+    {
+        auto exception = TextIteratorException(
+            criticality, iterator_location.getLocation(), iterator_location.getWorkingLine(),
+            message, suggestion);
+
+        if (exception_handler == nullptr) {
+            throw std::move(exception);
+        }
+
+        exception_handler->handle(exception);
     }
 }// namespace ccl::text

@@ -2,6 +2,20 @@
 
 namespace ccl::lex::dot_item
 {
+    auto BasicItem::alwaysRecognizedSuggestion(TextIterator &text_iterator, bool condition) -> void
+    {
+        if (condition) {
+            text_iterator.throwSuggestion("item will be always recognized", "delete it");
+        }
+    }
+
+    auto BasicItem::neverRecognizedSuggestion(TextIterator &text_iterator, bool condition) -> void
+    {
+        if (condition) {
+            text_iterator.throwSuggestion("item will never be recognized");
+        }
+    }
+
     auto
         BasicItem::scan(const TextIterator &text_iterator, const Token &token, bool main_scan) const
         -> std::optional<std::pair<TextIterator, Token>>
@@ -11,7 +25,7 @@ namespace ccl::lex::dot_item
         auto local_token = Token{ token };
 
         while (times < recurrence.to) {
-            if (scanIterationCall(local_iterator, local_token)) {
+            if (not local_iterator.isEnd() && scanIterationCall(local_iterator, local_token)) {
                 ++times;
             } else {
                 break;

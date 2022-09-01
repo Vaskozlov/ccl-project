@@ -1,8 +1,6 @@
 #ifndef CCL_PROJECT_STRING_VIEW_HPP
 #define CCL_PROJECT_STRING_VIEW_HPP
 
-#include <algorithm>
-#include <array>
 #include <ccl/ccl.hpp>
 #include <numeric>
 #include <optional>
@@ -32,7 +30,7 @@ namespace ccl
     using wstring_view = BasicStringView<wchar_t>;
 
     template<typename T, typename CharT>
-    concept StringType = std::is_same_v<T, BasicStringView<CharT>> ||
+    concept StringLike = std::is_same_v<T, BasicStringView<CharT>> ||
         std::is_same_v<T, std::basic_string_view<CharT>> ||
         std::is_same_v<T, std::basic_string<CharT>>;
 
@@ -246,7 +244,7 @@ namespace ccl
             return this->operator==(BasicStringView{ other });
         }
 
-        CCL_DECL auto operator==(const StringType<CharT> auto &other) const noexcept -> bool
+        CCL_DECL auto operator==(const StringLike<CharT> auto &other) const noexcept -> bool
         {
             return std::ranges::equal(*this, other);
         }
@@ -256,7 +254,7 @@ namespace ccl
             return this->operator<=>(BasicStringView{ other });
         }
 
-        CCL_DECL auto operator<=>(const StringType<CharT> auto &other) const noexcept
+        CCL_DECL auto operator<=>(const StringLike<CharT> auto &other) const noexcept
             -> std::weak_ordering
         {
             auto max_length = std::min(size(), std::size(other));
@@ -291,11 +289,11 @@ namespace ccl
         {}
 
         // NOLINTNEXTLINE
-        constexpr BasicStringView(const StringType<CharT> auto &str) noexcept
+        constexpr BasicStringView(const StringLike<CharT> auto &str) noexcept
           : string{ std::data(str) }, length{ std::size(str) }
         {}
 
-        static constexpr size_t npos = std::numeric_limits<size_t>::max();
+        static constexpr auto npos = std::string_view::npos;
 
     private:
         template<typename T>
@@ -340,5 +338,15 @@ namespace ccl
         }
     }// namespace string_view_literals
 }// namespace ccl
+
+
+template<>
+struct fmt::formatter<ccl::string_view> : fmt::formatter<std::string_view>
+{
+    auto format(const ccl::string_view &str, format_context &ctx)
+    {
+        return formatter<std::string_view>::format(static_cast<std::string_view>(str), ctx);
+    }
+};
 
 #endif /* CCL_PROJECT_STRING_VIEW_HPP*/

@@ -22,13 +22,6 @@ namespace ccl
 
     template<typename T>
     concept CharacterArray = std::is_pointer_v<T> || std::is_array_v<T>;
-
-    template<typename T>
-    concept Pairable = requires(T pair)
-    {
-        pair.first;
-        pair.second;
-    };
 }// namespace ccl
 
 #endif /* CCL_PROJECT_CONCEPTS_HPP */

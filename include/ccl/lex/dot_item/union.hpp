@@ -6,13 +6,10 @@
 
 namespace ccl::lex::dot_item
 {
-    CCL_EXCEPTION(UnionException, text::TextIteratorException);
-
     class Union : public BasicItem
     {
     public:
         using typename BasicItem::CommentTokens;
-        using typename BasicItem::ExceptionAccumulator;
         using typename BasicItem::TextIterator;
 
         Union(TextIterator &rule_iterator_, AnalysisShared &analysis_shared_);
@@ -39,7 +36,7 @@ namespace ccl::lex::dot_item
                 -> void;
 
         static auto checkUnionBegin(TextIterator &rule_iterator) -> void;
-        static auto checkForClosedRange(TextIterator &rule_iterator, bool is_open) -> void;
+        static auto checkForClosedRange(TextIterator &rule_iterator, bool is_ranged_opened) -> void;
 
         static auto throwUnterminatedUnion(TextIterator &rule_iterator) -> void;
         static auto throwUnterminatedRangeException(TextIterator &rule_iterator) -> void;

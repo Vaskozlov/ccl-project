@@ -5,7 +5,7 @@ namespace ccl::lex::dot_item
     using namespace ccl::string_view_literals;
 
     Sequence::Sequence(
-        SequenceFlags flags_, u8string_view str_begin_, u8string_view str_end_,
+        SequenceFlags flags_, string_view str_begin_, string_view str_end_,
         TextIterator &rule_iterator_, AnalysisShared &analysis_shared_)
       : BasicItem(analysis_shared_), str_begin(str_begin_), str_end(str_end_),
         sequence_flags(flags_)
@@ -74,13 +74,12 @@ namespace ccl::lex::dot_item
         }
 
         if (isEoF(chr)) {
-            throwUnterminatedString(rule_iterator, u8"unterminated sequence");
+            throwUnterminatedString(rule_iterator, "unterminated sequence");
         }
 
         if (land(chr == '\n', not sequence_flags.multiline)) {
-            auto message = u8"new line is reached, but sequence has not been terminated"_sv;
-            auto suggestion =
-                fmt::format<u8"use multiline sequence or close it with `{}`">(str_end);
+            auto message = "new line is reached, but sequence has not been terminated"_sv;
+            auto suggestion = fmt::format("use multiline sequence or close it with `{}`", str_end);
 
             throwUnterminatedString(rule_iterator, message, suggestion);
         }
@@ -110,30 +109,30 @@ namespace ccl::lex::dot_item
 
     auto Sequence::throwEmptyStringBegin(TextIterator &rule_iterator) -> void
     {
-        rule_iterator.throwException<SequenceException>(u8"sequence item begin cannot be empty"_sv);
-        throw UnrecoverableError{ "unreachable error in SequenceType" };
+        rule_iterator.throwPanicError("sequence item begin cannot be empty"_sv);
+        throw UnrecoverableError{ "unrecoverable error in SequenceType" };
     }
 
     auto Sequence::throwEmptyStringEnd(TextIterator &rule_iterator) -> void
     {
-        rule_iterator.throwException<SequenceException>(u8"sequence item end cannot be empty"_sv);
-        throw UnrecoverableError{ "unreachable error in SequenceType" };
+        rule_iterator.throwPanicError("sequence item end cannot be empty"_sv);
+        throw UnrecoverableError{ "unrecoverable error in SequenceType" };
     }
 
     auto Sequence::throwUnterminatedString(
         TextIterator &rule_iterator,
-        u8string_view message,
-        u8string_view suggestion) -> void
+        string_view message,
+        string_view suggestion) -> void
     {
-        rule_iterator.throwException<SequenceException>(message, suggestion);
-        throw UnrecoverableError{ "unreachable error in SequenceType" };
+        rule_iterator.throwPanicError(message, suggestion);
+        throw UnrecoverableError{ "unrecoverable error in SequenceType" };
     }
 
     auto Sequence::throwStringBeginException(TextIterator &rule_iterator) const -> void
     {
-        auto message = fmt::format<u8"string literal must begin with {}">(str_begin);
+        auto message = fmt::format("string literal must begin with {}", str_begin);
 
-        rule_iterator.throwException<SequenceException>(message);
-        throw UnrecoverableError{ "unreachable error in SequenceType" };
+        rule_iterator.throwPanicError(message);
+        throw UnrecoverableError{ "unrecoverable error in SequenceType" };
     }
 }// namespace ccl::lex::dot_item

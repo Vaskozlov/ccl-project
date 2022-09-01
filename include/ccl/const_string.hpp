@@ -1,9 +1,6 @@
 #ifndef CCL_PROJECT_CONST_STRING_HPP
 #define CCL_PROJECT_CONST_STRING_HPP
 
-#include <algorithm>
-#include <array>
-#include <ccl/ccl.hpp>
 #include <ccl/string_view.hpp>
 
 namespace ccl
@@ -11,8 +8,8 @@ namespace ccl
     template<size_t N>
     struct ConstString
     {
-        using value_type = char8_t;
-        using storage_t = std::array<char8_t, N>;
+        using value_type = char;
+        using storage_t = std::array<char, N>;
         using const_iterator = typename storage_t::const_iterator;
         using const_reverse_iterator = typename storage_t::const_reverse_iterator;
 
@@ -66,17 +63,17 @@ namespace ccl
             return size() == 0;
         }
 
-        CCL_DECL operator u8string_view() const noexcept// NOLINT
+        CCL_DECL operator string_view() const noexcept// NOLINT implicit conversion
         {
             return { string.data(), size() };
         }
 
-        CCL_DECL auto at(size_t index) const -> char8_t
+        CCL_DECL auto at(size_t index) const -> char
         {
             return string.at(index);
         }
 
-        CCL_DECL auto operator[](size_t index) const -> char8_t
+        CCL_DECL auto operator[](size_t index) const noexcept -> char
         {
             return string[index];
         }
@@ -85,11 +82,11 @@ namespace ccl
             -> std::weak_ordering = default;
 
         // NOLINTNEXTLINE
-        consteval ConstString(const char8_t (&str)[N]) : string{ std::to_array(str) }
+        consteval ConstString(const char (&str)[N]) : string{ std::to_array(str) }
         {}
 
         // NOLINTNEXTLINE
-        consteval ConstString(const std::array<char8_t, N> &str) : string{ str }
+        consteval ConstString(const std::array<char, N> &str) : string{ str }
         {}
 
         storage_t string{};

@@ -1,18 +1,14 @@
-#ifndef CCL_PROJECT_DOT_ITEM_STRING_HPP
-#define CCL_PROJECT_DOT_ITEM_STRING_HPP
+#ifndef CCL_PROJECT_CONTAINER_STRING_HPP
+#define CCL_PROJECT_CONTAINER_STRING_HPP
 
 #include <ccl/lex/dot_item/basic_item.hpp>
-#include <fmt/format.h>
 
 namespace ccl::lex::dot_item
 {
-    CCL_EXCEPTION(SequenceException, text::TextIteratorException);
-
     class Sequence : public BasicItem
     {
     private:
         using typename BasicItem::CommentTokens;
-        using typename BasicItem::ExceptionAccumulator;
         using typename BasicItem::TextIterator;
 
     public:
@@ -23,21 +19,21 @@ namespace ccl::lex::dot_item
         };
 
         Sequence(
-            SequenceFlags flags_, u8string_view str_begin_, u8string_view str_end,
+            SequenceFlags flags_, string_view str_begin_, string_view str_end,
             TextIterator &rule_iterator_, AnalysisShared &analysis_shared_);
 
         Sequence(
-            SequenceFlags flags_, u8string_view str_begin_, TextIterator &rule_iterator_,
+            SequenceFlags flags_, string_view str_begin_, TextIterator &rule_iterator_,
             AnalysisShared &analysis_shared_)
           : Sequence(flags_, str_begin_, str_begin_, rule_iterator_, analysis_shared_)
         {}
 
-        [[nodiscard]] auto get() const noexcept -> const std::u8string &
+        [[nodiscard]] auto get() const noexcept -> const std::string &
         {
             return sequence_value;
         }
 
-        [[nodiscard]] auto getByRef() noexcept -> std::u8string &
+        [[nodiscard]] auto getByRef() noexcept -> std::string &
         {
             return sequence_value;
         }
@@ -55,6 +51,7 @@ namespace ccl::lex::dot_item
         auto
             checkForUnexpectedEnd(TextIterator &rule_iterator, bool is_escaping, char32_t chr) const
             -> void;
+
         auto checkSequenceArguments(TextIterator &rule_iterator) const -> void;
 
         static auto throwEmptyStringEnd(TextIterator &rule_iterator) -> void;
@@ -62,14 +59,14 @@ namespace ccl::lex::dot_item
         auto throwStringBeginException(TextIterator &rule_iterator) const -> void;
         static auto throwUnterminatedString(
             TextIterator &rule_iterator,
-            u8string_view message,
-            u8string_view suggestion = {}) -> void;
+            string_view message,
+            string_view suggestion = {}) -> void;
 
-        u8string_view str_begin{};
-        u8string_view str_end{};
-        std::u8string sequence_value{};
+        string_view str_begin{};
+        string_view str_end{};
+        std::string sequence_value{};
         SequenceFlags sequence_flags{};
     };
 }// namespace ccl::lex::dot_item
 
-#endif /* CCL_PROJECT_DOT_ITEM_STRING_HPP */
+#endif /* CCL_PROJECT_CONTAINER_STRING_HPP */

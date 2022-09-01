@@ -5,21 +5,26 @@ namespace ccl::lex
     using namespace std::string_literals;
 
     LexicalAnalyzer::LexicalAnalyzer(
-        const std::initializer_list<std::pair<size_t, u8string_view>> &rules_,
-        u8string_view filename, const CommentTokens &comment_tokens_)
+        ExceptionHandler &exception_handler_,
+        const std::initializer_list<std::pair<size_t, string_view>> &rules_, string_view filename,
+        const CommentTokens &comment_tokens_)
+      : exception_handler(exception_handler_)
     {
         for (const auto &[id, rule] : rules_) {
-            errors += createDotItem(rule, id, comment_tokens_, filename);
+            createContainer(rule, id, comment_tokens_, filename);
         }
     }
 
-    auto LexicalAnalyzer::createDotItem(
-        u8string_view rule, size_t id, const CommentTokens &comment_tokens, u8string_view filename)
-        -> size_t
+    auto LexicalAnalyzer::createContainer(
+        string_view rule, size_t id, const CommentTokens &comment_tokens, string_view filename)
+        -> void
     {
-        items.emplace_back(
-            TextIterator{ rule, &exception_accumulator, comment_tokens, filename }, id, shared);
-        return 0;
+        auto container = Container(
+            TextIterator{ rule, exception_handler, comment_tokens, filename }, id, shared);
+
+        if (not container.empty()) {
+            items.emplace(std::move(container));
+        }
     }
 
 }// namespace ccl::lex

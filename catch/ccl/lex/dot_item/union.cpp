@@ -9,11 +9,11 @@ using namespace dot_item;
 // NOLINTNEXTLINE
 static auto shared = AnalysisShared{};
 
-BOOST_AUTO_TEST_SUITE(DotItemUnion)
+BOOST_AUTO_TEST_SUITE(ContainerUnion)
 
 BOOST_AUTO_TEST_CASE(UnionWithOneElem)
 {
-    auto text_iterator = TextIterator{ u8"[a]" };
+    auto text_iterator = TextIterator{ "[a]" };
     text_iterator.next();
 
     auto union_item = Union(text_iterator, shared);
@@ -26,7 +26,7 @@ BOOST_AUTO_TEST_CASE(UnionWithOneElem)
 
 BOOST_AUTO_TEST_CASE(UnionWithMultipleElems)
 {
-    auto text_iterator = TextIterator{ u8"[a-z_]" };
+    auto text_iterator = TextIterator{ "[a-z_]" };
     text_iterator.next();
 
     auto union_item = Union(text_iterator, shared);

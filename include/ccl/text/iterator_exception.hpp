@@ -1,14 +1,26 @@
 #ifndef CCL_PROJECT_TIM_EXCEPTION_HPP
 #define CCL_PROJECT_TIM_EXCEPTION_HPP
 
-#include <ccl/ccl.hpp>
-#include <ccl/format/format.hpp>
+#include <ccl/text/location.hpp>
 #include <string>
 
-namespace ccl::text
+namespace ccl
 {
     CCL_EXCEPTION(BasicTextIteratorException, CclException);
 
+    CCL_ENUM(// NOLINTNEXTLINE
+        ExceptionCriticality, u32, NONE = 0, SUGGESTION = 1, WARNING = 2, UNCRITICAL = 3,
+        CRITICAL = 4, PANIC = 5);
+
+    // NOLINTNEXTLINE
+    CCL_ENUM(AnalysationStage, u32, NONE = 0, LEXICAL_ANALYSIS = 1, PARSING = 2);
+
+    auto ExceptionCriticalityDescription(ExceptionCriticality criticality) noexcept
+        -> std::string_view;
+}// namespace ccl
+
+namespace ccl::text
+{
     class TextIteratorException : public BasicTextIteratorException
     {
     public:
@@ -22,24 +34,44 @@ namespace ccl::text
             return location.getColumn();
         }
 
+        [[nodiscard]] auto getFilename() const noexcept -> const string_view &
+        {
+            return location.getFilename();
+        }
+
         [[nodiscard]] auto getLocation() const noexcept -> const Location &
         {
             return location;
         }
 
-        [[nodiscard]] auto getWorkingLine() const noexcept -> const u8string_view &
+        [[nodiscard]] auto getWorkingLine() const noexcept -> const string_view &
         {
             return working_line;
         }
 
-        [[nodiscard]] auto getMessage() const noexcept -> u8string_view
+        [[nodiscard]] auto getMessage() const noexcept -> string_view
         {
             return message;
         }
 
-        [[nodiscard]] auto getSuggestion() const noexcept -> u8string_view
+        [[nodiscard]] auto getSuggestion() const noexcept -> string_view
         {
             return suggestion;
+        }
+
+        [[nodiscard]] auto getCriticality() const noexcept -> ExceptionCriticality
+        {
+            return criticality;
+        }
+
+        [[nodiscard]] auto getCriticalityDescription() const noexcept -> string_view
+        {
+            return ExceptionCriticalityDescription(criticality);
+        }
+
+        [[nodiscard]] auto getStage() const noexcept -> AnalysationStage
+        {
+            return stage;
         }
 
         [[nodiscard]] auto hasSuggestion() const noexcept -> bool
@@ -52,36 +84,34 @@ namespace ccl::text
         TextIteratorException() = default;
 
         TextIteratorException(
-            const Location &location_, const u8string_view &working_line_,
-            const u8string_view &message_, const u8string_view &suggestion_ = {})
+            ExceptionCriticality criticality_, const Location &location_,
+            const string_view &working_line_, const string_view &message_,
+            const string_view &suggestion_ = {})
           : location(location_), message(message_), suggestion(suggestion_),
-            working_line(working_line_)
+            working_line(working_line_), criticality(criticality_)
         {}
 
+        CCL_PERFECT_FORWARDING_2(T1, std::string, T2, std::string)
         TextIteratorException(
-            const Location &location_, const u8string_view &working_line_,
-            const std::u8string &message_, const std::u8string &suggestion_ = {})
-          : TextIteratorException{ location_, working_line_, u8string_view{ message_ },
-                                   u8string_view{ suggestion_ } }
+            ExceptionCriticality criticality_, const Location &location_,
+            const string_view &working_line_, T1 &&message_, T2 &&suggestion_ = {})
+          : location(location_), message(std::forward<T1>(message_)),
+            suggestion(std::forward<T2>(suggestion_)), working_line(working_line_),
+            criticality(criticality_)
         {}
 
-        TextIteratorException(
-            const Location &location_, const u8string_view &working_line_, const char8_t *message_,
-            const char8_t *suggestion_ = nullptr)
-          : TextIteratorException(
-                location_, working_line_, u8string_view{ message_ }, u8string_view{ suggestion_ })
-        {}
-
-        [[nodiscard]] auto createFullMessage() const -> std::u8string;
+        [[nodiscard]] auto createFullMessage() const -> std::string;
 
     private:
-        auto addSuggestion(std::u8string &full_message) const -> void;
-        auto addArrowToError(std::u8string &full_message) const -> void;
+        auto addSuggestion(std::string &full_message) const -> void;
+        auto addArrowToError(std::string &full_message) const -> void;
 
         Location location{};
-        std::u8string message{};
-        std::u8string suggestion{};
-        u8string_view working_line{};
+        std::string message{};
+        std::string suggestion{};
+        string_view working_line{};
+        ExceptionCriticality criticality{};
+        AnalysationStage stage{};
     };
 }// namespace ccl::text
 

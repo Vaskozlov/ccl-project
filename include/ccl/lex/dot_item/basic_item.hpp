@@ -3,7 +3,6 @@
 
 #include <ccl/lex/analysis_shared.hpp>
 #include <ccl/lex/dot_item/recurrence.hpp>
-#include <ccl/lex/exception.hpp>
 #include <ccl/lex/token.hpp>
 #include <ccl/text/text_iterator.hpp>
 #include <optional>
@@ -15,7 +14,6 @@ namespace ccl::lex::dot_item
     public:
         using TextIterator = text::TextIterator;
         using CommentTokens = text::CommentTokens;
-        using ExceptionAccumulator = analysis::ExceptionAccumulator<text::TextIteratorException>;
 
         explicit BasicItem(AnalysisShared &analysis_shared_) noexcept
           : analysis_shared{ analysis_shared_ }
@@ -71,8 +69,11 @@ namespace ccl::lex::dot_item
 
         [[nodiscard]] auto canBeOptimized() const noexcept -> bool
         {
-            return recurrence.from == 0 && empty();
+            return not reversed && recurrence.from == 0 && empty();
         }
+
+        static auto alwaysRecognizedSuggestion(TextIterator &text_iterator, bool condition) -> void;
+        static auto neverRecognizedSuggestion(TextIterator &text_iterator, bool condition) -> void;
 
         [[nodiscard]] virtual auto empty() const noexcept -> bool = 0;
 

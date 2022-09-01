@@ -1,5 +1,5 @@
-#ifndef CCL_PROJECT_DOT_ITEM_HPP
-#define CCL_PROJECT_DOT_ITEM_HPP
+#ifndef CCL_PROJECT_CONTAINER_HPP
+#define CCL_PROJECT_CONTAINER_HPP
 
 #include <boost/container/small_vector.hpp>
 #include <ccl/lex/analysis_shared.hpp>
@@ -9,7 +9,7 @@
 
 namespace ccl::lex::dot_item
 {
-    class DotItem : public BasicItem
+    class Container : public BasicItem
     {
     private:
         using BasicItem::analysis_shared;
@@ -17,13 +17,12 @@ namespace ccl::lex::dot_item
         using BasicItem::recurrence;
 
         using typename BasicItem::CommentTokens;
-        using typename BasicItem::ExceptionAccumulator;
         using typename BasicItem::TextIterator;
 
         using storage_t = boost::container::small_vector<std::unique_ptr<BasicItem>, 4>;
 
     public:
-        DotItem(
+        Container(
             const TextIterator &rule_iterator_, size_t id_, AnalysisShared &analysis_shared_,
             bool main_item_ = true)
           : BasicItem(analysis_shared_), id(id_), main_item(main_item_)
@@ -32,7 +31,7 @@ namespace ccl::lex::dot_item
             parseRule(rule_iterator);
         }
 
-        DotItem(
+        Container(
             TextIterator &&rule_iterator_, size_t id_, AnalysisShared &analysis_shared_,
             bool main_item_ = true)
           : BasicItem(analysis_shared_), id(id_), main_item(main_item_)
@@ -40,12 +39,22 @@ namespace ccl::lex::dot_item
             parseRule(rule_iterator_);
         }
 
-        DotItem(
+        Container(
             TextIterator &rule_iterator_, size_t id_, AnalysisShared &analysis_shared_,
             bool main_item_ = false)
           : BasicItem(analysis_shared_), id(id_), main_item(main_item_)
         {
             parseRule(rule_iterator_);
+        }
+
+        [[nodiscard]] auto operator==(const Container &other) const noexcept
+        {
+            return id == other.id;
+        }
+
+        [[nodiscard]] auto operator<=>(const Container &other) const noexcept
+        {
+            return id <=> other.id;
         }
 
         [[nodiscard]] auto getId() const noexcept -> size_t
@@ -64,8 +73,7 @@ namespace ccl::lex::dot_item
         }
 
     private:
-        template<typename T>
-        requires std::is_base_of_v<BasicItem, T>
+        template<std::derived_from<BasicItem> T>
         auto unsafeGetLastItemAs() noexcept -> T *
         {
             // NOLINTNEXTLINE unsafe cast to increase performance
@@ -106,7 +114,7 @@ namespace ccl::lex::dot_item
         auto constructCommentOrCharacter(TextIterator &rule_iterator, ItemsCounter &items_counter)
             -> void;
 
-        auto emplaceItem(std::unique_ptr<BasicItem> &&item) -> void;
+        auto emplaceItem(TextIterator &rule_iterator, std::unique_ptr<BasicItem> &&item) -> void;
 
         auto addPrefixPostfix() -> void;
 
@@ -116,13 +124,14 @@ namespace ccl::lex::dot_item
 
         auto postCreationCheck(TextIterator &rule_iterator, const ItemsCounter &counter) -> void;
 
-        static auto findDotItemEnd(TextIterator &rule_iterator, u8string_view repr) -> size_t;
+        static auto findContainerEnd(TextIterator &rule_iterator, string_view repr) -> size_t;
+
+        auto checkId() const -> void;
 
         auto checkAbilityToCreatePrefixPostfix(TextIterator &rule_iterator) -> void;
 
-        template<ConstString Reason>
-        CCL_INLINE static auto
-            throwUnableToApply(TextIterator &rule_iterator, u8string_view suggestion = {}) -> void;
+        static auto throwUnableToApply(
+            TextIterator &rule_iterator, string_view reason, string_view suggestion = {}) -> void;
 
         static auto throwUndefinedAction(TextIterator &rule_iterator) -> void;
 
@@ -132,4 +141,4 @@ namespace ccl::lex::dot_item
     };
 }// namespace ccl::lex::dot_item
 
-#endif /* CCL_PROJECT_DOT_ITEM_HPP */
+#endif /* CCL_PROJECT_CONTAINER_HPP */

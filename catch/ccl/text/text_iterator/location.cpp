@@ -7,7 +7,7 @@ using namespace string_view_literals;
 
 BOOST_AUTO_TEST_CASE(TextIteratorLocationTrackingOnEmptyInput)
 {
-    auto text_iterator = TextIterator{ u8""_sv };
+    auto text_iterator = TextIterator{ ""_sv };
 
     BOOST_ASSERT(text_iterator.getLine() == 1);
     BOOST_ASSERT(text_iterator.getColumn() == 0);
@@ -25,7 +25,7 @@ BOOST_AUTO_TEST_CASE(TextIteratorLocationTrackingOnEmptyInput)
 
 BOOST_AUTO_TEST_CASE(TextIteratorLocationTrackingWithUtfSymbols)
 {
-    auto text_iterator = TextIterator{ u8"Hi\n\U0001f000World!"_sv };
+    auto text_iterator = TextIterator{ "Hi\n\U0001f000World!"_sv };
 
     BOOST_ASSERT(text_iterator.getLine() == 1);
     BOOST_ASSERT(text_iterator.getColumn() == 0);

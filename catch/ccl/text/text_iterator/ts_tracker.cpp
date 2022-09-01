@@ -7,7 +7,7 @@ using namespace string_view_literals;
 
 BOOST_AUTO_TEST_CASE(TextIteratorTabsAndSpaceTracking)
 {
-    auto text_iterator = TextIterator{ u8"\t\t  H i\nWorld!"_sv };
+    auto text_iterator = TextIterator{ "\t\t  H i\nWorld!"_sv };
 
     text_iterator.moveToCleanChar();
     text_iterator.next();

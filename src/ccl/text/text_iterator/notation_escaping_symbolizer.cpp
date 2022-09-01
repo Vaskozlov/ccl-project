@@ -13,8 +13,6 @@ namespace ccl::text
                 break;
             }
 
-            checkCharacterOverflow();
-
             result = static_cast<char32_t>(result << notation_power);
             result += static_cast<char32_t>(HexadecimalCharsToInt<char32_t>.at(chr));
         }
@@ -23,22 +21,22 @@ namespace ccl::text
     }
 
     auto TextIterator::NotationEscapingSymbolizer::createSuggestionNotEnoughChars(
-        u16 chars_count) const -> std::u8string
+        u16 chars_count) const -> std::string
     {
-        auto suggestion_message = static_cast<std::u8string>(text_iterator.getWorkingLine());
+        auto suggestion_message = static_cast<std::string>(text_iterator.getWorkingLine());
         insertExtraZerosToNotEnoughMessage(chars_count, suggestion_message);
         return suggestion_message;
     }
 
     auto TextIterator::NotationEscapingSymbolizer::insertExtraZerosToNotEnoughMessage(
         u16 chars_count,
-        std::u8string &message) const -> void
+        std::string &message) const -> void
     {
         auto column = text_iterator.getColumn();
         auto insertion_size = static_cast<size_t>(max_times - chars_count);
         auto insertion_position = column - chars_count;
 
-        message.insert(insertion_position, insertion_size, u8'0');
+        message.insert(insertion_position, insertion_size, '0');
     }
 
     // NOLINTNEXTLINE method can not be static
@@ -55,15 +53,6 @@ namespace ccl::text
                HexadecimalCharsToInt<char32_t>.at(chr) >= (1U << notation_power);
     }
 
-    auto TextIterator::NotationEscapingSymbolizer::checkCharacterOverflow() const -> void
-    {
-        constexpr auto size_in_bits = sizeof(char32_t) * 8;
-
-        if ((result >> (size_in_bits - notation_power)) != 0) {
-            throwCharacterOverflow();
-        }
-    }
-
     auto TextIterator::NotationEscapingSymbolizer::checkAllCharsUsage(u16 chars_count) const -> void
     {
         if (land(need_all_chars, chars_count != max_times)) {
@@ -71,25 +60,15 @@ namespace ccl::text
         }
     }
 
-    auto TextIterator::NotationEscapingSymbolizer::throwCharacterOverflow() const -> void
-    {
-        using namespace std::string_view_literals;
-
-        text_iterator.throwException<NotationEscapingSymbolizerException>(
-            u8"character literal overflow"sv);
-    }
-
     auto TextIterator::NotationEscapingSymbolizer::throwNotEnoughCharsException(
         u16 chars_count) const -> void
     {
-        auto exception_message =
-            fmt::format<u8"expected {} characters, but only {} of them were provided">(
-                max_times, chars_count);
+        auto exception_message = fmt::format(
+            "expected {} characters, but only {} of them were provided", max_times, chars_count);
 
         auto suggestion_message = createSuggestionNotEnoughChars(chars_count);
 
-        text_iterator.throwException<NotationEscapingSymbolizerException>(
-            exception_message, suggestion_message);
+        text_iterator.throwUncriticalError(exception_message, suggestion_message);
     }
 
     TextIterator::NotationEscapingSymbolizer::NotationEscapingSymbolizer(

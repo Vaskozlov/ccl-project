@@ -6,35 +6,35 @@ using namespace text;
 
 BOOST_AUTO_TEST_CASE(LocationTracking)
 {
-    auto location = Location{ u8"none" };
+    auto location = Location{ "none" };
 
     BOOST_ASSERT(location.getLine() == 1U);
     BOOST_ASSERT(location.getColumn() == 0U);
     BOOST_ASSERT(location.getRealColumn() == 0U);
-    BOOST_ASSERT(location.getFilename() == u8"none");
+    BOOST_ASSERT(location.getFilename() == "none");
 
-    location.intermediateNext(u8'a');
+    location.intermediateNext('a');
     location.next(U'a');
 
     BOOST_ASSERT(location.getLine() == 1U);
     BOOST_ASSERT(location.getColumn() == 1U);
     BOOST_ASSERT(location.getRealColumn() == 1U);
 
-    location.intermediateNext(u8'\n');
+    location.intermediateNext('\n');
     location.next(U'\n');
 
     BOOST_ASSERT(location.getLine() == 2U);
     BOOST_ASSERT(location.getColumn() == 0U);
     BOOST_ASSERT(location.getRealColumn() == 0U);
 
-    location.intermediateNext(0b1100'0010);// NOLINT utf8 2 byte character
+    location.intermediateNext(static_cast<char>(0b1100'0010));// NOLINT utf8 2 byte character
 
     BOOST_ASSERT(location.getLine() == 2U);
     BOOST_ASSERT(location.getColumn() == 0U);
     BOOST_ASSERT(location.getRealColumn() == 1U);
 
-    location.intermediateNext(0b1000'0000);// NOLINT utf8 2 byte character end
-    location.next(U'a');                   // just some character
+    location.intermediateNext(static_cast<char>(0b1000'0000));// NOLINT utf8 2 byte character end
+    location.next(U'a');                                      // just some character
 
     BOOST_ASSERT(location.getLine() == 2U);
     BOOST_ASSERT(location.getColumn() == 1U);

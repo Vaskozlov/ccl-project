@@ -1,15 +1,15 @@
 #include <ccl/debug/debug_file.hpp>
-#include <ccl/lex/dot_item/dot_item.hpp>
+#include <ccl/lex/dot_item/container.hpp>
 
 using namespace ccl;
 using namespace text;
 using namespace lex::dot_item;
 
-BOOST_AUTO_TEST_SUITE(DotItemRecurrence)
+BOOST_AUTO_TEST_SUITE(ContainerRecurrence)
 
 BOOST_AUTO_TEST_CASE(RecurrenceBasicCase)
 {
-    auto text_iterator = TextIterator{ u8"{10, 20}" };
+    auto text_iterator = TextIterator{ "{10, 20}" };
     text_iterator.next();
 
     DEBUG_VAR recurrence = Recurrence{ text_iterator };
@@ -19,7 +19,7 @@ BOOST_AUTO_TEST_CASE(RecurrenceBasicCase)
 
 BOOST_AUTO_TEST_CASE(RecurrenceEmptyFirstArgument)
 {
-    auto text_iterator = TextIterator{ u8"{, 1}" };
+    auto text_iterator = TextIterator{ "{, 1}" };
     text_iterator.next();
 
     DEBUG_VAR recurrence = Recurrence{ text_iterator };
@@ -30,17 +30,17 @@ BOOST_AUTO_TEST_CASE(RecurrenceEmptyFirstArgument)
 
 BOOST_AUTO_TEST_CASE(RecurrenceFirstArgumentGreaterThanSecond)
 {
-    auto text_iterator = TextIterator{ u8"{2, 1}" };
+    auto text_iterator = TextIterator{ "{2, 1}" };
     text_iterator.next();
 
     BOOST_CHECK_EXCEPTION(
         Recurrence{ text_iterator },
-        RecurrenceException,
-        []([[maybe_unused]] const RecurrenceException &exception) {
+        text::TextIteratorException,
+        []([[maybe_unused]] const text::TextIteratorException &exception) {
             BOOST_ASSERT(exception.getColumn() == 1);
             BOOST_ASSERT(
                 exception.getMessage() ==
-                u8"the beginning of the recurrence (2) is greater than the end (1)");
+                "the beginning of the recurrence (2) is greater than the end (1)");
             return true;
         });
 }

@@ -7,17 +7,28 @@
 
 #define CCL_DECL [[nodiscard]] constexpr
 
-#define CCL_CONCATENATE(x, y) x##y
-#define CCL_FORCE_EXPAND(x, y) CCL_CONCATENATE(x, y)
-#define CCL_UNIQUE_IDENT CCL_FORCE_EXPAND(_cerblib_uid, __COUNTER__)
+// NOLINTBEGIN
 
 #define CCL_PERFECT_FORWARDING(Repr, Type)                                                         \
     template<typename Repr = Type>                                                                 \
     requires std::is_convertible_v<Repr, Type>
 
-#define CCL_PERFECT_FORWARDING_2(Repr1, Repr2, Type1, Type2)                                       \
+#define CCL_PERFECT_FORWARDING_2(Repr1, Type1, Repr2, Type2)                                       \
     template<typename Repr1 = Type1, typename Repr2 = Type2>                                       \
     requires std::is_convertible_v<Repr1, Type1> && std::is_convertible_v<Repr2, Type2>
+
+#define CCL_PERFECT_FORWARDING_3(Repr1, Type1, Repr2, Type2, Repr3, Type3)                         \
+    template<typename Repr1 = Type1, typename Repr2 = Type2, typename Repr3 = Type3>               \
+    requires std::is_convertible_v<Repr1, Type1> && std::is_convertible_v<Repr2, Type2> &&         \
+        std::is_convertible_v<Repr3, Type3>
+
+// NOLINTEND
+
+#define CCL_STRX(x) #x
+#define CCL_STR(x) CCL_STRX(x)
+#define CCL_JOIN_STR(x, y) CCL_STR(x##y)
+#define CCL_FORCE_EXPAND(x, y) CCL_CONCATENATE(x, y)
+#define CCL_CONCATENATE(x, y) x##y
 
 #if INTPTR_MAX == INT32_MAX
 #    define CCL_64BIT false
@@ -48,21 +59,5 @@
 #else
 #    define CCL_TRIVIAL_ABI
 #endif /* CCL_TRIVIAL_ABI */
-
-#define CCL_HAS_CONSTEXPR_STRING                                                                   \
-    __cpp_lib_constexpr_string >= 201907L && (!__clang__ || __clang_major__ >= 15)
-
-#define CCL_HAS_CONSTEXPR_VECTOR                                                                   \
-    __cpp_lib_constexpr_vector >= 201907L && (!__clang__ || __clang_major__ >= 15)
-
-// NOLINTBEGIN
-#define CCL_DERIVED_CONSTRUCTORS(Class)                                                            \
-    Class() = default;                                                                             \
-    Class(const Class &) = default;                                                                \
-    Class(Class &&) noexcept = default;                                                            \
-    ~Class() = default;                                                                            \
-    auto operator=(const Class &)->Class & = default;                                              \
-    auto operator=(Class &&) noexcept->Class & = default
-// NOLINTEND
 
 #endif /* CCL_PROJECT_DEFINES_HPP */

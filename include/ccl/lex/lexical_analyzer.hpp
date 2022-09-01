@@ -1,64 +1,87 @@
 #ifndef CCL_PROJECT_LEXICAL_ANALYZER_HPP
 #define CCL_PROJECT_LEXICAL_ANALYZER_HPP
 
-#include <ccl/lex/dot_item/dot_item.hpp>
-#include <deque>
+#include <ccl/lex/dot_item/container.hpp>
+#include <set>
 
 namespace ccl::lex
 {
     class LexicalAnalyzer
     {
     public:
-        using DotItem = dot_item::DotItem;
+        using Container = dot_item::Container;
         using BasicItem = dot_item::BasicItem;
         using TextIterator = typename BasicItem::TextIterator;
         using CommentTokens = typename BasicItem::CommentTokens;
-        using ExceptionAccumulator = typename BasicItem::ExceptionAccumulator;
 
         struct Tokenizer
         {
-            Tokenizer(LexicalAnalyzer &lexical_analyzer_, u8string_view text)
+            Tokenizer(
+                LexicalAnalyzer &lexical_analyzer_, string_view text, string_view filename_ = {})
               : lexical_analyzer(lexical_analyzer_),
                 text_iterator(
-                    text, &lexical_analyzer_.exception_accumulator,
-                    lexical_analyzer_.shared.comment_tokens)
+                    text, lexical_analyzer_.exception_handler,
+                    lexical_analyzer_.shared.comment_tokens, filename_)
             {}
+
+            Tokenizer(
+                LexicalAnalyzer &lexical_analyzer_, string_view text, string_view filename_,
+                ExceptionHandler &exception_handler_)
+              : lexical_analyzer(lexical_analyzer_),
+                text_iterator(
+                    text, exception_handler_, lexical_analyzer_.shared.comment_tokens, filename_)
+            {}
+
+            [[nodiscard]] auto getIterator() const -> const TextIterator &
+            {
+                return text_iterator;
+            }
+
+            [[nodiscard]] auto getExceptionHandler() -> ExceptionHandler &
+            {
+                return text_iterator.getExceptionHandler();
+            }
+
+            auto throwException(
+                ExceptionCriticality criticality, string_view message, string_view suggestion = {})
+                -> void
+            {
+                text_iterator.throwToHandle(text_iterator, criticality, message, suggestion);
+            }
 
             [[nodiscard]] auto yield() -> Token;
             [[nodiscard]] auto constructBadToken() -> Token;
 
         private:
-            const LexicalAnalyzer &lexical_analyzer;
+            LexicalAnalyzer &lexical_analyzer;
             TextIterator text_iterator;
         };
 
         LexicalAnalyzer(
-            const std::initializer_list<std::pair<size_t, u8string_view>> &rules_,
-            u8string_view filename = {}, const CommentTokens &comment_tokens_ = { u8"#" });
+            ExceptionHandler &exception_handler_,
+            const std::initializer_list<std::pair<size_t, string_view>> &rules_,
+            string_view filename = {}, const CommentTokens &comment_tokens_ = { "#" });
 
-        [[nodiscard]] auto getTokenizer(u8string_view text) -> Tokenizer
+        [[nodiscard]] auto getTokenizer(string_view text, string_view filename = {}) -> Tokenizer
         {
-            return { *this, text };
+            return { *this, text, filename };
         }
 
-        [[nodiscard]] auto getExceptionAccumulator() -> ExceptionAccumulator &
+        [[nodiscard]] auto
+            getTokenizer(string_view text, string_view filename, ExceptionHandler &handler)
+                -> Tokenizer
         {
-            return exception_accumulator;
-        }
-
-        [[nodiscard]] auto getExceptionAccumulator() const -> const ExceptionAccumulator &
-        {
-            return exception_accumulator;
+            return { *this, text, filename, handler };
         }
 
     private:
-        auto createDotItem(
-            u8string_view rule, size_t id, const CommentTokens &comment_tokens,
-            u8string_view filename) -> size_t;
+        auto createContainer(
+            string_view rule, size_t id, const CommentTokens &comment_tokens, string_view filename)
+            -> void;
 
-        std::deque<DotItem> items{};
+        std::set<Container> items;
         AnalysisShared shared{};
-        ExceptionAccumulator exception_accumulator{};
+        ExceptionHandler &exception_handler;
         size_t errors{};
     };
 }// namespace ccl::lex

@@ -1,4 +1,3 @@
-#include <ccl/ccl.hpp>
 #include <ccl/debug/debug_file.hpp>
 
 using namespace ccl;
@@ -25,6 +24,8 @@ BOOST_AUTO_TEST_CASE(TestEnumWithInt)
 
     BOOST_ASSERT(first_test_enum == 2);
     BOOST_ASSERT(second_test_enum == 1);
+
+    BOOST_ASSERT(TestIntEnum::contains(1));
 }
 
 BOOST_AUTO_TEST_CASE(TestEnumWithString)

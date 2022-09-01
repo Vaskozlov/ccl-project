@@ -13,7 +13,7 @@ namespace ccl::text
         Location() noexcept = default;
 
         constexpr explicit Location(
-            u8string_view filename_, size_t line_ = 1, size_t column_ = 0,
+            string_view filename_, size_t line_ = 1, size_t column_ = 0,
             size_t real_column_ = 0) noexcept
           : filename(filename_), line(line_), column(column_), real_column(real_column_)
         {}
@@ -33,14 +33,14 @@ namespace ccl::text
             return real_column;
         }
 
-        CCL_DECL auto getFilename() const noexcept -> const u8string_view &
+        CCL_DECL auto getFilename() const noexcept -> const string_view &
         {
             return filename;
         }
 
-        constexpr auto intermediateNext(char8_t chr) noexcept -> void
+        constexpr auto intermediateNext(char chr) noexcept -> void
         {
-            if (land(not isEoF(chr), chr != u8'\n')) {
+            if (land(not isEoF(chr), chr != '\n')) {
                 ++real_column;
             }
         }
@@ -56,12 +56,29 @@ namespace ccl::text
         }
 
     private:
-        u8string_view filename{};
+        string_view filename{};
         size_t line{ 1 };
         size_t column{ 0 };
         size_t real_column{ 0 };
     };
-
 }// namespace ccl::text
+
+template<>
+class fmt::formatter<ccl::text::Location>
+{
+public:
+    constexpr static auto parse(format_parse_context &ctx)
+    {
+        return ctx.begin();
+    }
+
+    template<typename FmtContext>
+    constexpr auto format(const ccl::text::Location &location, FmtContext &ctx) const
+    {
+        return format_to(
+            ctx.out(), "{}, line: {}, column: {}", location.getFilename(), location.getLine(),
+            location.getColumn());
+    }
+};
 
 #endif /* CCL_PROJECT_LOCATION_HPP */

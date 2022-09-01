@@ -8,7 +8,7 @@ namespace ccl::utf8
     CCL_EXCEPTION(Utf8ConvertionError, CclException);
 
     template<typename T>
-    concept ValueTypeUtf8 = std::is_same_v<char8_t, typename T::value_type>;
+    concept ValueTypeUtf8 = std::is_same_v<char, typename T::value_type>;
 
     constexpr u8 OneByteMask = 0b1000'0000;
     constexpr u8 TwoBytesMask = 0b1110'0000;
@@ -29,27 +29,27 @@ namespace ccl::utf8
     constexpr std::array<u8, 5> UtfMasks{ 0, OneByteMask, TwoBytesMask, TreeBytesMask,
                                           FourBytesMask };
 
-    CCL_DECL auto isTrailingCharacter(char8_t chr) noexcept -> bool
+    CCL_DECL auto isTrailingCharacter(char chr) noexcept -> bool
     {
         return (chr & ContinuationMask) == ContinuationSignature;
     }
 
-    CCL_DECL auto isOneByteSize(char8_t chr) noexcept -> bool
+    CCL_DECL auto isOneByteSize(char chr) noexcept -> bool
     {
         return (chr & OneByteMask) == 0;
     }
 
-    CCL_DECL auto isTwoBytesSize(char8_t chr) noexcept -> bool
+    CCL_DECL auto isTwoBytesSize(char chr) noexcept -> bool
     {
         return (chr & TwoBytesMask) == TwoBytesSignature;
     }
 
-    CCL_DECL auto isThreeBytesSize(char8_t chr) noexcept -> bool
+    CCL_DECL auto isThreeBytesSize(char chr) noexcept -> bool
     {
         return (chr & TreeBytesMask) == TreeBytesSignature;
     }
 
-    CCL_DECL auto isFourBytesSize(char8_t chr) noexcept -> bool
+    CCL_DECL auto isFourBytesSize(char chr) noexcept -> bool
     {
         return (chr & FourBytesMask) == FourBytesSignature;
     }
@@ -59,7 +59,7 @@ namespace ccl::utf8
         return UtfMasks.at(size);
     }
 
-    CCL_DECL auto utfSize(char8_t chr) noexcept -> u16
+    CCL_DECL auto utfSize(char chr) noexcept -> u16
     {
         if (isOneByteSize(chr)) {
             return 1U;
@@ -80,7 +80,7 @@ namespace ccl::utf8
         return 0U;
     }
 
-    constexpr auto checkTrailingCharacterMask(char8_t chr) -> void
+    constexpr auto checkTrailingCharacterMask(char chr) -> void
     {
         using namespace std::string_view_literals;
 
@@ -97,22 +97,20 @@ namespace ccl::utf8
         // NOLINTBEGIN
 
         if (chr <= OneByteMax) {
-            string.push_back(static_cast<char8_t>(chr));
+            string.push_back(static_cast<char>(chr));
         } else if (chr <= TwoBytesMax) {
-            string.push_back(static_cast<char8_t>(TwoBytesSignature | (chr >> 6)));
-            string.push_back(static_cast<char8_t>(ContinuationSignature | (chr & 0b0011'1111)));
+            string.push_back(static_cast<char>(TwoBytesSignature | (chr >> 6)));
+            string.push_back(static_cast<char>(ContinuationSignature | (chr & 0b0011'1111)));
         } else if (chr <= TreeBytesMax) {
-            string.push_back(static_cast<char8_t>(TreeBytesSignature | (chr >> 12)));
-            string.push_back(
-                static_cast<char8_t>(ContinuationSignature | ((chr >> 6) & 0b0011'1111)));
-            string.push_back(static_cast<char8_t>(ContinuationSignature | (chr & 0b0011'1111)));
+            string.push_back(static_cast<char>(TreeBytesSignature | (chr >> 12)));
+            string.push_back(static_cast<char>(ContinuationSignature | ((chr >> 6) & 0b0011'1111)));
+            string.push_back(static_cast<char>(ContinuationSignature | (chr & 0b0011'1111)));
         } else if (chr <= FourBytesMax) {
-            string.push_back(static_cast<char8_t>(FourBytesSignature | (chr >> 18)));
+            string.push_back(static_cast<char>(FourBytesSignature | (chr >> 18)));
             string.push_back(
-                static_cast<char8_t>(ContinuationSignature | ((chr >> 12) & 0b0011'1111)));
-            string.push_back(
-                static_cast<char8_t>(ContinuationSignature | ((chr >> 6) & 0b0011'1111)));
-            string.push_back(static_cast<char8_t>(ContinuationSignature | (chr & 0b0011'1111)));
+                static_cast<char>(ContinuationSignature | ((chr >> 12) & 0b0011'1111)));
+            string.push_back(static_cast<char>(ContinuationSignature | ((chr >> 6) & 0b0011'1111)));
+            string.push_back(static_cast<char>(ContinuationSignature | (chr & 0b0011'1111)));
         } else {
             throw Utf8ConvertionError{ "unable to convert symbol to utf8"sv };
         }
@@ -120,5 +118,6 @@ namespace ccl::utf8
         // NOLINTEND
     }
 }// namespace ccl::utf8
+
 
 #endif /* CCL_PROJECT_UTF8_HPP */

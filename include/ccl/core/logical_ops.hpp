@@ -7,16 +7,14 @@
 
 namespace ccl
 {
-    template<Boolean... Ts>
-    CCL_DECL auto land(Ts &&...args) noexcept -> bool
+    CCL_DECL auto land(Boolean auto &&...args) noexcept -> bool
     {
-        return (... && std::forward<Ts>(args));
+        return (... && args);
     }
 
-    template<Boolean... Ts>
-    CCL_DECL auto lor(Ts &&...args) noexcept -> bool
+    CCL_DECL auto lor(Boolean auto &&...args) noexcept -> bool
     {
-        return (... || std::forward<Ts>(args));
+        return (... || args);
     }
 }// namespace ccl
 
