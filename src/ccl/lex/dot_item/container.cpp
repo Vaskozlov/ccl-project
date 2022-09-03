@@ -21,10 +21,11 @@ namespace ccl::lex::dot_item
         return true;
     }
 
-    auto Container::scanItem(const BasicItem *item, TextIterator &text_iterator, Token &token)
+    auto Container::scanItem(const BasicItem *item, TextIterator &text_iterator, Token &token) const
         -> bool
     {
-        auto scan_result = item->scan(text_iterator, token);
+        auto scan_result =
+            item->scan(text_iterator, token, special_item ? ScanType::SPECIAL : ScanType::FORKED);
 
         if (scan_result.has_value()) {
             auto &[iterator, new_token] = *scan_result;
@@ -41,11 +42,9 @@ namespace ccl::lex::dot_item
         checkId();
 
         auto counter = ItemsCounter{ rule_iterator };
-        rule_iterator.skipCommentsAndLayout();
 
         while (hasMovedToTheNextChar(rule_iterator)) {
             recognizeAction(rule_iterator, counter);
-            rule_iterator.skipCommentsAndLayout();
         }
 
         postCreationCheck(rule_iterator, counter);
@@ -61,6 +60,10 @@ namespace ccl::lex::dot_item
         -> void
     {
         switch (rule_iterator.getCurrentChar()) {
+        case '!':
+            makeSpecial(rule_iterator, items_counter);
+            break;
+
         case U'[':
             emplaceItem(rule_iterator, constructNewUnion(rule_iterator, items_counter));
             break;
@@ -71,10 +74,6 @@ namespace ccl::lex::dot_item
 
         case U'(':
             emplaceItem(rule_iterator, constructNewItem(rule_iterator, items_counter));
-            break;
-
-        case U'\'':
-            constructTerminal(rule_iterator, items_counter);
             break;
 
         case U'*':
@@ -102,18 +101,6 @@ namespace ccl::lex::dot_item
             addPrefixPostfix();
             break;
 
-        case U'c':
-            constructCommentOrCharacter(rule_iterator, items_counter);
-            break;
-
-        case U's':
-            constructString(items_counter, false, false);
-            break;
-
-        case U'm':
-            constructString(items_counter, false, true);
-            break;
-
         default:
             throwUndefinedAction(rule_iterator);
             break;
@@ -126,7 +113,7 @@ namespace ccl::lex::dot_item
         items_counter.add(item::Sequence);
 
         return std::make_unique<Sequence>(
-            Sequence::SequenceFlags{}, "\"", rule_iterator, analysis_shared);
+            Sequence::SequenceFlags{}, "\"", rule_iterator, special_items);
     }
 
     auto Container::constructNewUnion(TextIterator &rule_iterator, ItemsCounter &items_counter)
@@ -134,7 +121,7 @@ namespace ccl::lex::dot_item
     {
         items_counter.add(item::Union);
 
-        return std::make_unique<Union>(rule_iterator, analysis_shared);
+        return std::make_unique<Union>(rule_iterator, special_items);
     }
 
     // NOLINTNEXTLINE (recursive function)
@@ -149,82 +136,10 @@ namespace ccl::lex::dot_item
 
         rule_iterator.setEnd(text.begin() + bracket_index);
 
-        auto new_container = std::make_unique<Container>(rule_iterator, id, analysis_shared, false);
+        auto new_container = std::make_unique<Container>(rule_iterator, id, special_items, false);
         rule_iterator.setEnd(saved_end);
 
         return new_container;
-    }
-
-    auto Container::constructString(
-        ItemsCounter &items_counter,
-        bool is_character,
-        bool is_multiline) -> void
-    {
-        if (is_character) {
-            items_counter.add(item::Character);
-        } else {
-            items_counter.add(item::String);
-        }
-
-        auto *sequence = unsafeGetLastItemAs<Sequence>();// check is above
-        auto &strings_and_chars = analysis_shared.strings_and_chars;
-        auto &string = sequence->getByRef();
-        auto column_index = string.find(':');
-
-        if (column_index == std::string::npos) {
-            strings_and_chars.emplace_back(std::move(string), id, is_character, is_multiline);
-        } else {
-            auto [string_begin, string_end] = splitStringByIndex(string, column_index);
-
-            strings_and_chars.emplace_back(
-                std::move(string_begin), std::move(string_end), id, is_character, is_multiline);
-        }
-
-        items.pop_back();
-    }
-
-    auto Container::constructTerminal(TextIterator &rule_iterator, ItemsCounter &items_counter)
-        -> void
-    {
-        items_counter.add(item::Terminal);
-
-        auto &special_tokens = analysis_shared.special_tokens;
-        auto sequence = Sequence{ {}, "\'", rule_iterator, analysis_shared };
-
-        special_tokens.addString(std::move(sequence.getByRef()), id);
-    }
-
-    auto Container::constructComment(ItemsCounter &items_counter) -> void
-    {
-        items_counter.add(item::Comment);
-
-        auto *sequence = unsafeGetLastItemAs<Sequence>();// check is above
-        auto &string = sequence->getByRef();
-        auto column_index = string.find(':');
-        auto &[single_line_comment, multiline_begin_comment, multiline_end_comment] =
-            analysis_shared.comment_tokens;
-
-        if (column_index == std::string::npos) {
-            single_line_comment = string;
-        } else {
-            auto [comment_begin, comment_end] = splitStringByIndex(string, column_index);
-            multiline_begin_comment = std::move(comment_begin);
-            multiline_end_comment = std::move(comment_end);
-        }
-
-        items.pop_back();
-    }
-
-    auto Container::constructCommentOrCharacter(
-        TextIterator &rule_iterator,
-        ItemsCounter &items_counter) -> void
-    {
-        if (rule_iterator.isNextCharacterEqual<U'o'>()) {
-            rule_iterator.next();
-            constructComment(items_counter);
-        } else {
-            constructString(items_counter, true, false);
-        }
     }
 
     auto Container::emplaceItem(TextIterator &rule_iterator, std::unique_ptr<BasicItem> &&item)
@@ -273,6 +188,16 @@ namespace ccl::lex::dot_item
         }
 
         last_item->setRecurrence(new_recurrence);
+    }
+
+    auto Container::makeSpecial(TextIterator &rule_iterator, ItemsCounter &counter) -> void
+    {
+        if (counter.hasAny()) {
+            throwUnableToApply(
+                rule_iterator, "you must declare, that the item is special at first");
+        }
+
+        special_item = true;
     }
 
     auto Container::reverseLastItem(TextIterator &rule_iterator) -> void
@@ -324,7 +249,6 @@ namespace ccl::lex::dot_item
         }
 
         BasicItem::neverRecognizedSuggestion(rule_iterator, not counter.hasAny() && not reversed);
-
         BasicItem::alwaysRecognizedSuggestion(rule_iterator, not counter.hasAny() && reversed);
     }
 

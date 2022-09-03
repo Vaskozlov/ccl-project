@@ -7,16 +7,16 @@ using namespace text;
 using namespace dot_item;
 
 // NOLINTNEXTLINE
-static auto shared = AnalysisShared{};
 
 BOOST_AUTO_TEST_SUITE(ContainerUnion)
 
 BOOST_AUTO_TEST_CASE(UnionWithOneElem)
 {
+    auto special_items = SpecialItems{};
     auto text_iterator = TextIterator{ "[a]" };
     text_iterator.next();
 
-    auto union_item = Union(text_iterator, shared);
+    auto union_item = Union(text_iterator, special_items);
     DEBUG_VAR &&bitset = union_item.get();
 
     for (char32_t i = 0; i < 127; ++i) {// NOLINT
@@ -26,10 +26,11 @@ BOOST_AUTO_TEST_CASE(UnionWithOneElem)
 
 BOOST_AUTO_TEST_CASE(UnionWithMultipleElems)
 {
+    auto special_items = SpecialItems{};
     auto text_iterator = TextIterator{ "[a-z_]" };
     text_iterator.next();
 
-    auto union_item = Union(text_iterator, shared);
+    auto union_item = Union(text_iterator, special_items);
     DEBUG_VAR &&bitset = union_item.get();
 
     for (char32_t i = '\0'; i != '_'; ++i) {

@@ -9,10 +9,9 @@ namespace ccl::lex::dot_item
     class Union : public BasicItem
     {
     public:
-        using typename BasicItem::CommentTokens;
         using typename BasicItem::TextIterator;
 
-        Union(TextIterator &rule_iterator_, AnalysisShared &analysis_shared_);
+        Union(TextIterator &rule_iterator_, SpecialItems &special_items_);
 
         [[nodiscard]] auto get() const noexcept -> const UtfSet &
         {

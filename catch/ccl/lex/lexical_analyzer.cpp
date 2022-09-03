@@ -17,15 +17,7 @@ BOOST_AUTO_TEST_CASE(LexTest)
 
     // NOLINTBEGIN
     auto analyzer = LexicalAnalyzer(
-        handler::Cmd::instance(),
-        { { 2, R"([a-zA-Z_]+)" },
-          { 3, "[0-9]+" },
-          { 4, R"( '+')" },
-          { 5, R"(';')" },
-          { 6, R"('=')" },
-          { 7, R"("\""s)" },
-          { 8, R"('\n')" },
-          { 9, R"("//"co)" } });
+        handler::Cmd::instance(), { { 2, R"([a-zA-Z_]+)" }, { 3, "[0-9]+" }, { 9, R"("//")" } });
 
     auto tokenizer = analyzer.getTokenizer(text);
     // NOLINTEND

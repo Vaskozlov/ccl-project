@@ -16,13 +16,20 @@ namespace ccl::lex::dot_item
         }
     }
 
-    auto
-        BasicItem::scan(const TextIterator &text_iterator, const Token &token, bool main_scan) const
-        -> std::optional<std::pair<TextIterator, Token>>
+    auto BasicItem::scan(const TextIterator &text_iterator, const Token &token, ScanType scan_type)
+        const -> std::optional<std::pair<TextIterator, Token>>
     {
         auto times = static_cast<size_t>(0);
         auto local_iterator = text_iterator;
         auto local_token = Token{ token };
+
+        if (scan_type != ScanType::SPECIAL) {
+            auto scan_result = special_items.scan(local_iterator);
+
+            if (scan_result.has_value()) {
+                return *scan_result;
+            }
+        }
 
         while (times < recurrence.to) {
             if (not local_iterator.isEnd() && scanIterationCall(local_iterator, local_token)) {
@@ -32,7 +39,7 @@ namespace ccl::lex::dot_item
             }
         }
 
-        if (successfullyScanned(local_iterator, times, main_scan)) {
+        if (successfullyScanned(local_iterator, times, scan_type == ScanType::MAIN)) {
             if (times != 0) {
                 modifyToken(text_iterator, local_iterator, local_token);
             }
@@ -63,7 +70,7 @@ namespace ccl::lex::dot_item
         const TextIterator &text_iterator, size_t times, bool main_scan) const -> bool
     {
         return recurrence.inRange(times) &&
-               (not main_scan || analysis_shared.isNextCharNotForScanning(text_iterator));
+               (not main_scan || isLayoutOrEoF(text_iterator.getNextCarriageValue()));
     }
 
     auto BasicItem::modifyToken(

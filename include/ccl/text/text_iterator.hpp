@@ -12,13 +12,6 @@
 
 namespace ccl::text
 {
-    struct CommentTokens
-    {
-        std::string single_line{};
-        std::string multiline_begin{};
-        std::string multiline_end{};
-    };
-
     class TextIterator : public CrtpBasicTextIterator<TextIterator>
     {
     private:
@@ -26,7 +19,6 @@ namespace ccl::text
         using extra_symbols_t = std::basic_string<Pair<char32_t, char32_t>>;
 
     public:
-        class CommentSkipper;
         class EscapingSymbolizer;
         class NotationEscapingSymbolizer;
 
@@ -41,9 +33,9 @@ namespace ccl::text
 
         explicit TextIterator(
             string_view input, ExceptionHandler &exception_handler_ = ExceptionHandler::instance(),
-            CommentTokens comment_tokens_ = {}, string_view filename = {})
+            string_view filename = {})
           : Base(input), location(filename), line_tracker(input),
-            comment_tokens(std::move(comment_tokens_)), exception_handler(&exception_handler_)
+            exception_handler(&exception_handler_)
         {}
 
         [[nodiscard]] auto getLocation() const noexcept -> const Location &
@@ -92,9 +84,6 @@ namespace ccl::text
         auto onMove(char chr) -> void;
         auto onCharacter(char32_t chr) -> void;
         auto utfError(char chr) -> void;
-
-        auto skipComments() -> bool;
-        auto skipCommentsAndLayout() -> void;
 
         auto throwSuggestion(
             const TextIterator &iterator_location, string_view message, string_view suggestion = {})
@@ -164,29 +153,7 @@ namespace ccl::text
         Location location{};
         module::TsTracker ts_tracker{};
         module::LineTracker line_tracker;
-        CommentTokens comment_tokens{};
         ExceptionHandler *exception_handler{};
-    };
-
-    class TextIterator::CommentSkipper
-    {
-    public:
-        auto skip() -> bool;
-
-        CommentSkipper(TextIterator &text_iterator_, const CommentTokens &comment_tokens_);
-
-    private:
-        [[nodiscard]] auto isComment(const string_view &comment) const noexcept -> bool;
-
-        auto skipSingleLine() -> void;
-        auto skipMultiline() -> void;
-
-        auto checkCommentTermination(const TextIterator &comment_begin) const -> void;
-
-        auto throwUnterminatedCommentError(const TextIterator &comment_begin) const -> void;
-
-        const CommentTokens &comment_tokens;// MAYBE: copy comment tokens into StrViews
-        TextIterator &text_iterator;
     };
 
     class TextIterator::EscapingSymbolizer

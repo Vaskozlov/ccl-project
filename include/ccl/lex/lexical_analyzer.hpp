@@ -12,24 +12,20 @@ namespace ccl::lex
         using Container = dot_item::Container;
         using BasicItem = dot_item::BasicItem;
         using TextIterator = typename BasicItem::TextIterator;
-        using CommentTokens = typename BasicItem::CommentTokens;
 
         struct Tokenizer
         {
             Tokenizer(
                 LexicalAnalyzer &lexical_analyzer_, string_view text, string_view filename_ = {})
               : lexical_analyzer(lexical_analyzer_),
-                text_iterator(
-                    text, lexical_analyzer_.exception_handler,
-                    lexical_analyzer_.shared.comment_tokens, filename_)
+                text_iterator(text, lexical_analyzer_.exception_handler, filename_)
             {}
 
             Tokenizer(
                 LexicalAnalyzer &lexical_analyzer_, string_view text, string_view filename_,
                 ExceptionHandler &exception_handler_)
               : lexical_analyzer(lexical_analyzer_),
-                text_iterator(
-                    text, exception_handler_, lexical_analyzer_.shared.comment_tokens, filename_)
+                text_iterator(text, exception_handler_, filename_)
             {}
 
             [[nodiscard]] auto getIterator() const -> const TextIterator &
@@ -60,7 +56,7 @@ namespace ccl::lex
         LexicalAnalyzer(
             ExceptionHandler &exception_handler_,
             const std::initializer_list<std::pair<size_t, string_view>> &rules_,
-            string_view filename = {}, const CommentTokens &comment_tokens_ = { "#" });
+            string_view filename = {});
 
         [[nodiscard]] auto getTokenizer(string_view text, string_view filename = {}) -> Tokenizer
         {
@@ -75,12 +71,10 @@ namespace ccl::lex
         }
 
     private:
-        auto createContainer(
-            string_view rule, size_t id, const CommentTokens &comment_tokens, string_view filename)
-            -> void;
+        auto createContainer(string_view rule, size_t id, string_view filename) -> void;
 
         std::set<Container> items;
-        AnalysisShared shared{};
+        SpecialItems special_items{};
         ExceptionHandler &exception_handler;
         size_t errors{};
     };

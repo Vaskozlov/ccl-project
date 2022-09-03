@@ -7,16 +7,16 @@ using namespace text;
 using namespace dot_item;
 
 // NOLINTNEXTLINE
-static auto shared = AnalysisShared{};
 
 BOOST_AUTO_TEST_SUITE(ContainerSequence)
 
 BOOST_AUTO_TEST_CASE(SequenceWithOneCharBegin)
 {
+    auto special_items = SpecialItems{};
     auto text_iterator = TextIterator{ R"("Hello, \"World\"!")" };
     text_iterator.next();
 
-    auto string_item = Sequence({}, "\"", text_iterator, shared);
+    auto string_item = Sequence({}, "\"", text_iterator, special_items);
     DEBUG_VAR &&string = string_item.get();
 
     BOOST_ASSERT(string == R"(Hello, "World"!)");
@@ -25,10 +25,11 @@ BOOST_AUTO_TEST_CASE(SequenceWithOneCharBegin)
 
 BOOST_AUTO_TEST_CASE(SequenceWithTreeCharBegin)
 {
+    auto special_items = SpecialItems{};
     auto text_iterator = TextIterator{ "\"\"\"Hello,\n    \"World\"!\"\"\"" };
     text_iterator.next();
 
-    auto string_item = Sequence({ .multiline = true }, R"(""")", text_iterator, shared);
+    auto string_item = Sequence({ .multiline = true }, R"(""")", text_iterator, special_items);
     DEBUG_VAR &&string = string_item.get();
 
     BOOST_ASSERT(string == "Hello,\n    \"World\"!");
@@ -37,11 +38,12 @@ BOOST_AUTO_TEST_CASE(SequenceWithTreeCharBegin)
 
 BOOST_AUTO_TEST_CASE(UnterminatedSequence)
 {
+    auto special_items = SpecialItems{};
     auto text_iterator = TextIterator{ R"("Hello, World!)" };
     text_iterator.next();
 
     BOOST_CHECK_EXCEPTION(
-        Sequence({}, "\"", text_iterator, shared),
+        Sequence({}, "\"", text_iterator, special_items),
         text::TextIteratorException,
         []([[maybe_unused]] const text::TextIteratorException &exception) {
             {
@@ -54,11 +56,12 @@ BOOST_AUTO_TEST_CASE(UnterminatedSequence)
 
 BOOST_AUTO_TEST_CASE(SequenceReachedNewLine)
 {
+    auto special_items = SpecialItems{};
     auto text_iterator = TextIterator{ "\"Hello, World!\n\"" };
     text_iterator.next();
 
     BOOST_CHECK_EXCEPTION(
-        Sequence({}, "\"", text_iterator, shared),
+        Sequence({}, "\"", text_iterator, special_items),
         text::TextIteratorException,
         []([[maybe_unused]] const text::TextIteratorException &exception) {
             {

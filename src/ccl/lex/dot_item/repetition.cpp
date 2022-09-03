@@ -20,8 +20,7 @@ namespace ccl::lex::dot_item
     {
         auto result = static_cast<size_t>(0);
         constexpr auto decimal_base = static_cast<size_t>(10);
-
-        text_iterator.skipCommentsAndLayout();
+        text_iterator.moveToCleanChar();
 
         while (text_iterator.next() != terminator) {
             auto chr = text_iterator.getCurrentChar();

@@ -7,19 +7,12 @@ namespace ccl::lex
     // NOLINTNEXTLINE recursive function
     auto LexicalAnalyzer::Tokenizer::yield() -> Token
     {
-        text_iterator.skipComments();
-
         if (text_iterator.isEnd()) {
             return Token{ { text_iterator }, ReservedTokenType::EOI, "$"s };
         }
 
-        if (auto special_token = lexical_analyzer.shared.getSpecialToken(text_iterator);
-            special_token.has_value()) {
-            return *special_token;
-        }
-
         for (auto &&item : lexical_analyzer.items) {
-            auto scan_result = item.scan(text_iterator, Token{ text_iterator, item.getId() }, true);
+            auto scan_result = item.scan(text_iterator, Token{ text_iterator, item.getId() }, dot_item::ScanType::MAIN);
 
             if (scan_result.has_value() && not scan_result->second.getRepr().empty()) {
                 auto &[iterator, token] = *scan_result;
@@ -41,7 +34,7 @@ namespace ccl::lex
     {
         auto token = Token{ text_iterator, ReservedTokenType::BAD_TOKEN };
 
-        while (not lexical_analyzer.shared.isNextCharNotForScanning(text_iterator)) {
+        while (not isLayoutOrEoF(text_iterator.getNextCarriageValue())) {
             text_iterator.next();
         }
 

@@ -8,7 +8,6 @@ namespace ccl::lex::dot_item
     class Sequence : public BasicItem
     {
     private:
-        using typename BasicItem::CommentTokens;
         using typename BasicItem::TextIterator;
 
     public:
@@ -20,12 +19,12 @@ namespace ccl::lex::dot_item
 
         Sequence(
             SequenceFlags flags_, string_view str_begin_, string_view str_end,
-            TextIterator &rule_iterator_, AnalysisShared &analysis_shared_);
+            TextIterator &rule_iterator_, SpecialItems &special_items_);
 
         Sequence(
             SequenceFlags flags_, string_view str_begin_, TextIterator &rule_iterator_,
-            AnalysisShared &analysis_shared_)
-          : Sequence(flags_, str_begin_, str_begin_, rule_iterator_, analysis_shared_)
+            SpecialItems &special_items_)
+          : Sequence(flags_, str_begin_, str_begin_, rule_iterator_, special_items_)
         {}
 
         [[nodiscard]] auto get() const noexcept -> const std::string &

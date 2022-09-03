@@ -6,21 +6,18 @@ namespace ccl::lex
 
     LexicalAnalyzer::LexicalAnalyzer(
         ExceptionHandler &exception_handler_,
-        const std::initializer_list<std::pair<size_t, string_view>> &rules_, string_view filename,
-        const CommentTokens &comment_tokens_)
+        const std::initializer_list<std::pair<size_t, string_view>> &rules_, string_view filename)
       : exception_handler(exception_handler_)
     {
         for (const auto &[id, rule] : rules_) {
-            createContainer(rule, id, comment_tokens_, filename);
+            createContainer(rule, id, filename);
         }
     }
 
-    auto LexicalAnalyzer::createContainer(
-        string_view rule, size_t id, const CommentTokens &comment_tokens, string_view filename)
-        -> void
+    auto LexicalAnalyzer::createContainer(string_view rule, size_t id, string_view filename) -> void
     {
-        auto container = Container(
-            TextIterator{ rule, exception_handler, comment_tokens, filename }, id, shared);
+        auto container =
+            Container(TextIterator{ rule, exception_handler, filename }, id, special_items);
 
         if (not container.empty()) {
             items.emplace(std::move(container));

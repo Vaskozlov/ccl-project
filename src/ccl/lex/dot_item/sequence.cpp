@@ -6,9 +6,8 @@ namespace ccl::lex::dot_item
 
     Sequence::Sequence(
         SequenceFlags flags_, string_view str_begin_, string_view str_end_,
-        TextIterator &rule_iterator_, AnalysisShared &analysis_shared_)
-      : BasicItem(analysis_shared_), str_begin(str_begin_), str_end(str_end_),
-        sequence_flags(flags_)
+        TextIterator &rule_iterator_, SpecialItems &special_items_)
+      : BasicItem(special_items_), str_begin(str_begin_), str_end(str_end_), sequence_flags(flags_)
     {
         auto &rule_iterator = rule_iterator_;
         auto begin_iterator_state = rule_iterator;
