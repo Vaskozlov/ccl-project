@@ -17,7 +17,7 @@ BOOST_AUTO_TEST_CASE(SequenceWithOneCharBegin)
     text_iterator.next();
 
     auto string_item = Sequence({}, "\"", text_iterator, special_items);
-    DEBUG_VAR &&string = string_item.get();
+    DEBUG_VAR &&string = string_item.getValue();
 
     BOOST_ASSERT(string == R"(Hello, "World"!)");
     BOOST_ASSERT(ccl::isEoF(text_iterator.next()));
@@ -30,7 +30,7 @@ BOOST_AUTO_TEST_CASE(SequenceWithTreeCharBegin)
     text_iterator.next();
 
     auto string_item = Sequence({ .multiline = true }, R"(""")", text_iterator, special_items);
-    DEBUG_VAR &&string = string_item.get();
+    DEBUG_VAR &&string = string_item.getValue();
 
     BOOST_ASSERT(string == "Hello,\n    \"World\"!");
     BOOST_ASSERT(ccl::isEoF(text_iterator.next()));

@@ -127,16 +127,6 @@ namespace ccl::text
             return getRemainingAsCarriage() == end;
         }
 
-        template<char32_t Chr>
-        CCL_DECL auto isNextCharacterEqual() const noexcept(noexcept_carriage_move) -> bool
-        {
-            if constexpr (Chr <= utf8::OneByteMax) {
-                return Chr == getNextCarriageValue();
-            } else {
-                return Chr == futureChar(1);
-            }
-        }
-
         CCL_DECL auto getFutureRemaining(size_t times) const noexcept -> string_view
         {
             auto fork = ForkedTextIterator{ CrtpFork, *this };

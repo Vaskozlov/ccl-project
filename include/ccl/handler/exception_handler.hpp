@@ -29,13 +29,13 @@ namespace ccl
         template<DerivedFromTextIteratorException T>
         auto handle(const T *error)
         {
-            handle(static_cast<const text::TextIteratorException *>(error));
+            handle(static_cast<const ExceptionT *>(error));
         }
 
         template<DerivedFromTextIteratorException T>
         auto handle(const T &error)
         {
-            handle(static_cast<const text::TextIteratorException *>(&error));
+            handle(static_cast<const ExceptionT *>(&error));
         }
 
     private:

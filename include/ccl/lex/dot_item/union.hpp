@@ -6,23 +6,23 @@
 
 namespace ccl::lex::dot_item
 {
-    class Union : public BasicItem
+    class Union final : public BasicItem
     {
     public:
         using typename BasicItem::TextIterator;
 
         Union(TextIterator &rule_iterator_, SpecialItems &special_items_);
 
-        [[nodiscard]] auto get() const noexcept -> const UtfSet &
+        [[nodiscard]] auto getBitset() const noexcept -> const UtfSet &
         {
             return bitset;
         }
 
-        [[nodiscard]] auto empty() const noexcept -> bool override;
+        [[nodiscard]] auto empty() const noexcept -> bool final;
 
     private:
         [[nodiscard]] auto scanIteration(TextIterator &text_iterator, Token & /* unused */) const
-            -> bool override;
+            -> bool final;
 
         [[nodiscard]] static auto isRange(bool is_escaping, char32_t chr) noexcept -> bool;
 

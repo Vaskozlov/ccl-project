@@ -1,7 +1,14 @@
 #include <ccl/lex/dot_item/basic_item.hpp>
 
+using namespace ccl::integral_literals;
+
 namespace ccl::lex::dot_item
 {
+    [[nodiscard]] static auto isNotEOI(const text::TextIterator &text_iterator) -> bool
+    {
+        return not text_iterator.isEnd();
+    }
+
     auto BasicItem::alwaysRecognizedSuggestion(TextIterator &text_iterator, bool condition) -> void
     {
         if (condition) {
@@ -19,19 +26,19 @@ namespace ccl::lex::dot_item
     auto BasicItem::scan(const TextIterator &text_iterator, const Token &token, ScanType scan_type)
         const -> std::optional<std::pair<TextIterator, Token>>
     {
-        auto times = static_cast<size_t>(0);
+        auto times = 0_ZU;
+        auto local_token = token;
         auto local_iterator = text_iterator;
-        auto local_token = Token{ token };
 
         while (times < recurrence.to) {
-            if (not local_iterator.isEnd() && scanIterationCall(local_iterator, local_token)) {
+            if (isNotEOI(local_iterator) && successfulIteration(local_iterator, local_token)) {
                 ++times;
             } else {
                 break;
             }
         }
 
-        if (successfullyScanned(local_iterator, times, scan_type == ScanType::MAIN)) {
+        if (isSuccessfullyScanned(local_iterator, times, scan_type)) {
             if (times != 0) {
                 modifyToken(text_iterator, local_iterator, local_token);
             }
@@ -43,7 +50,7 @@ namespace ccl::lex::dot_item
         return std::nullopt;
     }
 
-    auto BasicItem::scanIterationCall(TextIterator &local_iterator, Token &local_token) const
+    auto BasicItem::successfulIteration(TextIterator &local_iterator, Token &local_token) const
         -> bool
     {
         auto token_copy = local_token;
@@ -58,11 +65,22 @@ namespace ccl::lex::dot_item
         return false;
     }
 
-    auto BasicItem::successfullyScanned(
-        const TextIterator &text_iterator, size_t times, bool main_scan) const -> bool
+    auto BasicItem::isSuccessfullyScanned(
+        const TextIterator &text_iterator, size_t times, ScanType scan_type) const -> bool
     {
-        return recurrence.inRange(times) &&
-               (not main_scan || isLayoutOrEoF(text_iterator.getNextCarriageValue()));
+        auto is_next_value_special = false;
+
+        if (scan_type != ScanType::SPECIAL) {
+            auto iterator_copy = text_iterator;
+            iterator_copy.next();
+
+            is_next_value_special = special_items.scan(text_iterator).has_value();
+        }
+
+        bool is_not_main_scan = scan_type != ScanType::MAIN;
+
+        return recurrence.inRange(times) && (is_not_main_scan || is_next_value_special ||
+                                             isLayoutOrEoF(text_iterator.getNextCarriageValue()));
     }
 
     auto BasicItem::modifyToken(

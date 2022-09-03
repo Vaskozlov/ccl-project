@@ -89,15 +89,22 @@ namespace ccl::lex::dot_item
             ScanType main_scan = ScanType::FORKED) const
             -> std::optional<std::pair<TextIterator, Token>>;
 
+        [[nodiscard]] auto
+            scan(const TextIterator &text_iterator, ScanType main_scan = ScanType::FORKED) const
+            -> std::optional<std::pair<TextIterator, Token>>
+        {
+            return scan(text_iterator, Token{ text_iterator, getId() }, main_scan);
+        }
+
     private:
-        [[nodiscard]] auto scanIterationCall(TextIterator &local_iterator, Token &local_token) const
-            -> bool;
+        [[nodiscard]] auto
+            successfulIteration(TextIterator &local_iterator, Token &local_token) const -> bool;
 
         [[nodiscard]] virtual auto scanIteration(TextIterator &text_iterator, Token &token) const
             -> bool = 0;
 
-        [[nodiscard]] auto successfullyScanned(
-            const TextIterator &text_iterator, size_t times, bool main_scan) const -> bool;
+        [[nodiscard]] auto isSuccessfullyScanned(
+            const TextIterator &text_iterator, size_t times, ScanType scan_type) const -> bool;
 
         auto modifyToken(
             const TextIterator &before_scan_iterator, const TextIterator &after_scan_iterator,
@@ -114,11 +121,11 @@ namespace ccl::lex::dot_item
 
     struct BasicItem::SpecialItems
     {
-        auto scan(TextIterator &text_iterator) -> std::optional<std::pair<TextIterator, Token>>
+        auto scan(const TextIterator &text_iterator) const
+            -> std::optional<std::pair<TextIterator, Token>>
         {
             for (auto &&item : special_items) {
-                auto scan_result = item->scan(
-                    text_iterator, Token{ text_iterator, item->getId() }, ScanType::SPECIAL);
+                auto scan_result = item->scan(text_iterator, ScanType::SPECIAL);
 
                 if (scan_result.has_value() && not scan_result->second.getRepr().empty()) {
                     return scan_result;

@@ -1,16 +1,17 @@
 #include <ccl/lex/lexical_analyzer.hpp>
+#include <utility>
 
 namespace ccl::lex
 {
     using namespace std::string_literals;
 
     LexicalAnalyzer::LexicalAnalyzer(
-        ExceptionHandler &exception_handler_,
-        const std::initializer_list<std::pair<size_t, string_view>> &rules_, string_view filename)
-      : exception_handler(exception_handler_)
+        ExceptionHandler &exception_handler_, const std::initializer_list<Rule> &rules_,
+        string_view filename, std::basic_string<size_t> ignored_ids_)
+      : ignored_ids(std::move(ignored_ids_)), exception_handler(exception_handler_)
     {
-        for (const auto &[id, rule] : rules_) {
-            createContainer(rule, id, filename);
+        for (const Rule &rule : rules_) {
+            createContainer(rule.repr, rule.id, filename);
         }
     }
 

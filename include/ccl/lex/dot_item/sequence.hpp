@@ -5,7 +5,7 @@
 
 namespace ccl::lex::dot_item
 {
-    class Sequence : public BasicItem
+    class Sequence final : public BasicItem
     {
     private:
         using typename BasicItem::TextIterator;
@@ -27,21 +27,21 @@ namespace ccl::lex::dot_item
           : Sequence(flags_, str_begin_, str_begin_, rule_iterator_, special_items_)
         {}
 
-        [[nodiscard]] auto get() const noexcept -> const std::string &
+        [[nodiscard]] auto getValue() noexcept -> std::string &
         {
             return sequence_value;
         }
 
-        [[nodiscard]] auto getByRef() noexcept -> std::string &
+        [[nodiscard]] auto getValue() const noexcept -> const std::string &
         {
             return sequence_value;
         }
 
-        [[nodiscard]] auto empty() const noexcept -> bool override;
+        [[nodiscard]] auto empty() const noexcept -> bool final;
 
     private:
         [[nodiscard]] auto scanIteration(TextIterator &text_iterator, Token &token) const
-            -> bool override;
+            -> bool final;
 
         [[nodiscard]] auto isStringEnd(TextIterator &rule_iterator, bool is_escaping) const -> bool;
 
@@ -55,7 +55,9 @@ namespace ccl::lex::dot_item
 
         static auto throwEmptyStringEnd(TextIterator &rule_iterator) -> void;
         static auto throwEmptyStringBegin(TextIterator &rule_iterator) -> void;
+
         auto throwStringBeginException(TextIterator &rule_iterator) const -> void;
+
         static auto throwUnterminatedString(
             TextIterator &rule_iterator,
             string_view message,

@@ -13,6 +13,12 @@ namespace ccl::lex
         using BasicItem = dot_item::BasicItem;
         using TextIterator = typename BasicItem::TextIterator;
 
+        struct CCL_TRIVIAL_ABI Rule
+        {
+            size_t id{};
+            string_view repr{};
+        };
+
         struct Tokenizer
         {
             Tokenizer(
@@ -33,9 +39,9 @@ namespace ccl::lex
                 return text_iterator;
             }
 
-            [[nodiscard]] auto getExceptionHandler() -> ExceptionHandler &
+            [[nodiscard]] auto getHandler() -> ExceptionHandler &
             {
-                return text_iterator.getExceptionHandler();
+                return text_iterator.getHandler();
             }
 
             auto throwException(
@@ -46,17 +52,25 @@ namespace ccl::lex
             }
 
             [[nodiscard]] auto yield() -> Token;
-            [[nodiscard]] auto constructBadToken() -> Token;
 
         private:
+            [[nodiscard]] auto shouldIgnoreToken(const Token &token) const -> bool;
+
+            [[nodiscard]] auto constructBadToken() -> Token;
+            [[nodiscard]] auto constructEOIToken() -> Token;
+
             LexicalAnalyzer &lexical_analyzer;
             TextIterator text_iterator;
         };
 
         LexicalAnalyzer(
-            ExceptionHandler &exception_handler_,
-            const std::initializer_list<std::pair<size_t, string_view>> &rules_,
-            string_view filename = {});
+            ExceptionHandler &exception_handler_, const std::initializer_list<Rule> &rules_,
+            string_view filename = {}, std::basic_string<size_t> ignored_ids_ = {});
+
+        [[nodiscard]] auto getIgnoredIds() const -> const std::basic_string<size_t> &
+        {
+            return ignored_ids;
+        }
 
         [[nodiscard]] auto getTokenizer(string_view text, string_view filename = {}) -> Tokenizer
         {
@@ -75,6 +89,7 @@ namespace ccl::lex
 
         std::set<Container> items;
         SpecialItems special_items{};
+        std::basic_string<size_t> ignored_ids{};
         ExceptionHandler &exception_handler;
         size_t errors{};
     };

@@ -73,7 +73,7 @@ namespace ccl::text
             return ts_tracker.get();
         }
 
-        [[nodiscard]] auto getExceptionHandler() noexcept -> ExceptionHandler &
+        [[nodiscard]] auto getHandler() noexcept -> ExceptionHandler &
         {
             return *exception_handler;
         }

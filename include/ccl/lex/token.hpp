@@ -55,6 +55,11 @@ namespace ccl::lex
             return id;
         }
 
+        [[nodiscard]] auto emptyRepr() const noexcept -> bool
+        {
+            return repr.empty();
+        }
+
         [[nodiscard]] explicit operator bool() const noexcept
         {
             return getId() != 0;

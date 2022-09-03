@@ -7,16 +7,9 @@ using namespace lex;
 using namespace text;
 using namespace string_view_literals;
 
-const std::map<size_t, string_view> rule_names({ { 0, "EOI" },
-                                                 { 1, "BAD TOKEN" },
-                                                 { 2, "identifier" },
-                                                 { 3, "number" },
-                                                 { 4, "addition" },
-                                                 { 5, "column" },
-                                                 { 6, "assignment" },
-                                                 { 7, "string" },
-                                                 { 8, "new line" },
-                                                 { 9, "comment" } });
+constexpr std::array<string_view, 10> rule_names({ "EOI", "BAD TOKEN", "identifier", "number",
+                                                   "addition", "column", "assignment", "string",
+                                                   "new line", "comment" });
 
 BOOST_AUTO_TEST_CASE(LexTest)
 {
@@ -24,7 +17,7 @@ BOOST_AUTO_TEST_CASE(LexTest)
         R"(
         10
         auto i = 10;
-        i + 10; // test
+        i+10; // test
         auto _ = "Hello, World!" + "test")"_sv;
 
     // NOLINTBEGIN
@@ -35,9 +28,9 @@ BOOST_AUTO_TEST_CASE(LexTest)
           { 4, R"(! "+")" },
           { 5, R"(! ";")" },
           { 6, R"(! "=")" },
-          { 7, R"(! "\"" [\"]*^ "\"" )" },
+          { 7, R"(! "\"" (["]^ | "\\\"")* "\"" )" },
           { 8, R"(! "\n")" },
-          { 9, R"(! "//"[\n]*)" } });
+          { 9, R"(! "//"[\n]^*)" } });
 
     auto tokenizer = analyzer.getTokenizer(text);
     // NOLINTEND
