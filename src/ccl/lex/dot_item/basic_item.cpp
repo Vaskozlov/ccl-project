@@ -23,14 +23,6 @@ namespace ccl::lex::dot_item
         auto local_iterator = text_iterator;
         auto local_token = Token{ token };
 
-        if (scan_type != ScanType::SPECIAL) {
-            auto scan_result = special_items.scan(local_iterator);
-
-            if (scan_result.has_value()) {
-                return *scan_result;
-            }
-        }
-
         while (times < recurrence.to) {
             if (not local_iterator.isEnd() && scanIterationCall(local_iterator, local_token)) {
                 ++times;

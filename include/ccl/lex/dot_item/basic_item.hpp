@@ -8,6 +8,7 @@
 
 namespace ccl::lex::dot_item
 {
+    // NOLINTNEXTLINE
     CCL_ENUM(ScanType, u16, MAIN = 1, FORKED = 2, SPECIAL = 3);
 
     class BasicItem
@@ -15,24 +16,7 @@ namespace ccl::lex::dot_item
     public:
         using TextIterator = text::TextIterator;
 
-        struct SpecialItems
-        {
-            auto scan(TextIterator &text_iterator) -> std::optional<std::pair<TextIterator, Token>>
-            {
-                for (auto &&item : special_items) {
-                    auto scan_result = item->scan(
-                        text_iterator, Token{ text_iterator, item->getId() }, ScanType::SPECIAL);
-
-                    if (scan_result.has_value() && not scan_result->second.getRepr().empty()) {
-                        return scan_result;
-                    }
-                }
-
-                return std::nullopt;
-            }
-
-            std::vector<std::unique_ptr<BasicItem>> special_items;
-        };
+        struct SpecialItems;
 
         explicit BasicItem(SpecialItems &special_items_, size_t id_ = 0) noexcept
           : id(id_), special_items{ special_items_ } {};
@@ -121,11 +105,30 @@ namespace ccl::lex::dot_item
 
     protected:
         Recurrence recurrence{ Recurrence::basic() };
-        size_t id;
+        size_t id{};
         SpecialItems &special_items;
         bool reversed{ false };
         bool prefix{};
         bool postfix{};
+    };
+
+    struct BasicItem::SpecialItems
+    {
+        auto scan(TextIterator &text_iterator) -> std::optional<std::pair<TextIterator, Token>>
+        {
+            for (auto &&item : special_items) {
+                auto scan_result = item->scan(
+                    text_iterator, Token{ text_iterator, item->getId() }, ScanType::SPECIAL);
+
+                if (scan_result.has_value() && not scan_result->second.getRepr().empty()) {
+                    return scan_result;
+                }
+            }
+
+            return std::nullopt;
+        }
+
+        std::vector<std::unique_ptr<BasicItem>> special_items;
     };
 }// namespace ccl::lex::dot_item
 

@@ -59,6 +59,11 @@ namespace ccl::lex::dot_item
             return items.empty();
         }
 
+        [[nodiscard]] auto isSpecial() const noexcept -> bool
+        {
+            return is_special;
+        }
+
         [[nodiscard]] auto getItems() const noexcept -> const storage_t &
         {
             return items;
@@ -123,7 +128,7 @@ namespace ccl::lex::dot_item
 
         storage_t items{};
         bool main_item{};
-        bool special_item{ false };
+        bool is_special{ false };
     };
 }// namespace ccl::lex::dot_item
 

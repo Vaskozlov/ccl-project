@@ -25,7 +25,7 @@ namespace ccl::lex::dot_item
         -> bool
     {
         auto scan_result =
-            item->scan(text_iterator, token, special_item ? ScanType::SPECIAL : ScanType::FORKED);
+            item->scan(text_iterator, token, is_special ? ScanType::SPECIAL : ScanType::FORKED);
 
         if (scan_result.has_value()) {
             auto &[iterator, new_token] = *scan_result;
@@ -40,11 +40,13 @@ namespace ccl::lex::dot_item
     auto Container::parseRule(TextIterator &rule_iterator) -> void
     {
         checkId();
+        rule_iterator.moveToCleanChar();
 
         auto counter = ItemsCounter{ rule_iterator };
 
         while (hasMovedToTheNextChar(rule_iterator)) {
             recognizeAction(rule_iterator, counter);
+            rule_iterator.moveToCleanChar();
         }
 
         postCreationCheck(rule_iterator, counter);
@@ -197,7 +199,7 @@ namespace ccl::lex::dot_item
                 rule_iterator, "you must declare, that the item is special at first");
         }
 
-        special_item = true;
+        is_special = true;
     }
 
     auto Container::reverseLastItem(TextIterator &rule_iterator) -> void
