@@ -67,16 +67,15 @@ namespace ccl::lex::dot_item
             break;
 
         case U'p':
-            checkAbilityToCreatePrefixPostfix();
             addPrefixPostfix();
             break;
 
         case U'&':
-            prepareForLogicalOperation(LogicalUnitType::AND);
+            prepareForLogicalOperation(LogicalOperation::AND);
             break;
 
         case U'|':
-            prepareForLogicalOperation(LogicalUnitType::OR);
+            prepareForLogicalOperation(LogicalOperation::OR);
             break;
 
         default:
@@ -85,10 +84,10 @@ namespace ccl::lex::dot_item
         }
     }
 
-    auto Container::RuleParser::prepareForLogicalOperation(LogicalUnitType type) -> void
+    auto Container::RuleParser::prepareForLogicalOperation(LogicalOperation type) -> void
     {
         checkThereIsLhsItem();
-        logical_unit_type = type;
+        logical_operation = type;
 
         reserved_lhs = std::move(items.back());
         items.pop_back();
@@ -100,20 +99,20 @@ namespace ccl::lex::dot_item
             rhs_item_constructed = true;
         } else if (rhs_item_constructed && reserved_lhs.has_value()) {
             emplaceItem(constructLogicalUnit());
-            logical_unit_type = LogicalUnitType::NONE;
+            logical_operation = LogicalOperation::NONE;
         }
     }
 
-    auto Container::RuleParser::constructLogicalUnit() -> std::unique_ptr<BasicItem>
+    auto Container::RuleParser::constructLogicalUnit() -> BasicItemPtr
     {
         auto rhs = std::move(items.back());
         items.pop_back();
 
         return std::make_unique<LogicalUnit>(
-            std::move(reserved_lhs.value()), std::move(rhs), logical_unit_type, special_items);
+            std::move(reserved_lhs.value()), std::move(rhs), logical_operation, special_items);
     }
 
-    auto Container::RuleParser::constructNewSequence() -> std::unique_ptr<BasicItem>
+    auto Container::RuleParser::constructNewSequence() -> BasicItemPtr
     {
         tryToFinishLogicalOperation();
 
@@ -121,7 +120,7 @@ namespace ccl::lex::dot_item
             Sequence::SequenceFlags{}, "\"", rule_iterator, special_items);
     }
 
-    auto Container::RuleParser::constructNewUnion() -> std::unique_ptr<BasicItem>
+    auto Container::RuleParser::constructNewUnion() -> BasicItemPtr
     {
         tryToFinishLogicalOperation();
 
@@ -129,7 +128,7 @@ namespace ccl::lex::dot_item
     }
 
     // NOLINTNEXTLINE (recursive function)
-    auto Container::RuleParser::constructNewContainer() -> std::unique_ptr<BasicItem>
+    auto Container::RuleParser::constructNewContainer() -> BasicItemPtr
     {
         tryToFinishLogicalOperation();
 
@@ -146,7 +145,7 @@ namespace ccl::lex::dot_item
         return new_container;
     }
 
-    auto Container::RuleParser::emplaceItem(std::unique_ptr<BasicItem> &&item) -> void
+    auto Container::RuleParser::emplaceItem(BasicItemPtr &&item) -> void
     {
         if (not item->canBeOptimized()) {
             auto item_recurrence = item->getRecurrence();
@@ -162,6 +161,8 @@ namespace ccl::lex::dot_item
 
     auto Container::RuleParser::addPrefixPostfix() -> void
     {
+        checkAbilityToCreatePrefixPostfix();
+
         auto &last_item = items.back();
         auto is_prefix = items.size() == 1 || items[items.size() - 2]->hasPrefix();
 
@@ -175,15 +176,14 @@ namespace ccl::lex::dot_item
     auto Container::RuleParser::addRecurrence(Recurrence new_recurrence) -> void
     {
         if (items.empty()) {
-            throwUnableToApply("no items found", "set recurrence modifier after item");
+            throwUnableToApply("no items found to set recurrence");
             return;
         }
 
         auto &last_item = items.back();
 
         if (last_item->getRecurrence() != Recurrence::basic()) {
-            throwUnableToApply(
-                "item already has recurrence", "do not set recurrence more than once");
+            throwUnableToApply("item already has recurrence");
             return;
         }
 
@@ -235,20 +235,18 @@ namespace ccl::lex::dot_item
             postfix_elem, items.end(), [](const auto &elem) { return elem->hasPostfix(); });
 
         if (not are_postfixes_correct) {
-            auto suggestion = fmt::format(
-                "add postfix modifier to the last item\n{}p", rule_iterator.getWorkingLine());
-
-            throwUnableToApply(
-                "item without postfix modifier exists after items with it", suggestion);
+            throwUnableToApply("item without postfix modifier exists after items with it");
             return;
         }
 
         if (reserved_lhs.has_value() && not rhs_item_constructed) {
             throwUnableToApply("no rhs items to apply operation");
+            return;
         }
 
         if (reserved_lhs.has_value() && rhs_item_constructed) {
             tryToFinishLogicalOperation();
+            return;
         }
 
         BasicItem::neverRecognizedSuggestion(rule_iterator, items.empty() && not isReversed());
@@ -278,8 +276,7 @@ namespace ccl::lex::dot_item
     {
         if (not container.main_item) {
             throwUnableToApply(
-                "you are not allowed to create prefixes or postfixes inside other dot items",
-                "create them only in main item");
+                "you are not allowed to create prefixes or postfixes inside other containers");
             return;
         }
 
@@ -291,12 +288,12 @@ namespace ccl::lex::dot_item
         auto &last_item = items.back();
 
         if (last_item->hasPrefix()) {
-            throwUnableToApply("item already has prefix modifier", "do not add it more than once");
+            throwUnableToApply("item already has prefix modifier");
             return;
         }
 
         if (last_item->hasPostfix()) {
-            throwUnableToApply("item already has postfix modifier", "do not add it more than once");
+            throwUnableToApply("item already has postfix modifier");
             return;
         }
     }

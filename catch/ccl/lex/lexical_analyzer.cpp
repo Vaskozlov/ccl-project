@@ -18,7 +18,7 @@ BOOST_AUTO_TEST_CASE(LexTest)
         10
         auto i = 10;
         i+10; // test
-        auto _ = "Hello, World!" + "test")"_sv;
+        auto _ = "Hello, World!" + "test\"")"_sv;
 
     // NOLINTBEGIN
     auto analyzer = LexicalAnalyzer(

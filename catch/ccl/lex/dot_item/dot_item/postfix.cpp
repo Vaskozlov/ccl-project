@@ -32,9 +32,6 @@ BOOST_AUTO_TEST_CASE(WrongPostfixCreation)
             BOOST_ASSERT(
                 exception.getMessage() ==
                 "unable to apply: item without postfix modifier exists after items with it");
-            BOOST_ASSERT(
-                exception.getSuggestion() ==
-                "add postfix modifier to the last item\n[a-z]+[_]p\"test\"p");
             return true;
         });
 }

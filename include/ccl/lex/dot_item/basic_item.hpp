@@ -15,6 +15,7 @@ namespace ccl::lex::dot_item
     {
     public:
         using TextIterator = text::TextIterator;
+        using BasicItemPtr = std::unique_ptr<BasicItem>;
 
         struct SpecialItems;
 
@@ -121,7 +122,7 @@ namespace ccl::lex::dot_item
 
     struct BasicItem::SpecialItems
     {
-        auto scan(const TextIterator &text_iterator) const
+        [[nodiscard]] auto scan(const TextIterator &text_iterator) const
             -> std::optional<std::pair<TextIterator, Token>>
         {
             for (auto &&item : special_items) {
@@ -135,7 +136,7 @@ namespace ccl::lex::dot_item
             return std::nullopt;
         }
 
-        std::vector<std::unique_ptr<BasicItem>> special_items;
+        std::vector<BasicItemPtr> special_items;
     };
 }// namespace ccl::lex::dot_item
 

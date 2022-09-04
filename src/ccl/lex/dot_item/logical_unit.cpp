@@ -9,11 +9,11 @@ namespace ccl::lex::dot_item
 
     auto LogicalUnit::scanIteration(TextIterator &text_iterator, Token &token) const -> bool
     {
-        switch (logical_unit_type) {
-        case LogicalUnitType::AND:
+        switch (logical_operation) {
+        case LogicalOperation::AND:
             return logicalAnd(text_iterator, token);
 
-        case LogicalUnitType::OR:
+        case LogicalOperation::OR:
             return logicalOr(text_iterator, token);
 
         default:
@@ -50,17 +50,21 @@ namespace ccl::lex::dot_item
         auto lhs_scan_result = lhs_item->scan(text_iterator, token);
         auto rhs_scan_result = rhs_item->scan(text_iterator, token);
 
-        if (not lhs_scan_result.has_value() && not rhs_scan_result.has_value()) {
+        auto has_lhs = lhs_scan_result.has_value();
+        auto has_rhs = rhs_scan_result.has_value();
+
+        if (not lor(has_lhs, has_rhs)) {
             return false;
         }
 
-        if (lhs_scan_result.has_value() && not rhs_scan_result.has_value()) {
+        if (land(has_lhs, not has_rhs)) {
             applyResult(*lhs_scan_result, text_iterator, token);
             return true;
         }
 
-        if (not lhs_scan_result.has_value() && rhs_scan_result.has_value()) {
+        if (land(not has_lhs, has_rhs)) {
             applyResult(*rhs_scan_result, text_iterator, token);
+            return true;
         }
 
         auto &[lhs_iterator, lhs_token] = *lhs_scan_result;

@@ -16,7 +16,7 @@ namespace ccl::lex::dot_item
         using BasicItem::recurrence;
 
         using typename BasicItem::TextIterator;
-        using storage_t = boost::container::small_vector<std::unique_ptr<BasicItem>, 4>;
+        using storage_t = boost::container::small_vector<BasicItemPtr, 4>;
 
         struct RuleParser;
 
@@ -105,21 +105,21 @@ namespace ccl::lex::dot_item
 
         auto recognizeAction() -> void;
 
-        auto prepareForLogicalOperation(LogicalUnitType type) -> void;
+        auto prepareForLogicalOperation(LogicalOperation type) -> void;
 
         auto tryToFinishLogicalOperation() -> void;
 
         [[nodiscard]] auto hasMovedToTheNextChar() -> bool;
 
-        [[nodiscard]] auto constructLogicalUnit() -> std::unique_ptr<BasicItem>;
+        [[nodiscard]] auto constructLogicalUnit() -> BasicItemPtr;
 
-        [[nodiscard]] auto constructNewSequence() -> std::unique_ptr<BasicItem>;
+        [[nodiscard]] auto constructNewSequence() -> BasicItemPtr;
 
-        [[nodiscard]] auto constructNewUnion() -> std::unique_ptr<BasicItem>;
+        [[nodiscard]] auto constructNewUnion() -> BasicItemPtr;
 
-        [[nodiscard]] auto constructNewContainer() -> std::unique_ptr<BasicItem>;
+        [[nodiscard]] auto constructNewContainer() -> BasicItemPtr;
 
-        auto emplaceItem(std::unique_ptr<BasicItem> &&item) -> void;
+        auto emplaceItem(BasicItemPtr &&item) -> void;
 
         auto addPrefixPostfix() -> void;
 
@@ -145,8 +145,8 @@ namespace ccl::lex::dot_item
         TextIterator &rule_iterator;
         storage_t &items{ container.items };
         SpecialItems &special_items{ container.special_items };
-        std::optional<std::unique_ptr<BasicItem>> reserved_lhs{ std::nullopt };
-        LogicalUnitType logical_unit_type;
+        std::optional<BasicItemPtr> reserved_lhs{ std::nullopt };
+        LogicalOperation logical_operation{};
         bool rhs_item_constructed{ false };
     };
 }// namespace ccl::lex::dot_item
