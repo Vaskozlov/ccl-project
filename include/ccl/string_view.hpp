@@ -31,8 +31,8 @@ namespace ccl
 
     template<typename T, typename CharT>
     concept StringLike = std::is_same_v<T, BasicStringView<CharT>> ||
-        std::is_same_v<T, std::basic_string_view<CharT>> ||
-        std::is_same_v<T, std::basic_string<CharT>>;
+                         std::is_same_v<T, std::basic_string_view<CharT>> ||
+                         std::is_same_v<T, std::basic_string<CharT>>;
 
     template<CharacterLiteral CharT>
     struct BasicStringView
@@ -212,7 +212,11 @@ namespace ccl
 
         CCL_DECL auto startsWith(const BasicStringView &str) const noexcept -> bool
         {
-            return substr(0, str.size()) == str;
+            if (size() < str.size()) {
+                return false;
+            }
+
+            return std::equal(begin(), begin() + str.size(), str.begin());
         }
 
         CCL_DECL auto operator[](size_t index) const noexcept -> CharT

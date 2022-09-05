@@ -2,6 +2,7 @@
 #define CCL_PROJECT_LEXICAL_ANALYZER_HPP
 
 #include <ccl/lex/dot_item/container.hpp>
+#include <memory_resource>
 #include <set>
 
 namespace ccl::lex
@@ -87,7 +88,11 @@ namespace ccl::lex
     private:
         auto createContainer(string_view rule, size_t id, string_view filename) -> void;
 
-        std::set<Container> items;
+        std::array<std::byte, 8096> buffer{};
+        std::pmr::monotonic_buffer_resource memory_resource{ buffer.data(), 8096 };
+
+        std::pmr::set<Container> items{ &memory_resource };
+
         SpecialItems special_items{};
         std::basic_string<size_t> ignored_ids{};
         ExceptionHandler &exception_handler;

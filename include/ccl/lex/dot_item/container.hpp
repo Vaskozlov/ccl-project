@@ -24,8 +24,9 @@ namespace ccl::lex::dot_item
         Container(
             TextIterator &rule_iterator_, SpecialItems &special_items_, size_t id_,
             bool main_item_ = false, bool is_special_ = false)
-          : BasicItem(special_items_, id_), rule_repr(rule_iterator_.getRemainingWithCurrent()),
-            main_item(main_item_), is_special(is_special_)
+          : BasicItem(special_items_, id_, true),
+            rule_repr(rule_iterator_.getRemainingWithCurrent()), main_item(main_item_),
+            is_special(is_special_)
         {
             parseRule(rule_iterator_);
         }
@@ -33,8 +34,9 @@ namespace ccl::lex::dot_item
         Container(
             TextIterator &&rule_iterator_, SpecialItems &special_items_, size_t id_,
             bool main_item_ = true, bool is_special_ = false)
-          : BasicItem(special_items_, id_), rule_repr(rule_iterator_.getRemainingWithCurrent()),
-            main_item(main_item_), is_special(is_special_)
+          : BasicItem(special_items_, id_, true),
+            rule_repr(rule_iterator_.getRemainingWithCurrent()), main_item(main_item_),
+            is_special(is_special_)
         {
             parseRule(rule_iterator_);
         }
@@ -42,8 +44,9 @@ namespace ccl::lex::dot_item
         Container(
             const TextIterator &rule_iterator_, SpecialItems &special_items_, size_t id_,
             bool main_item_ = true, bool is_special_ = false)
-          : BasicItem(special_items_, id_), rule_repr(rule_iterator_.getRemainingWithCurrent()),
-            main_item(main_item_), is_special(is_special_)
+          : BasicItem(special_items_, id_, true),
+            rule_repr(rule_iterator_.getRemainingWithCurrent()), main_item(main_item_),
+            is_special(is_special_)
         {
             auto rule_iterator = rule_iterator_;
             parseRule(rule_iterator);
@@ -75,11 +78,9 @@ namespace ccl::lex::dot_item
         }
 
     private:
-        [[nodiscard]] auto scanIteration(TextIterator &text_iterator, Token &token) const
-            -> bool final;
+        [[nodiscard]] auto scanIteration(TextIterator &text_iterator) const -> bool final;
 
-        [[nodiscard]] auto
-            scanItem(const BasicItem *item, TextIterator &text_iterator, Token &token) const
+        [[nodiscard]] auto scanItem(const BasicItem *item, TextIterator &text_iterator) const
             -> bool;
 
         auto parseRule(TextIterator &rule_iterator) -> void;

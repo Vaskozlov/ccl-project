@@ -15,23 +15,22 @@ namespace ccl::lex::dot_item
 
         [[nodiscard]] auto empty() const noexcept -> bool final;
 
-        auto scanIteration(TextIterator &text_iterator, Token &token) const -> bool final;
+        auto scanIteration(TextIterator &text_iterator) const -> bool final;
 
         LogicalUnit(
             BasicItemPtr lhs_, BasicItemPtr rhs_, LogicalOperation type_,
             SpecialItems &special_items_, size_t id_, bool is_special_)
-          : BasicItem(special_items_, id_), lhs_item(std::move(lhs_)), rhs_item(std::move(rhs_)),
-            logical_operation(type_), is_special(is_special_)
+          : BasicItem(special_items_, id_, true), lhs_item(std::move(lhs_)),
+            rhs_item(std::move(rhs_)), logical_operation(type_), is_special(is_special_)
         {}
 
     private:
-        auto logicalAnd(TextIterator &text_iterator, Token &token) const -> bool;
-        auto logicalOr(TextIterator &text_iterator, Token &token) const -> bool;
+        auto logicalAnd(TextIterator &text_iterator) const -> bool;
+        auto logicalOr(TextIterator &text_iterator) const -> bool;
 
-        static auto applyResult(
-            std::pair<TextIterator, Token> &scan_result,
-            TextIterator &text_iterator,
-            Token &token) -> void;
+        static auto
+            applyResult(std::pair<TextIterator, Token> &scan_result, TextIterator &text_iterator)
+                -> void;
 
         std::unique_ptr<BasicItem> lhs_item{};
         std::unique_ptr<BasicItem> rhs_item{};

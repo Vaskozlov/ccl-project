@@ -155,6 +155,7 @@ static void lexicalAnalysisOfC()
     auto token = tokenizer.yield();
 
     while (token) {
+        fmt::print("{}\n", token.getRepr());
         token = tokenizer.yield();
     }
 

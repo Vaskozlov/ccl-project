@@ -20,8 +20,8 @@ namespace ccl::lex::dot_item
 
         struct SpecialItems;
 
-        BasicItem(SpecialItems &special_items_, size_t id_)
-          : id(id_), special_items{ special_items_ } {};
+        BasicItem(SpecialItems &special_items_, size_t id_, bool need_token_)
+          : id(id_), special_items(special_items_), need_token(need_token_){};
 
         BasicItem(const BasicItem &) = default;
         BasicItem(BasicItem &&) noexcept = default;
@@ -98,10 +98,10 @@ namespace ccl::lex::dot_item
         }
 
     private:
-        [[nodiscard]] auto callScanIteration(TextIterator &local_iterator, Token &local_token) const
+        [[nodiscard]] auto callScanIteration(TextIterator &local_iterator) const
             -> bool;
 
-        [[nodiscard]] virtual auto scanIteration(TextIterator &text_iterator, Token &token) const
+        [[nodiscard]] virtual auto scanIteration(TextIterator &text_iterator) const
             -> bool = 0;
 
         [[nodiscard]] auto isSuccessfullyScanned(
@@ -116,6 +116,7 @@ namespace ccl::lex::dot_item
         size_t id{};
         SpecialItems &special_items;
         bool reversed{ false };
+        bool need_token{ false };
         bool prefix{};
         bool postfix{};
     };

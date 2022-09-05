@@ -87,5 +87,5 @@ STRING:             ! "\"" (["]^ | "\\\"")* "\""
 
 BOOST_AUTO_TEST_CASE(StaticGeneration)
 {
-    ccl::lex::AnalyzerGenerator::generateStaticVersion(__FILE__, C_RULE);
+    //ccl::lex::AnalyzerGenerator::generateStaticVersion(__FILE__, C_RULE);
 }

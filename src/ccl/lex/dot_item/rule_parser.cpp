@@ -1,6 +1,7 @@
 #include <ccl/lex/dot_item/container.hpp>
 #include <ccl/lex/dot_item/sequence.hpp>
 #include <ccl/lex/dot_item/union.hpp>
+#include <memory_resource>
 
 namespace ccl::lex::dot_item
 {

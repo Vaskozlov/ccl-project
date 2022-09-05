@@ -31,7 +31,7 @@ namespace ccl::lex::dot_item
         auto local_iterator = text_iterator;
 
         while (times < recurrence.to) {
-            if (isNotEOI(local_iterator) && callScanIteration(local_iterator, local_token)) {
+            if (isNotEOI(local_iterator) && callScanIteration(local_iterator)) {
                 ++times;
                 continue;
             }
@@ -51,15 +51,13 @@ namespace ccl::lex::dot_item
         return std::nullopt;
     }
 
-    auto BasicItem::callScanIteration(TextIterator &local_iterator, Token &local_token) const
+    auto BasicItem::callScanIteration(TextIterator &local_iterator) const
         -> bool
     {
-        auto token_copy = local_token;
         auto iterator_copy = local_iterator;
 
-        if (scanIteration(iterator_copy, token_copy) ^ reversed) {
+        if (scanIteration(iterator_copy) ^ reversed) {
             local_iterator = std::move(iterator_copy);
-            local_token = std::move(token_copy);
             return true;
         }
 
@@ -71,7 +69,7 @@ namespace ccl::lex::dot_item
     {
         auto is_next_value_special = false;
 
-        if (scan_type != ScanType::SPECIAL) {
+        if (scan_type == ScanType::MAIN) {
             auto iterator_copy = text_iterator;
             iterator_copy.next();
 
@@ -80,7 +78,7 @@ namespace ccl::lex::dot_item
 
         bool is_not_main_scan = scan_type != ScanType::MAIN;
 
-        return recurrence.inRange(times) && (is_not_main_scan || is_next_value_special || // TODO
+        return recurrence.inRange(times) && (is_not_main_scan || is_next_value_special ||// TODO
                                              isLayoutOrEoF(text_iterator.getNextCarriageValue()));
     }
 

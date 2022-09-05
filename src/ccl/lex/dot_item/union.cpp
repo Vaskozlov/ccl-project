@@ -5,7 +5,7 @@ namespace ccl::lex::dot_item
     using namespace ccl::string_view_literals;
 
     Union::Union(TextIterator &rule_iterator_, SpecialItems &special_items_, size_t id_)
-      : BasicItem(special_items_, id_)
+      : BasicItem(special_items_, id_, false)
     {
         auto is_range = false;
         auto previous_chr = static_cast<char32_t>(0);
@@ -41,7 +41,7 @@ namespace ccl::lex::dot_item
         return bitset.empty();
     }
 
-    auto Union::scanIteration(TextIterator &text_iterator, Token & /* unused */) const -> bool
+    auto Union::scanIteration(TextIterator &text_iterator) const -> bool
     {
         return bitset.at(text_iterator.next());
     }

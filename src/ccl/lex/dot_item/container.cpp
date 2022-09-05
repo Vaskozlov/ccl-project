@@ -4,10 +4,12 @@ namespace ccl::lex::dot_item
 {
     using namespace ccl::string_view_literals;
 
-    auto Container::scanIteration(TextIterator &text_iterator, Token &token) const -> bool
+    const static Token EmptyToken{};
+
+    auto Container::scanIteration(TextIterator &text_iterator) const -> bool
     {
         for (auto &&item : items) {
-            if (not scanItem(item.get(), text_iterator, token)) {
+            if (not scanItem(item.get(), text_iterator)) {
                 return false;
             }
         }
@@ -15,15 +17,13 @@ namespace ccl::lex::dot_item
         return true;
     }
 
-    auto Container::scanItem(const BasicItem *item, TextIterator &text_iterator, Token &token) const
-        -> bool
+    auto Container::scanItem(const BasicItem *item, TextIterator &text_iterator) const -> bool
     {
         ScanType scan_type = is_special ? ScanType::SPECIAL : ScanType::FORKED;
-        auto scan_result = item->scan(text_iterator, token, scan_type);
+        auto scan_result = item->scan(text_iterator, EmptyToken, scan_type);
 
         if (scan_result.has_value()) {
             auto &[iterator, new_token] = *scan_result;
-            token = std::move(new_token);
             text_iterator = std::move(iterator);
         }
 

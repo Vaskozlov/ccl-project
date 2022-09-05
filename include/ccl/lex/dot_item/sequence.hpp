@@ -40,8 +40,7 @@ namespace ccl::lex::dot_item
         [[nodiscard]] auto empty() const noexcept -> bool final;
 
     private:
-        [[nodiscard]] auto scanIteration(TextIterator &text_iterator, Token &token) const
-            -> bool final;
+        [[nodiscard]] auto scanIteration(TextIterator &text_iterator) const -> bool final;
 
         [[nodiscard]] auto isStringEnd(TextIterator &rule_iterator, bool is_escaping) const -> bool;
 

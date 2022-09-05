@@ -21,7 +21,7 @@ namespace ccl::lex::dot_item
         [[nodiscard]] auto empty() const noexcept -> bool final;
 
     private:
-        [[nodiscard]] auto scanIteration(TextIterator &text_iterator, Token & /* unused */) const
+        [[nodiscard]] auto scanIteration(TextIterator &text_iterator) const
             -> bool final;
 
         [[nodiscard]] static auto isRange(bool is_escaping, char32_t chr) noexcept -> bool;

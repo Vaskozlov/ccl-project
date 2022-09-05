@@ -7,7 +7,7 @@ namespace ccl::lex::dot_item
     Sequence::Sequence(
         SequenceFlags flags_, const string_view &str_begin_, const string_view &str_end_,
         TextIterator &rule_iterator_, SpecialItems &special_items_, size_t id_)
-      : BasicItem(special_items_, id_), str_begin(str_begin_), str_end(str_end_),
+      : BasicItem(special_items_, id_, false), str_begin(str_begin_), str_end(str_end_),
         sequence_flags(flags_)
     {
         auto &rule_iterator = rule_iterator_;
@@ -44,7 +44,7 @@ namespace ccl::lex::dot_item
         return sequence_value.empty();
     }
 
-    auto Sequence::scanIteration(TextIterator &text_iterator, Token & /* unused */) const -> bool
+    auto Sequence::scanIteration(TextIterator &text_iterator) const -> bool
     {
         auto future_text = text_iterator.getFutureRemaining(1);
 
