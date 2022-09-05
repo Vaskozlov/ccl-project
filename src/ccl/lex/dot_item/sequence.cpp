@@ -5,9 +5,10 @@ namespace ccl::lex::dot_item
     using namespace ccl::string_view_literals;
 
     Sequence::Sequence(
-        SequenceFlags flags_, string_view str_begin_, string_view str_end_,
-        TextIterator &rule_iterator_, SpecialItems &special_items_)
-      : BasicItem(special_items_), str_begin(str_begin_), str_end(str_end_), sequence_flags(flags_)
+        SequenceFlags flags_, const string_view &str_begin_, const string_view &str_end_,
+        TextIterator &rule_iterator_, SpecialItems &special_items_, size_t id_)
+      : BasicItem(special_items_, id_), str_begin(str_begin_), str_end(str_end_),
+        sequence_flags(flags_)
     {
         auto &rule_iterator = rule_iterator_;
         auto begin_iterator_state = rule_iterator;
@@ -50,6 +51,10 @@ namespace ccl::lex::dot_item
         if (future_text.startsWith(sequence_value)) {
             text_iterator.skip(sequence_value.size());
             return true;
+        }
+
+        if (reversed) {
+            text_iterator.next();
         }
 
         return false;
@@ -120,8 +125,8 @@ namespace ccl::lex::dot_item
 
     auto Sequence::throwUnterminatedString(
         TextIterator &rule_iterator,
-        string_view message,
-        string_view suggestion) -> void
+        const string_view &message,
+        const string_view &suggestion) -> void
     {
         rule_iterator.throwPanicError(message, suggestion);
         throw UnrecoverableError{ "unrecoverable error in SequenceType" };

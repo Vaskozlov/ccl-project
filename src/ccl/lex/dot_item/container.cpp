@@ -18,7 +18,7 @@ namespace ccl::lex::dot_item
     auto Container::scanItem(const BasicItem *item, TextIterator &text_iterator, Token &token) const
         -> bool
     {
-        auto scan_type = is_special ? ScanType::SPECIAL : ScanType::FORKED;
+        ScanType scan_type = is_special ? ScanType::SPECIAL : ScanType::FORKED;
         auto scan_result = item->scan(text_iterator, token, scan_type);
 
         if (scan_result.has_value()) {

@@ -6,7 +6,7 @@ namespace ccl::lex::dot_item
 {
     [[nodiscard]] static auto isNotEOI(const text::TextIterator &text_iterator) -> bool
     {
-        return not text_iterator.isEnd();
+        return not text_iterator.isEOI();
     }
 
     auto BasicItem::alwaysRecognizedSuggestion(TextIterator &text_iterator, bool condition) -> void
@@ -31,11 +31,12 @@ namespace ccl::lex::dot_item
         auto local_iterator = text_iterator;
 
         while (times < recurrence.to) {
-            if (isNotEOI(local_iterator) && successfulIteration(local_iterator, local_token)) {
+            if (isNotEOI(local_iterator) && callScanIteration(local_iterator, local_token)) {
                 ++times;
-            } else {
-                break;
+                continue;
             }
+
+            break;
         }
 
         if (isSuccessfullyScanned(local_iterator, times, scan_type)) {
@@ -50,7 +51,7 @@ namespace ccl::lex::dot_item
         return std::nullopt;
     }
 
-    auto BasicItem::successfulIteration(TextIterator &local_iterator, Token &local_token) const
+    auto BasicItem::callScanIteration(TextIterator &local_iterator, Token &local_token) const
         -> bool
     {
         auto token_copy = local_token;
@@ -79,7 +80,7 @@ namespace ccl::lex::dot_item
 
         bool is_not_main_scan = scan_type != ScanType::MAIN;
 
-        return recurrence.inRange(times) && (is_not_main_scan || is_next_value_special ||
+        return recurrence.inRange(times) && (is_not_main_scan || is_next_value_special || // TODO
                                              isLayoutOrEoF(text_iterator.getNextCarriageValue()));
     }
 

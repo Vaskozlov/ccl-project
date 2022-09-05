@@ -30,10 +30,10 @@ namespace ccl::text
             TextIterator &text_iterator, u16 max_times, u16 notation_power, bool need_all_chars)
             -> char32_t;
 
-
         explicit TextIterator(
-            string_view input, ExceptionHandler &exception_handler_ = ExceptionHandler::instance(),
-            string_view filename = {})
+            const string_view &input,
+            ExceptionHandler &exception_handler_ = ExceptionHandler::instance(),
+            const string_view &filename = {})
           : Base(input), location(filename), line_tracker(input),
             exception_handler(&exception_handler_)
         {}
@@ -86,68 +86,70 @@ namespace ccl::text
         auto utfError(char chr) -> void;
 
         auto throwSuggestion(
-            const TextIterator &iterator_location, string_view message, string_view suggestion = {})
-            -> void
+            const TextIterator &iterator_location, const string_view &message,
+            const string_view &suggestion = {}) -> void
         {
             throwToHandle(iterator_location, ExceptionCriticality::SUGGESTION, message, suggestion);
         }
 
         auto throwWarning(
-            const TextIterator &iterator_location, string_view message, string_view suggestion = {})
-            -> void
+            const TextIterator &iterator_location, const string_view &message,
+            const string_view &suggestion = {}) -> void
         {
             throwToHandle(iterator_location, ExceptionCriticality::WARNING, message, suggestion);
         }
 
         auto throwUncriticalError(
-            const TextIterator &iterator_location, string_view message, string_view suggestion = {})
-            -> void
+            const TextIterator &iterator_location, const string_view &message,
+            const string_view &suggestion = {}) -> void
         {
             throwToHandle(iterator_location, ExceptionCriticality::SUGGESTION, message, suggestion);
         }
 
         auto throwCriticalError(
-            const TextIterator &iterator_location, string_view message, string_view suggestion = {})
-            -> void
+            const TextIterator &iterator_location, const string_view &message,
+            const string_view &suggestion = {}) -> void
         {
             throwToHandle(iterator_location, ExceptionCriticality::CRITICAL, message, suggestion);
         }
 
         auto throwPanicError(
-            const TextIterator &iterator_location, string_view message, string_view suggestion = {})
-            -> void
+            const TextIterator &iterator_location, const string_view &message,
+            const string_view &suggestion = {}) -> void
         {
             throwToHandle(iterator_location, ExceptionCriticality::PANIC, message, suggestion);
         }
 
-        auto throwSuggestion(string_view message, string_view suggestion = {}) -> void
+        auto throwSuggestion(const string_view &message, const string_view &suggestion = {}) -> void
         {
             throwToHandle(*this, ExceptionCriticality::SUGGESTION, message, suggestion);
         }
 
-        auto throwWarning(string_view message, string_view suggestion = {}) -> void
+        auto throwWarning(const string_view &message, const string_view &suggestion = {}) -> void
         {
             throwToHandle(*this, ExceptionCriticality::WARNING, message, suggestion);
         }
 
-        auto throwUncriticalError(string_view message, string_view suggestion = {}) -> void
+        auto throwUncriticalError(const string_view &message, const string_view &suggestion = {})
+            -> void
         {
             throwToHandle(*this, ExceptionCriticality::SUGGESTION, message, suggestion);
         }
 
-        auto throwCriticalError(string_view message, string_view suggestion = {}) -> void
+        auto throwCriticalError(const string_view &message, const string_view &suggestion = {})
+            -> void
         {
             throwToHandle(*this, ExceptionCriticality::CRITICAL, message, suggestion);
         }
 
-        auto throwPanicError(string_view message, string_view suggestion = {}) -> void
+        auto throwPanicError(const string_view &message, const string_view &suggestion = {}) -> void
         {
             throwToHandle(*this, ExceptionCriticality::PANIC, message, suggestion);
         }
 
         auto throwToHandle(
             const TextIterator &iterator_location, ExceptionCriticality criticality,
-            string_view message, string_view suggestion = {}) -> void;
+            const string_view &message, const string_view &suggestion = {}) -> void;
 
     private:
         Location location{};

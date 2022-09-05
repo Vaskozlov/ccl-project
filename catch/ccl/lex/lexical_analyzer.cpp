@@ -23,7 +23,7 @@ BOOST_AUTO_TEST_CASE(LexTest)
     // NOLINTBEGIN
     auto analyzer = LexicalAnalyzer(
         handler::Cmd::instance(),
-        { { 2, R"([a-zA-Z_]+)" },
+        { { 2, "[a-zA-Z_]+" },
           { 3, "[0-9]+" },
           { 4, R"(! "+")" },
           { 5, R"(! ";")" },

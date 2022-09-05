@@ -23,8 +23,10 @@ namespace ccl::lex::dot_item
 
     auto LogicalUnit::logicalAnd(TextIterator &text_iterator, Token &token) const -> bool
     {
-        auto lhs_scan_result = lhs_item->scan(text_iterator, token);
-        auto rhs_scan_result = rhs_item->scan(text_iterator, token);
+        ScanType scan_type = is_special ? ScanType::SPECIAL : ScanType::FORKED;
+
+        auto lhs_scan_result = lhs_item->scan(text_iterator, token, scan_type);
+        auto rhs_scan_result = rhs_item->scan(text_iterator, token, scan_type);
 
         if (not lhs_scan_result.has_value() || not rhs_scan_result.has_value()) {
             return false;
@@ -47,8 +49,10 @@ namespace ccl::lex::dot_item
 
     auto LogicalUnit::logicalOr(TextIterator &text_iterator, Token &token) const -> bool
     {
-        auto lhs_scan_result = lhs_item->scan(text_iterator, token);
-        auto rhs_scan_result = rhs_item->scan(text_iterator, token);
+        ScanType scan_type = is_special ? ScanType::SPECIAL : ScanType::FORKED;
+
+        auto lhs_scan_result = lhs_item->scan(text_iterator, token, scan_type);
+        auto rhs_scan_result = rhs_item->scan(text_iterator, token, scan_type);
 
         auto has_lhs = lhs_scan_result.has_value();
         auto has_rhs = rhs_scan_result.has_value();

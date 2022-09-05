@@ -1,7 +1,6 @@
 #ifndef CCL_PROJECT_EXCEPTION_HANDLER_HPP
 #define CCL_PROJECT_EXCEPTION_HANDLER_HPP
 
-#include <ccl/ccl.hpp>
 #include <ccl/text/iterator_exception.hpp>
 
 namespace ccl

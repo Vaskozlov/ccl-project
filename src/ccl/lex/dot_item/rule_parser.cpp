@@ -109,7 +109,8 @@ namespace ccl::lex::dot_item
         items.pop_back();
 
         return std::make_unique<LogicalUnit>(
-            std::move(reserved_lhs.value()), std::move(rhs), logical_operation, special_items);
+            std::move(reserved_lhs.value()), std::move(rhs), logical_operation, special_items,
+            getId(), container.is_special);
     }
 
     auto Container::RuleParser::constructNewSequence() -> BasicItemPtr
@@ -117,14 +118,14 @@ namespace ccl::lex::dot_item
         tryToFinishLogicalOperation();
 
         return std::make_unique<Sequence>(
-            Sequence::SequenceFlags{}, "\"", rule_iterator, special_items);
+            Sequence::SequenceFlags{}, "\"", rule_iterator, special_items, getId());
     }
 
     auto Container::RuleParser::constructNewUnion() -> BasicItemPtr
     {
         tryToFinishLogicalOperation();
 
-        return std::make_unique<Union>(rule_iterator, special_items);
+        return std::make_unique<Union>(rule_iterator, special_items, getId());
     }
 
     // NOLINTNEXTLINE (recursive function)
@@ -138,8 +139,8 @@ namespace ccl::lex::dot_item
 
         rule_iterator.setEnd(text.begin() + bracket_index);
 
-        auto new_container =
-            std::make_unique<Container>(rule_iterator, container.id, special_items, false);
+        auto new_container = std::make_unique<Container>(
+            rule_iterator, special_items, getId(), false, container.is_special);
         rule_iterator.setEnd(saved_end);
 
         return new_container;
@@ -313,8 +314,8 @@ namespace ccl::lex::dot_item
     {
         auto message = "undefined action"_sv;
         auto suggestion =
-            "Use `\"` for string, `'` for special symbol, `[` for unions, `(` for dot "
-            "items"_sv;
+            "use `!` to declare special symbol, `\"` for string, `[` for unions, `(` for "
+            "containers "_sv;
 
         rule_iterator.throwPanicError(message, suggestion);
         throw UnrecoverableError{ "unrecoverable error in ContainerType" };

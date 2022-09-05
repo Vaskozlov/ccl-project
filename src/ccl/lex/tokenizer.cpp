@@ -20,7 +20,7 @@ namespace ccl::lex
         while (true) {
         ScanBegin:
 
-            if (text_iterator.isEnd()) {
+            if (text_iterator.isEOI()) {
                 return constructEOIToken();
             }
 

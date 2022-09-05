@@ -10,7 +10,7 @@
 namespace ccl::lex
 {
     // NOLINTNEXTLINE
-    CCL_ENUM(ReservedTokenType, size_t, EOI = 0, BAD_TOKEN = 1);
+    CCL_ENUM(ReservedTokenType, size_t, EOI, BAD_TOKEN);
 
     struct TokenAttributes
     {
@@ -32,22 +32,20 @@ namespace ccl::lex
 
         CCL_PERFECT_FORWARDING(T, std::string)
         Token(TokenAttributes &&attributes_, const string_view &repr_, size_t id_, T &&value_ = {})
-          : attributes(attributes_), value{ std::forward<T>(value_) }, repr{ repr_ }, id{ id_ }
+          : attributes(attributes_), value(std::forward<T>(value_)), repr(repr_), id(id_)
         {}
 
         CCL_PERFECT_FORWARDING(T, std::string)
         Token(
             TokenAttributes &&attributes_, typename string_view::iterator begin_, size_t id_,
             T &&value_ = {})
-          : Token(
-                std::move(attributes_), { begin_, static_cast<size_t>(0) }, id_,
-                std::forward<T>(value_))
+          : Token(std::move(attributes_), { begin_, 0 }, id_, std::forward<T>(value_))
         {}
 
         CCL_PERFECT_FORWARDING(T, std::string)
         Token(const text::TextIterator &text_iterator_, size_t id_, T &&value_ = {})
-          : attributes(text_iterator_), value{ std::forward<T>(value_) },
-            repr{ text_iterator_.getRemaining() }, id{ id_ }
+          : attributes(text_iterator_), value(std::forward<T>(value_)),
+            repr(text_iterator_.getRemaining()), id(id_)
         {}
 
         [[nodiscard]] auto getId() const noexcept -> size_t

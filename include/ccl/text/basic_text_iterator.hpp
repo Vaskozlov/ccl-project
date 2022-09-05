@@ -122,7 +122,7 @@ namespace ccl::text
             return { carriage, end };
         }
 
-        CCL_DECL auto isEnd() const noexcept -> bool
+        CCL_DECL auto isEOI() const noexcept -> bool
         {
             return getRemainingAsCarriage() == end;
         }

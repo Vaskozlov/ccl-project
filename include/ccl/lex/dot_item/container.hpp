@@ -22,25 +22,28 @@ namespace ccl::lex::dot_item
 
     public:
         Container(
-            TextIterator &rule_iterator_, size_t id_, SpecialItems &special_items_,
-            bool main_item_ = false)
-          : BasicItem(special_items_, id_), main_item(main_item_)
+            TextIterator &rule_iterator_, SpecialItems &special_items_, size_t id_,
+            bool main_item_ = false, bool is_special_ = false)
+          : BasicItem(special_items_, id_), rule_repr(rule_iterator_.getRemainingWithCurrent()),
+            main_item(main_item_), is_special(is_special_)
         {
             parseRule(rule_iterator_);
         }
 
         Container(
-            TextIterator &&rule_iterator_, size_t id_, SpecialItems &special_items_,
-            bool main_item_ = true)
-          : BasicItem(special_items_, id_), main_item(main_item_)
+            TextIterator &&rule_iterator_, SpecialItems &special_items_, size_t id_,
+            bool main_item_ = true, bool is_special_ = false)
+          : BasicItem(special_items_, id_), rule_repr(rule_iterator_.getRemainingWithCurrent()),
+            main_item(main_item_), is_special(is_special_)
         {
             parseRule(rule_iterator_);
         }
 
         Container(
-            const TextIterator &rule_iterator_, size_t id_, SpecialItems &special_items_,
-            bool main_item_ = true)
-          : BasicItem(special_items_, id_), main_item(main_item_)
+            const TextIterator &rule_iterator_, SpecialItems &special_items_, size_t id_,
+            bool main_item_ = true, bool is_special_ = false)
+          : BasicItem(special_items_, id_), rule_repr(rule_iterator_.getRemainingWithCurrent()),
+            main_item(main_item_), is_special(is_special_)
         {
             auto rule_iterator = rule_iterator_;
             parseRule(rule_iterator);
@@ -82,6 +85,7 @@ namespace ccl::lex::dot_item
         auto parseRule(TextIterator &rule_iterator) -> void;
 
         storage_t items{};
+        std::string rule_repr{};
         bool main_item{};
         bool is_special{ false };
     };

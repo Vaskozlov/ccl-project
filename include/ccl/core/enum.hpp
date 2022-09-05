@@ -3,7 +3,70 @@
 
 #include <ccl/core/defines.hpp>
 
+#define CCL_PARENS ()
+
+// Rescan macro tokens 256 times
+#define CCL_EXPAND(arg) CCL_EXPAND1(CCL_EXPAND1(CCL_EXPAND1(CCL_EXPAND1(arg))))
+#define CCL_EXPAND1(arg) CCL_EXPAND2(CCL_EXPAND2(CCL_EXPAND2(CCL_EXPAND2(arg))))
+#define CCL_EXPAND2(arg) CCL_EXPAND3(CCL_EXPAND3(CCL_EXPAND3(CCL_EXPAND3(arg))))
+#define CCL_EXPAND3(arg) CCL_EXPAND4(CCL_EXPAND4(CCL_EXPAND4(CCL_EXPAND4(arg))))
+#define CCL_EXPAND4(arg) arg
+
+#define CCL_FOR_EACH(macro, ...) __VA_OPT__(CCL_EXPAND(CCL_FOR_EACH_HELPER(macro, __VA_ARGS__)))
+#define CCL_FOR_EACH_HELPER(macro, a1, ...)                                                        \
+    macro(a1) __VA_OPT__(CCL_FOR_EACH_AGAIN CCL_PARENS(macro, __VA_ARGS__))
+#define CCL_FOR_EACH_AGAIN() CCL_FOR_EACH_HELPER
+
+#define CCL_ENUM_CASE(name)                                                                        \
+case name:                                                                                         \
+    return #name;
+
+#define CCL_DECLARATION(name) static constexpr size_t name = __COUNTER__ - counter_begin - 1;
+
 #define CCL_ENUM(Name, Type, ...)                                                                  \
+    struct Name                                                                                    \
+    {                                                                                              \
+    private:                                                                                       \
+        static constexpr auto counter_begin = __COUNTER__;                                         \
+                                                                                                   \
+    public:                                                                                        \
+        CCL_DECL operator Type() const                                                             \
+        {                                                                                          \
+            return value;                                                                          \
+        }                                                                                          \
+                                                                                                   \
+        CCL_DECL static auto contains(Name value) -> bool                                          \
+        {                                                                                          \
+            return value.value < (counter_end - counter_begin);                                    \
+        }                                                                                          \
+                                                                                                   \
+        constexpr static std::string_view toString(Name value)                                     \
+        {                                                                                          \
+            switch (value) {                                                                       \
+                CCL_FOR_EACH(CCL_ENUM_CASE, __VA_ARGS__)                                           \
+            default:                                                                               \
+                return "unknown";                                                                  \
+            }                                                                                      \
+        }                                                                                          \
+                                                                                                   \
+        Name() = default;                                                                          \
+                                                                                                   \
+        constexpr Name(const Type &value_) : value(value_)                                         \
+        {}                                                                                         \
+                                                                                                   \
+        constexpr Name(Type &&value_) noexcept(std::is_nothrow_move_constructible_v<Type>)         \
+          : value(std::move(value_))                                                               \
+        {}                                                                                         \
+                                                                                                   \
+        CCL_FOR_EACH(CCL_DECLARATION, __VA_ARGS__)                                                 \
+                                                                                                   \
+    private:                                                                                       \
+        static constexpr auto counter_end = __COUNTER__ - 1;                                       \
+                                                                                                   \
+        Type value{};                                                                              \
+    }
+
+#define CCL_PREDEFINED_ENUM(Name, Type, ...)                                                       \
     namespace detail::CCL_FORCE_EXPAND(Name, _)                                                    \
     {                                                                                              \
         struct IterationValues                                                                     \

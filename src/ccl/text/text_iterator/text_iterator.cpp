@@ -21,7 +21,7 @@ namespace ccl::text
     }
 
     auto TextIterator::nextRawCharWithEscapingSymbols(
-        TextIterator::extra_symbols_t const &extra_symbols) -> Pair<bool, char32_t>
+        const TextIterator::extra_symbols_t &extra_symbols) -> Pair<bool, char32_t>
     {
         auto escaping = false;
         auto chr = next();
@@ -39,22 +39,20 @@ namespace ccl::text
         TextIterator &text_iterator, TextIterator::extra_symbols_t const &extra_symbols_)
         -> char32_t
     {
-        auto symbolizer = EscapingSymbolizer{ text_iterator, extra_symbols_ };
-        return symbolizer.matchNextChar();
+        return EscapingSymbolizer(text_iterator, extra_symbols_).matchNextChar();
     }
 
     auto TextIterator::calculateNotationEscapeSymbol(
         TextIterator &text_iterator, u16 max_times, u16 notation_power, bool need_all_chars)
         -> char32_t
     {
-        auto notation_escape_symbolizer =
-            NotationEscapingSymbolizer{ text_iterator, max_times, notation_power, need_all_chars };
-        return notation_escape_symbolizer.get();
+        return NotationEscapingSymbolizer(text_iterator, max_times, notation_power, need_all_chars)
+            .get();
     }
 
     auto TextIterator::throwToHandle(
         const TextIterator &iterator_location, ExceptionCriticality criticality,
-        string_view message, string_view suggestion) -> void
+        const string_view &message, const string_view &suggestion) -> void
     {
         auto exception = TextIteratorException(
             criticality, iterator_location.getLocation(), iterator_location.getWorkingLine(),

@@ -18,13 +18,13 @@ namespace ccl::lex::dot_item
         };
 
         Sequence(
-            SequenceFlags flags_, string_view str_begin_, string_view str_end,
-            TextIterator &rule_iterator_, SpecialItems &special_items_);
+            SequenceFlags flags_, const string_view &str_begin_, const string_view &str_end,
+            TextIterator &rule_iterator_, SpecialItems &special_items_, size_t id_ = 0);
 
         Sequence(
-            SequenceFlags flags_, string_view str_begin_, TextIterator &rule_iterator_,
-            SpecialItems &special_items_)
-          : Sequence(flags_, str_begin_, str_begin_, rule_iterator_, special_items_)
+            SequenceFlags flags_, const string_view &str_begin_, TextIterator &rule_iterator_,
+            SpecialItems &special_items_, size_t id_ = 0)
+          : Sequence(flags_, str_begin_, str_begin_, rule_iterator_, special_items_, id_)
         {}
 
         [[nodiscard]] auto getValue() noexcept -> std::string &
@@ -60,12 +60,12 @@ namespace ccl::lex::dot_item
 
         static auto throwUnterminatedString(
             TextIterator &rule_iterator,
-            string_view message,
-            string_view suggestion = {}) -> void;
+            const string_view &message,
+            const string_view &suggestion = {}) -> void;
 
+        std::string sequence_value{};
         string_view str_begin{};
         string_view str_end{};
-        std::string sequence_value{};
         SequenceFlags sequence_flags{};
     };
 }// namespace ccl::lex::dot_item

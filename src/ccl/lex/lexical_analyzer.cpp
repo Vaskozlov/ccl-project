@@ -1,5 +1,4 @@
 #include <ccl/lex/lexical_analyzer.hpp>
-#include <utility>
 
 namespace ccl::lex
 {
@@ -18,7 +17,7 @@ namespace ccl::lex
     auto LexicalAnalyzer::createContainer(string_view rule, size_t id, string_view filename) -> void
     {
         auto container =
-            Container(TextIterator{ rule, exception_handler, filename }, id, special_items);
+            Container(TextIterator{ rule, exception_handler, filename }, special_items, id);
 
         if (container.isSpecial()) {
             special_items.special_items.emplace_back(

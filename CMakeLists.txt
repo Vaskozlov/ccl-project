@@ -8,3 +8,4 @@ include(cmake/libraries.cmake)
 
 include(src/CMakeLists.txt)
 include(catch/CMakeLists.txt)
+include(bench/CMakeLists.txt)

@@ -12,7 +12,7 @@ BOOST_AUTO_TEST_CASE(SpecialItem)
     auto text_iterator = TextIterator{ "+" };
 
     special_items.special_items.emplace_back(
-        std::make_unique<Container>(TextIterator{ R"(!"+")" }, 2, special_items));
+        std::make_unique<Container>(TextIterator{ R"(!"+")" }, special_items, 2));
 
     auto item = special_items.scan(text_iterator);
 

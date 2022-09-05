@@ -6,7 +6,7 @@
 namespace ccl::lex::dot_item
 {
     // NOLINTNEXTLINE
-    CCL_ENUM(LogicalOperation, u16, NONE = 0, AND = 1, OR = 2);
+    CCL_ENUM(LogicalOperation, u16, NONE, AND, OR);
 
     class LogicalUnit final : public BasicItem
     {
@@ -19,9 +19,9 @@ namespace ccl::lex::dot_item
 
         LogicalUnit(
             BasicItemPtr lhs_, BasicItemPtr rhs_, LogicalOperation type_,
-            SpecialItems &special_items_)
-          : BasicItem(special_items_), lhs_item(std::move(lhs_)), rhs_item(std::move(rhs_)),
-            logical_operation(type_)
+            SpecialItems &special_items_, size_t id_, bool is_special_)
+          : BasicItem(special_items_, id_), lhs_item(std::move(lhs_)), rhs_item(std::move(rhs_)),
+            logical_operation(type_), is_special(is_special_)
         {}
 
     private:
@@ -36,6 +36,7 @@ namespace ccl::lex::dot_item
         std::unique_ptr<BasicItem> lhs_item{};
         std::unique_ptr<BasicItem> rhs_item{};
         LogicalOperation logical_operation{ LogicalOperation::NONE };
+        bool is_special{ false };
     };
 }// namespace ccl::lex::dot_item
 
