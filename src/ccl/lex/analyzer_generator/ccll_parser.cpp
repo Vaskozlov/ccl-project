@@ -101,7 +101,7 @@ namespace ccl::lex::parser
         auto name = token_stack.top();
         token_stack.pop();
 
-        rules.emplace_back(current_block, blocks[current_block], name.getValue(), rule.getValue());
+        rules.emplace_back(current_block, blocks[current_block], name.getRepr(), rule.getRepr());
 
         expectRuleEnd();
     }
@@ -114,7 +114,7 @@ namespace ccl::lex::parser
         auto directive = token_stack.top();
         token_stack.pop();
 
-        directives[directive.getValue()] = directive_value.getValue();
+        directives[directive.getRepr()] = directive_value.getRepr();
 
         expectRuleEnd();
     }
@@ -159,7 +159,7 @@ namespace ccl::lex::parser
         auto block_name = token_stack.top();
         token_stack.pop();
 
-        current_block = block_name.getValue();
+        current_block = block_name.getRepr();
 
         if (not blocks.contains(current_block)) {
             blocks.insert({ current_block, { static_cast<u16>(last_block_id++), 0 } });

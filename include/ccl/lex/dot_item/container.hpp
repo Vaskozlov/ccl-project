@@ -9,6 +9,8 @@
 
 namespace ccl::lex::dot_item
 {
+    CCL_ENUM(ScanningType, u16, MAIN_SCAN, BASIC, SPECIAL, CHECK);
+
     class Container final : public BasicItem
     {
     private:
@@ -16,6 +18,8 @@ namespace ccl::lex::dot_item
         using BasicItem::recurrence;
 
         using typename BasicItem::TextIterator;
+
+        using ForkedGen = typename TextIterator::ForkedTextIterator;
         using storage_t = boost::container::small_vector<BasicItemPtr, 4>;
 
         struct RuleParser;
@@ -24,9 +28,8 @@ namespace ccl::lex::dot_item
         Container(
             TextIterator &rule_iterator_, SpecialItems &special_items_, size_t id_,
             bool main_item_ = false, bool is_special_ = false)
-          : BasicItem(special_items_, id_, true),
-            rule_repr(rule_iterator_.getRemainingWithCurrent()), main_item(main_item_),
-            is_special(is_special_)
+          : BasicItem(special_items_, id_), rule_repr(rule_iterator_.getRemainingWithCurrent()),
+            main_item(main_item_), is_special(is_special_)
         {
             parseRule(rule_iterator_);
         }
@@ -34,9 +37,8 @@ namespace ccl::lex::dot_item
         Container(
             TextIterator &&rule_iterator_, SpecialItems &special_items_, size_t id_,
             bool main_item_ = true, bool is_special_ = false)
-          : BasicItem(special_items_, id_, true),
-            rule_repr(rule_iterator_.getRemainingWithCurrent()), main_item(main_item_),
-            is_special(is_special_)
+          : BasicItem(special_items_, id_), rule_repr(rule_iterator_.getRemainingWithCurrent()),
+            main_item(main_item_), is_special(is_special_)
         {
             parseRule(rule_iterator_);
         }
@@ -44,13 +46,15 @@ namespace ccl::lex::dot_item
         Container(
             const TextIterator &rule_iterator_, SpecialItems &special_items_, size_t id_,
             bool main_item_ = true, bool is_special_ = false)
-          : BasicItem(special_items_, id_, true),
-            rule_repr(rule_iterator_.getRemainingWithCurrent()), main_item(main_item_),
-            is_special(is_special_)
+          : BasicItem(special_items_, id_), rule_repr(rule_iterator_.getRemainingWithCurrent()),
+            main_item(main_item_), is_special(is_special_)
         {
             auto rule_iterator = rule_iterator_;
             parseRule(rule_iterator);
         }
+
+        auto beginScan(TextIterator &text_iterator, ScanningType special_scan = ScanningType::BASIC)
+            const -> std::optional<Token>;
 
         [[nodiscard]] auto operator==(const Container &other) const noexcept
         {
@@ -67,6 +71,9 @@ namespace ccl::lex::dot_item
             return items.empty();
         }
 
+        [[nodiscard]] auto scanIteration(const ForkedGenerator &text_iterator) const
+            -> size_t final;
+
         [[nodiscard]] auto isSpecial() const noexcept -> bool
         {
             return is_special;
@@ -78,11 +85,6 @@ namespace ccl::lex::dot_item
         }
 
     private:
-        [[nodiscard]] auto scanIteration(TextIterator &text_iterator) const -> bool final;
-
-        [[nodiscard]] auto scanItem(const BasicItem *item, TextIterator &text_iterator) const
-            -> bool;
-
         auto parseRule(TextIterator &rule_iterator) -> void;
 
         storage_t items{};
@@ -153,6 +155,32 @@ namespace ccl::lex::dot_item
         std::optional<BasicItemPtr> reserved_lhs{ std::nullopt };
         LogicalOperation logical_operation{};
         bool rhs_item_constructed{ false };
+    };
+
+    struct BasicItem::SpecialItems
+    {
+        [[nodiscard]] auto checkForSpecial(const ForkedGenerator &text_iterator) const -> bool
+        {
+            return std::ranges::any_of(special_items, [text_iterator](const auto &special_item) {
+                auto scan_result = special_item.scan(text_iterator);
+                return scan_result.has_value() && scan_result != 0;
+            });
+        }
+
+        auto specialScan(TextIterator &text_iterator) const -> std::optional<Token>
+        {
+            for (auto &&special_item : special_items) {
+                auto scan_result = special_item.beginScan(text_iterator, ScanningType::SPECIAL);
+
+                if (scan_result.has_value()) {
+                    return scan_result;
+                }
+            }
+
+            return std::nullopt;
+        }
+
+        std::vector<Container> special_items;
     };
 }// namespace ccl::lex::dot_item
 

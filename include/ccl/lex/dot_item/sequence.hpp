@@ -11,7 +11,7 @@ namespace ccl::lex::dot_item
         using typename BasicItem::TextIterator;
 
     public:
-        struct SequenceFlags
+        struct CCL_TRIVIAL_ABI SequenceFlags
         {
             bool multiline : 1 = false;
             bool no_escaping_symbols : 1 = false;
@@ -37,10 +37,14 @@ namespace ccl::lex::dot_item
             return sequence_value;
         }
 
-        [[nodiscard]] auto empty() const noexcept -> bool final;
+        [[nodiscard]] auto empty() const noexcept -> bool final
+        {
+            return sequence_value.empty();
+        }
 
     private:
-        [[nodiscard]] auto scanIteration(TextIterator &text_iterator) const -> bool final;
+        [[nodiscard]] auto scanIteration(const ForkedGenerator &text_iterator) const
+            -> size_t final;
 
         [[nodiscard]] auto isStringEnd(TextIterator &rule_iterator, bool is_escaping) const -> bool;
 

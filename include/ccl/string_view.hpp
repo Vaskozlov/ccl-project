@@ -210,7 +210,7 @@ namespace ccl
             return result;
         }
 
-        CCL_DECL auto startsWith(const BasicStringView &str) const noexcept -> bool
+        CCL_DECL auto startsWith(const StringLike<CharT> auto &str) const noexcept -> bool
         {
             if (size() < str.size()) {
                 return false;

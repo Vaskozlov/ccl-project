@@ -111,7 +111,7 @@ namespace ccl::lex::dot_item
 
         return std::make_unique<LogicalUnit>(
             std::move(reserved_lhs.value()), std::move(rhs), logical_operation, special_items,
-            getId(), container.is_special);
+            getId());
     }
 
     auto Container::RuleParser::constructNewSequence() -> BasicItemPtr

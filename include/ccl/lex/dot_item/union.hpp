@@ -18,11 +18,13 @@ namespace ccl::lex::dot_item
             return bitset;
         }
 
-        [[nodiscard]] auto empty() const noexcept -> bool final;
+        [[nodiscard]] auto empty() const noexcept -> bool final
+        {
+            return bitset.empty();
+        }
 
     private:
-        [[nodiscard]] auto scanIteration(TextIterator &text_iterator) const
-            -> bool final;
+        auto scanIteration(const ForkedGenerator &text_iterator) const -> size_t final;
 
         [[nodiscard]] static auto isRange(bool is_escaping, char32_t chr) noexcept -> bool;
 

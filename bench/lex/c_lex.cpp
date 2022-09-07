@@ -124,11 +124,62 @@ static inline ccl::lex::LexicalAnalyzer C_Lexer(
         { Token_C_Lexer::NUMBER, R"( [0-9]+ ( [a-zA-Z_]+ [a-zA-Z0-9_]* )?p )" },
         { Token_C_Lexer::FLOAT, R"( [0-9]+"."[0-9]* ( [a-zA-Z_]+ [a-zA-Z0-9_]* )?p )" },
         { Token_C_Lexer::IDENTIFIER, R"( [a-zA-Z_]+[a-zA-Z0-9_]* )" },
-        { Token_C_Lexer::CHAR, R"( ! "\'" ([']^ | "\\\'" ) "\'" )" },
-        { Token_C_Lexer::STRING, R"( ! "\"" (["]^ | "\\\"")* "\"" )" },
+        { Token_C_Lexer::CHAR, R"( ! "\'" ("\\\'" | [']^) "\'" )" },
+        { Token_C_Lexer::STRING, R"( ! "\"" ("\\\"" | ["]^)* "\"" )" },
     });
 
 auto C_Program = R"(
+int main(int argc, char **argv) {
+int a = 10;
+int b = 20;
+char *c = "Hello, World!\xff";
+char d = 't';
+
+  /*
+This is a comment!*/
+
+float a2 = 20.0f;
+
+a += b;
+b *= a;
+
+return a + b;
+}
+
+int main(int argc, char **argv) {
+int a = 10;
+int b = 20;
+char *c = "Hello, World!\xff";
+char d = 't';
+
+  /*
+This is a comment!*/
+
+float a2 = 20.0f;
+
+a += b;
+b *= a;
+
+return a + b;
+}
+
+int main(int argc, char **argv) {
+int a = 10;
+int b = 20;
+char *c = "Hello, World!\xff";
+char d = 't';
+
+  /*
+This is a comment!*/
+
+float a2 = 20.0f;
+
+a += b;
+b *= a;
+
+return a + b;
+}
+
 int main(int argc, char **argv) {
 int a = 10;
 int b = 20;
@@ -151,12 +202,13 @@ static void lexicalAnalysisOfC()
 {
     auto begin = std::chrono::high_resolution_clock::now();
 
-    auto tokenizer = C_Lexer.getTokenizer(C_Program);
-    auto token = tokenizer.yield();
+    for (size_t i = 0; i != 10; ++i) {
+        auto tokenizer = C_Lexer.getTokenizer(C_Program);
+        auto token = tokenizer.yield();
 
-    while (token) {
-        fmt::print("{}\n", token.getRepr());
-        token = tokenizer.yield();
+        while (token) {
+            token = tokenizer.yield();
+        }
     }
 
     auto end = std::chrono::high_resolution_clock::now();

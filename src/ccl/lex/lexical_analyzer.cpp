@@ -20,8 +20,7 @@ namespace ccl::lex
             Container(TextIterator{ rule, exception_handler, filename }, special_items, id);
 
         if (container.isSpecial()) {
-            special_items.special_items.emplace_back(
-                std::make_unique<Container>(std::move(container)));
+            special_items.special_items.emplace_back(std::move(container));
         } else if (not container.empty()) {
             items.emplace(std::move(container));
         }

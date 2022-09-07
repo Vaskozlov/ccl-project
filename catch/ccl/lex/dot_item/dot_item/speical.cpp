@@ -12,9 +12,9 @@ BOOST_AUTO_TEST_CASE(SpecialItem)
     auto text_iterator = TextIterator{ "+" };
 
     special_items.special_items.emplace_back(
-        std::make_unique<Container>(TextIterator{ R"(!"+")" }, special_items, 2));
+        Container(TextIterator{ R"(!"+")" }, special_items, 2));
 
-    auto item = special_items.scan(text_iterator);
+    auto item = special_items.checkForSpecial(text_iterator.fork());
 
-    fmt::print("{}\n", item->second.getRepr());
+    fmt::print("{}\n", item);
 }

@@ -2,24 +2,6 @@
 
 namespace ccl::text
 {
-    auto TextIterator::onMove(char chr) -> void
-    {
-        location.intermediateNext(chr);
-    }
-
-    auto TextIterator::onCharacter(char32_t chr) -> void
-    {
-        location.next(chr);
-        ts_tracker.next(chr);
-        line_tracker.next(chr);
-    }
-
-    auto TextIterator::utfError(char /* chr */) -> void
-    {
-        throwPanicError("invalid utf symbol");
-        throw UnrecoverableError{ "unable to recover, because of invalid utf symbol" };
-    }
-
     auto TextIterator::nextRawCharWithEscapingSymbols(
         const TextIterator::extra_symbols_t &extra_symbols) -> Pair<bool, char32_t>
     {

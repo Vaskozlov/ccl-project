@@ -5,7 +5,7 @@ namespace ccl::lex::dot_item
     using namespace ccl::string_view_literals;
 
     Union::Union(TextIterator &rule_iterator_, SpecialItems &special_items_, size_t id_)
-      : BasicItem(special_items_, id_, false)
+      : BasicItem(special_items_, id_)
     {
         auto is_range = false;
         auto previous_chr = static_cast<char32_t>(0);
@@ -36,17 +36,19 @@ namespace ccl::lex::dot_item
         checkForClosedRange(rule_iterator, is_range);
     }
 
-    auto Union::empty() const noexcept -> bool
+    auto Union::scanIteration(const ForkedGenerator &text_iterator) const -> size_t
     {
-        return bitset.empty();
+        auto future_char = text_iterator.futureChar(1);
+        auto next_carriage_value = text_iterator.getNextCarriageValue();
+
+        if (bitset.at(future_char) ^ reversed) {
+            return utf8::utfSize(next_carriage_value);
+        }
+
+        return 0;
     }
 
-    auto Union::scanIteration(TextIterator &text_iterator) const -> bool
-    {
-        return bitset.at(text_iterator.next());
-    }
-
-    auto Union::isRange(bool is_escaping, char32_t chr) noexcept -> bool
+    CCL_INLINE auto Union::isRange(bool is_escaping, char32_t chr) noexcept -> bool
     {
         if (is_escaping) {
             return false;
@@ -55,13 +57,13 @@ namespace ccl::lex::dot_item
         return chr == U'-';
     }
 
-    auto Union::isUnionEnd(bool is_escaping, char32_t chr) noexcept -> bool
+    CCL_INLINE auto Union::isUnionEnd(bool is_escaping, char32_t chr) noexcept -> bool
     {
         return land(not is_escaping, chr == U']');
     }
 
-    auto Union::addCharactersToTheBitset(bool &is_range, char32_t previous_chr, char32_t chr)
-        -> void
+    CCL_INLINE auto
+        Union::addCharactersToTheBitset(bool &is_range, char32_t previous_chr, char32_t chr) -> void
     {
         if (is_range) {
             bitset.set(previous_chr, chr, true);
@@ -71,22 +73,24 @@ namespace ccl::lex::dot_item
         }
     }
 
-    auto Union::checkForUnexpectedEnd(TextIterator &rule_iterator, bool is_escaping, char32_t chr)
-        -> void
+    CCL_INLINE auto
+        Union::checkForUnexpectedEnd(TextIterator &rule_iterator, bool is_escaping, char32_t chr)
+            -> void
     {
         if (land(not is_escaping, isEoF(chr))) {
             throwUnterminatedUnion(rule_iterator);
         }
     }
 
-    auto Union::checkUnionBegin(TextIterator &rule_iterator) -> void
+    CCL_INLINE auto Union::checkUnionBegin(TextIterator &rule_iterator) -> void
     {
         if (rule_iterator.getCurrentChar() != U'[') {
             throwUnionBeginException(rule_iterator);
         }
     }
 
-    auto Union::checkForClosedRange(TextIterator &rule_iterator, bool is_ranged_opened) -> void
+    CCL_INLINE auto Union::checkForClosedRange(TextIterator &rule_iterator, bool is_ranged_opened)
+        -> void
     {
         if (is_ranged_opened) {
             throwUnterminatedRangeException(rule_iterator);

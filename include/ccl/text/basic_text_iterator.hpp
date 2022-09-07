@@ -72,6 +72,11 @@ namespace ccl::text
         auto operator=(CrtpBasicTextIterator &&) noexcept -> CrtpBasicTextIterator & = default;
         auto operator=(const CrtpBasicTextIterator &) noexcept -> CrtpBasicTextIterator & = default;
 
+        CCL_DECL auto fork() const noexcept -> ForkedTextIterator
+        {
+            return ForkedTextIterator{ CrtpFork, *this };
+        }
+
         CCL_DECL auto isInitialized() const noexcept -> bool
         {
             return initialized;

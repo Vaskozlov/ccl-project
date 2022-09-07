@@ -7,7 +7,7 @@ namespace ccl::lex::dot_item
     Sequence::Sequence(
         SequenceFlags flags_, const string_view &str_begin_, const string_view &str_end_,
         TextIterator &rule_iterator_, SpecialItems &special_items_, size_t id_)
-      : BasicItem(special_items_, id_, false), str_begin(str_begin_), str_end(str_end_),
+      : BasicItem(special_items_, id_), str_begin(str_begin_), str_end(str_end_),
         sequence_flags(flags_)
     {
         auto &rule_iterator = rule_iterator_;
@@ -39,28 +39,18 @@ namespace ccl::lex::dot_item
         }
     }
 
-    auto Sequence::empty() const noexcept -> bool
-    {
-        return sequence_value.empty();
-    }
-
-    auto Sequence::scanIteration(TextIterator &text_iterator) const -> bool
+    auto Sequence::scanIteration(const ForkedGenerator &text_iterator) const -> size_t // make return value optional
     {
         auto future_text = text_iterator.getFutureRemaining(1);
 
-        if (future_text.startsWith(sequence_value)) {
-            text_iterator.skip(sequence_value.size());
-            return true;
+        if (future_text.startsWith(sequence_value) ^ reversed) {
+            return reversed ? utf8::utfSize(future_text[0]) : sequence_value.size();
         }
 
-        if (reversed) {
-            text_iterator.next();
-        }
-
-        return false;
+        return 0;
     }
 
-    auto Sequence::isStringEnd(TextIterator &rule_iterator, bool is_escaping) const -> bool
+    CCL_INLINE auto Sequence::isStringEnd(TextIterator &rule_iterator, bool is_escaping) const -> bool
     {
         if (is_escaping) {
             return false;
@@ -70,7 +60,7 @@ namespace ccl::lex::dot_item
         return text.startsWith(str_end);
     }
 
-    auto Sequence::checkForUnexpectedEnd(
+    CCL_INLINE auto Sequence::checkForUnexpectedEnd(
         TextIterator &rule_iterator, bool is_escaping, char32_t chr) const -> void
     {
         if (is_escaping) {
@@ -89,7 +79,7 @@ namespace ccl::lex::dot_item
         }
     }
 
-    auto Sequence::skipStringDefinition(TextIterator &rule_iterator) const -> void
+    CCL_INLINE auto Sequence::skipStringDefinition(TextIterator &rule_iterator) const -> void
     {
         rule_iterator.skip(str_begin.size() - 1);
     }

@@ -81,9 +81,23 @@ namespace ccl::text
         auto nextRawCharWithEscapingSymbols(const extra_symbols_t &extra_symbols = {})
             -> Pair<bool, char32_t>;
 
-        auto onMove(char chr) -> void;
-        auto onCharacter(char32_t chr) -> void;
-        auto utfError(char chr) -> void;
+        CCL_INLINE auto onMove(char chr) -> void
+        {
+            location.intermediateNext(chr);
+        }
+
+        CCL_INLINE auto onCharacter(char32_t chr) -> void
+        {
+            location.next(chr);
+            ts_tracker.next(chr);
+            line_tracker.next(chr);
+        }
+
+        auto utfError(char /* unused */) -> void
+        {
+            throwPanicError("invalid utf symbol");
+            throw UnrecoverableError{ "unable to recover, because of invalid utf symbol" };
+        }
 
         auto throwSuggestion(
             const TextIterator &iterator_location, const string_view &message,

@@ -30,24 +30,16 @@ namespace ccl::lex
     public:
         Token() = default;
 
-        CCL_PERFECT_FORWARDING(T, std::optional<std::string>)
-        Token(
-            TokenAttributes &&attributes_, const string_view &repr_, size_t id_,
-            T &&value_ = std::nullopt)
-          : value(std::forward<T>(value_)), attributes(attributes_), repr(repr_), id(id_)
+        Token(TokenAttributes &&attributes_, const string_view &repr_, size_t id_)
+          : attributes(attributes_), repr(repr_), id(id_)
         {}
 
-        CCL_PERFECT_FORWARDING(T, std::optional<std::string>)
-        Token(
-            TokenAttributes &&attributes_, typename string_view::iterator begin_, size_t id_,
-            T &&value_ = std::nullopt)
-          : Token(std::move(attributes_), { begin_, 0 }, id_, std::forward<T>(value_))
+        Token(TokenAttributes &&attributes_, typename string_view::iterator begin_, size_t id_)
+          : Token(std::move(attributes_), { begin_, static_cast<size_t>(0) }, id_)
         {}
 
-        CCL_PERFECT_FORWARDING(T, std::optional<std::string>)
-        Token(const text::TextIterator &text_iterator_, size_t id_, T &&value_ = std::nullopt)
-          : value(std::forward<T>(value_)), attributes(text_iterator_),
-            repr(text_iterator_.getRemaining()), id(id_)
+        Token(const text::TextIterator &text_iterator_, size_t id_)
+          : attributes(text_iterator_), repr(text_iterator_.getRemaining()), id(id_)
         {}
 
         [[nodiscard]] auto getId() const noexcept -> size_t
@@ -95,32 +87,14 @@ namespace ccl::lex
             return repr;
         }
 
-        [[nodiscard]] auto getValue() const noexcept -> string_view
-        {
-            if (not value.has_value()) {
-                return repr;
-            }
-
-            return *value;
-        }
-
         [[nodiscard]] auto getPrefixes() noexcept -> const std::vector<string_view> &
         {
-            if (not prefixes.has_value()) {
-                prefixes = std::vector<string_view>{};
-            }
-
-            // NOLINT access checked above
-            return *prefixes;
+            return prefixes;
         }
 
         [[nodiscard]] auto getPostfixes() noexcept -> const std::vector<string_view> &
         {
-            if (not postfixes.has_value()) {
-                postfixes = std::vector<string_view>{};
-            }
-
-            return *postfixes;
+            return postfixes;
         }
 
         [[nodiscard]] auto getTabsAndSpaces() const noexcept -> const std::u32string &
@@ -133,28 +107,24 @@ namespace ccl::lex
             repr = { repr.begin(), end_ };
         }
 
+        auto setReprLength(size_t length) noexcept -> void
+        {
+            repr = { repr.begin(), length };
+        }
+
         auto addPrefix(string_view prefix) -> void
         {
-            if (not prefixes.has_value()) {
-                prefixes = std::vector<string_view>{};
-            }
-
-            prefixes->push_back(prefix);
+            prefixes.push_back(prefix);
         }
 
         auto addPostfix(string_view postfix) -> void
         {
-            if (not postfixes.has_value()) {
-                postfixes = std::vector<string_view>{};
-            }
-
-            postfixes->push_back(postfix);
+            postfixes.push_back(postfix);
         }
 
     private:
-        std::optional<std::vector<string_view>> prefixes{ std::nullopt };
-        std::optional<std::vector<string_view>> postfixes{ std::nullopt };
-        std::optional<std::string> value{};
+        std::vector<string_view> prefixes{};
+        std::vector<string_view> postfixes{};
         TokenAttributes attributes{};
         string_view repr{};
         size_t id{};
