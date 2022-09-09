@@ -38,8 +38,8 @@ namespace ccl::lex::dot_item
             utf8::appendUtf32ToUtf8Container(sequence_value, chr);
         }
     }
-
-    auto Sequence::scanIteration(const ForkedGenerator &text_iterator) const -> size_t // make return value optional
+ l
+    auto Sequence::scanIteration(const ForkedGenerator &text_iterator) const -> size_t
     {
         auto future_text = text_iterator.getFutureRemaining(1);
 
@@ -50,7 +50,8 @@ namespace ccl::lex::dot_item
         return 0;
     }
 
-    CCL_INLINE auto Sequence::isStringEnd(TextIterator &rule_iterator, bool is_escaping) const -> bool
+    CCL_INLINE auto Sequence::isStringEnd(TextIterator &rule_iterator, bool is_escaping) const
+        -> bool
     {
         if (is_escaping) {
             return false;
