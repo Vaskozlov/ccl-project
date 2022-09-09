@@ -14,31 +14,33 @@ namespace ccl::lex
 
     auto LexicalAnalyzer::Tokenizer::yield() -> Token
     {
-        if (text_iterator.isEOI()) {
-            return constructEOIToken();
-        }
-
-        auto token = Token{ text_iterator, 0 };
-        auto special_item = lexical_analyzer.special_items.specialScan(text_iterator);
-
-        if (special_item.has_value()) {
-            return *special_item;
-        }
-
-        for (auto &&container : lexical_analyzer.items) {
-            auto scan_result = container.beginScan(text_iterator);
-
-            if (scan_result.has_value()) {
-                return *scan_result;
+        while (true) {
+            if (text_iterator.isEOI()) [[unlikely]] {
+                return constructEOIToken();
             }
-        }
 
-        if (isLayout(text_iterator.getNextCarriageValue())) {
-            text_iterator.skip(1);
-            return yield();
-        }
+            auto token = Token{ text_iterator, 0 };
+            auto special_item = lexical_analyzer.special_items.specialScan(text_iterator);
 
-        return constructBadToken();
+            if (special_item.has_value()) {
+                return *special_item;
+            }
+
+            for (auto &&container : lexical_analyzer.items) {
+                auto scan_result = container.beginScan(text_iterator);
+
+                if (scan_result.has_value()) {
+                    return *scan_result;
+                }
+            }
+
+            if (isLayout(text_iterator.getNextCarriageValue())) {
+                text_iterator.skip(1);
+                continue;
+            }
+
+            return constructBadToken();
+        }
     }
 
     CCL_INLINE auto LexicalAnalyzer::Tokenizer::constructEOIToken() -> Token

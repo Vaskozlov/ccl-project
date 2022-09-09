@@ -11,16 +11,16 @@
 
 #define CCL_PERFECT_FORWARDING(Repr, Type)                                                         \
     template<typename Repr = Type>                                                                 \
-    requires std::is_convertible_v<Repr, Type>
+        requires std::is_convertible_v<Repr, Type>
 
 #define CCL_PERFECT_FORWARDING_2(Repr1, Type1, Repr2, Type2)                                       \
     template<typename Repr1 = Type1, typename Repr2 = Type2>                                       \
-    requires std::is_convertible_v<Repr1, Type1> && std::is_convertible_v<Repr2, Type2>
+        requires std::is_convertible_v<Repr1, Type1> && std::is_convertible_v<Repr2, Type2>
 
 #define CCL_PERFECT_FORWARDING_3(Repr1, Type1, Repr2, Type2, Repr3, Type3)                         \
     template<typename Repr1 = Type1, typename Repr2 = Type2, typename Repr3 = Type3>               \
-    requires std::is_convertible_v<Repr1, Type1> && std::is_convertible_v<Repr2, Type2> &&         \
-        std::is_convertible_v<Repr3, Type3>
+        requires std::is_convertible_v<Repr1, Type1> && std::is_convertible_v<Repr2, Type2> &&     \
+                 std::is_convertible_v<Repr3, Type3>
 
 // NOLINTEND
 
@@ -59,5 +59,13 @@
 #else
 #    define CCL_TRIVIAL_ABI
 #endif /* CCL_TRIVIAL_ABI */
+
+#if defined(__clang__)
+#    define CCL_UNROLL_N(N) _Pragma(CCL_STR(unroll N))
+#elif defined(__GNUC__)
+#    define CCL_UNROLL_N(N) _Pragma(CCL_STR(GCC unroll N))
+#else
+#    define CCL_UNROLL_N(N)
+#endif /* CCL_UNROLL_N */
 
 #endif /* CCL_PROJECT_DEFINES_HPP */

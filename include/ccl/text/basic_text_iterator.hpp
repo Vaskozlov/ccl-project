@@ -19,7 +19,7 @@ namespace ccl::text
     public:
         using iterator = typename string_view::iterator;
 
-        struct ForkedTextIterator : public CrtpBasicTextIterator<ForkedTextIterator>
+        struct ForkedTextIterator final : public CrtpBasicTextIterator<ForkedTextIterator>
         {
             ForkedTextIterator() noexcept = default;
 
@@ -77,27 +77,27 @@ namespace ccl::text
             return ForkedTextIterator{ CrtpFork, *this };
         }
 
-        CCL_DECL auto isInitialized() const noexcept -> bool
+        CCL_DECL CCL_INLINE auto isInitialized() const noexcept -> bool
         {
             return initialized;
         }
 
-        CCL_DECL auto getRemainingToFinishUtf() const noexcept -> u16
+        CCL_DECL CCL_INLINE auto getRemainingToFinishUtf() const noexcept -> u16
         {
             return remaining_to_finish_utf;
         }
 
-        CCL_DECL auto getCarriage() const noexcept -> iterator
+        CCL_DECL CCL_INLINE auto getCarriage() const noexcept -> iterator
         {
             return carriage;
         }
 
-        CCL_DECL auto getEnd() const noexcept -> iterator
+        CCL_DECL CCL_INLINE auto getEnd() const noexcept -> iterator
         {
             return end;
         }
 
-        CCL_DECL auto getRemainingAsCarriage() const noexcept -> iterator
+        CCL_DECL CCL_INLINE auto getRemainingAsCarriage() const noexcept -> iterator
         {
             if (initialized) {
                 return std::min(carriage + 1, end);
@@ -165,6 +165,7 @@ namespace ccl::text
 
         constexpr auto skip(size_t n) noexcept(noexcept_carriage_move) -> void
         {
+            CCL_UNROLL_N(4)
             for (size_t i = 0; i != n; ++i) {
                 moveCarriage();
             }
@@ -293,7 +294,7 @@ namespace ccl::text
         bool initialized{};
     };
 
-    struct BasicTextIterator : public CrtpBasicTextIterator<BasicTextIterator>
+    struct BasicTextIterator final : public CrtpBasicTextIterator<BasicTextIterator>
     {
         using Base = CrtpBasicTextIterator<BasicTextIterator>;
 

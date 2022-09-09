@@ -37,7 +37,6 @@ namespace ccl::lex::dot_item
                     special_items.checkForSpecial(local_iterator))) {
                 return std::nullopt;
             }
-
         } else if (special_scan == ScanningType::CHECK) {
             return token;
         }

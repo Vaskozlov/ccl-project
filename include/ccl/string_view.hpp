@@ -212,11 +212,7 @@ namespace ccl
 
         CCL_DECL auto startsWith(const StringLike<CharT> auto &str) const noexcept -> bool
         {
-            if (size() < str.size()) {
-                return false;
-            }
-
-            return std::equal(begin(), begin() + str.size(), str.begin());
+            return substr(0, str.size()).operator==(str);
         }
 
         CCL_DECL auto operator[](size_t index) const noexcept -> CharT

@@ -15,7 +15,6 @@ BOOST_AUTO_TEST_CASE(LexicalAnalyzerSequence, *utf::depends_on("ContainerSequenc
 
     BOOST_ASSERT(token.getId() == 2);
     BOOST_ASSERT(token.getRepr() == R"(abz10)");
-    BOOST_ASSERT(token.getValue() == "abz10");
     BOOST_ASSERT(token.getPrefixes().size() == 1);
     BOOST_ASSERT(token.getPrefixes()[0] == "abz");
 
@@ -23,7 +22,6 @@ BOOST_AUTO_TEST_CASE(LexicalAnalyzerSequence, *utf::depends_on("ContainerSequenc
 
     BOOST_ASSERT(token.getId() == 3);
     BOOST_ASSERT(token.getRepr() == R"(10abz)");
-    BOOST_ASSERT(token.getValue() == "10abz");
     BOOST_ASSERT(token.getPostfixes().size() == 1);
     BOOST_ASSERT(token.getPostfixes()[0] == "abz");
 }
