@@ -20,7 +20,6 @@ namespace ccl::lex
                 return local_token;
             }
 
-            auto token = Token{ text_iterator, 0 };
             auto special_item =
                 lexical_analyzer.special_items.specialScan(text_iterator, local_token);
 
@@ -32,7 +31,7 @@ namespace ccl::lex
                 auto scan_result = container.beginScan(text_iterator, local_token);
 
                 if (scan_result) {
-                    goto EndYielding; // NOLINT
+                    goto EndYielding;// NOLINT
                 }
             }
 

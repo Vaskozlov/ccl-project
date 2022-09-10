@@ -12,10 +12,10 @@ BOOST_AUTO_TEST_CASE(TextIteratorTabsAndSpaceTracking)
     text_iterator.moveToCleanChar();
     text_iterator.next();
 
-    BOOST_ASSERT(text_iterator.getTabsAndSpaces() == U"\t\t  ");
+    BOOST_ASSERT(text_iterator.getTabsAndSpaces() == "\t\t  ");
 
     text_iterator.moveToCleanChar();
     text_iterator.next();
 
-    BOOST_ASSERT(text_iterator.getTabsAndSpaces() == U" ");
+    BOOST_ASSERT(text_iterator.getTabsAndSpaces() == " ");
 }

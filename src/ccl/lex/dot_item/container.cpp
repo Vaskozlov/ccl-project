@@ -43,8 +43,8 @@ namespace ccl::lex::dot_item
         parseRule(rule_iterator);
     }
 
-    auto Container::beginScan(TextIterator &text_iterator, Token &token, ScanningType special_scan)
-        const -> bool
+    auto Container::beginScan(
+        TextIterator &text_iterator, Token &token, ScanningType special_scan) const -> bool
     {
         size_t totally_skipped = 0;
         auto local_iterator = text_iterator.fork();
