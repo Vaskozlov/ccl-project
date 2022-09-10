@@ -1,4 +1,5 @@
 #include <ccl/debug/debug_file.hpp>
+#include <ccl/lex/dot_item/container.hpp>
 #include <ccl/lex/dot_item/union.hpp>
 
 using namespace ccl;
@@ -7,17 +8,17 @@ using namespace text;
 using namespace dot_item;
 
 // NOLINTNEXTLINE
-static auto shared = AnalysisShared{};
 
 BOOST_AUTO_TEST_SUITE(ContainerUnion)
 
 BOOST_AUTO_TEST_CASE(UnionWithOneElem)
 {
+    auto special_items = SpecialItems{};
     auto text_iterator = TextIterator{ "[a]" };
     text_iterator.next();
 
-    auto union_item = Union(text_iterator, shared);
-    DEBUG_VAR &&bitset = union_item.get();
+    auto union_item = Union(text_iterator, special_items);
+    DEBUG_VAR &&bitset = union_item.getBitset();
 
     for (char32_t i = 0; i < 127; ++i) {// NOLINT
         BOOST_ASSERT(bitset.at(i) == (i == 'a'));
@@ -26,11 +27,12 @@ BOOST_AUTO_TEST_CASE(UnionWithOneElem)
 
 BOOST_AUTO_TEST_CASE(UnionWithMultipleElems)
 {
+    auto special_items = SpecialItems{};
     auto text_iterator = TextIterator{ "[a-z_]" };
     text_iterator.next();
 
-    auto union_item = Union(text_iterator, shared);
-    DEBUG_VAR &&bitset = union_item.get();
+    auto union_item = Union(text_iterator, special_items);
+    DEBUG_VAR &&bitset = union_item.getBitset();
 
     for (char32_t i = '\0'; i != '_'; ++i) {
         BOOST_ASSERT(not bitset.at(i));

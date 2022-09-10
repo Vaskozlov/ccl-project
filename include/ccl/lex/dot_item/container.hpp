@@ -2,50 +2,53 @@
 #define CCL_PROJECT_CONTAINER_HPP
 
 #include <boost/container/small_vector.hpp>
-#include <ccl/lex/analysis_shared.hpp>
-#include <ccl/lex/dot_item/items_counter.hpp>
-#include <ccl/lex/dot_item/sequence.hpp>
-#include <ccl/lex/dot_item/union.hpp>
+#include <ccl/lex/dot_item/basic_item.hpp>
+#include <ccl/lex/dot_item/logical_unit.hpp>
+#include <ccl/lex/dot_item/recurrence.hpp>
+#include <stack>
 
 namespace ccl::lex::dot_item
 {
-    class Container : public BasicItem
+    CCL_ENUM(ScanningType, u16, MAIN_SCAN, BASIC, SPECIAL, CHECK);
+
+    class Container final : public BasicItem
     {
     private:
-        using BasicItem::analysis_shared;
         using BasicItem::canBeOptimized;
         using BasicItem::recurrence;
 
-        using typename BasicItem::CommentTokens;
         using typename BasicItem::TextIterator;
 
-        using storage_t = boost::container::small_vector<std::unique_ptr<BasicItem>, 4>;
+        using ForkedGen = typename TextIterator::ForkedTextIterator;
+        using storage_t = boost::container::small_vector<BasicItemPtr, 4>;
+
+        struct RuleParser;
+
+        struct ContainerFlags
+        {
+            bool is_main : 1 = false;
+            bool is_special : 1 = false;
+        };
 
     public:
         Container(
-            const TextIterator &rule_iterator_, size_t id_, AnalysisShared &analysis_shared_,
-            bool main_item_ = true)
-          : BasicItem(analysis_shared_), id(id_), main_item(main_item_)
-        {
-            auto rule_iterator = rule_iterator_;
-            parseRule(rule_iterator);
-        }
+            TextIterator &rule_iterator_, SpecialItems &special_items_, size_t id_,
+            bool main_item_ = false, bool is_special_ = false);
 
         Container(
-            TextIterator &&rule_iterator_, size_t id_, AnalysisShared &analysis_shared_,
-            bool main_item_ = true)
-          : BasicItem(analysis_shared_), id(id_), main_item(main_item_)
-        {
-            parseRule(rule_iterator_);
-        }
+            TextIterator &&rule_iterator_, SpecialItems &special_items_, size_t id_,
+            bool main_item_ = false, bool is_special_ = false);
 
         Container(
-            TextIterator &rule_iterator_, size_t id_, AnalysisShared &analysis_shared_,
-            bool main_item_ = false)
-          : BasicItem(analysis_shared_), id(id_), main_item(main_item_)
-        {
-            parseRule(rule_iterator_);
-        }
+            const TextIterator &rule_iterator_, SpecialItems &special_items_, size_t id_,
+            bool main_item_ = false, bool is_special_ = false);
+
+        auto beginScan(
+            TextIterator &text_iterator, Token &token,
+            ScanningType special_scan = ScanningType::BASIC) const -> bool;
+
+        [[nodiscard]] auto scanIteration(const ForkedGenerator &text_iterator) const
+            -> size_t final;
 
         [[nodiscard]] auto operator==(const Container &other) const noexcept
         {
@@ -57,14 +60,14 @@ namespace ccl::lex::dot_item
             return id <=> other.id;
         }
 
-        [[nodiscard]] auto getId() const noexcept -> size_t
-        {
-            return id;
-        }
-
-        [[nodiscard]] auto empty() const noexcept -> bool override
+        [[nodiscard]] auto empty() const noexcept -> bool final
         {
             return items.empty();
+        }
+
+        [[nodiscard]] auto isSpecial() const noexcept -> bool
+        {
+            return flags.is_special;
         }
 
         [[nodiscard]] auto getItems() const noexcept -> const storage_t &
@@ -73,71 +76,104 @@ namespace ccl::lex::dot_item
         }
 
     private:
-        template<std::derived_from<BasicItem> T>
-        auto unsafeGetLastItemAs() noexcept -> T *
-        {
-            // NOLINTNEXTLINE unsafe cast to increase performance
-            return static_cast<T *>(items.back().get());
-        }
-
-        [[nodiscard]] auto scanIteration(TextIterator &text_iterator, Token &token) const
-            -> bool override;
-
-        [[nodiscard]] static auto
-            scanItem(const BasicItem *item, TextIterator &text_iterator, Token &token) -> bool;
-
-        [[nodiscard]] static auto hasMovedToTheNextChar(TextIterator &rule_iterator) -> bool;
-
         auto parseRule(TextIterator &rule_iterator) -> void;
 
-        auto recognizeAction(TextIterator &rule_iterator, ItemsCounter &items_counter) -> void;
+        [[nodiscard]] auto failedToEndItem(const ForkedGenerator &text_iterator) const -> bool;
 
-        [[nodiscard]] auto
-            constructNewSequence(TextIterator &rule_iterator, ItemsCounter &items_counter)
-                -> std::unique_ptr<BasicItem>;
+        storage_t items{};
+        std::string rule_repr{};
+        ContainerFlags flags{};
+    };
 
-        [[nodiscard]] auto
-            constructNewUnion(TextIterator &rule_iterator, ItemsCounter &items_counter)
-                -> std::unique_ptr<BasicItem>;
+    struct Container::RuleParser
+    {
+        RuleParser(Container &container_, TextIterator &rule_iterator_);
 
-        [[nodiscard]] auto
-            constructNewItem(TextIterator &rule_iterator, ItemsCounter &items_counter)
-                -> std::unique_ptr<BasicItem>;
+    private:
+        [[nodiscard]] auto getId() const noexcept -> size_t
+        {
+            return container.id;
+        }
 
-        auto constructString(ItemsCounter &items_counter, bool is_character, bool is_multiline)
-            -> void;
-
-        auto constructTerminal(TextIterator &rule_iterator, ItemsCounter &items_counter) -> void;
-
-        auto constructComment(ItemsCounter &items_counter) -> void;
-
-        auto constructCommentOrCharacter(TextIterator &rule_iterator, ItemsCounter &items_counter)
-            -> void;
-
-        auto emplaceItem(TextIterator &rule_iterator, std::unique_ptr<BasicItem> &&item) -> void;
-
-        auto addPrefixPostfix() -> void;
-
-        auto addRecurrence(TextIterator &rule_iterator, Recurrence new_recurrence) -> void;
-
-        auto reverseLastItem(TextIterator &rule_iterator) -> void;
-
-        auto postCreationCheck(TextIterator &rule_iterator, const ItemsCounter &counter) -> void;
-
-        static auto findContainerEnd(TextIterator &rule_iterator, string_view repr) -> size_t;
+        [[nodiscard]] auto isReversed() const noexcept -> bool
+        {
+            return container.reversed;
+        }
 
         auto checkId() const -> void;
 
-        auto checkAbilityToCreatePrefixPostfix(TextIterator &rule_iterator) -> void;
+        auto recognizeAction() -> void;
 
-        static auto throwUnableToApply(
-            TextIterator &rule_iterator, string_view reason, string_view suggestion = {}) -> void;
+        auto prepareForLogicalOperation(LogicalOperation type) -> void;
 
-        static auto throwUndefinedAction(TextIterator &rule_iterator) -> void;
+        auto tryToFinishLogicalOperation() -> void;
 
-        storage_t items{};
-        size_t id{};
-        bool main_item{};
+        [[nodiscard]] auto hasMovedToTheNextChar() -> bool;
+
+        [[nodiscard]] auto constructLogicalUnit() -> BasicItemPtr;
+
+        [[nodiscard]] auto constructNewSequence() -> BasicItemPtr;
+
+        [[nodiscard]] auto constructNewUnion() -> BasicItemPtr;
+
+        [[nodiscard]] auto constructNewContainer() -> BasicItemPtr;
+
+        auto emplaceItem(BasicItemPtr &&item) -> void;
+
+        auto addPrefixPostfix() -> void;
+
+        auto addRecurrence(Recurrence new_recurrence) -> void;
+
+        auto makeSpecial() -> void;
+
+        auto reverseLastItem() -> void;
+
+        auto postCreationCheck() -> void;
+
+        auto findContainerEnd(string_view repr) -> size_t;
+
+        auto checkThereIsLhsItem() -> void;
+
+        auto checkAbilityToCreatePrefixPostfix() -> void;
+
+        auto throwUnableToApply(string_view reason, string_view suggestion = {}) -> void;
+
+        auto throwUndefinedAction() -> void;
+
+        Container &container;
+        TextIterator &rule_iterator;
+        storage_t &items{ container.items };
+        SpecialItems &special_items{ container.special_items };
+        std::optional<BasicItemPtr> reserved_lhs{ std::nullopt };
+        LogicalOperation logical_operation{};
+        bool rhs_item_constructed{ false };
+    };
+
+    struct BasicItem::SpecialItems
+    {
+        [[nodiscard]] auto checkForSpecial(const ForkedGenerator &text_iterator) const -> bool
+        {
+            return std::ranges::any_of(special_items, [text_iterator](const auto &special_item) {
+                auto scan_result = special_item.scan(text_iterator);
+                return scan_result.has_value() && scan_result != 0;
+            });
+        }
+
+        auto specialScan(TextIterator &text_iterator, Token &token) const -> bool
+        {
+            for (auto &&special_item : special_items) {
+                auto scan_result =
+                    special_item.beginScan(text_iterator, token, ScanningType::SPECIAL);
+
+                if (scan_result) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        std::vector<Container> special_items;
     };
 }// namespace ccl::lex::dot_item
 

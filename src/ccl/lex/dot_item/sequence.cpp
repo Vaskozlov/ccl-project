@@ -5,9 +5,9 @@ namespace ccl::lex::dot_item
     using namespace ccl::string_view_literals;
 
     Sequence::Sequence(
-        SequenceFlags flags_, string_view str_begin_, string_view str_end_,
-        TextIterator &rule_iterator_, AnalysisShared &analysis_shared_)
-      : BasicItem(analysis_shared_), str_begin(str_begin_), str_end(str_end_),
+        SequenceFlags flags_, const string_view &str_begin_, const string_view &str_end_,
+        TextIterator &rule_iterator_, SpecialItems &special_items_, size_t id_)
+      : BasicItem(special_items_, id_), str_begin(str_begin_), str_end(str_end_),
         sequence_flags(flags_)
     {
         auto &rule_iterator = rule_iterator_;
@@ -39,24 +39,19 @@ namespace ccl::lex::dot_item
         }
     }
 
-    auto Sequence::empty() const noexcept -> bool
+    auto Sequence::scanIteration(const ForkedGenerator &text_iterator) const -> size_t
     {
-        return sequence_value.empty();
-    }
+        auto future_text = text_iterator.getFutureRemaining<std::string_view>();
 
-    auto Sequence::scanIteration(TextIterator &text_iterator, Token & /* unused */) const -> bool
-    {
-        auto future_text = text_iterator.getFutureRemaining(1);
-
-        if (future_text.startsWith(sequence_value)) {
-            text_iterator.skip(sequence_value.size());
-            return true;
+        if (future_text.starts_with(sequence_value) ^ reversed) {
+            return reversed ? utf8::utfSize(future_text[0]) : sequence_value.size();
         }
 
-        return false;
+        return 0;
     }
 
-    auto Sequence::isStringEnd(TextIterator &rule_iterator, bool is_escaping) const -> bool
+    CCL_INLINE auto Sequence::isStringEnd(TextIterator &rule_iterator, bool is_escaping) const
+        -> bool
     {
         if (is_escaping) {
             return false;
@@ -66,7 +61,7 @@ namespace ccl::lex::dot_item
         return text.startsWith(str_end);
     }
 
-    auto Sequence::checkForUnexpectedEnd(
+    CCL_INLINE auto Sequence::checkForUnexpectedEnd(
         TextIterator &rule_iterator, bool is_escaping, char32_t chr) const -> void
     {
         if (is_escaping) {
@@ -85,12 +80,12 @@ namespace ccl::lex::dot_item
         }
     }
 
-    auto Sequence::skipStringDefinition(TextIterator &rule_iterator) const -> void
+    CCL_INLINE auto Sequence::skipStringDefinition(TextIterator &rule_iterator) const -> void
     {
         rule_iterator.skip(str_begin.size() - 1);
     }
 
-    auto Sequence::checkSequenceArguments(TextIterator &rule_iterator) const -> void
+    CCL_INLINE auto Sequence::checkSequenceArguments(TextIterator &rule_iterator) const -> void
     {
         auto text = rule_iterator.getRemainingWithCurrent();
 
@@ -121,8 +116,8 @@ namespace ccl::lex::dot_item
 
     auto Sequence::throwUnterminatedString(
         TextIterator &rule_iterator,
-        string_view message,
-        string_view suggestion) -> void
+        const string_view &message,
+        const string_view &suggestion) -> void
     {
         rule_iterator.throwPanicError(message, suggestion);
         throw UnrecoverableError{ "unrecoverable error in SequenceType" };

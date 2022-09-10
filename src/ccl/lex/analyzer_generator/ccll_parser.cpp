@@ -83,7 +83,7 @@ namespace ccl::lex::parser
         auto token = tokenizer.yield();
         auto token_id = token.getId();
 
-        if (token_id == GenToken::IDENTIFIER) {
+        if (token_id == GenToken::IDENTIFIER || token_id == GenToken::STRING) {
             token_stack.push(std::move(token));
             completeDirectiveDeclaration();
             return true;
@@ -101,7 +101,7 @@ namespace ccl::lex::parser
         auto name = token_stack.top();
         token_stack.pop();
 
-        rules.emplace_back(current_block, name.getValue(), rule.getValue());
+        rules.emplace_back(current_block, blocks[current_block], name.getRepr(), rule.getRepr());
 
         expectRuleEnd();
     }
@@ -114,7 +114,7 @@ namespace ccl::lex::parser
         auto directive = token_stack.top();
         token_stack.pop();
 
-        directives.emplace_back(directive.getValue(), directive_value.getValue());
+        directives[directive.getRepr()] = directive_value.getRepr();
 
         expectRuleEnd();
     }
@@ -122,7 +122,7 @@ namespace ccl::lex::parser
     auto CcllParser::checkRule(text::TextIterator &rule) -> void
     {
         try {
-            auto container = dot_item::Container{ std::move(rule), 2, analysis_shared };
+            auto container = dot_item::Container{ std::move(rule), special_items, 2, true };
         } catch (const UnrecoverableError & /* unused */) {}
     }
 
@@ -159,7 +159,11 @@ namespace ccl::lex::parser
         auto block_name = token_stack.top();
         token_stack.pop();
 
-        current_block = block_name.getValue();
+        current_block = block_name.getRepr();
+
+        if (not blocks.contains(current_block)) {
+            blocks.insert({ current_block, { static_cast<u16>(last_block_id++), 0 } });
+        }
 
         expectRuleEnd();
     }
@@ -199,7 +203,7 @@ namespace ccl::lex::parser
         string_view expected_types, GenToken given_token, string_view suggestion) -> void
     {
         auto error_message =
-            fmt::format("expected {}, got {}", expected_types, GenTokenNames.at(given_token));
+            fmt::format("expected {}, got {}", expected_types, GenToken::toString(given_token));
 
         tokenizer.throwException(ExceptionCriticality::PANIC, error_message, suggestion);
     }

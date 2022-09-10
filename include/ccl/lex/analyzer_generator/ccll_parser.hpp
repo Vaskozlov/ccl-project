@@ -2,6 +2,7 @@
 #define CCL_PROJECT_CCLL_PARSER_HPP
 
 #include <ccl/lex/analyzer_generator/analyzer_generator.hpp>
+#include <map>
 #include <stack>
 
 namespace ccl::lex::parser
@@ -11,18 +12,28 @@ namespace ccl::lex::parser
     public:
         using Tokenizer = typename LexicalAnalyzer::Tokenizer;
 
+        struct BlockInfo
+        {
+            u16 block_id{};
+            u16 last_id{};
+        };
+
         struct Rule
         {
             Rule() = default;
 
-            Rule(string_view block_, string_view name_, string_view definition_)
-              : block(block_), name(name_), definition(definition_)
+            Rule(
+                string_view block_name_, BlockInfo &block_info_, string_view name_,
+                string_view definition_)
+              : block_name(block_name_), name(name_), definition(definition_),
+                block_id(block_info_.block_id), id(block_info_.last_id++)
             {}
 
-            string_view block;
+            string_view block_name;
             string_view name;
             string_view definition;
-            size_t id{};
+            u16 block_id{};
+            u16 id{};
         };
 
         explicit CcllParser(Tokenizer &tokenizer_) : tokenizer(tokenizer_)
@@ -52,12 +63,17 @@ namespace ccl::lex::parser
         auto parsingError(
             string_view expected_types, GenToken given_token, string_view suggestion = {}) -> void;
 
-        std::stack<Token> token_stack{};
-        std::vector<std::pair<string_view, string_view>> directives{};
+    public:
+        std::map<string_view, string_view> directives{};
         std::vector<Rule> rules{};
-        AnalysisShared analysis_shared{};
+
+    private:
+        std::stack<Token> token_stack{};
+        std::map<string_view, BlockInfo> blocks{ { "NONE", { 0, 2 } } };
+        SpecialItems special_items{};
         string_view current_block = "NONE";
         Tokenizer &tokenizer;
+        size_t last_block_id{ 1 };
     };
 }// namespace ccl::lex::parser
 

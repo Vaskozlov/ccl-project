@@ -2,6 +2,7 @@
 #define CCL_PROJECT_LEXICAL_ANALYZER_HPP
 
 #include <ccl/lex/dot_item/container.hpp>
+#include <memory_resource>
 #include <set>
 
 namespace ccl::lex
@@ -12,24 +13,26 @@ namespace ccl::lex
         using Container = dot_item::Container;
         using BasicItem = dot_item::BasicItem;
         using TextIterator = typename BasicItem::TextIterator;
-        using CommentTokens = typename BasicItem::CommentTokens;
+
+        struct CCL_TRIVIAL_ABI Rule
+        {
+            size_t id{};
+            string_view repr{};
+        };
 
         struct Tokenizer
         {
             Tokenizer(
                 LexicalAnalyzer &lexical_analyzer_, string_view text, string_view filename_ = {})
               : lexical_analyzer(lexical_analyzer_),
-                text_iterator(
-                    text, lexical_analyzer_.exception_handler,
-                    lexical_analyzer_.shared.comment_tokens, filename_)
+                text_iterator(text, lexical_analyzer_.exception_handler, filename_)
             {}
 
             Tokenizer(
                 LexicalAnalyzer &lexical_analyzer_, string_view text, string_view filename_,
                 ExceptionHandler &exception_handler_)
               : lexical_analyzer(lexical_analyzer_),
-                text_iterator(
-                    text, exception_handler_, lexical_analyzer_.shared.comment_tokens, filename_)
+                text_iterator(text, exception_handler_, filename_)
             {}
 
             [[nodiscard]] auto getIterator() const -> const TextIterator &
@@ -37,9 +40,9 @@ namespace ccl::lex
                 return text_iterator;
             }
 
-            [[nodiscard]] auto getExceptionHandler() -> ExceptionHandler &
+            [[nodiscard]] auto getHandler() -> ExceptionHandler &
             {
-                return text_iterator.getExceptionHandler();
+                return text_iterator.getHandler();
             }
 
             auto throwException(
@@ -49,18 +52,27 @@ namespace ccl::lex
                 text_iterator.throwToHandle(text_iterator, criticality, message, suggestion);
             }
 
-            [[nodiscard]] auto yield() -> Token;
-            [[nodiscard]] auto constructBadToken() -> Token;
+            [[nodiscard]] auto yield() -> Token &;
 
         private:
+            [[nodiscard]] auto shouldIgnoreToken(const Token &token) const -> bool;
+
+            auto constructBadToken() -> void;
+            auto constructEOIToken() -> void;
+
+            Token local_token{};
             LexicalAnalyzer &lexical_analyzer;
             TextIterator text_iterator;
         };
 
         LexicalAnalyzer(
-            ExceptionHandler &exception_handler_,
-            const std::initializer_list<std::pair<size_t, string_view>> &rules_,
-            string_view filename = {}, const CommentTokens &comment_tokens_ = { "#" });
+            ExceptionHandler &exception_handler_, const std::initializer_list<Rule> &rules_,
+            string_view filename = {}, std::basic_string<size_t> ignored_ids_ = {});
+
+        [[nodiscard]] auto getIgnoredIds() const -> const std::basic_string<size_t> &
+        {
+            return ignored_ids;
+        }
 
         [[nodiscard]] auto getTokenizer(string_view text, string_view filename = {}) -> Tokenizer
         {
@@ -75,12 +87,11 @@ namespace ccl::lex
         }
 
     private:
-        auto createContainer(
-            string_view rule, size_t id, const CommentTokens &comment_tokens, string_view filename)
-            -> void;
+        auto createContainer(string_view rule, size_t id, string_view filename) -> void;
 
-        std::set<Container> items;
-        AnalysisShared shared{};
+        std::vector<Container> items{};
+        SpecialItems special_items{};
+        std::basic_string<size_t> ignored_ids{};
         ExceptionHandler &exception_handler;
         size_t errors{};
     };

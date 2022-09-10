@@ -1,7 +1,6 @@
 #ifndef CCL_PROJECT_EXCEPTION_HANDLER_HPP
 #define CCL_PROJECT_EXCEPTION_HANDLER_HPP
 
-#include <ccl/ccl.hpp>
 #include <ccl/text/iterator_exception.hpp>
 
 namespace ccl
@@ -29,13 +28,13 @@ namespace ccl
         template<DerivedFromTextIteratorException T>
         auto handle(const T *error)
         {
-            handle(static_cast<const text::TextIteratorException *>(error));
+            handle(static_cast<const ExceptionT *>(error));
         }
 
         template<DerivedFromTextIteratorException T>
         auto handle(const T &error)
         {
-            handle(static_cast<const text::TextIteratorException *>(&error));
+            handle(static_cast<const ExceptionT *>(&error));
         }
 
     private:

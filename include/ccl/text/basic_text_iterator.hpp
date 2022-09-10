@@ -19,7 +19,7 @@ namespace ccl::text
     public:
         using iterator = typename string_view::iterator;
 
-        struct ForkedTextIterator : public CrtpBasicTextIterator<ForkedTextIterator>
+        struct ForkedTextIterator final : public CrtpBasicTextIterator<ForkedTextIterator>
         {
             ForkedTextIterator() noexcept = default;
 
@@ -72,27 +72,32 @@ namespace ccl::text
         auto operator=(CrtpBasicTextIterator &&) noexcept -> CrtpBasicTextIterator & = default;
         auto operator=(const CrtpBasicTextIterator &) noexcept -> CrtpBasicTextIterator & = default;
 
-        CCL_DECL auto isInitialized() const noexcept -> bool
+        CCL_DECL auto fork() const noexcept -> ForkedTextIterator
+        {
+            return ForkedTextIterator{ CrtpFork, *this };
+        }
+
+        CCL_DECL CCL_INLINE auto isInitialized() const noexcept -> bool
         {
             return initialized;
         }
 
-        CCL_DECL auto getRemainingToFinishUtf() const noexcept -> u16
+        CCL_DECL CCL_INLINE auto getRemainingToFinishUtf() const noexcept -> u16
         {
             return remaining_to_finish_utf;
         }
 
-        CCL_DECL auto getCarriage() const noexcept -> iterator
+        CCL_DECL CCL_INLINE auto getCarriage() const noexcept -> iterator
         {
             return carriage;
         }
 
-        CCL_DECL auto getEnd() const noexcept -> iterator
+        CCL_DECL CCL_INLINE auto getEnd() const noexcept -> iterator
         {
             return end;
         }
 
-        CCL_DECL auto getRemainingAsCarriage() const noexcept -> iterator
+        CCL_DECL CCL_INLINE auto getRemainingAsCarriage() const noexcept -> iterator
         {
             if (initialized) {
                 return std::min(carriage + 1, end);
@@ -122,31 +127,17 @@ namespace ccl::text
             return { carriage, end };
         }
 
-        CCL_DECL auto isEnd() const noexcept -> bool
+        CCL_DECL auto isEOI() const noexcept -> bool
         {
             return getRemainingAsCarriage() == end;
         }
 
-        template<char32_t Chr>
-        CCL_DECL auto isNextCharacterEqual() const noexcept(noexcept_carriage_move) -> bool
+
+        template<typename T = string_view>
+        CCL_DECL auto getFutureRemaining() const noexcept -> T
         {
-            if constexpr (Chr <= utf8::OneByteMax) {
-                return Chr == getNextCarriageValue();
-            } else {
-                return Chr == futureChar(1);
-            }
-        }
-
-        CCL_DECL auto getFutureRemaining(size_t times) const noexcept -> string_view
-        {
-            auto fork = ForkedTextIterator{ CrtpFork, *this };
-            fork.skipCharacters(times);
-
-            if (fork.error_detected) {
-                return {};
-            }
-
-            return fork.getRemainingWithCurrent();
+            auto carriage_move = initialized ? utf8::utfSize(getNextCarriageValue()) : 0;
+            return { carriage + carriage_move, end };
         }
 
         CCL_DECL auto getCurrentChar() const noexcept -> char32_t
@@ -170,6 +161,7 @@ namespace ccl::text
 
         constexpr auto skip(size_t n) noexcept(noexcept_carriage_move) -> void
         {
+            CCL_UNROLL_N(4)
             for (size_t i = 0; i != n; ++i) {
                 moveCarriage();
             }
@@ -298,7 +290,7 @@ namespace ccl::text
         bool initialized{};
     };
 
-    struct BasicTextIterator : public CrtpBasicTextIterator<BasicTextIterator>
+    struct BasicTextIterator final : public CrtpBasicTextIterator<BasicTextIterator>
     {
         using Base = CrtpBasicTextIterator<BasicTextIterator>;
 

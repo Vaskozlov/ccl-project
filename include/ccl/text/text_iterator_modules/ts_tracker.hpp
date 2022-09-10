@@ -19,7 +19,7 @@ namespace ccl::text::module
             return tabs_and_spaces.empty();
         }
 
-        CCL_DECL auto get() const noexcept -> const std::u32string &
+        CCL_DECL auto get() const noexcept -> const std::string &
         {
             return tabs_and_spaces;
         }
@@ -29,7 +29,7 @@ namespace ccl::text::module
             clearIfNeed();
 
             if (isTabOrSpace(chr)) {
-                tabs_and_spaces.push_back(chr);
+                tabs_and_spaces.push_back(static_cast<char>(chr));
             } else {
                 need_to_clear = true;
             }
@@ -51,7 +51,7 @@ namespace ccl::text::module
             return lor(chr == '\t', chr == ' ');
         }
 
-        std::u32string tabs_and_spaces{};
+        std::string tabs_and_spaces{};
         bool need_to_clear{};
     };
 }// namespace ccl::text::module

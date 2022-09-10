@@ -52,7 +52,7 @@ namespace ccl::lex::dot_item
         auto checkCorrectnessOfValues(text::TextIterator &text_iterator) const -> void;
 
         auto throwBadValues(text::TextIterator &text_iterator) const -> void;
-        static auto throwUnexpectedTermination(text::TextIterator &text_iterator) -> void;
+
         static auto throwRangeBeginException(text::TextIterator &text_iterator) -> void;
         static auto throwUnexpectedCharacter(text::TextIterator &text_iterator, char32_t chr)
             -> void;

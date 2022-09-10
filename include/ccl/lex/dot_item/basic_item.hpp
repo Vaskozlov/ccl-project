@@ -1,7 +1,6 @@
 #ifndef CCL_PROJECT_BASIC_ITEM_HPP
 #define CCL_PROJECT_BASIC_ITEM_HPP
 
-#include <ccl/lex/analysis_shared.hpp>
 #include <ccl/lex/dot_item/recurrence.hpp>
 #include <ccl/lex/token.hpp>
 #include <ccl/text/text_iterator.hpp>
@@ -9,14 +8,22 @@
 
 namespace ccl::lex::dot_item
 {
+    // NOLINTNEXTLINE
+    CCL_ENUM(ScanType, u16, MAIN, FORKED, SPECIAL);
+
+    class Container;
+
     class BasicItem
     {
     public:
         using TextIterator = text::TextIterator;
-        using CommentTokens = text::CommentTokens;
+        using ForkedGenerator = typename text::TextIterator::ForkedTextIterator;
+        using BasicItemPtr = std::unique_ptr<BasicItem>;
+        using ScanResult = std::optional<std::pair<TextIterator, Token>>;
 
-        explicit BasicItem(AnalysisShared &analysis_shared_) noexcept
-          : analysis_shared{ analysis_shared_ }
+        struct SpecialItems;
+
+        BasicItem(SpecialItems &special_items_, size_t id_) : id(id_), special_items(special_items_)
         {}
 
         BasicItem(const BasicItem &) = default;
@@ -59,7 +66,7 @@ namespace ccl::lex::dot_item
 
         auto reverse() noexcept -> void
         {
-            reversed = !reversed;
+            reversed = not reversed;
         }
 
         auto setRecurrence(Recurrence new_recurrence) noexcept -> void
@@ -72,36 +79,34 @@ namespace ccl::lex::dot_item
             return not reversed && recurrence.from == 0 && empty();
         }
 
+        [[nodiscard]] auto getId() const noexcept -> size_t
+        {
+            return id;
+        }
+
         static auto alwaysRecognizedSuggestion(TextIterator &text_iterator, bool condition) -> void;
         static auto neverRecognizedSuggestion(TextIterator &text_iterator, bool condition) -> void;
 
         [[nodiscard]] virtual auto empty() const noexcept -> bool = 0;
-
-        [[nodiscard]] auto scan(
-            const TextIterator &text_iterator, const Token &token, bool main_scan = false) const
-            -> std::optional<std::pair<TextIterator, Token>>;
+        [[nodiscard]] auto scan(ForkedGenerator text_iterator) const -> std::optional<size_t>;
 
     private:
-        [[nodiscard]] auto scanIterationCall(TextIterator &local_iterator, Token &local_token) const
-            -> bool;
-
-        [[nodiscard]] virtual auto scanIteration(TextIterator &text_iterator, Token &token) const
-            -> bool = 0;
-
-        [[nodiscard]] auto successfullyScanned(
-            const TextIterator &text_iterator, size_t times, bool main_scan) const -> bool;
-
-        auto modifyToken(
-            const TextIterator &before_scan_iterator, const TextIterator &after_scan_iterator,
-            Token &token) const -> void;
+        [[nodiscard]] virtual auto scanIteration(const ForkedGenerator &text_iterator) const
+            -> size_t = 0;
 
     protected:
         Recurrence recurrence{ Recurrence::basic() };
-        AnalysisShared &analysis_shared;
+        size_t id{};
+        SpecialItems &special_items;
         bool reversed{ false };
         bool prefix{};
         bool postfix{};
     };
 }// namespace ccl::lex::dot_item
+
+namespace ccl::lex
+{
+    using SpecialItems = dot_item::BasicItem::SpecialItems;
+}
 
 #endif /* CCL_PROJECT_BASIC_ITEM_HPP */

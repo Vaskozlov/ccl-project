@@ -5,44 +5,46 @@
 
 namespace ccl::lex::dot_item
 {
-    class Sequence : public BasicItem
+    class Sequence final : public BasicItem
     {
     private:
-        using typename BasicItem::CommentTokens;
         using typename BasicItem::TextIterator;
 
     public:
-        struct SequenceFlags
+        struct CCL_TRIVIAL_ABI SequenceFlags
         {
             bool multiline : 1 = false;
             bool no_escaping_symbols : 1 = false;
         };
 
         Sequence(
-            SequenceFlags flags_, string_view str_begin_, string_view str_end,
-            TextIterator &rule_iterator_, AnalysisShared &analysis_shared_);
+            SequenceFlags flags_, const string_view &str_begin_, const string_view &str_end,
+            TextIterator &rule_iterator_, SpecialItems &special_items_, size_t id_ = 0);
 
         Sequence(
-            SequenceFlags flags_, string_view str_begin_, TextIterator &rule_iterator_,
-            AnalysisShared &analysis_shared_)
-          : Sequence(flags_, str_begin_, str_begin_, rule_iterator_, analysis_shared_)
+            SequenceFlags flags_, const string_view &str_begin_, TextIterator &rule_iterator_,
+            SpecialItems &special_items_, size_t id_ = 0)
+          : Sequence(flags_, str_begin_, str_begin_, rule_iterator_, special_items_, id_)
         {}
 
-        [[nodiscard]] auto get() const noexcept -> const std::string &
+        [[nodiscard]] auto getValue() noexcept -> std::string &
         {
             return sequence_value;
         }
 
-        [[nodiscard]] auto getByRef() noexcept -> std::string &
+        [[nodiscard]] auto getValue() const noexcept -> const std::string &
         {
             return sequence_value;
         }
 
-        [[nodiscard]] auto empty() const noexcept -> bool override;
+        [[nodiscard]] auto empty() const noexcept -> bool final
+        {
+            return sequence_value.empty();
+        }
 
     private:
-        [[nodiscard]] auto scanIteration(TextIterator &text_iterator, Token &token) const
-            -> bool override;
+        [[nodiscard]] auto scanIteration(const ForkedGenerator &text_iterator) const
+            -> size_t final;
 
         [[nodiscard]] auto isStringEnd(TextIterator &rule_iterator, bool is_escaping) const -> bool;
 
@@ -54,17 +56,20 @@ namespace ccl::lex::dot_item
 
         auto checkSequenceArguments(TextIterator &rule_iterator) const -> void;
 
-        static auto throwEmptyStringEnd(TextIterator &rule_iterator) -> void;
-        static auto throwEmptyStringBegin(TextIterator &rule_iterator) -> void;
         auto throwStringBeginException(TextIterator &rule_iterator) const -> void;
-        static auto throwUnterminatedString(
-            TextIterator &rule_iterator,
-            string_view message,
-            string_view suggestion = {}) -> void;
 
+        CCL_INLINE static auto throwEmptyStringEnd(TextIterator &rule_iterator) -> void;
+
+        CCL_INLINE static auto throwEmptyStringBegin(TextIterator &rule_iterator) -> void;
+
+        CCL_INLINE static auto throwUnterminatedString(
+            TextIterator &rule_iterator,
+            const string_view &message,
+            const string_view &suggestion = {}) -> void;
+
+        std::string sequence_value{};
         string_view str_begin{};
         string_view str_end{};
-        std::string sequence_value{};
         SequenceFlags sequence_flags{};
     };
 }// namespace ccl::lex::dot_item

@@ -4,48 +4,66 @@ using namespace std::string_literals;
 
 namespace ccl::lex
 {
-    // NOLINTNEXTLINE recursive function
-    auto LexicalAnalyzer::Tokenizer::yield() -> Token
+    using ScanType = dot_item::ScanType;
+
+    CCL_INLINE auto LexicalAnalyzer::Tokenizer::shouldIgnoreToken(const Token &token) const -> bool
     {
-        text_iterator.skipComments();
-
-        if (text_iterator.isEnd()) {
-            return Token{ { text_iterator }, ReservedTokenType::EOI, "$"s };
-        }
-
-        if (auto special_token = lexical_analyzer.shared.getSpecialToken(text_iterator);
-            special_token.has_value()) {
-            return *special_token;
-        }
-
-        for (auto &&item : lexical_analyzer.items) {
-            auto scan_result = item.scan(text_iterator, Token{ text_iterator, item.getId() }, true);
-
-            if (scan_result.has_value() && not scan_result->second.getRepr().empty()) {
-                auto &[iterator, token] = *scan_result;
-                text_iterator = std::move(iterator);
-                return token;
-            }
-        }
-
-        if (isLayout(text_iterator.getNextCarriageValue())) {
-            text_iterator.next();
-            return yield();
-        }
-
-        return constructBadToken();
+        const auto &ignore = lexical_analyzer.ignored_ids;
+        return ignore.contains(token.getId());
     }
 
-
-    auto LexicalAnalyzer::Tokenizer::constructBadToken() -> Token
+    auto LexicalAnalyzer::Tokenizer::yield() -> Token &
     {
-        auto token = Token{ text_iterator, ReservedTokenType::BAD_TOKEN };
+        while (true) {
+            if (text_iterator.isEOI()) [[unlikely]] {
+                constructEOIToken();
+                return local_token;
+            }
 
-        while (not lexical_analyzer.shared.isNextCharNotForScanning(text_iterator)) {
+            auto special_item =
+                lexical_analyzer.special_items.specialScan(text_iterator, local_token);
+
+            if (special_item) {
+                goto EndYielding;// NOLINT
+            }
+
+            for (auto &&container : lexical_analyzer.items) {
+                auto scan_result = container.beginScan(text_iterator, local_token);
+
+                if (scan_result) {
+                    goto EndYielding;// NOLINT
+                }
+            }
+
+            if (isLayout(text_iterator.getNextCarriageValue())) {
+                text_iterator.skip(1);
+                continue;
+            }
+
+            constructBadToken();
+
+        EndYielding:
+            if (lexical_analyzer.ignored_ids.contains(local_token.getId())) {
+                continue;
+            }
+
+            return local_token;
+        }
+    }
+
+    CCL_INLINE auto LexicalAnalyzer::Tokenizer::constructEOIToken() -> void
+    {
+        local_token = { text_iterator, ReservedTokenType::EOI };
+    }
+
+    CCL_INLINE auto LexicalAnalyzer::Tokenizer::constructBadToken() -> void
+    {
+        local_token = Token{ text_iterator, ReservedTokenType::BAD_TOKEN };
+
+        while (not isLayoutOrEoF(text_iterator.getNextCarriageValue())) {
             text_iterator.next();
         }
 
-        token.setEnd(text_iterator.getRemainingAsCarriage());
-        return token;
+        local_token.setEnd(text_iterator.getRemainingAsCarriage());
     }
 }// namespace ccl::lex

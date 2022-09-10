@@ -7,25 +7,31 @@ using namespace lex;
 using namespace text;
 using namespace string_view_literals;
 
+constexpr std::array<string_view, 11> rule_names({ "EOI", "BAD TOKEN", "float", "identifier",
+                                                   "number", "addition", "column", "assignment",
+                                                   "string", "new line", "comment" });
+
 BOOST_AUTO_TEST_CASE(LexTest)
 {
     auto text =
         R"(
+        10.0f;
         auto i = 10;
-        i + 10; // test
-        auto _ = "Hello, World!" + "test")"_sv;
+        i+10; // test
+        auto _ = "Hello, World!" + "test\"")"_sv;
 
     // NOLINTBEGIN
     auto analyzer = LexicalAnalyzer(
         handler::Cmd::instance(),
-        { { 2, R"([a-zA-Z_]+)" },
-          { 3, "[0-9]+" },
-          { 4, R"( '+')" },
-          { 5, R"(';')" },
-          { 6, R"('=')" },
-          { 7, R"("\""s)" },
-          { 8, R"('\n')" },
-          { 9, R"("//"co)" } });
+        { { 2, R"( [0-9]+"."[0-9]* ( [a-zA-Z_]+ [a-zA-Z0-9_]* )?p )" },
+          { 3, "[a-zA-Z_]+" },
+          { 4, "[0-9]+" },
+          { 5, R"(! "+")" },
+          { 6, R"(! ";")" },
+          { 7, R"(! "=")" },
+          { 8, R"(! "\"" ("\\\"" | ["]^)* "\"" )" },
+          { 9, R"(! "\n")" },
+          { 10, R"(! "//"[\n]^*)" } });
 
     auto tokenizer = analyzer.getTokenizer(text);
     // NOLINTEND
@@ -33,9 +39,7 @@ BOOST_AUTO_TEST_CASE(LexTest)
     auto token = tokenizer.yield();
 
     while (token) {
-        /*fmt::print(
-            "{} {}: {}\n", token.getId(), token.getTabsAndSpaces().size(),
-            token.getRepr());*/
+        fmt::print("{}: {}\n", rule_names.at(token.getId()), token.getRepr());
         token = tokenizer.yield();
     }
 }

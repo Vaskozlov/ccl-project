@@ -5,26 +5,24 @@ namespace ccl::lex
     using namespace std::string_literals;
 
     LexicalAnalyzer::LexicalAnalyzer(
-        ExceptionHandler &exception_handler_,
-        const std::initializer_list<std::pair<size_t, string_view>> &rules_, string_view filename,
-        const CommentTokens &comment_tokens_)
-      : exception_handler(exception_handler_)
+        ExceptionHandler &exception_handler_, const std::initializer_list<Rule> &rules_,
+        string_view filename, std::basic_string<size_t> ignored_ids_)
+      : ignored_ids(std::move(ignored_ids_)), exception_handler(exception_handler_)
     {
-        for (const auto &[id, rule] : rules_) {
-            createContainer(rule, id, comment_tokens_, filename);
+        for (const Rule &rule : rules_) {
+            createContainer(rule.repr, rule.id, filename);
         }
     }
 
-    auto LexicalAnalyzer::createContainer(
-        string_view rule, size_t id, const CommentTokens &comment_tokens, string_view filename)
-        -> void
+    auto LexicalAnalyzer::createContainer(string_view rule, size_t id, string_view filename) -> void
     {
-        auto container = Container(
-            TextIterator{ rule, exception_handler, comment_tokens, filename }, id, shared);
+        auto container =
+            Container(TextIterator{ rule, exception_handler, filename }, special_items, id, true);
 
-        if (not container.empty()) {
-            items.emplace(std::move(container));
+        if (container.isSpecial()) {
+            special_items.special_items.emplace_back(std::move(container));
+        } else if (not container.empty()) {
+            items.emplace_back(std::move(container));
         }
     }
-
 }// namespace ccl::lex

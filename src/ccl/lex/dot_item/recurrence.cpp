@@ -2,9 +2,10 @@
 
 namespace ccl::lex::dot_item
 {
+    using namespace text;
     using namespace ccl::string_view_literals;
 
-    Recurrence::Recurrence(text::TextIterator &text_iterator)
+    Recurrence::Recurrence(TextIterator &text_iterator)
     {
         checkRangeStart(text_iterator);
 
@@ -16,12 +17,11 @@ namespace ccl::lex::dot_item
         checkCorrectnessOfValues(iterator_copy);
     }
 
-    auto Recurrence::parseNumber(text::TextIterator &text_iterator, char32_t terminator) -> size_t
+    auto Recurrence::parseNumber(TextIterator &text_iterator, char32_t terminator) -> size_t
     {
         auto result = static_cast<size_t>(0);
         constexpr auto decimal_base = static_cast<size_t>(10);
-
-        text_iterator.skipCommentsAndLayout();
+        text_iterator.moveToCleanChar();
 
         while (text_iterator.next() != terminator) {
             auto chr = text_iterator.getCurrentChar();
@@ -37,21 +37,21 @@ namespace ccl::lex::dot_item
         return result;
     }
 
-    auto Recurrence::checkRangeStart(text::TextIterator &text_iterator) -> void
+    auto Recurrence::checkRangeStart(TextIterator &text_iterator) -> void
     {
         if (text_iterator.getCurrentChar() != U'{') {
             throwRangeBeginException(text_iterator);
         }
     }
 
-    auto Recurrence::checkCorrectnessOfValues(text::TextIterator &text_iterator) const -> void
+    auto Recurrence::checkCorrectnessOfValues(TextIterator &text_iterator) const -> void
     {
         if (from > to) {
             throwBadValues(text_iterator);
         }
     }
 
-    auto Recurrence::throwBadValues(text::TextIterator &text_iterator) const -> void
+    auto Recurrence::throwBadValues(TextIterator &text_iterator) const -> void
     {
         auto message = fmt::format(
             "the beginning of the recurrence ({}) is greater than the end "
@@ -61,8 +61,7 @@ namespace ccl::lex::dot_item
         text_iterator.throwCriticalError(message);
     }
 
-    auto Recurrence::throwUnexpectedCharacter(text::TextIterator &text_iterator, char32_t chr)
-        -> void
+    auto Recurrence::throwUnexpectedCharacter(TextIterator &text_iterator, char32_t chr) -> void
     {
         auto buffer = std::string{};
         utf8::appendUtf32ToUtf8Container(buffer, chr);
@@ -73,13 +72,7 @@ namespace ccl::lex::dot_item
         throw UnrecoverableError{ "unrecoverable error in Recurrence" };
     }
 
-    auto Recurrence::throwUnexpectedTermination(text::TextIterator &text_iterator) -> void
-    {
-        text_iterator.throwPanicError("unexpected termination"_sv);
-        throw UnrecoverableError{ "unrecoverable error in Recurrence" };
-    }
-
-    auto Recurrence::throwRangeBeginException(text::TextIterator &text_iterator) -> void
+    auto Recurrence::throwRangeBeginException(TextIterator &text_iterator) -> void
     {
         text_iterator.throwPanicError("expected '{' at the beginning of recurrence range"_sv);
         throw UnrecoverableError{ "unrecoverable error in Recurrence" };

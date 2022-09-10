@@ -9,11 +9,10 @@ namespace ccl
     CCL_EXCEPTION(BasicTextIteratorException, CclException);
 
     CCL_ENUM(// NOLINTNEXTLINE
-        ExceptionCriticality, u32, NONE = 0, SUGGESTION = 1, WARNING = 2, UNCRITICAL = 3,
-        CRITICAL = 4, PANIC = 5);
+        ExceptionCriticality, u32, NONE, SUGGESTION, WARNING, UNCRITICAL, CRITICAL, PANIC);
 
     // NOLINTNEXTLINE
-    CCL_ENUM(AnalysationStage, u32, NONE = 0, LEXICAL_ANALYSIS = 1, PARSING = 2);
+    CCL_ENUM(AnalysationStage, u32, NONE, LEXICAL_ANALYSIS, PARSING);
 
     auto ExceptionCriticalityDescription(ExceptionCriticality criticality) noexcept
         -> std::string_view;

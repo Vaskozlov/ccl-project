@@ -12,13 +12,6 @@
 
 namespace ccl::text
 {
-    struct CommentTokens
-    {
-        std::string single_line{};
-        std::string multiline_begin{};
-        std::string multiline_end{};
-    };
-
     class TextIterator : public CrtpBasicTextIterator<TextIterator>
     {
     private:
@@ -26,7 +19,6 @@ namespace ccl::text
         using extra_symbols_t = std::basic_string<Pair<char32_t, char32_t>>;
 
     public:
-        class CommentSkipper;
         class EscapingSymbolizer;
         class NotationEscapingSymbolizer;
 
@@ -38,12 +30,12 @@ namespace ccl::text
             TextIterator &text_iterator, u16 max_times, u16 notation_power, bool need_all_chars)
             -> char32_t;
 
-
         explicit TextIterator(
-            string_view input, ExceptionHandler &exception_handler_ = ExceptionHandler::instance(),
-            CommentTokens comment_tokens_ = {}, string_view filename = {})
+            const string_view &input,
+            ExceptionHandler &exception_handler_ = ExceptionHandler::instance(),
+            const string_view &filename = {})
           : Base(input), location(filename), line_tracker(input),
-            comment_tokens(std::move(comment_tokens_)), exception_handler(&exception_handler_)
+            exception_handler(&exception_handler_)
         {}
 
         [[nodiscard]] auto getLocation() const noexcept -> const Location &
@@ -76,12 +68,12 @@ namespace ccl::text
             return line_tracker.get();
         }
 
-        [[nodiscard]] auto getTabsAndSpaces() const noexcept -> const std::u32string &
+        [[nodiscard]] auto getTabsAndSpaces() const noexcept -> const std::string &
         {
             return ts_tracker.get();
         }
 
-        [[nodiscard]] auto getExceptionHandler() noexcept -> ExceptionHandler &
+        [[nodiscard]] auto getHandler() noexcept -> ExceptionHandler &
         {
             return *exception_handler;
         }
@@ -89,104 +81,95 @@ namespace ccl::text
         auto nextRawCharWithEscapingSymbols(const extra_symbols_t &extra_symbols = {})
             -> Pair<bool, char32_t>;
 
-        auto onMove(char chr) -> void;
-        auto onCharacter(char32_t chr) -> void;
-        auto utfError(char chr) -> void;
+        CCL_INLINE auto onMove(char chr) -> void
+        {
+            location.intermediateNext(chr);
+        }
 
-        auto skipComments() -> bool;
-        auto skipCommentsAndLayout() -> void;
+        CCL_INLINE auto onCharacter(char32_t chr) -> void
+        {
+            location.next(chr);
+            ts_tracker.next(chr);
+            line_tracker.next(chr);
+        }
+
+        auto utfError(char /* unused */) -> void
+        {
+            throwPanicError("invalid utf symbol");
+            throw UnrecoverableError{ "unable to recover, because of invalid utf symbol" };
+        }
 
         auto throwSuggestion(
-            const TextIterator &iterator_location, string_view message, string_view suggestion = {})
-            -> void
+            const TextIterator &iterator_location, const string_view &message,
+            const string_view &suggestion = {}) -> void
         {
             throwToHandle(iterator_location, ExceptionCriticality::SUGGESTION, message, suggestion);
         }
 
         auto throwWarning(
-            const TextIterator &iterator_location, string_view message, string_view suggestion = {})
-            -> void
+            const TextIterator &iterator_location, const string_view &message,
+            const string_view &suggestion = {}) -> void
         {
             throwToHandle(iterator_location, ExceptionCriticality::WARNING, message, suggestion);
         }
 
         auto throwUncriticalError(
-            const TextIterator &iterator_location, string_view message, string_view suggestion = {})
-            -> void
+            const TextIterator &iterator_location, const string_view &message,
+            const string_view &suggestion = {}) -> void
         {
             throwToHandle(iterator_location, ExceptionCriticality::SUGGESTION, message, suggestion);
         }
 
         auto throwCriticalError(
-            const TextIterator &iterator_location, string_view message, string_view suggestion = {})
-            -> void
+            const TextIterator &iterator_location, const string_view &message,
+            const string_view &suggestion = {}) -> void
         {
             throwToHandle(iterator_location, ExceptionCriticality::CRITICAL, message, suggestion);
         }
 
         auto throwPanicError(
-            const TextIterator &iterator_location, string_view message, string_view suggestion = {})
-            -> void
+            const TextIterator &iterator_location, const string_view &message,
+            const string_view &suggestion = {}) -> void
         {
             throwToHandle(iterator_location, ExceptionCriticality::PANIC, message, suggestion);
         }
 
-        auto throwSuggestion(string_view message, string_view suggestion = {}) -> void
+        auto throwSuggestion(const string_view &message, const string_view &suggestion = {}) -> void
         {
             throwToHandle(*this, ExceptionCriticality::SUGGESTION, message, suggestion);
         }
 
-        auto throwWarning(string_view message, string_view suggestion = {}) -> void
+        auto throwWarning(const string_view &message, const string_view &suggestion = {}) -> void
         {
             throwToHandle(*this, ExceptionCriticality::WARNING, message, suggestion);
         }
 
-        auto throwUncriticalError(string_view message, string_view suggestion = {}) -> void
+        auto throwUncriticalError(const string_view &message, const string_view &suggestion = {})
+            -> void
         {
             throwToHandle(*this, ExceptionCriticality::SUGGESTION, message, suggestion);
         }
 
-        auto throwCriticalError(string_view message, string_view suggestion = {}) -> void
+        auto throwCriticalError(const string_view &message, const string_view &suggestion = {})
+            -> void
         {
             throwToHandle(*this, ExceptionCriticality::CRITICAL, message, suggestion);
         }
 
-        auto throwPanicError(string_view message, string_view suggestion = {}) -> void
+        auto throwPanicError(const string_view &message, const string_view &suggestion = {}) -> void
         {
             throwToHandle(*this, ExceptionCriticality::PANIC, message, suggestion);
         }
 
         auto throwToHandle(
             const TextIterator &iterator_location, ExceptionCriticality criticality,
-            string_view message, string_view suggestion = {}) -> void;
+            const string_view &message, const string_view &suggestion = {}) -> void;
 
     private:
         Location location{};
         module::TsTracker ts_tracker{};
         module::LineTracker line_tracker;
-        CommentTokens comment_tokens{};
         ExceptionHandler *exception_handler{};
-    };
-
-    class TextIterator::CommentSkipper
-    {
-    public:
-        auto skip() -> bool;
-
-        CommentSkipper(TextIterator &text_iterator_, const CommentTokens &comment_tokens_);
-
-    private:
-        [[nodiscard]] auto isComment(const string_view &comment) const noexcept -> bool;
-
-        auto skipSingleLine() -> void;
-        auto skipMultiline() -> void;
-
-        auto checkCommentTermination(const TextIterator &comment_begin) const -> void;
-
-        auto throwUnterminatedCommentError(const TextIterator &comment_begin) const -> void;
-
-        const CommentTokens &comment_tokens;// MAYBE: copy comment tokens into StrViews
-        TextIterator &text_iterator;
     };
 
     class TextIterator::EscapingSymbolizer
