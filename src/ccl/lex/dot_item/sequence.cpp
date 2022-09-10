@@ -38,12 +38,12 @@ namespace ccl::lex::dot_item
             utf8::appendUtf32ToUtf8Container(sequence_value, chr);
         }
     }
- l
+
     auto Sequence::scanIteration(const ForkedGenerator &text_iterator) const -> size_t
     {
-        auto future_text = text_iterator.getFutureRemaining(1);
+        auto future_text = text_iterator.getFutureRemaining<std::string_view>();
 
-        if (future_text.startsWith(sequence_value) ^ reversed) {
+        if (future_text.starts_with(sequence_value) ^ reversed) {
             return reversed ? utf8::utfSize(future_text[0]) : sequence_value.size();
         }
 
@@ -85,7 +85,7 @@ namespace ccl::lex::dot_item
         rule_iterator.skip(str_begin.size() - 1);
     }
 
-    auto Sequence::checkSequenceArguments(TextIterator &rule_iterator) const -> void
+    CCL_INLINE auto Sequence::checkSequenceArguments(TextIterator &rule_iterator) const -> void
     {
         auto text = rule_iterator.getRemainingWithCurrent();
 

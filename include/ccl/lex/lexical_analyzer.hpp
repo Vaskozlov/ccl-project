@@ -52,14 +52,15 @@ namespace ccl::lex
                 text_iterator.throwToHandle(text_iterator, criticality, message, suggestion);
             }
 
-            [[nodiscard]] auto yield() -> Token;
+            [[nodiscard]] auto yield() -> Token &;
 
         private:
             [[nodiscard]] auto shouldIgnoreToken(const Token &token) const -> bool;
 
-            [[nodiscard]] auto constructBadToken() -> Token;
-            [[nodiscard]] auto constructEOIToken() -> Token;
+            auto constructBadToken() -> void;
+            auto constructEOIToken() -> void;
 
+            Token local_token{};
             LexicalAnalyzer &lexical_analyzer;
             TextIterator text_iterator;
         };
@@ -88,11 +89,7 @@ namespace ccl::lex
     private:
         auto createContainer(string_view rule, size_t id, string_view filename) -> void;
 
-        std::array<std::byte, 8096> buffer{};
-        std::pmr::monotonic_buffer_resource memory_resource{ buffer.data(), 8096 };
-
-        std::pmr::set<Container> items{ &memory_resource };
-
+        std::vector<Container> items{};
         SpecialItems special_items{};
         std::basic_string<size_t> ignored_ids{};
         ExceptionHandler &exception_handler;

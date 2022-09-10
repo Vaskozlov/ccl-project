@@ -122,7 +122,7 @@ namespace ccl::lex::parser
     auto CcllParser::checkRule(text::TextIterator &rule) -> void
     {
         try {
-            auto container = dot_item::Container{ std::move(rule), special_items, 2 };
+            auto container = dot_item::Container{ std::move(rule), special_items, 2, true };
         } catch (const UnrecoverableError & /* unused */) {}
     }
 

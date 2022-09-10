@@ -21,7 +21,7 @@ namespace ccl::lex
             location(text_iterator_.getLocation())
         {}
 
-        std::u32string tabs_and_spaces{};
+        std::string tabs_and_spaces{};
         text::Location location{};
     };
 
@@ -29,6 +29,9 @@ namespace ccl::lex
     {
     public:
         Token() = default;
+
+        explicit Token(size_t id_) : id(id_)
+        {}
 
         Token(TokenAttributes &&attributes_, const string_view &repr_, size_t id_)
           : attributes(attributes_), repr(repr_), id(id_)
@@ -97,7 +100,7 @@ namespace ccl::lex
             return postfixes;
         }
 
-        [[nodiscard]] auto getTabsAndSpaces() const noexcept -> const std::u32string &
+        [[nodiscard]] auto getTabsAndSpaces() const noexcept -> const std::string &
         {
             return attributes.tabs_and_spaces;
         }
@@ -105,6 +108,12 @@ namespace ccl::lex
         auto setEnd(typename string_view::iterator end_) noexcept -> void
         {
             repr = { repr.begin(), end_ };
+        }
+
+        auto finishInitialization(const text::TextIterator &text_iterator) -> void
+        {
+            repr = text_iterator.getRemaining();
+            attributes = TokenAttributes{ text_iterator };
         }
 
         auto setReprLength(size_t length) noexcept -> void
@@ -120,6 +129,16 @@ namespace ccl::lex
         auto addPostfix(string_view postfix) -> void
         {
             postfixes.push_back(postfix);
+        }
+
+        auto clear(size_t new_id)
+        {
+            id = new_id;
+            repr = {};
+            prefixes.clear();
+            postfixes.clear();
+            attributes.tabs_and_spaces.clear();
+            attributes.location = text::Location{};
         }
 
     private:

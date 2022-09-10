@@ -12,25 +12,27 @@ namespace ccl::lex
         return ignore.contains(token.getId());
     }
 
-    auto LexicalAnalyzer::Tokenizer::yield() -> Token
+    auto LexicalAnalyzer::Tokenizer::yield() -> Token &
     {
         while (true) {
             if (text_iterator.isEOI()) [[unlikely]] {
-                return constructEOIToken();
+                constructEOIToken();
+                return local_token;
             }
 
             auto token = Token{ text_iterator, 0 };
-            auto special_item = lexical_analyzer.special_items.specialScan(text_iterator);
+            auto special_item =
+                lexical_analyzer.special_items.specialScan(text_iterator, local_token);
 
-            if (special_item.has_value()) {
-                return *special_item;
+            if (special_item) {
+                goto EndYielding;// NOLINT
             }
 
             for (auto &&container : lexical_analyzer.items) {
-                auto scan_result = container.beginScan(text_iterator);
+                auto scan_result = container.beginScan(text_iterator, local_token);
 
-                if (scan_result.has_value()) {
-                    return *scan_result;
+                if (scan_result) {
+                    goto EndYielding; // NOLINT
                 }
             }
 
@@ -39,24 +41,30 @@ namespace ccl::lex
                 continue;
             }
 
-            return constructBadToken();
+            constructBadToken();
+
+        EndYielding:
+            if (lexical_analyzer.ignored_ids.contains(local_token.getId())) {
+                continue;
+            }
+
+            return local_token;
         }
     }
 
-    CCL_INLINE auto LexicalAnalyzer::Tokenizer::constructEOIToken() -> Token
+    CCL_INLINE auto LexicalAnalyzer::Tokenizer::constructEOIToken() -> void
     {
-        return { text_iterator, ReservedTokenType::EOI };
+        local_token = { text_iterator, ReservedTokenType::EOI };
     }
 
-    CCL_INLINE auto LexicalAnalyzer::Tokenizer::constructBadToken() -> Token
+    CCL_INLINE auto LexicalAnalyzer::Tokenizer::constructBadToken() -> void
     {
-        auto token = Token{ text_iterator, ReservedTokenType::BAD_TOKEN };
+        local_token = Token{ text_iterator, ReservedTokenType::BAD_TOKEN };
 
         while (not isLayoutOrEoF(text_iterator.getNextCarriageValue())) {
             text_iterator.next();
         }
 
-        token.setEnd(text_iterator.getRemainingAsCarriage());
-        return token;
+        local_token.setEnd(text_iterator.getRemainingAsCarriage());
     }
 }// namespace ccl::lex

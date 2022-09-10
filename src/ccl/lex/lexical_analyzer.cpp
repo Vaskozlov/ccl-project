@@ -17,13 +17,12 @@ namespace ccl::lex
     auto LexicalAnalyzer::createContainer(string_view rule, size_t id, string_view filename) -> void
     {
         auto container =
-            Container(TextIterator{ rule, exception_handler, filename }, special_items, id);
+            Container(TextIterator{ rule, exception_handler, filename }, special_items, id, true);
 
         if (container.isSpecial()) {
             special_items.special_items.emplace_back(std::move(container));
         } else if (not container.empty()) {
-            items.emplace(std::move(container));
+            items.emplace_back(std::move(container));
         }
     }
-
 }// namespace ccl::lex

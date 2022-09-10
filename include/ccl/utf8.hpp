@@ -29,27 +29,27 @@ namespace ccl::utf8
     constexpr std::array<u8, 5> UtfMasks{ 0, OneByteMask, TwoBytesMask, TreeBytesMask,
                                           FourBytesMask };
 
-    CCL_DECL auto isTrailingCharacter(char chr) noexcept -> bool
+    CCL_DECL CCL_INLINE auto isTrailingCharacter(char chr) noexcept -> bool
     {
         return (chr & ContinuationMask) == ContinuationSignature;
     }
 
-    CCL_DECL auto isOneByteSize(char chr) noexcept -> bool
+    CCL_DECL CCL_INLINE auto isOneByteSize(char chr) noexcept -> bool
     {
         return (chr & OneByteMask) == 0;
     }
 
-    CCL_DECL auto isTwoBytesSize(char chr) noexcept -> bool
+    CCL_DECL CCL_INLINE auto isTwoBytesSize(char chr) noexcept -> bool
     {
         return (chr & TwoBytesMask) == TwoBytesSignature;
     }
 
-    CCL_DECL auto isThreeBytesSize(char chr) noexcept -> bool
+    CCL_DECL CCL_INLINE auto isThreeBytesSize(char chr) noexcept -> bool
     {
         return (chr & TreeBytesMask) == TreeBytesSignature;
     }
 
-    CCL_DECL auto isFourBytesSize(char chr) noexcept -> bool
+    CCL_DECL CCL_INLINE auto isFourBytesSize(char chr) noexcept -> bool
     {
         return (chr & FourBytesMask) == FourBytesSignature;
     }
@@ -61,19 +61,19 @@ namespace ccl::utf8
 
     CCL_DECL auto utfSize(char chr) noexcept -> u16
     {
-        if (isOneByteSize(chr)) {
+        if (isOneByteSize(chr)) [[likely]] {
             return 1U;
         }
 
-        if (isTwoBytesSize(chr)) {
+        if (isTwoBytesSize(chr)) [[unlikely]] {
             return 2U;
         }
 
-        if (isThreeBytesSize(chr)) {
+        if (isThreeBytesSize(chr)) [[unlikely]] {
             return 3U;
         }
 
-        if (isFourBytesSize(chr)) {
+        if (isFourBytesSize(chr)) [[unlikely]] {
             return 4U;
         }
 

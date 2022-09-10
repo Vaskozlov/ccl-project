@@ -132,6 +132,27 @@ namespace ccl::text
             return getRemainingAsCarriage() == end;
         }
 
+        CCL_DECL auto doesRemainingFutureStartsWith(const StringLike<char> auto &str) const noexcept
+            -> bool
+        {
+            return std::string_view{ carriage + utf8::utfSize(getNextCarriageValue()), end }
+                .starts_with(str);
+        }
+
+        template<typename T = string_view>
+        CCL_DECL auto getFutureRemaining() const noexcept -> string_view
+            requires std::is_same_v<T, string_view>
+        {
+            return { carriage + utf8::utfSize(getNextCarriageValue()), end };
+        }
+
+        template<typename T = std::string_view>
+        CCL_DECL auto getFutureRemaining() const noexcept -> std::string_view
+            requires std::is_same_v<T, std::string_view>
+        {
+            return { carriage + utf8::utfSize(getNextCarriageValue()), end };
+        }
+
         CCL_DECL auto getFutureRemaining(size_t times) const noexcept -> string_view
         {
             auto fork = ForkedTextIterator{ CrtpFork, *this };

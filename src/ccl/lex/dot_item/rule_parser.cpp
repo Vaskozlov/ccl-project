@@ -141,7 +141,7 @@ namespace ccl::lex::dot_item
         rule_iterator.setEnd(text.begin() + bracket_index);
 
         auto new_container = std::make_unique<Container>(
-            rule_iterator, special_items, getId(), false, container.is_special);
+            rule_iterator, special_items, getId(), false, container.isSpecial());
         rule_iterator.setEnd(saved_end);
 
         return new_container;
@@ -199,7 +199,7 @@ namespace ccl::lex::dot_item
             return;
         }
 
-        container.is_special = true;
+        container.flags.is_special = true;
     }
 
     auto Container::RuleParser::checkId() const -> void
@@ -276,7 +276,7 @@ namespace ccl::lex::dot_item
 
     auto Container::RuleParser::checkAbilityToCreatePrefixPostfix() -> void
     {
-        if (not container.main_item) {
+        if (not container.flags.is_main) {
             throwUnableToApply(
                 "you are not allowed to create prefixes or postfixes inside other containers");
             return;

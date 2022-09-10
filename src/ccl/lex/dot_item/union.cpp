@@ -38,10 +38,11 @@ namespace ccl::lex::dot_item
 
     auto Union::scanIteration(const ForkedGenerator &text_iterator) const -> size_t
     {
-        auto future_char = text_iterator.futureChar(1);
         auto next_carriage_value = text_iterator.getNextCarriageValue();
 
-        if (bitset.at(future_char) ^ reversed) {
+        if ((bitset.at(std::bit_cast<char8_t>(next_carriage_value)) ||
+             bitset.at(text_iterator.futureChar(1))) ^
+            reversed) {
             return utf8::utfSize(next_carriage_value);
         }
 
@@ -97,19 +98,19 @@ namespace ccl::lex::dot_item
         }
     }
 
-    auto Union::throwUnterminatedUnion(TextIterator &rule_iterator) -> void
+    CCL_INLINE auto Union::throwUnterminatedUnion(TextIterator &rule_iterator) -> void
     {
         rule_iterator.throwPanicError("unterminated union item"_sv);
         throw UnrecoverableError{ "unrecoverable error in Union" };
     }
 
-    auto Union::throwUnterminatedRangeException(TextIterator &rule_iterator) -> void
+    CCL_INLINE auto Union::throwUnterminatedRangeException(TextIterator &rule_iterator) -> void
     {
         rule_iterator.throwPanicError("unterminated range"_sv);
         throw UnrecoverableError{ "unrecoverable error in Union" };
     }
 
-    auto Union::throwUnionBeginException(TextIterator &rule_iterator) -> void
+    CCL_INLINE auto Union::throwUnionBeginException(TextIterator &rule_iterator) -> void
     {
         auto buffer = std::string{};
         utf8::appendUtf32ToUtf8Container(buffer, rule_iterator.getCurrentChar());

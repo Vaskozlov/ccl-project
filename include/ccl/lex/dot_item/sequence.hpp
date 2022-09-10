@@ -56,12 +56,13 @@ namespace ccl::lex::dot_item
 
         auto checkSequenceArguments(TextIterator &rule_iterator) const -> void;
 
-        static auto throwEmptyStringEnd(TextIterator &rule_iterator) -> void;
-        static auto throwEmptyStringBegin(TextIterator &rule_iterator) -> void;
-
         auto throwStringBeginException(TextIterator &rule_iterator) const -> void;
 
-        static auto throwUnterminatedString(
+        CCL_INLINE static auto throwEmptyStringEnd(TextIterator &rule_iterator) -> void;
+
+        CCL_INLINE static auto throwEmptyStringBegin(TextIterator &rule_iterator) -> void;
+
+        CCL_INLINE static auto throwUnterminatedString(
             TextIterator &rule_iterator,
             const string_view &message,
             const string_view &suggestion = {}) -> void;

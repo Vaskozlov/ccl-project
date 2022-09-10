@@ -68,7 +68,7 @@ namespace ccl::text
             return line_tracker.get();
         }
 
-        [[nodiscard]] auto getTabsAndSpaces() const noexcept -> const std::u32string &
+        [[nodiscard]] auto getTabsAndSpaces() const noexcept -> const std::string &
         {
             return ts_tracker.get();
         }

@@ -24,37 +24,31 @@ namespace ccl::lex::dot_item
 
         struct RuleParser;
 
+        struct ContainerFlags
+        {
+            bool is_main : 1 = false;
+            bool is_special : 1 = false;
+        };
+
     public:
         Container(
             TextIterator &rule_iterator_, SpecialItems &special_items_, size_t id_,
-            bool main_item_ = false, bool is_special_ = false)
-          : BasicItem(special_items_, id_), rule_repr(rule_iterator_.getRemainingWithCurrent()),
-            main_item(main_item_), is_special(is_special_)
-        {
-            parseRule(rule_iterator_);
-        }
+            bool main_item_ = false, bool is_special_ = false);
 
         Container(
             TextIterator &&rule_iterator_, SpecialItems &special_items_, size_t id_,
-            bool main_item_ = true, bool is_special_ = false)
-          : BasicItem(special_items_, id_), rule_repr(rule_iterator_.getRemainingWithCurrent()),
-            main_item(main_item_), is_special(is_special_)
-        {
-            parseRule(rule_iterator_);
-        }
+            bool main_item_ = false, bool is_special_ = false);
 
         Container(
             const TextIterator &rule_iterator_, SpecialItems &special_items_, size_t id_,
-            bool main_item_ = true, bool is_special_ = false)
-          : BasicItem(special_items_, id_), rule_repr(rule_iterator_.getRemainingWithCurrent()),
-            main_item(main_item_), is_special(is_special_)
-        {
-            auto rule_iterator = rule_iterator_;
-            parseRule(rule_iterator);
-        }
+            bool main_item_ = false, bool is_special_ = false);
 
-        auto beginScan(TextIterator &text_iterator, ScanningType special_scan = ScanningType::BASIC)
-            const -> std::optional<Token>;
+        auto beginScan(
+            TextIterator &text_iterator, Token &token,
+            ScanningType special_scan = ScanningType::BASIC) const -> bool;
+
+        [[nodiscard]] auto scanIteration(const ForkedGenerator &text_iterator) const
+            -> size_t final;
 
         [[nodiscard]] auto operator==(const Container &other) const noexcept
         {
@@ -71,12 +65,9 @@ namespace ccl::lex::dot_item
             return items.empty();
         }
 
-        [[nodiscard]] auto scanIteration(const ForkedGenerator &text_iterator) const
-            -> size_t final;
-
         [[nodiscard]] auto isSpecial() const noexcept -> bool
         {
-            return is_special;
+            return flags.is_special;
         }
 
         [[nodiscard]] auto getItems() const noexcept -> const storage_t &
@@ -87,10 +78,11 @@ namespace ccl::lex::dot_item
     private:
         auto parseRule(TextIterator &rule_iterator) -> void;
 
+        [[nodiscard]] auto failedToEndItem(const ForkedGenerator &text_iterator) const -> bool;
+
         storage_t items{};
         std::string rule_repr{};
-        bool main_item{};
-        bool is_special{ false };
+        ContainerFlags flags{};
     };
 
     struct Container::RuleParser
@@ -167,17 +159,18 @@ namespace ccl::lex::dot_item
             });
         }
 
-        auto specialScan(TextIterator &text_iterator) const -> std::optional<Token>
+        auto specialScan(TextIterator &text_iterator, Token &token) const -> bool
         {
             for (auto &&special_item : special_items) {
-                auto scan_result = special_item.beginScan(text_iterator, ScanningType::SPECIAL);
+                auto scan_result =
+                    special_item.beginScan(text_iterator, token, ScanningType::SPECIAL);
 
-                if (scan_result.has_value()) {
-                    return scan_result;
+                if (scan_result) {
+                    return true;
                 }
             }
 
-            return std::nullopt;
+            return false;
         }
 
         std::vector<Container> special_items;

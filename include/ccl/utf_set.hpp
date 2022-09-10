@@ -14,9 +14,9 @@ namespace ccl
             return storage.empty() && small_storage.none();
         }
 
-        auto at(char32_t chr) const noexcept -> bool
+        [[nodiscard]] auto at(char32_t chr) const noexcept -> bool
         {
-            if (chr < small_storage_size) {
+            if (chr < small_storage_size) [[likely]] {
                 return small_storage.test(chr);
             }
 
