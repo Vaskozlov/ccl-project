@@ -34,6 +34,11 @@ target_link_libraries(
         ccl
 )
 
+target_link_libraries(
+        ccl-catch
+        fsc
+)
+
 if (${PRECOMPILED_HEADER})
     target_precompile_headers(
             ccl-catch
