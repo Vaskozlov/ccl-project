@@ -81,7 +81,6 @@ namespace ccl::lex::dot_item
         [[nodiscard]] auto failedToEndItem(const ForkedGenerator &text_iterator) const -> bool;
 
         storage_t items{};
-        std::string rule_repr{};
         ContainerFlags flags{};
     };
 

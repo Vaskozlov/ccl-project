@@ -17,28 +17,47 @@ namespace ccl::lex::gen
         explicit StaticGenerator(Tokenizer &tokenizer_)
           : tokenizer(tokenizer_), ccll_parser(tokenizer)
         {
-            generateHeader();
+            generate();
+        }
+
+        [[nodiscard]] auto get() const noexcept -> std::pair<std::string, std::string>
+        {
+            return { generated_header, generated_source };
         }
 
     private:
         auto loadDirectives() -> void;
 
-        auto generateHeader() -> void;
+        auto generate() -> void;
         auto generateHeaderDefinition() -> void;
+
+        auto generateNamespaceBegin(std::string &string) -> void;
+        auto generateNamespaceEnd(std::string &string) -> void;
+
+        auto generateRuleNames(std::string &string, std::string addition_flags = {}) -> void;
 
         auto generateEnum() -> void;
         auto generateEnumCases() -> void;
 
         auto generateVariable() -> void;
-        auto generateRules() -> void;
+        auto generateLexicalAnalyzer(std::string &string, std::string addition_flags = {}) -> void;
 
-        string_view handler{ "ccl::handler::Cmd::instance()" };
-        string_view filename{ "set_me" };
-        string_view variable_name{ "set_me" };
-        std::string enum_name{};
+        auto generateRules(std::string &string) -> void;
+        auto generateSource() -> void;
+
+        auto appendToStr(std::string &dest, const std::string &string) const -> void;
+
         Tokenizer &tokenizer;
         parser::CcllParser ccll_parser;
+        std::string include_dir_for_src{};
+        std::string handler{ "ccl::handler::Cmd::instance()" };
+        std::string variable_name{ "set_me" };
+        std::string filename{ "set_me" };
+        std::string name_space{};
+        std::string enum_name{};
         std::string generated_header{};
+        std::string generated_source{};
+        std::string extra_spaces{};
     };
 }// namespace ccl::lex::gen
 

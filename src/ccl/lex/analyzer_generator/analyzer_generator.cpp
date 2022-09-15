@@ -13,7 +13,7 @@ namespace ccl::lex
         { { GenToken::IDENTIFIER, "[a-zA-Z_]+[a-zA-Z0-9_]*" },
           { GenToken::INTEGER, "[0-9]+" },
           { GenToken::RULE_DECLARATION, R"(["!'([]+[\n]*^)" },
-          { GenToken::STRING, R"( "'" ( "\'"^ | "\\\'" )* "\'" )" },
+          { GenToken::STRING, R"( ! "\'" ([']^ | "\\\'" )* "\'" )" },
           { GenToken::NEW_LINE, R"(! "\n")" },
           { GenToken::COLUMN, R"(! ":")" },
           { GenToken::ASSIGN, R"(! "=")" },
@@ -37,17 +37,20 @@ namespace ccl::lex
         return buffer.str();
     }
 
-    auto AnalyzerGenerator::generateStaticVersion(const std::filesystem::path &path) -> void
+    auto AnalyzerGenerator::generateStaticVersion(const std::filesystem::path &path)
+        -> std::pair<std::string, std::string>
     {
         auto filename = path.string();
         auto file_content = readFile(path);
 
-        generateStaticVersion(filename, file_content);
+        return generateStaticVersion(filename, file_content);
     }
 
-    auto AnalyzerGenerator::generateStaticVersion(string_view filename, string_view text) -> void
+    auto AnalyzerGenerator::generateStaticVersion(string_view filename, string_view text)
+        -> std::pair<std::string, std::string>
     {
         auto tokenizer = LexForGenerator.getTokenizer(text, filename);
         auto static_generator = gen::StaticGenerator{ tokenizer };
+        return static_generator.get();
     }
 }// namespace ccl::lex

@@ -45,6 +45,11 @@ namespace ccl::lex
                 return text_iterator.getHandler();
             }
 
+            [[nodiscard]] auto getCurrentToken() -> Token &
+            {
+                return current_token;
+            }
+
             auto throwException(
                 ExceptionCriticality criticality, string_view message, string_view suggestion = {})
                 -> void
@@ -52,17 +57,22 @@ namespace ccl::lex
                 text_iterator.throwToHandle(text_iterator, criticality, message, suggestion);
             }
 
-            [[nodiscard]] auto yield() -> Token &;
+            auto yield() -> Token &;
+            auto futureToken() -> Token &;
 
         private:
+            auto nextToken(Token &token) -> void;
+
             [[nodiscard]] auto shouldIgnoreToken(const Token &token) const -> bool;
 
-            auto constructBadToken() -> void;
-            auto constructEOIToken() -> void;
+            auto constructBadToken(Token &token) -> void;
+            auto constructEOIToken(Token &token) -> void;
 
-            Token local_token{};
+            Token current_token{};
+            Token future_token{};
             LexicalAnalyzer &lexical_analyzer;
             TextIterator text_iterator;
+            bool has_future_token{ false };
         };
 
         LexicalAnalyzer(
@@ -91,6 +101,7 @@ namespace ccl::lex
 
         std::vector<Container> items{};
         SpecialItems special_items{};
+        std::string skipped_characters{};
         std::basic_string<size_t> ignored_ids{};
         ExceptionHandler &exception_handler;
         size_t errors{};
