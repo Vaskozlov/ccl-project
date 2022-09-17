@@ -4,47 +4,118 @@ namespace ccl::lex::gen
 {
     auto StaticGenerator::loadDirectives() -> void
     {
-        for (auto &&directive : ccll_parser.directives) {
-            if (directive.first == "FILENAME") {
-                filename = directive.second;
-            } else if (directive.first == "VAR_NAME") {
-                variable_name = directive.second;
-            } else if (directive.first == "HANDLER") {
-                handler = directive.second;
+        for (auto &[name, value] : ccll_parser.getDirectives()) {
+            if (name == "FILENAME") {
+                filename = value;
+            } else if (name == "VAR_NAME") {
+                variable_name = value;
+            } else if (name == "HANDLER") {
+                handler = value;
+            } else if (name == "INCLUDE_DIR_FOR_SRC") {
+                include_dir_for_src = value;
+            } else if (name == "NAMESPACE") {
+                name_space = value;
             } else {
-                fmt::print("unrecognizable directive: {}\n", directive.first);
+                fmt::print("unrecognizable directive: {}\n", name);
             }
         }
 
         if (enum_name.empty()) {
-            enum_name = fmt::format("Token_{}", variable_name);
+            enum_name = fmt::format("{}Token", variable_name);
         }
     }
 
-    auto StaticGenerator::generateHeader() -> void
+    auto StaticGenerator::generate() -> void
     {
         ccll_parser.parse();
 
         loadDirectives();
+
         generateHeaderDefinition();
+        generateNamespaceBegin(generated_header);
+
         generateEnum();
         generateVariable();
 
-        fmt::print("{}\n", generated_header);
+        generateNamespaceEnd(generated_header);
+
+        generateSource();
+    }
+
+    auto StaticGenerator::generateSource() -> void
+    {
+        generated_source = fmt::format(
+            "#include <ccl/handler/cmd_handler.hpp>\n"
+            "#include <{}/{}>\n\n",
+            include_dir_for_src, filename);
+
+        generateNamespaceBegin(generated_source);
+        generateLexicalAnalyzer(generated_source);
+        generateRuleNames(generated_source);
+        generateNamespaceEnd(generated_source);
     }
 
     auto StaticGenerator::generateHeaderDefinition() -> void
     {
         generated_header =
             "#pragma once\n\n"
-            "#include <ccl/handler/cmd_handler.hpp>\n"
+            "#include <unordered_map>\n"
             "#include <ccl/lex/lexical_analyzer.hpp>\n\n";
+    }
+
+    auto StaticGenerator::generateNamespaceBegin(std::string &string) -> void
+    {
+        if (not name_space.empty()) {
+            extra_spaces = "    ";
+            string.append(fmt::format("namespace {}\n{{\n", name_space));
+        }
+    }
+
+    auto StaticGenerator::generateNamespaceEnd(std::string &string) -> void
+    {
+        if (not name_space.empty()) {
+            extra_spaces.clear();
+            string.append(fmt::format("}}// namespace {}\n", name_space));
+        }
+    }
+
+    auto StaticGenerator::generateRuleNames(std::string &string, std::string addition_flags) -> void
+    {
+        if (not addition_flags.empty() && addition_flags.back() != ' ') {
+            addition_flags.push_back(' ');
+        }
+
+        appendToStr(
+            string,
+            fmt::format(
+                "{}const std::unordered_map<size_t, ccl::string_view> ToString{}Token\n{{\n",
+                addition_flags, variable_name));
+
+        std::set<string_view> generated_rules{};
+
+        appendToStr(string, fmt::format("    {{ {0}::{1}, \"{1}\" }},\n", enum_name, "EOI"));
+        appendToStr(string, fmt::format("    {{ {0}::{1}, \"{1}\" }},\n", enum_name, "BAD_TOKEN"));
+
+        for (auto &&rule : ccll_parser.getRules()) {
+            if (generated_rules.contains(rule.name)) {
+                continue;
+            }
+
+            generated_rules.insert(rule.name);
+            appendToStr(
+                string, fmt::format("    {{ {0}::{1}, \"{1}\" }},\n", enum_name, rule.name));
+        }
+
+        appendToStr(string, "};\n");
     }
 
     auto StaticGenerator::generateEnum() -> void
     {
-        generated_header.append(
-            fmt::format("CCL_PREDEFINED_ENUM(\n    {},\n    size_t", enum_name));
+        appendToStr(
+            generated_header,
+            fmt::format(
+                "CCL_PREDEFINED_ENUM(// NOLINTNEXTLINE\n    {0}{1},\n    {0}size_t", extra_spaces,
+                enum_name));
 
         generateEnumCases();
 
@@ -53,31 +124,89 @@ namespace ccl::lex::gen
 
     auto StaticGenerator::generateEnumCases() -> void
     {
-        constexpr auto shift_size = 16;
+        constexpr size_t shift_size = 16;
 
-        for (auto &&rule : ccll_parser.rules) {
-            auto id = (rule.block_id << shift_size) | (rule.id);
-            generated_header.append(fmt::format(",\n    {} = {}", rule.name, id));
+        std::set<string_view> generated_cases{};
+        std::set<string_view> generated_blocks{};
+
+        for (const auto &[block_name, block_info] : ccll_parser.getBlocks()) {
+            if (generated_blocks.contains(block_name)) {
+                continue;
+            }
+
+            auto id = (static_cast<size_t>(block_info.block_id) << shift_size);
+
+            generated_blocks.insert(block_name);
+            generated_header.append(fmt::format(",\n{}    {} = {}", extra_spaces, block_name, id));
+        }
+
+        generated_header.append(fmt::format(",\n{}    {} = {}", extra_spaces, "EOI", 0));
+        generated_header.append(fmt::format(",\n{}    {} = {}", extra_spaces, "BAD_TOKEN", 1));
+
+        for (auto &&rule : ccll_parser.getRules()) {
+            if (generated_cases.contains(rule.name)) {
+                continue;
+            }
+
+            auto id = (static_cast<size_t>(rule.block_id) << shift_size) | (rule.id);
+
+            generated_cases.insert(rule.name);
+            generated_header.append(fmt::format(",\n{}    {} = {}", extra_spaces, rule.name, id));
         }
     }
 
     auto StaticGenerator::generateVariable() -> void
     {
-        generated_header.append(fmt::format(
-            "const static inline ccl::lex::LexicalAnalyzer {}(\n    {},\n    {{\n", variable_name,
-            handler));
+        if (include_dir_for_src.empty()) {
+            generateLexicalAnalyzer(generated_header, "static inline");
+            generateRuleNames(generated_header, "static inline");
+        } else {
+            appendToStr(
+                generated_header,
+                fmt::format("extern ccl::lex::LexicalAnalyzer {};\n", variable_name));
 
-        generateRules();
-
-        generated_header.append("    });\n\n");
+            appendToStr(
+                generated_header,
+                fmt::format(
+                    "extern const std::unordered_map<size_t, ccl::string_view> ToString{}Token;\n",
+                    variable_name));
+        }
     }
 
-    auto StaticGenerator::generateRules() -> void
+    auto StaticGenerator::generateLexicalAnalyzer(std::string &string, std::string addition_flags)
+        -> void
     {
-        for (auto &&rule : ccll_parser.rules) {
+        if (not addition_flags.empty() && addition_flags.back() != ' ') {
+            addition_flags.push_back(' ');
+        }
+
+        appendToStr(
+            string,
+            fmt::format(
+                "// NOLINTNEXTLINE\n{0}{1}ccl::lex::LexicalAnalyzer {2}(\n    {0}{3},\n    {0}{{\n",
+                extra_spaces, addition_flags, variable_name, handler));
+
+        generateRules(string);
+
+        appendToStr(string, "    });\n\n");
+    }
+
+    auto StaticGenerator::generateRules(std::string &string) -> void
+    {
+        for (auto &&rule : ccll_parser.getRules()) {
             auto rule_name = fmt::format("{}::{}", enum_name, rule.name);
-            generated_header.append(
+            appendToStr(
+                string,
                 fmt::format("        {{ {}, R\"( {} )\" }},\n", rule_name, rule.definition));
         }
+    }
+
+    auto StaticGenerator::appendToStr(std::string &dest, const std::string &string) const -> void
+    {
+        if (not extra_spaces.empty()) {
+            dest.append(extra_spaces);
+        }
+
+        dest.append(string);
     }
 }// namespace ccl::lex::gen

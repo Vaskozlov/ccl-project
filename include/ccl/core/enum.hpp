@@ -105,6 +105,16 @@ case name:                                                                      
                    iteration_struct.end();                                                         \
         }                                                                                          \
                                                                                                    \
+        CCL_DECL auto isBaseOf(Name base) const noexcept -> bool                                   \
+        {                                                                                          \
+            return (value & base.value) == base.value;                                             \
+        }                                                                                          \
+                                                                                                   \
+        CCL_DECL static auto isBaseOf(Name base, Name derived) noexcept -> bool                    \
+        {                                                                                          \
+            return (derived.value & base.value) == base.value;                                     \
+        }                                                                                          \
+                                                                                                   \
         CCL_DECL auto operator==(const Type &other) const noexcept -> bool                         \
         {                                                                                          \
             return value == other;                                                                 \

@@ -39,6 +39,21 @@ namespace ccl::lex::parser
         explicit CcllParser(Tokenizer &tokenizer_) : tokenizer(tokenizer_)
         {}
 
+        [[nodiscard]] auto getRules() const -> const std::vector<Rule> &
+        {
+            return rules;
+        }
+
+        [[nodiscard]] auto getBlocks() const -> const std::map<string_view, BlockInfo> &
+        {
+            return blocks;
+        }
+
+        [[nodiscard]] auto getDirectives() const -> const std::map<string_view, std::string> &
+        {
+            return directives;
+        }
+
         auto parse() -> bool;
 
     private:
@@ -63,12 +78,10 @@ namespace ccl::lex::parser
         auto parsingError(
             string_view expected_types, GenToken given_token, string_view suggestion = {}) -> void;
 
-    public:
-        std::map<string_view, string_view> directives{};
-        std::vector<Rule> rules{};
-
     private:
+        std::vector<Rule> rules{};
         std::stack<Token> token_stack{};
+        std::map<string_view, std::string> directives{};
         std::map<string_view, BlockInfo> blocks{ { "NONE", { 0, 2 } } };
         SpecialItems special_items{};
         string_view current_block = "NONE";

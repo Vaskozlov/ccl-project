@@ -1,4 +1,5 @@
 #include <ccl/lex/analyzer_generator/ccll_parser.hpp>
+#include <ccl/lex/dot_item/sequence.hpp>
 #include <iostream>
 
 namespace ccl::lex::parser
@@ -114,7 +115,14 @@ namespace ccl::lex::parser
         auto directive = token_stack.top();
         token_stack.pop();
 
-        directives[directive.getRepr()] = directive_value.getRepr();
+        auto directive_repr = directive_value.getRepr();
+
+        if (directive_value.getId() == GenToken::STRING) {
+            auto string_part_of_repr = directive_repr.substr(1, directive_repr.size() - 2);
+            directives[directive.getRepr()] = std::string(string_part_of_repr);
+        } else {
+            directives[directive.getRepr()] = std::string(directive_repr);
+        }
 
         expectRuleEnd();
     }
