@@ -11,7 +11,7 @@ namespace ccl::lex::dot_item
     public:
         using typename BasicItem::TextIterator;
 
-        Union(TextIterator &rule_iterator_, SpecialItems &special_items_, size_t id_ = 0);
+        explicit Union(TextIterator &rule_iterator_, size_t id_ = 0);
 
         [[nodiscard]] auto getBitset() const noexcept -> const UtfSet &
         {

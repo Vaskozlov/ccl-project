@@ -55,7 +55,7 @@ namespace fsc
 
     auto Parser::parseFunctionDeclaration() -> unique_ptr<ast::BasicNode>
     {
-        auto &function_keyword = tokenizer.yield();
+        [[maybe_unused]] auto &function_keyword = tokenizer.yield();
         auto function_declaration = make_unique<ast::FunctionDeclarationNode>();
 
         // Parse function name

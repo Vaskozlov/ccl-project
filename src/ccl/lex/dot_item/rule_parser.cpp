@@ -48,19 +48,19 @@ namespace ccl::lex::dot_item
             break;
 
         case U'*':
-            addRecurrence(Recurrence::star());
+            addRepetition(Repetition::star());
             break;
 
         case U'+':
-            addRecurrence(Recurrence::plus());
+            addRepetition(Repetition::plus());
             break;
 
         case U'?':
-            addRecurrence(Recurrence::question());
+            addRepetition(Repetition::question());
             break;
 
         case U'{':
-            addRecurrence(Recurrence{ rule_iterator });
+            addRepetition(Repetition{ rule_iterator });
             break;
 
         case U'^':
@@ -110,23 +110,21 @@ namespace ccl::lex::dot_item
         items.pop_back();
 
         return std::make_unique<LogicalUnit>(
-            std::move(reserved_lhs.value()), std::move(rhs), logical_operation, special_items,
-            getId());
+            std::move(reserved_lhs.value()), std::move(rhs), logical_operation, getId());
     }
 
     auto Container::RuleParser::constructNewSequence() -> BasicItemPtr
     {
         tryToFinishLogicalOperation();
 
-        return std::make_unique<Sequence>(
-            Sequence::SequenceFlags{}, "\"", rule_iterator, special_items, getId());
+        return std::make_unique<Sequence>(Sequence::SequenceFlags{}, "\"", rule_iterator, getId());
     }
 
     auto Container::RuleParser::constructNewUnion() -> BasicItemPtr
     {
         tryToFinishLogicalOperation();
 
-        return std::make_unique<Union>(rule_iterator, special_items, getId());
+        return std::make_unique<Union>(rule_iterator, getId());
     }
 
     // NOLINTNEXTLINE (recursive function)
@@ -150,10 +148,10 @@ namespace ccl::lex::dot_item
     auto Container::RuleParser::emplaceItem(BasicItemPtr &&item) -> void
     {
         if (not item->canBeOptimized()) {
-            auto item_recurrence = item->getRecurrence();
+            auto item_repetition = item->getRepetition();
 
             BasicItem::neverRecognizedSuggestion(
-                rule_iterator, item_recurrence.from == 0 && not isReversed() && not item->empty());
+                rule_iterator, item_repetition.from == 0 && not isReversed() && not item->empty());
 
             BasicItem::alwaysRecognizedSuggestion(rule_iterator, not isReversed() && item->empty());
 
@@ -175,21 +173,21 @@ namespace ccl::lex::dot_item
         }
     }
 
-    auto Container::RuleParser::addRecurrence(Recurrence new_recurrence) -> void
+    auto Container::RuleParser::addRepetition(Repetition new_repetition) -> void
     {
         if (items.empty()) {
-            throwUnableToApply("no items found to set recurrence");
+            throwUnableToApply("no items found to set repetition");
             return;
         }
 
         auto &last_item = items.back();
 
-        if (last_item->getRecurrence() != Recurrence::basic()) {
-            throwUnableToApply("item already has recurrence");
+        if (last_item->getRepetition() != Repetition::basic()) {
+            throwUnableToApply("item already has repetition");
             return;
         }
 
-        last_item->setRecurrence(new_recurrence);
+        last_item->setRepetition(new_repetition);
     }
 
     auto Container::RuleParser::makeSpecial() -> void

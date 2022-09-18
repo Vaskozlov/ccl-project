@@ -1,7 +1,7 @@
 #ifndef CCL_PROJECT_BASIC_ITEM_HPP
 #define CCL_PROJECT_BASIC_ITEM_HPP
 
-#include <ccl/lex/dot_item/recurrence.hpp>
+#include <ccl/lex/dot_item/repetition.hpp>
 #include <ccl/lex/token.hpp>
 #include <ccl/text/text_iterator.hpp>
 #include <optional>
@@ -23,7 +23,7 @@ namespace ccl::lex::dot_item
 
         struct SpecialItems;
 
-        BasicItem(SpecialItems &special_items_, size_t id_) : id(id_), special_items(special_items_)
+        explicit BasicItem(size_t id_) : id(id_)
         {}
 
         BasicItem(const BasicItem &) = default;
@@ -34,9 +34,9 @@ namespace ccl::lex::dot_item
         auto operator=(const BasicItem &) -> void = delete;
         auto operator=(BasicItem &&) noexcept -> void = delete;
 
-        [[nodiscard]] auto getRecurrence() const noexcept -> Recurrence
+        [[nodiscard]] auto getRepetition() const noexcept -> Repetition
         {
-            return recurrence;
+            return repetition;
         }
 
         [[nodiscard]] auto isReversed() const noexcept -> bool
@@ -69,14 +69,14 @@ namespace ccl::lex::dot_item
             reversed = not reversed;
         }
 
-        auto setRecurrence(Recurrence new_recurrence) noexcept -> void
+        auto setRepetition(Repetition new_repetition) noexcept -> void
         {
-            recurrence = new_recurrence;
+            repetition = new_repetition;
         }
 
         [[nodiscard]] auto canBeOptimized() const noexcept -> bool
         {
-            return not reversed && recurrence.from == 0 && empty();
+            return not reversed && repetition.from == 0 && empty();
         }
 
         [[nodiscard]] auto getId() const noexcept -> size_t
@@ -95,9 +95,8 @@ namespace ccl::lex::dot_item
             -> size_t = 0;
 
     protected:
-        Recurrence recurrence{ Recurrence::basic() };
+        Repetition repetition{ Repetition::basic() };
         size_t id{};
-        SpecialItems &special_items;
         bool reversed{ false };
         bool prefix{};
         bool postfix{};

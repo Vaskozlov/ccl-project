@@ -18,7 +18,8 @@ namespace ccl::lex::dot_item
     Container::Container(
         TextIterator &rule_iterator_, SpecialItems &special_items_, size_t id_, bool main_item_,
         bool is_special_)
-      : BasicItem(special_items_, id_), flags({ .is_main = main_item_, .is_special = is_special_ })
+      : BasicItem(id_), special_items(special_items_),
+        flags({ .is_main = main_item_, .is_special = is_special_ })
     {
         parseRule(rule_iterator_);
     }
@@ -26,7 +27,8 @@ namespace ccl::lex::dot_item
     Container::Container(
         TextIterator &&rule_iterator_, SpecialItems &special_items_, size_t id_, bool main_item_,
         bool is_special_)
-      : BasicItem(special_items_, id_), flags({ .is_main = main_item_, .is_special = is_special_ })
+      : BasicItem(id_), special_items(special_items_),
+        flags({ .is_main = main_item_, .is_special = is_special_ })
     {
         parseRule(rule_iterator_);
     }
@@ -34,7 +36,8 @@ namespace ccl::lex::dot_item
     Container::Container(
         const TextIterator &rule_iterator_, SpecialItems &special_items_, size_t id_,
         bool main_item_, bool is_special_)
-      : BasicItem(special_items_, id_), flags({ .is_main = main_item_, .is_special = is_special_ })
+      : BasicItem(id_), special_items(special_items_),
+        flags({ .is_main = main_item_, .is_special = is_special_ })
     {
         auto rule_iterator = rule_iterator_;
         parseRule(rule_iterator);

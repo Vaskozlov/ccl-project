@@ -23,7 +23,7 @@ namespace ccl::lex::dot_item
         auto times = 0_ZU;
         size_t totally_skipped = 0;
 
-        while (times < recurrence.to) {
+        while (times < repetition.to) {
             if (text_iterator.isEOI()) {
                 break;
             }
@@ -39,7 +39,7 @@ namespace ccl::lex::dot_item
             ++times;
         }
 
-        if (recurrence.inRange(times)) {
+        if (repetition.inRange(times)) {
             return totally_skipped;
         }
 

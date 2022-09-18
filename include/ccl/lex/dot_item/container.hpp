@@ -4,7 +4,7 @@
 #include <boost/container/small_vector.hpp>
 #include <ccl/lex/dot_item/basic_item.hpp>
 #include <ccl/lex/dot_item/logical_unit.hpp>
-#include <ccl/lex/dot_item/recurrence.hpp>
+#include <ccl/lex/dot_item/repetition.hpp>
 #include <stack>
 
 namespace ccl::lex::dot_item
@@ -15,7 +15,7 @@ namespace ccl::lex::dot_item
     {
     private:
         using BasicItem::canBeOptimized;
-        using BasicItem::recurrence;
+        using BasicItem::repetition;
 
         using typename BasicItem::TextIterator;
 
@@ -81,6 +81,7 @@ namespace ccl::lex::dot_item
         [[nodiscard]] auto failedToEndItem(const ForkedGenerator &text_iterator) const -> bool;
 
         storage_t items{};
+        SpecialItems &special_items;
         ContainerFlags flags{};
     };
 
@@ -121,7 +122,7 @@ namespace ccl::lex::dot_item
 
         auto addPrefixPostfix() -> void;
 
-        auto addRecurrence(Recurrence new_recurrence) -> void;
+        auto addRepetition(Repetition new_repetition) -> void;
 
         auto makeSpecial() -> void;
 

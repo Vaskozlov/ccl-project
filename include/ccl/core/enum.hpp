@@ -40,7 +40,7 @@ case name:                                                                      
             return value.value < (counter_end - counter_begin);                                    \
         }                                                                                          \
                                                                                                    \
-        constexpr static std::string_view toString(Name value)                                     \
+        constexpr static std::string_view toString(Type value)                                     \
         {                                                                                          \
             switch (value) {                                                                       \
                 CCL_FOR_EACH(CCL_ENUM_CASE, __VA_ARGS__)                                           \

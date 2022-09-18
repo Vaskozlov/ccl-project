@@ -1,33 +1,33 @@
-#ifndef CCL_PROJECT_RECURRENCE_HPP
-#define CCL_PROJECT_RECURRENCE_HPP
+#ifndef CCL_PROJECT_REPETITION_HPP
+#define CCL_PROJECT_REPETITION_HPP
 
 #include <ccl/text/text_iterator.hpp>
 
 namespace ccl::lex::dot_item
 {
-    struct CCL_TRIVIAL_ABI Recurrence
+    struct CCL_TRIVIAL_ABI Repetition
     {
-        constexpr Recurrence(size_t from_, size_t to_) noexcept : from(from_), to(to_)
+        constexpr Repetition(size_t from_, size_t to_) noexcept : from(from_), to(to_)
         {}
 
-        explicit Recurrence(text::TextIterator &text_iterator);
+        explicit Repetition(text::TextIterator &text_iterator);
 
-        consteval static auto basic() noexcept -> Recurrence
+        consteval static auto basic() noexcept -> Repetition
         {
             return { 1, 1 };
         }
 
-        consteval static auto question() noexcept -> Recurrence
+        consteval static auto question() noexcept -> Repetition
         {
             return { 0, 1 };
         }
 
-        consteval static auto star() noexcept -> Recurrence
+        consteval static auto star() noexcept -> Repetition
         {
             return { 0, max() };
         }
 
-        consteval static auto plus() noexcept -> Recurrence
+        consteval static auto plus() noexcept -> Repetition
         {
             return { 1, max() };
         }
@@ -42,7 +42,7 @@ namespace ccl::lex::dot_item
             return land(value >= from, value <= to);
         }
 
-        [[nodiscard]] auto operator<=>(const Recurrence &) const noexcept
+        [[nodiscard]] auto operator<=>(const Repetition &) const noexcept
             -> std::weak_ordering = default;
 
     private:
@@ -63,4 +63,4 @@ namespace ccl::lex::dot_item
     };
 }// namespace ccl::lex::dot_item
 
-#endif /* CCL_PROJECT_RECURRENCE_HPP */
+#endif /* CCL_PROJECT_REPETITION_HPP */

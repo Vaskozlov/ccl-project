@@ -15,10 +15,8 @@ namespace ccl::lex::dot_item
 
         [[nodiscard]] auto empty() const noexcept -> bool final;
 
-        LogicalUnit(
-            BasicItemPtr lhs_, BasicItemPtr rhs_, LogicalOperation type_,
-            SpecialItems &special_items_, size_t id_)
-          : BasicItem(special_items_, id_), lhs_item(std::move(lhs_)), rhs_item(std::move(rhs_)),
+        LogicalUnit(BasicItemPtr lhs_, BasicItemPtr rhs_, LogicalOperation type_, size_t id_)
+          : BasicItem(id_), lhs_item(std::move(lhs_)), rhs_item(std::move(rhs_)),
             logical_operation(type_)
         {}
 
