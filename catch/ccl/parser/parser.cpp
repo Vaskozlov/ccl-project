@@ -8,40 +8,40 @@ using namespace ccl;
 
 
 CCL_ENUM(// NOLINTNEXTLINE
-    TestIntEnum, size_t, EOI, BAD_TOKEN, ID, NUM, MUL, ADD, NOT, ANGLE_OPENING, ANGLE_CLOSING,
-    FACTOR, EXPR);
+    TestToken, size_t, EOI, BAD_TOKEN, ID, NUM, MUL, ADD, NOT, ANGLE_OPENING, ANGLE_CLOSING, FACTOR,
+    EXPR);
 
 // NOLINTNEXTLINE
 lex::LexicalAnalyzer LexicalAnalyzer(
     handler::Cmd::instance(),
     {
-        { TestIntEnum::ID, "[a-zA-Z_][a-zA-Z0-9_]*" },
-        { TestIntEnum::NUM, "[0-9]+" },
-        { TestIntEnum::MUL, "! [*]" },
-        { TestIntEnum::ADD, "! [+]" },
-        { TestIntEnum::NOT, "! [!]" },
-        { TestIntEnum::ANGLE_CLOSING, R"(! "]" )" },
-        { TestIntEnum::ANGLE_OPENING, R"(! "[" )" },
+        { TestToken::ID, "[a-zA-Z_][a-zA-Z0-9_]*" },
+        { TestToken::NUM, "[0-9]+" },
+        { TestToken::MUL, "! [*]" },
+        { TestToken::ADD, "! [+]" },
+        { TestToken::NOT, "! [!]" },
+        { TestToken::ANGLE_CLOSING, R"(! "]" )" },
+        { TestToken::ANGLE_OPENING, R"(! "[" )" },
     });
 
-struct ValueFactor : public parser::ValueExpression<TestIntEnum::FACTOR>
+struct ValueFactor : public parser::ValueExpression<TestToken::FACTOR>
 {
-    ValueExpressionConstructor(ValueFactor, TestIntEnum::FACTOR);
+    ValueExpressionConstructor(ValueFactor, TestToken::FACTOR);
 };
 
-struct ValueExpression : public parser::ValueExpression<TestIntEnum::EXPR>
+struct ValueExpression : public parser::ValueExpression<TestToken::EXPR>
 {
-    ValueExpressionConstructor(ValueExpression, TestIntEnum::EXPR);
+    ValueExpressionConstructor(ValueExpression, TestToken::EXPR);
 };
 
-struct UnaryExpression : public parser::UnaryExpression<TestIntEnum::EXPR>
+struct UnaryExpression : public parser::UnaryExpression<TestToken::EXPR>
 {
-    UnaryExpressionConstructor(UnaryExpression, TestIntEnum::EXPR);
+    UnaryExpressionConstructor(UnaryExpression, TestToken::EXPR);
 };
 
-struct BinaryExpression : public parser::BinaryExpression<TestIntEnum::EXPR>
+struct BinaryExpression : public parser::BinaryExpression<TestToken::EXPR>
 {
-    BinaryExpressionConstructor(BinaryExpression, TestIntEnum::EXPR);
+    BinaryExpressionConstructor(BinaryExpression, TestToken::EXPR);
 };
 
 auto expressionFromNumConstruction(parser::StackGetter stack) -> parser::NodePtr
@@ -93,41 +93,44 @@ auto binaryExpressionConstruction(parser::StackGetter2 stack) -> parser::NodePtr
 
 BOOST_AUTO_TEST_CASE(CclParser)
 {
-    auto tokenizer = LexicalAnalyzer.getTokenizer("a[10] + 2");
+    auto tokenizer = LexicalAnalyzer.getTokenizer("a[10] + 2 * 4");
 
     std::unordered_map<size_t, size_t> precedence_table(//
         {
-            { TestIntEnum::NOT, 3 },
-            { TestIntEnum::MUL, 2 },
-            { TestIntEnum::ADD, 1 },
+            { TestToken::NOT, 3 },
+            { TestToken::MUL, 2 },
+            { TestToken::ADD, 1 },
         });
 
     /*auto parser = parser::ParsingRules(//
-        { { expressionFromNumConstruction, { TestIntEnum::NUM } },
-          { expressionFromNumConstruction, { TestIntEnum::ID } },
-          { unaryExpressionConstruction, { TestIntEnum::NOT, TestIntEnum::EXPR } },
+        { { expressionFromNumConstruction, { TestToken::NUM } },
+          { expressionFromNumConstruction, { TestToken::ID } },
+          { unaryExpressionConstruction, { TestToken::NOT, TestToken::EXPR } },
           { binaryExpressionConstruction,
-            { TestIntEnum::EXPR, TestIntEnum::ADD, TestIntEnum::EXPR } },
+            { TestToken::EXPR, TestToken::ADD, TestToken::EXPR } },
           { binaryExpressionConstruction,
-            { TestIntEnum::EXPR, TestIntEnum::MUL, TestIntEnum::EXPR } } },
-        precedence_table, TestIntEnum::toString);
+            { TestToken::EXPR, TestToken::MUL, TestToken::EXPR } } },
+        precedence_table, TestToken::toString);
 */
     // parser.getParser(tokenizer).parse();
 
     auto parsing_rules = parser::ParsingRules2(//
-        { { factorFromNumConstruction, { TestIntEnum::NUM } },
-          { factorFromNumConstruction, { TestIntEnum::ID } },
-          { expressionFromFactorConstruction, { TestIntEnum::FACTOR } },
-          { unaryExpressionConstruction, { TestIntEnum::NOT, TestIntEnum::EXPR } },
-          { binaryExpressionConstruction,
-            { TestIntEnum::EXPR, TestIntEnum::ADD, TestIntEnum::EXPR } },
-          { binaryExpressionConstruction,
-            { TestIntEnum::EXPR, TestIntEnum::MUL, TestIntEnum::EXPR } },
-          { indexOperatorConstruction,
-            { TestIntEnum::FACTOR, TestIntEnum::ANGLE_OPENING, TestIntEnum::EXPR,
-              TestIntEnum::ANGLE_CLOSING } } },
+        { { TestToken::FACTOR, factorFromNumConstruction, { TestToken::NUM } },
+          { TestToken::FACTOR, factorFromNumConstruction, { TestToken::ID } },
+          { TestToken::EXPR, expressionFromFactorConstruction, { TestToken::FACTOR } },
+          { TestToken::EXPR, unaryExpressionConstruction, { TestToken::NOT, TestToken::EXPR } },
+          { TestToken::EXPR,
+            binaryExpressionConstruction,
+            { TestToken::EXPR, TestToken::ADD, TestToken::EXPR } },
+          { TestToken::EXPR,
+            binaryExpressionConstruction,
+            { TestToken::EXPR, TestToken::MUL, TestToken::EXPR } },
+          { TestToken::FACTOR,
+            indexOperatorConstruction,
+            { TestToken::FACTOR, TestToken::ANGLE_OPENING, TestToken::EXPR,
+              TestToken::ANGLE_CLOSING } } },
         precedence_table,
-        TestIntEnum::toString);
+        TestToken::toString);
 
     auto parser = parser::Parser2(parsing_rules, tokenizer);
     parser.parser();

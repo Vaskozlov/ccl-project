@@ -26,6 +26,7 @@ namespace ccl::parser
 
     struct RuleForParsing
     {
+        size_t type{};
         NodePtr (*rule_constructor)(StackGetter2){ nullptr };
         std::vector<size_t> ids_to_construct{};
         std::unordered_set<size_t> forbidden_future_ids{};
@@ -126,8 +127,6 @@ namespace ccl::parser
         auto parser() -> void;
 
     private:
-        auto refillSet() -> void;
-
         auto iteration() -> void;
 
         [[nodiscard]] auto applyRule(const RuleForParsing &rule) -> bool;
@@ -136,7 +135,7 @@ namespace ccl::parser
 
         [[nodiscard]] auto needToSkip(const RuleForParsing &rule, size_t next_id) const -> bool;
 
-        std::unordered_map<size_t, std::vector<RuleForParsing>> current_set{};
+        std::unordered_map<size_t, std::vector<RuleForParsing>> follow_set{};
         std::vector<NodePtr> stack{};
         Tokenizer &tokenizer;
         const std::unordered_map<size_t, std::vector<RuleForParsing>> &first_set{};

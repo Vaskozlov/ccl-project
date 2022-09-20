@@ -134,9 +134,7 @@ namespace ccl::parser
         stack.front()->print();
     }
 
-    auto refillSet() -> void
-    {}
-
+    // NOLINTNEXTLINE(recursion)
     auto Parser2::iteration() -> void
     {
         auto &first_stack_elem = stack.back();
