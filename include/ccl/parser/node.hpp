@@ -5,6 +5,10 @@
 #include <iostream>
 #include <string>
 
+#define FactorConstructor(Name, Id)                                                                \
+    explicit Name(parser::NodePtr value_) : parser::Factor<Id>(std::move(value_))                  \
+    {}
+
 #define ValueExpressionConstructor(Name, Id)                                                       \
     explicit Name(parser::NodePtr value_) : parser::ValueExpression<Id>(std::move(value_))         \
     {}
@@ -75,6 +79,21 @@ namespace ccl::parser
 
     private:
         lex::Token token{};
+    };
+
+    template<size_t Id>
+    struct Factor : Node
+    {
+        explicit Factor(NodePtr value_) : Node(Id), value(std::move(value_))
+        {}
+
+        auto print(const std::string &prefix, bool is_left) const -> void override
+        {
+            fmt::print("{}Factor\n", getPrintingPrefix(prefix, is_left));
+            value->print(expandPrefix(prefix, is_left), false);
+        }
+
+        NodePtr value;
     };
 
     template<size_t Id>

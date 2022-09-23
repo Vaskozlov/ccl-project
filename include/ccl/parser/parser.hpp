@@ -1,103 +1,114 @@
 #ifndef CCL_PROJECT_PARSER_HPP
 #define CCL_PROJECT_PARSER_HPP
 
-#include <ccl/ccl.hpp>
+#include <atomic>
+#include <boost/container/flat_map.hpp>
 #include <ccl/lex/lexical_analyzer.hpp>
 #include <ccl/parser/node.hpp>
-#include <deque>
 #include <unordered_map>
 #include <unordered_set>
 
+#define CCL_PARSING_RULE(Type, RuleConstructor, ...)                                               \
+    ccl::parser::ParsingRule(Type, CCL_STR(Type), RuleConstructor, { __VA_ARGS__ })
+
 namespace ccl::parser
 {
-    struct StackGetter
+    CCL_ENUM(RuleOnStackResult, size_t, NO_MATCH, FULL_MATCH, PARTIAL_MATCH);// NOLINT
+    CCL_ENUM(ParsingRuleType, size_t, EOI, BAD_TOKEN, ROOT);                 // NOLINT
+
+    using RuleType = size_t;
+
+    struct Parser;
+    class ParsingRules;
+
+    struct ParsingStack
     {
-        explicit StackGetter(std::deque<NodePtr> &stack_) : stack(stack_)
+        explicit ParsingStack(std::vector<NodePtr> &stack_) : stack(stack_)
         {}
 
-        auto pop() -> std::unique_ptr<Node>
+        auto pop() -> NodePtr
         {
-            auto node = std::move(stack.front());
-            stack.pop_front();
+            auto node = std::move(stack.back());
+            stack.pop_back();
             return node;
         }
 
-        std::deque<NodePtr> &stack;
+    private:
+        std::vector<NodePtr> &stack;
     };
 
     struct ParsingRule
     {
-        using iterator = typename std::deque<NodePtr>::iterator;
+        friend ParsingRules;
 
-        NodePtr (*constructor)(StackGetter) = nullptr;
-        std::vector<size_t> ids_to_construct{};
-        std::unordered_set<size_t> can_not_be_followed{};
+        ParsingRule() = default;
+
+        ParsingRule(
+            RuleType type_, std::string_view name_, NodePtr (*rule_constructor_)(ParsingStack),
+            const std::initializer_list<size_t> &ids_to_constructs_)
+          : ids_to_constructs(ids_to_constructs_), name(name_), rule_constructor(rule_constructor_),
+            type(type_)
+        {}
+
+        std::vector<size_t> ids_to_constructs{};
+        std::unordered_set<size_t> ids_that_forbid_construction{};
+        std::string_view name{ "set name for ccl::parser::ParsingRule" };
+        NodePtr (*rule_constructor)(ParsingStack) = nullptr;
+        RuleType type{};
+        size_t uuid{};
+
+    private:
+        static std::atomic<size_t> uuid_counter;// NOLINT
     };
 
     class ParsingRules
     {
+        friend Parser;
+
     public:
-        using Tokenizer = lex::LexicalAnalyzer::Tokenizer;
-
-        struct Parser
-        {
-            Parser(const ParsingRules &parser_, Tokenizer &tokenizer_)
-              : rules(parser_.rules), tokenizer(tokenizer_),
-                token_to_string(parser_.token_to_string)
-            {}
-
-            auto parse() -> void;
-
-        private:
-            auto scanWithRules() -> void;
-            auto applyRule(const ParsingRule &rule) -> bool;
-
-            [[nodiscard]] auto matchesRule(const ParsingRule &rule) const -> bool;
-            [[nodiscard]] auto shouldSkipRule(const ParsingRule &rule, size_t future_id) const
-                -> bool;
-
-            [[nodiscard]] auto tokenToString(size_t id) const -> std::string;
-
-            template<typename T, typename Pred>
-            auto toString(const T &container, Pred &&function) const -> std::string;
-
-            std::deque<NodePtr> stack{};
-            std::vector<size_t> follow_set{};
-            const std::unordered_map<size_t, std::vector<ParsingRule>> &rules;
-            Tokenizer &tokenizer;
-            std::string_view (*token_to_string)(size_t){ nullptr };
-        };
-
-        ParsingRules(
-            std::vector<ParsingRule>
-                rules_,
-            std::unordered_map<size_t, size_t>
-                precedence_table_,
-            std::string_view (*token_to_string_)(size_t) = nullptr);
-
-        [[nodiscard]] auto getParser(Tokenizer &tokenizer) const -> Parser
-        {
-            return { *this, tokenizer };
-        }
+        ParsingRules(const std::initializer_list<ParsingRule> &rules_);
 
     private:
-        auto needToReduce(size_t last_id) const -> bool;
+        auto initializeRules(const std::initializer_list<ParsingRule> &initializer_list) -> void;
 
-        auto reduceTableConflicts() -> void;
-        auto reduceConflict(size_t entry_id, ParsingRule &rule) -> void;
-        auto completeReduction(size_t first_id, size_t second_id, ParsingRule &rule) -> void;
+        std::unordered_map<RuleType, std::vector<ParsingRule>> rules{};
+    };
 
-        auto initializeTable(std::vector<ParsingRule> &table_rules) -> void;
+    struct Parser
+    {
+        using Tokenizer = typename lex::LexicalAnalyzer::Tokenizer;
+        using Flatmap = boost::container::flat_map<size_t, std::vector<ParsingRule>>;
 
-        [[nodiscard]] auto tokenToString(size_t id) const -> std::string;
+        explicit Parser(const ParsingRules &parsing_rules_, Tokenizer &tokenizer_)
+          : tokenizer(tokenizer_), parsing_rules(parsing_rules_.rules)
+        {}
 
-        template<typename T, typename Pred>
-        auto toString(const T &container, Pred &&function) const -> std::string;
+        auto parse() -> void;
 
-        std::unordered_map<size_t, std::vector<ParsingRule>> rules;
-        std::unordered_map<size_t, size_t> precedence_table;
-        std::string_view (*token_to_string)(size_t){ nullptr };
+    private:
+        auto parse(const Flatmap &follow_set) -> bool;
+
+        auto parseWithNewFollowSet(const Flatmap &follow_set, const ParsingRule &rule) -> bool;
+
+        [[nodiscard]] auto isRuleOnStack(const ParsingRule &rule) const -> RuleOnStackResult;
+
+        auto reduce(const ParsingRule &rule) -> void;
+
+        auto pushNewToken() -> void;
+
+        std::vector<NodePtr> stack{};
+        Tokenizer &tokenizer;
+        const std::unordered_map<RuleType, std::vector<ParsingRule>> &parsing_rules;
     };
 }// namespace ccl::parser
+
+template<>
+struct fmt::formatter<ccl::parser::ParsingRule> : fmt::formatter<std::string_view>
+{
+    auto format(const ccl::parser::ParsingRule &rule, format_context &ctx) const
+    {
+        return formatter<std::string_view>::format(rule.name, ctx);
+    }
+};
 
 #endif /* CCL_PROJECT_PARSER_HPP */

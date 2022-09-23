@@ -5,12 +5,10 @@
 
 #define CCL_PARENS ()
 
-// Rescan macro tokens 256 times
 #define CCL_EXPAND(arg) CCL_EXPAND1(CCL_EXPAND1(CCL_EXPAND1(CCL_EXPAND1(arg))))
 #define CCL_EXPAND1(arg) CCL_EXPAND2(CCL_EXPAND2(CCL_EXPAND2(CCL_EXPAND2(arg))))
 #define CCL_EXPAND2(arg) CCL_EXPAND3(CCL_EXPAND3(CCL_EXPAND3(CCL_EXPAND3(arg))))
-#define CCL_EXPAND3(arg) CCL_EXPAND4(CCL_EXPAND4(CCL_EXPAND4(CCL_EXPAND4(arg))))
-#define CCL_EXPAND4(arg) arg
+#define CCL_EXPAND3(arg) arg
 
 #define CCL_FOR_EACH(macro, ...) __VA_OPT__(CCL_EXPAND(CCL_FOR_EACH_HELPER(macro, __VA_ARGS__)))
 #define CCL_FOR_EACH_HELPER(macro, a1, ...)                                                        \
@@ -40,7 +38,7 @@ case name:                                                                      
             return value.value < (counter_end - counter_begin);                                    \
         }                                                                                          \
                                                                                                    \
-        constexpr static std::string_view toString(Type value)                                     \
+        constexpr static auto toString(Type value) -> std::string_view                             \
         {                                                                                          \
             switch (value) {                                                                       \
                 CCL_FOR_EACH(CCL_ENUM_CASE, __VA_ARGS__)                                           \

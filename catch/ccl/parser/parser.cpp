@@ -2,14 +2,13 @@
 #include <ccl/handler/cmd_handler.hpp>
 #include <ccl/lex/lexical_analyzer.hpp>
 #include <ccl/parser/parser.hpp>
-#include <ccl/parser/parser2.hpp>
 
 using namespace ccl;
 
-
+// NOLINTNEXTLINE
 CCL_ENUM(// NOLINTNEXTLINE
-    TestToken, size_t, EOI, BAD_TOKEN, ID, NUM, MUL, ADD, NOT, ANGLE_OPENING, ANGLE_CLOSING, FACTOR,
-    EXPR);
+    TestToken, size_t, EOI, BAD_TOKEN, ROOT, ID, NUM, MUL, ADD, NOT, ANGLE_OPENING, ANGLE_CLOSING,
+    FACTOR, EXPR);
 
 // NOLINTNEXTLINE
 lex::LexicalAnalyzer LexicalAnalyzer(
@@ -24,114 +23,61 @@ lex::LexicalAnalyzer LexicalAnalyzer(
         { TestToken::ANGLE_OPENING, R"(! "[" )" },
     });
 
-struct ValueFactor : public parser::ValueExpression<TestToken::FACTOR>
+struct FactorWithValue : parser::Factor<TestToken::FACTOR>
 {
-    ValueExpressionConstructor(ValueFactor, TestToken::FACTOR);
+    FactorConstructor(FactorWithValue, TestToken::FACTOR);
 };
 
-struct ValueExpression : public parser::ValueExpression<TestToken::EXPR>
+struct ExpressionWithValue : parser::ValueExpression<TestToken::EXPR>
 {
-    ValueExpressionConstructor(ValueExpression, TestToken::EXPR);
+    ValueExpressionConstructor(ExpressionWithValue, TestToken::EXPR);
 };
 
-struct UnaryExpression : public parser::UnaryExpression<TestToken::EXPR>
-{
-    UnaryExpressionConstructor(UnaryExpression, TestToken::EXPR);
-};
-
-struct BinaryExpression : public parser::BinaryExpression<TestToken::EXPR>
+struct BinaryExpression : parser::BinaryExpression<TestToken::EXPR>
 {
     BinaryExpressionConstructor(BinaryExpression, TestToken::EXPR);
 };
 
-auto expressionFromNumConstruction(parser::StackGetter stack) -> parser::NodePtr
+struct Root : parser::ValueExpression<TestToken::ROOT>
 {
-    return std::make_unique<ValueExpression>(stack.pop());
+    ValueExpressionConstructor(Root, TestToken::ROOT);
+};
+
+auto constructFactorFromID(parser::ParsingStack stack) -> parser::NodePtr
+{
+    return std::make_unique<FactorWithValue>(stack.pop());
 }
 
-auto unaryExpressionConstruction(parser::StackGetter stack) -> parser::NodePtr
+auto constructExpressionFromFactor(parser::ParsingStack stack) -> parser::NodePtr
 {
-    return std::make_unique<UnaryExpression>(stack.pop(), stack.pop());
+    return std::make_unique<ExpressionWithValue>(stack.pop());
 }
 
-auto binaryExpressionConstruction(parser::StackGetter stack) -> parser::NodePtr
-{
-    return std::make_unique<BinaryExpression>(stack.pop(), stack.pop(), stack.pop());
-}
-
-
-auto factorFromNumConstruction(parser::StackGetter2 stack) -> parser::NodePtr
-{
-    return std::make_unique<ValueFactor>(stack.pop());
-}
-
-auto expressionFromFactorConstruction(parser::StackGetter2 stack) -> parser::NodePtr
-{
-    return std::make_unique<ValueExpression>(stack.pop());
-}
-
-auto unaryExpressionConstruction(parser::StackGetter2 stack) -> parser::NodePtr
-{
-    return std::make_unique<UnaryExpression>(stack.pop(), stack.pop());
-}
-
-auto indexOperatorConstruction(parser::StackGetter2 stack) -> parser::NodePtr
-{
-    auto angle_closing = stack.pop();
-    auto expr = stack.pop();
-    auto angle_opening = stack.pop();
-    auto factor = stack.pop();
-
-    return std::make_unique<UnaryExpression>(std::move(factor), std::move(expr));
-}
-
-auto binaryExpressionConstruction(parser::StackGetter2 stack) -> parser::NodePtr
+auto constructBinaryExpression(parser::ParsingStack stack) -> parser::NodePtr
 {
     return std::make_unique<BinaryExpression>(stack.pop(), stack.pop(), stack.pop());
 }
 
+auto constructRoot(parser::ParsingStack stack) -> parser::NodePtr
+{
+    return std::make_unique<Root>(stack.pop());
+}
 
 BOOST_AUTO_TEST_CASE(CclParser)
 {
-    auto tokenizer = LexicalAnalyzer.getTokenizer("a[10] + 2 * 4");
+    auto tokenizer = LexicalAnalyzer.getTokenizer("10 + 10 ");
 
-    std::unordered_map<size_t, size_t> precedence_table(//
-        {
-            { TestToken::NOT, 3 },
-            { TestToken::MUL, 2 },
-            { TestToken::ADD, 1 },
-        });
+    auto rules = parser::ParsingRules(
+        { CCL_PARSING_RULE(TestToken::FACTOR, constructFactorFromID, TestToken::NUM),
+          CCL_PARSING_RULE(TestToken::EXPR, constructExpressionFromFactor, TestToken::FACTOR),
+          CCL_PARSING_RULE(
+              TestToken::EXPR, constructBinaryExpression, TestToken::EXPR, TestToken::ADD,
+              TestToken::EXPR),
+          CCL_PARSING_RULE(
+              TestToken::EXPR, constructBinaryExpression, TestToken::EXPR, TestToken::MUL,
+              TestToken::EXPR),
+          CCL_PARSING_RULE(TestToken::ROOT, constructRoot, TestToken::EXPR, TestToken::EOI) });
 
-    /*auto parser = parser::ParsingRules(//
-        { { expressionFromNumConstruction, { TestToken::NUM } },
-          { expressionFromNumConstruction, { TestToken::ID } },
-          { unaryExpressionConstruction, { TestToken::NOT, TestToken::EXPR } },
-          { binaryExpressionConstruction,
-            { TestToken::EXPR, TestToken::ADD, TestToken::EXPR } },
-          { binaryExpressionConstruction,
-            { TestToken::EXPR, TestToken::MUL, TestToken::EXPR } } },
-        precedence_table, TestToken::toString);
-*/
-    // parser.getParser(tokenizer).parse();
-
-    auto parsing_rules = parser::ParsingRules2(//
-        { { TestToken::FACTOR, factorFromNumConstruction, { TestToken::NUM } },
-          { TestToken::FACTOR, factorFromNumConstruction, { TestToken::ID } },
-          { TestToken::EXPR, expressionFromFactorConstruction, { TestToken::FACTOR } },
-          { TestToken::EXPR, unaryExpressionConstruction, { TestToken::NOT, TestToken::EXPR } },
-          { TestToken::EXPR,
-            binaryExpressionConstruction,
-            { TestToken::EXPR, TestToken::ADD, TestToken::EXPR } },
-          { TestToken::EXPR,
-            binaryExpressionConstruction,
-            { TestToken::EXPR, TestToken::MUL, TestToken::EXPR } },
-          { TestToken::FACTOR,
-            indexOperatorConstruction,
-            { TestToken::FACTOR, TestToken::ANGLE_OPENING, TestToken::EXPR,
-              TestToken::ANGLE_CLOSING } } },
-        precedence_table,
-        TestToken::toString);
-
-    auto parser = parser::Parser2(parsing_rules, tokenizer);
-    parser.parser();
+    auto parser = parser::Parser(rules, tokenizer);
+    parser.parse();
 }
