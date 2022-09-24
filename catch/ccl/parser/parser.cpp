@@ -65,14 +65,14 @@ auto constructRoot(parser::ParsingStack stack) -> parser::NodePtr
 
 BOOST_AUTO_TEST_CASE(CclParser)
 {
-    auto tokenizer = LexicalAnalyzer.getTokenizer("10 + 10 ");
+    auto tokenizer = LexicalAnalyzer.getTokenizer("10 + 10 * 2");
 
     auto rules = parser::ParsingRules(
         { CCL_PARSING_RULE(TestToken::FACTOR, constructFactorFromID, TestToken::NUM),
           CCL_PARSING_RULE(TestToken::EXPR, constructExpressionFromFactor, TestToken::FACTOR),
-          CCL_PARSING_RULE(
-              TestToken::EXPR, constructBinaryExpression, TestToken::EXPR, TestToken::ADD,
-              TestToken::EXPR),
+          ccl::parser::ParsingRule(
+              TestToken::EXPR, "TestToken::EXPR", constructBinaryExpression,
+              { TestToken::EXPR, TestToken::ADD, TestToken::EXPR }, { TestToken::MUL }),
           CCL_PARSING_RULE(
               TestToken::EXPR, constructBinaryExpression, TestToken::EXPR, TestToken::MUL,
               TestToken::EXPR),

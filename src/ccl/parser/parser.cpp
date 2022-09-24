@@ -46,7 +46,6 @@ namespace ccl::parser
 
         fmt::print("----------------------------------------------------------------\n\n");
 
-    Scan:
         for (const auto &[rule_type, rules] : follow_set) {
             for (const auto &rule : rules) {
                 switch (isRuleOnStack(rule)) {
@@ -54,12 +53,14 @@ namespace ccl::parser
                     if (not parseWithNewFollowSet(follow_set, rule)) {
                         continue;
                     }
-                    goto Scan;// NOLINT
+                    parse(follow_set);
+                    break;
 
                 case RuleOnStackResult::PARTIAL_MATCH:
                     fmt::print("PARTIAL_MATCH {}: {}\n", rule.name, rule.ids_to_constructs);
                     pushNewToken();
-                    goto Scan;// NOLINT
+                    parse(follow_set);
+                    break;
 
                 case RuleOnStackResult::FULL_MATCH:
                     fmt::print("FULL MATCH\n");
@@ -96,7 +97,7 @@ namespace ccl::parser
         const auto &future_token = tokenizer.futureToken();
 
         if (rule.ids_that_forbid_construction.contains(future_token.getId())) {
-            return RuleOnStackResult::NO_MATCH;
+            return RuleOnStackResult::PRECEDENCE_FORBIDION;
         }
 
         const auto &ids_to_construct = rule.ids_to_constructs;

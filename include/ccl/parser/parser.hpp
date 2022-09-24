@@ -13,7 +13,7 @@
 
 namespace ccl::parser
 {
-    CCL_ENUM(RuleOnStackResult, size_t, NO_MATCH, FULL_MATCH, PARTIAL_MATCH);// NOLINT
+    CCL_ENUM(RuleOnStackResult, size_t, NO_MATCH, FULL_MATCH, PARTIAL_MATCH, PRECEDENCE_FORBIDION);// NOLINT
     CCL_ENUM(ParsingRuleType, size_t, EOI, BAD_TOKEN, ROOT);                 // NOLINT
 
     using RuleType = size_t;
@@ -45,9 +45,11 @@ namespace ccl::parser
 
         ParsingRule(
             RuleType type_, std::string_view name_, NodePtr (*rule_constructor_)(ParsingStack),
-            const std::initializer_list<size_t> &ids_to_constructs_)
-          : ids_to_constructs(ids_to_constructs_), name(name_), rule_constructor(rule_constructor_),
-            type(type_)
+            const std::initializer_list<size_t> &ids_to_constructs_,
+            const std::initializer_list<size_t> &ids_that_forbid_construction_ = {})
+          : ids_to_constructs(ids_to_constructs_),
+            ids_that_forbid_construction(ids_that_forbid_construction_), name(name_),
+            rule_constructor(rule_constructor_), type(type_)
         {}
 
         std::vector<size_t> ids_to_constructs{};
