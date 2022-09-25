@@ -21,16 +21,16 @@ namespace fsc
     private:
         auto parse() -> void;
 
-        auto parseFunctionDeclaration() -> unique_ptr<ast::BasicNode>;
+        auto parseFunctionDeclaration() -> UniquePtr<ast::BasicNode>;
 
-        auto parseParameters() -> unique_ptr<ast::ParamsListNode>;
+        auto parseParameters() -> UniquePtr<ast::ParamsListNode>;
 
-        auto parseExpression() -> unique_ptr<ast::BasicNode>;
-        auto parseRhsExpression(size_t precedence, unique_ptr<ast::BasicNode> lhs)
-            -> unique_ptr<ast::BasicNode>;
+        auto parseExpression() -> UniquePtr<ast::BasicNode>;
+        auto parseRhsExpression(size_t precedence, UniquePtr<ast::BasicNode> lhs)
+            -> UniquePtr<ast::BasicNode>;
 
-        auto parseTerm() -> unique_ptr<ast::BasicNode>;
-        auto termLookAhead() -> unique_ptr<ast::BasicNode>;
+        auto parseTerm() -> UniquePtr<ast::BasicNode>;
+        auto termLookAhead() -> UniquePtr<ast::BasicNode>;
 
         auto badTokenError() -> void;
 

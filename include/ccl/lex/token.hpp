@@ -90,12 +90,12 @@ namespace ccl::lex
             return repr;
         }
 
-        [[nodiscard]] auto getPrefixes() noexcept -> const std::vector<string_view> &
+        [[nodiscard]] auto getPrefixes() noexcept -> const Vector<string_view> &
         {
             return prefixes;
         }
 
-        [[nodiscard]] auto getPostfixes() noexcept -> const std::vector<string_view> &
+        [[nodiscard]] auto getPostfixes() noexcept -> const Vector<string_view> &
         {
             return postfixes;
         }
@@ -142,8 +142,8 @@ namespace ccl::lex
         }
 
     private:
-        std::vector<string_view> prefixes{};
-        std::vector<string_view> postfixes{};
+        Vector<string_view> prefixes{};
+        Vector<string_view> postfixes{};
         TokenAttributes attributes{};
         string_view repr{};
         size_t id{};

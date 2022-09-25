@@ -76,7 +76,7 @@ namespace ccl::lex
         };
 
         LexicalAnalyzer(
-            ExceptionHandler &exception_handler_, const std::initializer_list<Rule> &rules_,
+            ExceptionHandler &exception_handler_, InitializerList<Rule> rules_,
             string_view filename = {}, std::basic_string<size_t> ignored_ids_ = {});
 
         [[nodiscard]] auto getIgnoredIds() const -> const std::basic_string<size_t> &
@@ -99,7 +99,7 @@ namespace ccl::lex
     private:
         auto createContainer(string_view rule, size_t id, string_view filename) -> void;
 
-        std::vector<Container> items{};
+        Vector<Container> items{};
         SpecialItems special_items{};
         std::string skipped_characters{};
         std::basic_string<size_t> ignored_ids{};

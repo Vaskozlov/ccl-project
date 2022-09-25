@@ -104,31 +104,32 @@ namespace ccl::lex::dot_item
         }
     }
 
-    auto Container::RuleParser::constructLogicalUnit() -> BasicItemPtr
+    auto Container::RuleParser::constructLogicalUnit() -> UniquePtr<BasicItem>
     {
         auto rhs = std::move(items.back());
         items.pop_back();
 
-        return std::make_unique<LogicalUnit>(
+        return makeUnique<BasicItem, LogicalUnit>(
             std::move(reserved_lhs.value()), std::move(rhs), logical_operation, getId());
     }
 
-    auto Container::RuleParser::constructNewSequence() -> BasicItemPtr
+    auto Container::RuleParser::constructNewSequence() -> UniquePtr<BasicItem>
     {
         tryToFinishLogicalOperation();
 
-        return std::make_unique<Sequence>(Sequence::SequenceFlags{}, "\"", rule_iterator, getId());
+        return makeUnique<BasicItem, Sequence>(
+            Sequence::SequenceFlags{}, "\"", rule_iterator, getId());
     }
 
-    auto Container::RuleParser::constructNewUnion() -> BasicItemPtr
+    auto Container::RuleParser::constructNewUnion() -> UniquePtr<BasicItem>
     {
         tryToFinishLogicalOperation();
 
-        return std::make_unique<Union>(rule_iterator, getId());
+        return makeUnique<BasicItem, Union>(rule_iterator, getId());
     }
 
     // NOLINTNEXTLINE (recursive function)
-    auto Container::RuleParser::constructNewContainer() -> BasicItemPtr
+    auto Container::RuleParser::constructNewContainer() -> UniquePtr<BasicItem>
     {
         tryToFinishLogicalOperation();
 
@@ -138,7 +139,7 @@ namespace ccl::lex::dot_item
 
         rule_iterator.setEnd(text.begin() + bracket_index);
 
-        auto new_container = std::make_unique<Container>(
+        auto new_container = makeUnique<BasicItem, Container>(
             rule_iterator, special_items, getId(), false, container.isSpecial());
         rule_iterator.setEnd(saved_end);
 

@@ -1,8 +1,7 @@
 #ifndef CCL_PROJECT_UTF_SET_HPP
 #define CCL_PROJECT_UTF_SET_HPP
 
-#include <bitset>
-#include <unordered_set>
+#include <ccl/ccl.hpp>
 
 namespace ccl
 {
@@ -48,8 +47,8 @@ namespace ccl
     private:
         static constexpr auto small_storage_size = static_cast<size_t>(128);
 
-        std::bitset<small_storage_size> small_storage{};
-        std::unordered_set<char32_t> storage{};
+        SmallBitset<small_storage_size> small_storage{};
+        UnorderedSet<char32_t> storage{};
     };
 }// namespace ccl
 

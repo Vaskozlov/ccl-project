@@ -8,7 +8,7 @@
 namespace ccl
 {
     template<typename Key, typename Value, size_t Size>
-    class Flatmap
+    class StaticFlatmap
     {
     public:
         using key_type = Key;
@@ -124,9 +124,9 @@ namespace ccl
             return staticFind(*this, key);
         }
 
-        Flatmap() = default;
+        StaticFlatmap() = default;
 
-        constexpr Flatmap(const std::initializer_list<value_type> &initial_data)
+        constexpr StaticFlatmap(InitializerList<value_type> initial_data)
         {
             for (auto &value : initial_data) {
                 insert(value);

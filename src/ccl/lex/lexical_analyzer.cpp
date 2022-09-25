@@ -5,7 +5,7 @@ namespace ccl::lex
     using namespace std::string_literals;
 
     LexicalAnalyzer::LexicalAnalyzer(
-        ExceptionHandler &exception_handler_, const std::initializer_list<Rule> &rules_,
+        ExceptionHandler &exception_handler_,  InitializerList<Rule> rules_,
         string_view filename, std::basic_string<size_t> ignored_ids_)
       : ignored_ids(std::move(ignored_ids_)), exception_handler(exception_handler_)
     {

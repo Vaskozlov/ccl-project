@@ -9,7 +9,7 @@ namespace fsc::ast
     struct VariableDeclNode : BasicNode
     {
         CCL_PERFECT_FORWARDING_2(T1, Token, T2, Token)
-        explicit VariableDeclNode(T1 &&name_, T2 &&type_, unique_ptr<BasicNode> initializer_ = nullptr)
+        explicit VariableDeclNode(T1 &&name_, T2 &&type_, UniquePtr<BasicNode> initializer_ = nullptr)
           : initializer(std::move(initializer_)), name(std::forward<T1>(name_)),
             type(std::forward<T2>(type_))
         {}
@@ -25,7 +25,7 @@ namespace fsc::ast
             }
         }
 
-        unique_ptr<BasicNode> initializer{};
+        UniquePtr<BasicNode> initializer{};
         Token name{};
         Token type{};
     };

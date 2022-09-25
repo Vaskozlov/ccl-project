@@ -94,23 +94,25 @@ namespace ccl::utf8
     {
         using namespace std::string_view_literals;
 
+        auto &&cast = [](auto value) { return static_cast<char>(value); };
+
         // NOLINTBEGIN
 
-        if (chr <= OneByteMax) {
-            string.push_back(static_cast<char>(chr));
-        } else if (chr <= TwoBytesMax) {
-            string.push_back(static_cast<char>(TwoBytesSignature | (chr >> 6)));
-            string.push_back(static_cast<char>(ContinuationSignature | (chr & 0b0011'1111)));
-        } else if (chr <= TreeBytesMax) {
-            string.push_back(static_cast<char>(TreeBytesSignature | (chr >> 12)));
-            string.push_back(static_cast<char>(ContinuationSignature | ((chr >> 6) & 0b0011'1111)));
-            string.push_back(static_cast<char>(ContinuationSignature | (chr & 0b0011'1111)));
-        } else if (chr <= FourBytesMax) {
-            string.push_back(static_cast<char>(FourBytesSignature | (chr >> 18)));
+        if (chr <= OneByteMax) [[likely]] {
+            string.push_back(cast(chr));
+        } else if (chr <= TwoBytesMax) [[unlikely]] {
+            string.push_back(cast(TwoBytesSignature | (chr >> 6)));
+            string.push_back(cast(ContinuationSignature | (chr & 0b0011'1111)));
+        } else if (chr <= TreeBytesMax) [[unlikely]] {
+            string.push_back(cast(TreeBytesSignature | (chr >> 12)));
+            string.push_back(cast(ContinuationSignature | ((chr >> 6) & 0b0011'1111)));
+            string.push_back(cast(ContinuationSignature | (chr & 0b0011'1111)));
+        } else if (chr <= FourBytesMax) [[unlikely]] {
+            string.push_back(cast(FourBytesSignature | (chr >> 18)));
             string.push_back(
-                static_cast<char>(ContinuationSignature | ((chr >> 12) & 0b0011'1111)));
-            string.push_back(static_cast<char>(ContinuationSignature | ((chr >> 6) & 0b0011'1111)));
-            string.push_back(static_cast<char>(ContinuationSignature | (chr & 0b0011'1111)));
+                cast(ContinuationSignature | ((chr >> 12) & 0b0011'1111)));
+            string.push_back(cast(ContinuationSignature | ((chr >> 6) & 0b0011'1111)));
+            string.push_back(cast(ContinuationSignature | (chr & 0b0011'1111)));
         } else {
             throw Utf8ConvertionError{ "unable to convert symbol to utf8"sv };
         }

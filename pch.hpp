@@ -30,5 +30,3 @@
 #include <sstream>
 
 #include "include/ccl/ccl.hpp"
-
-#include <boost/container/small_vector.hpp>

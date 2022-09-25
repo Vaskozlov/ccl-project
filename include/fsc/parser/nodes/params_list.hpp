@@ -19,7 +19,7 @@ namespace fsc::ast
             }
         }
 
-        std::vector<unique_ptr<BasicNode>> params;
+        Vector<UniquePtr<BasicNode>> params;
     };
 }// namespace fsc::ast
 

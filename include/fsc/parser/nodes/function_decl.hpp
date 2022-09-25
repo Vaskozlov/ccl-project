@@ -12,7 +12,7 @@ namespace fsc::ast
 
         CCL_PERFECT_FORWARDING_2(T1, Token, T2, Token)
         explicit FunctionDeclarationNode(
-            T1 &&name_, T2 &&return_type_, unique_ptr<ParamsListNode> parameters_ = nullptr)
+            T1 &&name_, T2 &&return_type_, UniquePtr<ParamsListNode> parameters_ = nullptr)
           : name{ std::forward<T1>(name_) }, return_type{ std::forward<T2>(return_type_) },
             parameters{ std::move(parameters_) }
         {}
@@ -31,8 +31,8 @@ namespace fsc::ast
 
         Token name;
         Token return_type;
-        unique_ptr<ParamsListNode> parameters;
-        unique_ptr<BasicNode> body;
+        UniquePtr<ParamsListNode> parameters;
+        UniquePtr<BasicNode> body;
     };
 }// namespace fsc::ast
 

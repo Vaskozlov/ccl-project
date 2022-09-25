@@ -18,7 +18,7 @@ namespace ccl::lex::dot_item
     public:
         using TextIterator = text::TextIterator;
         using ForkedGenerator = typename text::TextIterator::ForkedTextIterator;
-        using BasicItemPtr = std::unique_ptr<BasicItem>;
+        using BasicItemPtr = UniquePtr<BasicItem>;
         using ScanResult = std::optional<std::pair<TextIterator, Token>>;
 
         struct SpecialItems;

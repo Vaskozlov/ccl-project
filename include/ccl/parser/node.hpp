@@ -26,7 +26,7 @@
 namespace ccl::parser
 {
     struct Node;
-    using NodePtr = std::unique_ptr<Node>;
+    using NodePtr = UniquePtr<Node>;
 
     struct Node
     {
@@ -45,24 +45,12 @@ namespace ccl::parser
             return id;
         }
 
-        static auto getPrintingPrefix(const std::string &prefix, bool is_left) -> std::string
-        {
-            return prefix + (is_left ? "\u251c\u2500\u2500" : "\u2514\u2500\u2500");
-        }
-
+        static auto getPrintingPrefix(const std::string &prefix, bool is_left) -> std::string;
         static auto
             expandPrefix(const std::string &prefix, bool is_left, size_t extra_expansion = 0)
-                -> std::string
-        {
-            auto result = prefix + (is_left ? "\u2502   " : "    ");
+                -> std::string;
 
-            for (size_t i = 0; i != extra_expansion; ++i) {
-                result.append("   ");
-            }
-
-            return result;
-        }
-
+        virtual auto clone() const -> UniquePtr<Node> = 0;
         virtual auto print(const std::string &prefix = "", bool is_left = false) const -> void;
 
     private:
@@ -75,6 +63,11 @@ namespace ccl::parser
         explicit TokenNode(T &&token_) : Node(token_.getId()), token(std::forward<T>(token_))
         {}
 
+        auto clone() const -> UniquePtr<Node> override
+        {
+            return makeUnique<Node, TokenNode>(token);
+        }
+
         auto print(const std::string &prefix, bool is_left) const -> void override;
 
     private:
@@ -84,8 +77,13 @@ namespace ccl::parser
     template<size_t Id>
     struct Factor : Node
     {
-        explicit Factor(NodePtr value_) : Node(Id), value(std::move(value_))
+        explicit Factor(UniquePtr<Node> value_) : Node(Id), value(std::move(value_))
         {}
+
+        auto clone() const -> UniquePtr<Node> override
+        {
+            return makeUnique<Node, Factor<Id>>(value->clone());
+        }
 
         auto print(const std::string &prefix, bool is_left) const -> void override
         {
@@ -93,14 +91,19 @@ namespace ccl::parser
             value->print(expandPrefix(prefix, is_left), false);
         }
 
-        NodePtr value;
+        UniquePtr<Node> value;
     };
 
     template<size_t Id>
     struct ValueExpression : Node
     {
-        explicit ValueExpression(NodePtr value_) : Node(Id), value(std::move(value_))
+        explicit ValueExpression(UniquePtr<Node> value_) : Node(Id), value(std::move(value_))
         {}
+
+        auto clone() const -> UniquePtr<Node> override
+        {
+            return makeUnique<Node, ValueExpression<Id>>(value->clone());
+        }
 
         auto print(const std::string &prefix, bool is_left) const -> void override
         {
@@ -108,15 +111,20 @@ namespace ccl::parser
             value->print(expandPrefix(prefix, is_left), false);
         }
 
-        NodePtr value;
+        UniquePtr<Node> value;
     };
 
     template<size_t Id>
     struct UnaryExpression : Node
     {
-        explicit UnaryExpression(NodePtr operation_, NodePtr value_)
+        explicit UnaryExpression(UniquePtr<Node> operation_, UniquePtr<Node> value_)
           : Node(Id), operation(std::move(operation_)), value(std::move(value_))
         {}
+
+        auto clone() const -> UniquePtr<Node> override
+        {
+            return makeUnique<Node, UnaryExpression<Id>>(operation->clone(), value->clone());
+        }
 
         auto print(const std::string &prefix, bool is_left) const -> void override
         {
@@ -125,16 +133,23 @@ namespace ccl::parser
             value->print(expandPrefix(prefix, is_left), false);
         }
 
-        NodePtr operation;
-        NodePtr value;
+        UniquePtr<Node> operation;
+        UniquePtr<Node> value;
     };
 
     template<size_t Id>
     struct BinaryExpression : Node
     {
-        explicit BinaryExpression(NodePtr rhs_, NodePtr operation_, NodePtr lhs_)
+        explicit BinaryExpression(
+            UniquePtr<Node> rhs_, UniquePtr<Node> operation_, UniquePtr<Node> lhs_)
           : Node(Id), operation(std::move(operation_)), lhs(std::move(lhs_)), rhs(std::move(rhs_))
         {}
+
+        auto clone() const -> NodePtr override
+        {
+            return makeUnique<Node, BinaryExpression<Id>>(
+                rhs->clone(), operation->clone(), lhs->clone());
+        }
 
         auto print(const std::string &prefix, bool is_left) const -> void override
         {
@@ -144,9 +159,9 @@ namespace ccl::parser
             rhs->print(expandPrefix(prefix, is_left, 1), false);
         }
 
-        NodePtr operation;
-        NodePtr lhs;
-        NodePtr rhs;
+        UniquePtr<Node> operation;
+        UniquePtr<Node> lhs;
+        UniquePtr<Node> rhs;
     };
 }// namespace ccl::parser
 

@@ -173,7 +173,7 @@ namespace ccl::lex::dot_item
             return false;
         }
 
-        std::vector<Container> special_items;
+        Vector<Container> special_items;
     };
 }// namespace ccl::lex::dot_item
 

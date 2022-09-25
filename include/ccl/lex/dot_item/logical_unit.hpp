@@ -23,8 +23,8 @@ namespace ccl::lex::dot_item
     private:
         auto scanIteration(const ForkedGenerator &text_iterator) const -> size_t final;
 
-        std::unique_ptr<BasicItem> lhs_item{};
-        std::unique_ptr<BasicItem> rhs_item{};
+        UniquePtr<BasicItem> lhs_item{};
+        UniquePtr<BasicItem> rhs_item{};
         LogicalOperation logical_operation{ LogicalOperation::NONE };
     };
 }// namespace ccl::lex::dot_item

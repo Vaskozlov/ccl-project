@@ -18,8 +18,9 @@ namespace fsc
 
     using Token = ccl::lex::Token;
 
-    using std::make_unique;// NOLINT
-    using std::unique_ptr; // NOLINT)
+    using ccl::makeUnique;// NOLINT
+    using ccl::UniquePtr; // NOLINT
+    using ccl::Vector;
 }// namespace fsc
 
 #endif /* CCL_PROJECT_FSC_HPP */

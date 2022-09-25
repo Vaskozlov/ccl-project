@@ -8,7 +8,7 @@ namespace fsc::ast
     struct BinaryExpressionNode : BasicNode
     {
         explicit BinaryExpressionNode(
-            Token &token_, unique_ptr<BasicNode> left_ = nullptr, unique_ptr<BasicNode> right_ = nullptr)
+            Token &token_, UniquePtr<BasicNode> left_ = nullptr, UniquePtr<BasicNode> right_ = nullptr)
           : binary_op{ token_ }, left{ std::move(left_) }, right{ std::move(right_) }
         {}
 
@@ -23,8 +23,8 @@ namespace fsc::ast
         }
 
         Token binary_op{};
-        unique_ptr<BasicNode> left{};
-        unique_ptr<BasicNode> right{};
+        UniquePtr<BasicNode> left{};
+        UniquePtr<BasicNode> right{};
     };
 }// namespace fsc::ast::node
 

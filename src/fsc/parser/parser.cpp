@@ -53,10 +53,10 @@ namespace fsc
          }*/
     }
 
-    auto Parser::parseFunctionDeclaration() -> unique_ptr<ast::BasicNode>
+    auto Parser::parseFunctionDeclaration() -> UniquePtr<ast::BasicNode>
     {
         [[maybe_unused]] auto &function_keyword = tokenizer.yield();
-        auto function_declaration = make_unique<ast::FunctionDeclarationNode>();
+        auto function_declaration = makeUnique<ast::FunctionDeclarationNode>();
 
         // Parse function name
         auto &token = tokenizer.yield();
@@ -100,9 +100,9 @@ namespace fsc
         return function_declaration;
     }
 
-    auto Parser::parseParameters() -> unique_ptr<ast::ParamsListNode>
+    auto Parser::parseParameters() -> UniquePtr<ast::ParamsListNode>
     {
-        auto parameters = make_unique<ast::ParamsListNode>();
+        auto parameters = UniquePtr<ast::ParamsListNode>();
         auto has_parameter = false;
 
         while (true) {
@@ -130,7 +130,7 @@ namespace fsc
         return parameters;
     }
 
-    auto Parser::parseExpression() -> unique_ptr<ast::BasicNode>
+    auto Parser::parseExpression() -> UniquePtr<ast::BasicNode>
     {
         auto lhs = parseTerm();
 
@@ -145,8 +145,8 @@ namespace fsc
         return lhs;
     }
 
-    auto Parser::parseRhsExpression(size_t precedence, unique_ptr<ast::BasicNode> lhs)
-        -> unique_ptr<ast::BasicNode>
+    auto Parser::parseRhsExpression(size_t precedence, UniquePtr<ast::BasicNode> lhs)
+        -> UniquePtr<ast::BasicNode>
     {
         while (true) {
             auto binary_operation_token = tokenizer.futureToken();
@@ -181,14 +181,14 @@ namespace fsc
         }
     }
 
-    auto Parser::parseTerm() -> unique_ptr<ast::BasicNode>
+    auto Parser::parseTerm() -> UniquePtr<ast::BasicNode>
     {
         auto &token = tokenizer.futureToken();
 
         switch (token.getId()) {
         case FscLexerToken::NUMBER:
             tokenizer.yield();
-            return make_unique<ast::TermNode>(token);
+            return makeUnique<ast::TermNode>(token);
 
         case FscLexerToken::IDENTIFIER:
             tokenizer.yield();
@@ -203,7 +203,7 @@ namespace fsc
         }
     }
 
-    auto Parser::termLookAhead() -> unique_ptr<ast::BasicNode>
+    auto Parser::termLookAhead() -> UniquePtr<ast::BasicNode>
     {
         auto &token = tokenizer.getCurrentToken();
         auto &future_token = tokenizer.futureToken();
@@ -216,7 +216,7 @@ namespace fsc
             return nullptr;
 
         default:
-            return make_unique<ast::TermNode>(token);
+            return makeUnique<ast::TermNode>(token);
         }
     }
 

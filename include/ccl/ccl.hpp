@@ -17,7 +17,7 @@
 #include <ccl/core/defines.hpp>
 #include <ccl/core/enum.hpp>
 #include <ccl/core/exception.hpp>
-#include <ccl/core/int_types.hpp>
 #include <ccl/core/logical_ops.hpp>
+#include <ccl/core/types.hpp>
 
 #endif /* CCL_PROJECT_CCL_HPP */

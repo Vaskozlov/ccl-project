@@ -8,7 +8,7 @@ namespace fsc::ast
     struct ParameterNode : BasicNode
     {
         CCL_PERFECT_FORWARDING(T, Token)
-        explicit ParameterNode(T &&name_, unique_ptr<BasicNode> expression_ = nullptr)
+        explicit ParameterNode(T &&name_, UniquePtr<BasicNode> expression_ = nullptr)
           : name{ std::forward<T>(name_) }, expression{ std::move(expression_) }
         {}
 
@@ -21,7 +21,7 @@ namespace fsc::ast
         }
 
         Token name{};
-        unique_ptr<BasicNode> expression{};
+        UniquePtr<BasicNode> expression{};
     };
 }// namespace fsc::ast
 

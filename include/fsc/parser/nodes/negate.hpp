@@ -7,7 +7,7 @@ namespace fsc::ast
 {
     struct NegateNode : BasicNode
     {
-        explicit NegateNode(unique_ptr<BasicNode> node_) : node{ std::move(node_) }
+        explicit NegateNode(UniquePtr<BasicNode> node_) : node{ std::move(node_) }
         {}
 
         auto print(const std::string &prefix, bool isLeft) const -> void override
@@ -17,7 +17,7 @@ namespace fsc::ast
             node->print(prefix + (isLeft ? "\u2502   " : "    "), false);
         }
 
-        unique_ptr<BasicNode> node{};
+        UniquePtr<BasicNode> node{};
     };
 }// namespace fsc::ast
 
