@@ -1,4 +1,5 @@
 #include <ccl/parser/parsing_rules.hpp>
+#include <ranges>
 
 namespace ccl::parser
 {
@@ -37,32 +38,33 @@ namespace ccl::parser
         auto inserter = std::inserter(terminals, terminals.begin());
         auto insert_condition = [this](RuleId id) { return not non_terminals.contains(id); };
 
-        for (const auto &[type, rules] : parsing_rules) {
+        for (const auto &rules : parsing_rules | std::views::values) {
             for (const auto &rule : rules) {
                 const auto &ids_to_construct = rule.ids_to_construct;
-                std::ranges::copy_if(ids_to_construct, inserter, insert_condition);
+                std::ranges::copy_if(
+                    ids_to_construct | std::views::drop(1), inserter, insert_condition);
             }
         }
     }
 
     auto ParsingRules::fixConflicts() -> void
     {
-        auto rules = Vector<ParsingRule *>{};
+        auto all_rules = Vector<ParsingRule *>{};
 
-        for (auto &[type, sub_rules] : parsing_rules) {
-            for (auto &rule : sub_rules) {
-                rules.push_back(&rule);
+        for (auto &rules : parsing_rules | std::views::values) {
+            for (auto &rule : rules) {
+                all_rules.push_back(&rule);
             }
         }
 
-        for (auto *rule : rules) {
+        for (auto *rule : all_rules) {
+            auto check_not_on_self = [rule](const ParsingRule *other_rule) {
+                return rule->uuid != other_rule->uuid;
+            };
+
             checkThereAreNoCloseNonTerminals(*rule);
 
-            for (auto *other_rule : rules) {
-                if (rule->uuid == other_rule->uuid) {
-                    continue;
-                }
-
+            for (auto *other_rule : all_rules | std::views::filter(check_not_on_self)) {
                 printRuleFully(*rule);
                 fixConflict(*rule, *other_rule);
                 printRuleFully(*rule);

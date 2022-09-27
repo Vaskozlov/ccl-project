@@ -5,13 +5,13 @@ namespace ccl::lex
     using namespace std::string_literals;
 
     LexicalAnalyzer::LexicalAnalyzer(
-        ExceptionHandler &exception_handler_,  InitializerList<Rule> rules_,
-        string_view filename, std::basic_string<size_t> ignored_ids_)
+        ExceptionHandler &exception_handler_, InitializerList<Rule> rules_, string_view filename,
+        std::basic_string<size_t> ignored_ids_)
       : ignored_ids(std::move(ignored_ids_)), exception_handler(exception_handler_)
     {
-        for (const Rule &rule : rules_) {
+        std::ranges::for_each(rules_, [this, filename](const Rule &rule) {
             createContainer(rule.repr, rule.id, filename);
-        }
+        });
     }
 
     auto LexicalAnalyzer::createContainer(string_view rule, size_t id, string_view filename) -> void

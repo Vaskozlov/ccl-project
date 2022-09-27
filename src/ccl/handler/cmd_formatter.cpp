@@ -50,7 +50,7 @@ namespace ccl::handler
 
     auto Cmd::CmdFormatter::formatArrow(size_t tabs_number) -> size_t
     {
-        constexpr auto total_line_number_width = 6;
+        constexpr auto total_line_number_width = 6U;
         auto arrow_position = column + tabs_number * (4 - 1) + total_line_number_width - 1;
 
         format_to(std::back_inserter(formatting_buffer), "{:>6}", '|');

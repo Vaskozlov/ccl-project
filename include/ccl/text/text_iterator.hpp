@@ -223,7 +223,7 @@ namespace ccl::text
 
         NotationEscapingSymbolizer(
             TextIterator &text_iterator_, u16 max_times_, u16 notation_power_,
-            bool need_all_chars_) noexcept;
+            bool need_all_chars_);
 
         ~NotationEscapingSymbolizer() = default;
 

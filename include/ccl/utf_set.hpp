@@ -45,7 +45,7 @@ namespace ccl
         UtfSet() = default;
 
     private:
-        static constexpr auto small_storage_size = static_cast<size_t>(128);
+        static constexpr auto small_storage_size = 128ZU;
 
         SmallBitset<small_storage_size> small_storage{};
         UnorderedSet<char32_t> storage{};

@@ -20,8 +20,8 @@ namespace ccl::lex::dot_item
 
     auto BasicItem::scan(ForkedGenerator text_iterator) const -> std::optional<size_t>
     {
-        auto times = 0_ZU;
-        size_t totally_skipped = 0;
+        auto times = 0ZU;
+        auto totally_skipped = 0ZU;
 
         while (times < repetition.to) {
             if (text_iterator.isEOI()) {

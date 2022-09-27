@@ -19,8 +19,9 @@ namespace ccl::lex::dot_item
 
     auto Repetition::parseNumber(TextIterator &text_iterator, char32_t terminator) -> size_t
     {
-        auto result = static_cast<size_t>(0);
-        constexpr auto decimal_base = static_cast<size_t>(10);
+        constexpr auto decimal_base = 10ZU;
+
+        auto result = 0ZU;
         text_iterator.moveToCleanChar();
 
         while (text_iterator.next() != terminator) {

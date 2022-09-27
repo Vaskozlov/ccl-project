@@ -1,6 +1,7 @@
 #include <ccl/parser/parser.hpp>
 #include <fmt/ranges.h>
 #include <fmt/std.h>
+#include <ranges>
 
 namespace ccl::parser
 {
@@ -142,10 +143,8 @@ namespace ccl::parser
     {
         auto follow_set = FollowSet{};
 
-        for (auto &&rule : parsing_rules.at(expected_type)) {
-            if (pred(rule)) {
-                follow_set.push_back(&rule);
-            }
+        for (auto &&rule : parsing_rules.at(expected_type) | std::views::filter(pred)) {
+            follow_set.push_back(&rule);
         }
 
         return follow_set;
@@ -168,7 +167,6 @@ namespace ccl::parser
         }
 
         auto stack_size = stack.size();
-
         const auto &future_token = tokenizer.futureToken();
         auto future_id = future_token.getId();
 
@@ -177,7 +175,7 @@ namespace ccl::parser
 
             if (stack_size < rule->ids_to_construct.size() &&
                 ids_to_construct[stack_size] == future_id) {
-                return true;
+                break;
             }
         }
 

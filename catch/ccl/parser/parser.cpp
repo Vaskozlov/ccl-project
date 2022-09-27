@@ -93,6 +93,7 @@ BOOST_AUTO_TEST_CASE(CclParser)
     auto rules = parser::ParsingRules(
         PrecedenceTable,
         { CCL_PARSING_RULE(TestToken::FACTOR, constructFactorFromID, TestToken::NUM),
+          CCL_PARSING_RULE(TestToken::FACTOR, constructFactorFromID, TestToken::ID),
           CCL_PARSING_RULE(
               TestToken::FACTOR, constructIndexOperator, TestToken::FACTOR,
               TestToken::ANGLE_OPENING, TestToken::EXPR, TestToken::ANGLE_CLOSING),
@@ -106,7 +107,8 @@ BOOST_AUTO_TEST_CASE(CclParser)
           CCL_PARSING_RULE(TestToken::ROOT, constructRoot, TestToken::EXPR, TestToken::EOI) });
 
 
-    auto tokenizer = LexicalAnalyzer.getTokenizer("10[0] + 2 * 2");
+    auto tokenizer = LexicalAnalyzer.getTokenizer("a[1] + 2 * 4");
+
     auto parser = parser::Parser(rules, tokenizer);
     parser.parse();
 }

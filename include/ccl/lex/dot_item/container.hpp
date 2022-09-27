@@ -151,27 +151,8 @@ namespace ccl::lex::dot_item
 
     struct BasicItem::SpecialItems
     {
-        [[nodiscard]] auto checkForSpecial(const ForkedGenerator &text_iterator) const -> bool
-        {
-            return std::ranges::any_of(special_items, [text_iterator](const auto &special_item) {
-                auto scan_result = special_item.scan(text_iterator);
-                return scan_result.has_value() && scan_result != 0;
-            });
-        }
-
-        auto specialScan(TextIterator &text_iterator, Token &token) const -> bool
-        {
-            for (auto &&special_item : special_items) {
-                auto scan_result =
-                    special_item.beginScan(text_iterator, token, ScanningType::SPECIAL);
-
-                if (scan_result) {
-                    return true;
-                }
-            }
-
-            return false;
-        }
+        auto specialScan(TextIterator &text_iterator, Token &token) const -> bool;
+        [[nodiscard]] auto checkForSpecial(const ForkedGenerator &text_iterator) const -> bool;
 
         Vector<Container> special_items;
     };

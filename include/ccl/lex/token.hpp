@@ -38,7 +38,7 @@ namespace ccl::lex
         {}
 
         Token(TokenAttributes &&attributes_, typename string_view::iterator begin_, size_t id_)
-          : Token(std::move(attributes_), { begin_, static_cast<size_t>(0) }, id_)
+          : Token(std::move(attributes_), { begin_, 0ZU }, id_)
         {}
 
         Token(const text::TextIterator &text_iterator_, size_t id_)

@@ -302,8 +302,6 @@ namespace ccl::lex::dot_item
     auto Container::RuleParser::throwUnableToApply(string_view reason, string_view suggestion)
         -> void
     {
-        using namespace fmt::literals;
-
         auto message = fmt::format("unable to apply: {}", reason);
 
         rule_iterator.throwCriticalError(message, suggestion);
@@ -319,5 +317,23 @@ namespace ccl::lex::dot_item
 
         rule_iterator.throwPanicError(message, suggestion);
         throw UnrecoverableError{ "unrecoverable error in ContainerType" };
+    }
+
+    auto BasicItem::SpecialItems::checkForSpecial(const ForkedGenerator &text_iterator) const
+        -> bool
+    {
+        return std::ranges::any_of(special_items, [text_iterator](const auto &special_item) {
+            auto scan_result = special_item.scan(text_iterator);
+            return scan_result.has_value() && scan_result != 0;
+        });
+    }
+
+    auto BasicItem::SpecialItems::specialScan(TextIterator &text_iterator, Token &token) const
+        -> bool
+    {
+        return std::ranges::any_of(
+            special_items, [&text_iterator, &token](const auto &special_item) {
+                return special_item.beginScan(text_iterator, token, ScanningType::SPECIAL);
+            });
     }
 }// namespace ccl::lex::dot_item
