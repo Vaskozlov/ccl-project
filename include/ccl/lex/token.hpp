@@ -134,11 +134,8 @@ namespace ccl::lex
         auto clear(size_t new_id)
         {
             id = new_id;
-            repr = {};
             prefixes.clear();
             postfixes.clear();
-            attributes.tabs_and_spaces.clear();
-            attributes.location = text::Location{};
         }
 
     private:

@@ -8,9 +8,9 @@ namespace ccl
     class UtfSet
     {
     public:
-        auto empty() const noexcept -> bool
+        [[nodiscard]] auto empty() const noexcept -> bool
         {
-            return storage.empty() && small_storage.none();
+            return small_storage.none() && storage.empty();
         }
 
         [[nodiscard]] auto at(char32_t chr) const noexcept -> bool
@@ -24,7 +24,7 @@ namespace ccl
 
         auto set(char32_t chr, bool value = true) -> void
         {
-            if (chr < small_storage_size) {
+            if (chr < small_storage_size) [[likely]] {
                 small_storage.set(chr, value);
             } else {
                 if (value) {
@@ -48,7 +48,7 @@ namespace ccl
         static constexpr auto small_storage_size = 128ZU;
 
         SmallBitset<small_storage_size> small_storage{};
-        UnorderedSet<char32_t> storage{};
+        FlatSet<char32_t> storage{};
     };
 }// namespace ccl
 
