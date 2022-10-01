@@ -59,7 +59,7 @@ namespace ccl::lex::dot_item
             "({})",
             from, to);
 
-        text_iterator.throwCriticalError(message);
+        text_iterator.throwCriticalError(AnalysationStage::LEXICAL_ANALYSIS, message);
     }
 
     auto Repetition::throwUnexpectedCharacter(TextIterator &text_iterator, char32_t chr) -> void
@@ -69,13 +69,15 @@ namespace ccl::lex::dot_item
 
         auto message = fmt::format("expected a number, but found `{}`", buffer);
 
-        text_iterator.throwPanicError(message);
+        text_iterator.throwPanicError(AnalysationStage::LEXICAL_ANALYSIS, message);
         throw UnrecoverableError{ "unrecoverable error in Repetition" };
     }
 
     auto Repetition::throwRangeBeginException(TextIterator &text_iterator) -> void
     {
-        text_iterator.throwPanicError("expected '{' at the beginning of repetition range"_sv);
+        text_iterator.throwPanicError(
+            AnalysationStage::LEXICAL_ANALYSIS,
+            "expected '{' at the beginning of repetition range"_sv);
         throw UnrecoverableError{ "unrecoverable error in Repetition" };
     }
 }// namespace ccl::lex::dot_item

@@ -125,7 +125,7 @@ namespace ccl::lex::gen
 
     auto StaticGenerator::generateEnumCases() -> void
     {
-        constexpr size_t shift_size = 16;
+        constexpr auto shift_size = 16ZU;
 
         std::set<string_view> generated_cases{};
         std::set<string_view> generated_blocks{};

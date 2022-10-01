@@ -3,7 +3,6 @@
 
 using namespace ccl;
 using namespace text;
-using namespace text::module;
 using namespace string_view_literals;
 
 constexpr static auto Input = "Hello, World!\nIt's a \nTest!\nOf line tracker\n "_sv;

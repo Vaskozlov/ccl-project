@@ -31,7 +31,8 @@ namespace ccl::handler
         explicit CmdFormatter(const ExceptionT *exception) noexcept
           : working_line(exception->getWorkingLine()), filename(exception->getFilename()),
             message(exception->getMessage()), suggestion(exception->getSuggestion()),
-            line(exception->getLine()), column(exception->getColumn())
+            length(exception->getLength()), line(exception->getLine()),
+            column(exception->getColumn())
         {}
 
         template<fmt::color Color, typename HandleType>
@@ -74,6 +75,7 @@ namespace ccl::handler
         string_view filename{};
         string_view message{};
         string_view suggestion{};
+        size_t length{};
         size_t line{};
         size_t column{};
     };

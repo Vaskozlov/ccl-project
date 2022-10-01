@@ -146,7 +146,7 @@ namespace ccl::lex::dot_item
         return new_container;
     }
 
-    auto Container::RuleParser::emplaceItem(BasicItemPtr &&item) -> void
+    auto Container::RuleParser::emplaceItem(UniquePtr<BasicItem> &&item) -> void
     {
         if (not item->canBeOptimized()) {
             auto item_repetition = item->getRepetition();
@@ -258,8 +258,9 @@ namespace ccl::lex::dot_item
     {
         auto bracket_index = repr.openCloseFind('(', ')');
 
-        if (not bracket_index.has_value()) {
-            rule_iterator.throwPanicError("unterminated dot item");
+        if (not bracket_index.has_value()) [[unlikely]] {
+            rule_iterator.throwPanicError(
+                AnalysationStage::LEXICAL_ANALYSIS, "unterminated dot item");
             throw UnrecoverableError{ "unrecoverable error in ContainerType" };
         }
 
@@ -268,7 +269,7 @@ namespace ccl::lex::dot_item
 
     auto Container::RuleParser::checkThereIsLhsItem() -> void
     {
-        if (items.empty()) {
+        if (items.empty()) [[unlikely]] {
             throwUnableToApply("no left hand side items to apply operation");
         }
     }
@@ -304,7 +305,7 @@ namespace ccl::lex::dot_item
     {
         auto message = fmt::format("unable to apply: {}", reason);
 
-        rule_iterator.throwCriticalError(message, suggestion);
+        rule_iterator.throwCriticalError(AnalysationStage::LEXICAL_ANALYSIS, message, suggestion);
         throw UnrecoverableError{ "unrecoverable error in ContainerType" };
     }
 
@@ -315,14 +316,14 @@ namespace ccl::lex::dot_item
             "use `!` to declare special symbol, `\"` for string, `[` for unions, `(` for "
             "containers "_sv;
 
-        rule_iterator.throwPanicError(message, suggestion);
+        rule_iterator.throwPanicError(AnalysationStage::LEXICAL_ANALYSIS, message, suggestion);
         throw UnrecoverableError{ "unrecoverable error in ContainerType" };
     }
 
     auto BasicItem::SpecialItems::checkForSpecial(const ForkedGenerator &text_iterator) const
         -> bool
     {
-        return std::ranges::any_of(special_items, [text_iterator](const auto &special_item) {
+        return std::ranges::any_of(special_items, [&text_iterator](const auto &special_item) {
             auto scan_result = special_item.scan(text_iterator);
             return scan_result.has_value() && scan_result != 0;
         });

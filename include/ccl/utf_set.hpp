@@ -26,7 +26,7 @@ namespace ccl
         {
             if (chr < small_storage_size) [[likely]] {
                 small_storage.set(chr, value);
-            } else {
+            } else [[unlikely]] {
                 if (value) {
                     storage.insert(chr);
                 } else {

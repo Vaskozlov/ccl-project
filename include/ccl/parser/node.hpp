@@ -6,28 +6,27 @@
 #include <string>
 
 #define FactorConstructor(Name, Id)                                                                \
-    explicit Name(parser::NodePtr value_) : parser::Factor<Id>(std::move(value_))                  \
+    explicit Name(parser::UniquePtr<Node> value_) : parser::Factor<Id>(std::move(value_))          \
     {}
 
 #define ValueExpressionConstructor(Name, Id)                                                       \
-    explicit Name(parser::NodePtr value_) : parser::ValueExpression<Id>(std::move(value_))         \
+    explicit Name(parser::UniquePtr<Node> value_) : parser::ValueExpression<Id>(std::move(value_)) \
     {}
 
 #define UnaryExpressionConstructor(Name, Id)                                                       \
-    Name(parser::NodePtr value_, parser::NodePtr operation_)                                       \
+    Name(parser::UniquePtr<Node> value_, parser::UniquePtr<Node> operation_)                       \
       : parser::UnaryExpression<Id>(std::move(value_), std::move(operation_))                      \
     {}
 
 #define BinaryExpressionConstructor(Name, Id)                                                      \
-    Name(parser::NodePtr right_, parser::NodePtr operation_, parser::NodePtr left_)                \
-      : parser::BinaryExpression<Id>(std::move(right_), std::move(operation_), std::move(left_))   \
+    Name(                                                                                          \
+        parser::UniquePtr<Node> left_, parser::UniquePtr<Node> operation_,                         \
+        parser::UniquePtr<Node> right_)                                                            \
+      : parser::BinaryExpression<Id>(std::move(left_), std::move(operation_), std::move(right_))   \
     {}
 
 namespace ccl::parser
 {
-    struct Node;
-    using NodePtr = UniquePtr<Node>;
-
     struct Node
     {
         explicit Node(size_t id_) : id(id_)
@@ -63,9 +62,14 @@ namespace ccl::parser
         explicit TokenNode(T &&token_) : Node(token_.getId()), token(std::forward<T>(token_))
         {}
 
-        auto clone() const -> UniquePtr<Node> override
+        [[nodiscard]] auto clone() const -> UniquePtr<Node> override
         {
             return makeUnique<Node, TokenNode>(token);
+        }
+
+        [[nodiscard]] auto getToken() const noexcept -> const lex::Token &
+        {
+            return token;
         }
 
         auto print(const std::string &prefix, bool is_left) const -> void override;
@@ -80,7 +84,7 @@ namespace ccl::parser
         explicit Factor(UniquePtr<Node> value_) : Node(Id), value(std::move(value_))
         {}
 
-        auto clone() const -> UniquePtr<Node> override
+        [[nodiscard]] auto clone() const -> UniquePtr<Node> override
         {
             return makeUnique<Node, Factor<Id>>(value->clone());
         }
@@ -100,7 +104,7 @@ namespace ccl::parser
         explicit ValueExpression(UniquePtr<Node> value_) : Node(Id), value(std::move(value_))
         {}
 
-        auto clone() const -> UniquePtr<Node> override
+        [[nodiscard]] auto clone() const -> UniquePtr<Node> override
         {
             return makeUnique<Node, ValueExpression<Id>>(value->clone());
         }
@@ -121,7 +125,7 @@ namespace ccl::parser
           : Node(Id), operation(std::move(operation_)), value(std::move(value_))
         {}
 
-        auto clone() const -> UniquePtr<Node> override
+        [[nodiscard]] auto clone() const -> UniquePtr<Node> override
         {
             return makeUnique<Node, UnaryExpression<Id>>(operation->clone(), value->clone());
         }
@@ -141,14 +145,14 @@ namespace ccl::parser
     struct BinaryExpression : Node
     {
         explicit BinaryExpression(
-            UniquePtr<Node> rhs_, UniquePtr<Node> operation_, UniquePtr<Node> lhs_)
+            UniquePtr<Node> lhs_, UniquePtr<Node> operation_, UniquePtr<Node> rhs_)
           : Node(Id), operation(std::move(operation_)), lhs(std::move(lhs_)), rhs(std::move(rhs_))
         {}
 
-        auto clone() const -> NodePtr override
+        [[nodiscard]] auto clone() const -> UniquePtr<Node> override
         {
             return makeUnique<Node, BinaryExpression<Id>>(
-                rhs->clone(), operation->clone(), lhs->clone());
+                lhs->clone(), operation->clone(), rhs->clone());
         }
 
         auto print(const std::string &prefix, bool is_left) const -> void override

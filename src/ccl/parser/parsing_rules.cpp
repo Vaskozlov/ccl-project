@@ -3,7 +3,7 @@
 
 namespace ccl::parser
 {
-    static auto printRuleFully(const ParsingRule &rule) -> void
+    [[maybe_unused]] static auto printRuleFully(const ParsingRule &rule) -> void
     {
         fmt::print(
             "{}: {} {}\n\n", rule, rule.getIdsToConstruct(), rule.getIdsThatForbidConstruction());
@@ -28,8 +28,6 @@ namespace ccl::parser
 
             non_terminals.insert(rule.type);
             parsing_rules[rule.type].push_back(std::move(rule));
-
-            fmt::print("{}: {}\n", const_rule, const_rule.ids_to_construct);
         }
     }
 
@@ -58,17 +56,16 @@ namespace ccl::parser
         }
 
         for (auto *rule : all_rules) {
-            auto check_not_on_self = [rule](const ParsingRule *other_rule) {
+            auto check_not_on_self = [&rule](const ParsingRule *other_rule) {
                 return rule->uuid != other_rule->uuid;
             };
 
-            checkThereAreNoCloseNonTerminals(*rule);
-
-            for (auto *other_rule : all_rules | std::views::filter(check_not_on_self)) {
-                printRuleFully(*rule);
+            auto fix_conflict = [this, rule](const ParsingRule *other_rule) {
                 fixConflict(*rule, *other_rule);
-                printRuleFully(*rule);
-            }
+            };
+
+            checkThereAreNoCloseNonTerminals(*rule);
+            std::ranges::for_each(all_rules | std::views::filter(check_not_on_self), fix_conflict);
         }
     }
 
@@ -76,7 +73,7 @@ namespace ccl::parser
     {
         const auto &ids_to_construct = rule.ids_to_construct;
 
-        for (size_t i = 1; i != ids_to_construct.size(); ++i) {
+        for (auto i = 1ZU; i != ids_to_construct.size(); ++i) {
             if (non_terminals.contains(ids_to_construct[i - 1]) &&
                 non_terminals.contains(ids_to_construct[i])) {
                 throw std::logic_error(fmt::format(
@@ -87,14 +84,15 @@ namespace ccl::parser
         }
     }
 
-    auto ParsingRules::fixConflict(ParsingRule &rule, const ParsingRule &other) -> void
+    auto ParsingRules::fixConflict(ParsingRule &rule, const ParsingRule &other_rule) -> void
     {
-        auto mismatch = std::ranges::mismatch(rule.ids_to_construct, other.ids_to_construct);
+        auto mismatch = std::ranges::mismatch(rule.ids_to_construct, other_rule.ids_to_construct);
 
         if (mismatch.in1 == rule.ids_to_construct.end()) {
             if (mismatch.in2 == rule.ids_to_construct.end()) {
                 throw std::logic_error(fmt::format(
-                    "Rules are identical! {} {}\n", rule.ids_to_construct, other.ids_to_construct));
+                    "Rules are identical! {} {}\n", rule.ids_to_construct,
+                    other_rule.ids_to_construct));
             }
 
             rule.ids_that_forbid_construction.insert(*mismatch.in2);
@@ -102,24 +100,30 @@ namespace ccl::parser
         }
 
         if (mismatch.in1 != rule.ids_to_construct.begin() &&
-            mismatch.in2 != other.ids_to_construct.end()) {
+            mismatch.in2 != other_rule.ids_to_construct.end()) {
             auto first = *mismatch.in1;
             auto second = *mismatch.in2;
 
             if (precedence_table.contains(first) && precedence_table.contains(second)) {
-                auto first_precedence = precedence_table.at(first);
-                auto second_precedence = precedence_table.at(second);
-
-                if (first_precedence < second_precedence) {
-                    rule.ids_that_forbid_construction.insert(second);
-                }
-
-                return;
+                return fixUsingPrecedence(rule, first, second);
             }
 
             throw std::logic_error(fmt::format(
                 "Not enough precedence rules for {} {}\n", rule.ids_to_construct,
-                other.ids_to_construct));
+                other_rule.ids_to_construct));
         }
+    }
+
+    auto ParsingRules::fixUsingPrecedence(
+        ParsingRule &rule, RuleId first_mismatch, RuleId second_mismatch) const -> void
+    {
+        auto first_precedence = precedence_table.at(first_mismatch);
+        auto second_precedence = precedence_table.at(second_mismatch);
+
+        if (first_precedence < second_precedence) {
+            rule.ids_that_forbid_construction.insert(second_mismatch);
+        }
+
+        return;
     }
 }// namespace ccl::parser

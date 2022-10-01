@@ -10,9 +10,9 @@ namespace ccl::parser
         auto stack = Stack{};
         auto follow_set = FollowSet{};
 
-        for (const auto &rule : parsing_rules.at(ParsingRuleType::ROOT)) {
-            follow_set.push_back(&rule);
-        }
+        std::ranges::for_each(
+            parsing_rules.at(ParsingRuleType::ROOT),
+            [&follow_set](const ParsingRule &rule) { follow_set.push_back(&rule); });
 
         pushNewToken(stack);
         parse(stack, follow_set);
@@ -50,6 +50,7 @@ namespace ccl::parser
             }
         }
 
+        throwError(stack, follow_set);
         return false;
     }
 
@@ -70,7 +71,7 @@ namespace ccl::parser
             return TerminalMatchResult::CONTINUE;
         }
 
-        auto pred = [ids_to_construct](const ParsingRule &future_rule) {
+        auto pred = [&ids_to_construct](const ParsingRule &future_rule) {
             return future_rule.ids_to_construct.front() == ids_to_construct.front();
         };
 
@@ -101,7 +102,7 @@ namespace ccl::parser
 
         if (rule.canNotBeConstructed(future_token_id)) {
             const auto &ids_to_construct = rule.ids_to_construct;
-            auto pred = [ids_to_construct](const ParsingRule &future_rule) {
+            auto pred = [&ids_to_construct](const ParsingRule &future_rule) {
                 return future_rule.ids_to_construct.front() == ids_to_construct.back();
             };
 
@@ -185,13 +186,15 @@ namespace ccl::parser
     CCL_INLINE auto Parser::isNonTerminal(const MismatchResult &mismatch_result) const -> bool
     {
         return mismatch_result.rule_version.has_value() &&
-               non_terminals.contains(*mismatch_result.rule_version);
+               non_terminals.contains(*mismatch_result.rule_version) &&
+               not(mismatch_result.stack_version.has_value() &&
+                   terminals.contains(*mismatch_result.stack_version));
     }
 
     CCL_INLINE auto Parser::mismatch(const Stack &stack, const ParsingRule &rule) -> MismatchResult
     {
         auto mismatch_result =
-            std::ranges::mismatch(stack, rule.ids_to_construct, [](const NodePtr &node, RuleId id) {
+            std::ranges::mismatch(stack, rule.ids_to_construct, [](const UniquePtr<Node> &node, RuleId id) {
                 return id == node->getId();
             });
 
@@ -216,5 +219,38 @@ namespace ccl::parser
     CCL_INLINE auto Parser::pushNewToken(Stack &stack) -> void
     {
         stack.push_back(makeUnique<Node, TokenNode>(tokenizer.yield()));
+    }
+
+    auto Parser::throwError(Stack &stack, const FollowSet &follow_set) -> void
+    {
+        if (stack.empty()) {
+            return;
+        }
+
+        auto last_elem = std::move(stack.back());
+        stack.pop_back();
+
+        auto *as_token_node = dynamic_cast<TokenNode *>(last_elem.get());
+
+        if (as_token_node == nullptr) {
+            throw UnrecoverableError{ "last stack element bust be a token!" };
+        }
+
+        const auto &token = as_token_node->getToken();
+        auto expected_types = std::vector<std::string>();
+
+        std::ranges::transform(
+            follow_set, std::back_inserter(expected_types),
+            [](const auto *rule) { return std::string(rule->getName()); });
+
+        auto message = fmt::format(
+            "Unexpected token! Any rule from [{}] can not be constructed using {}",
+            fmt::join(expected_types, ", "), token.getRepr());
+
+        auto exception = text::TextIteratorException(
+            ExceptionCriticality::CRITICAL, AnalysationStage::PARSING, token.getLocation(),
+            token.getReprSize(), token.getWorkingLine(), message);
+
+        exception_handler.handle(exception);
     }
 }// namespace ccl::parser

@@ -14,7 +14,7 @@ namespace ccl::parser
         explicit ParsingStack(Stack &stack_) : stack(stack_)
         {}
 
-        auto pop() -> NodePtr
+        auto pop() -> UniquePtr<Node>
         {
             auto node = std::move(stack.back());
             stack.pop_back();
@@ -33,11 +33,11 @@ namespace ccl::parser
         ParsingRule() = default;
 
         ParsingRule(
-            RuleId type_, std::string_view name_, NodePtr (*rule_constructor_)(ParsingStack),
+            RuleId type_, std::string_view name_, UniquePtr<Node> (*rule_constructor_)(ParsingStack),
             InitializerList<RuleId> ids_to_constructs_,
             InitializerList<RuleId> ids_that_forbid_construction_ = {});
 
-        [[nodiscard]] auto getName() const noexcept -> std::string_view
+        [[nodiscard]] auto getName() const noexcept -> string_view
         {
             return name;
         }
@@ -64,8 +64,8 @@ namespace ccl::parser
 
         SmallVector<RuleId, 4> ids_to_construct{};
         FlatSet<RuleId> ids_that_forbid_construction{};
-        std::string_view name{ "set name for ccl::parser::ParsingRule" };
-        NodePtr (*rule_constructor)(ParsingStack) = nullptr;
+        string_view name{ "set name for ccl::parser::ParsingRule" };
+        UniquePtr<Node> (*rule_constructor)(ParsingStack) = nullptr;
         RuleId type{};
         size_t uuid{};
     };
@@ -77,7 +77,8 @@ struct fmt::formatter<ccl::parser::ParsingRule> : fmt::formatter<std::string_vie
 {
     auto format(const ccl::parser::ParsingRule &rule, format_context &ctx) const
     {
-        return formatter<std::string_view>::format(rule.getName(), ctx);
+        return formatter<std::string_view>::format(
+            static_cast<std::string_view>(rule.getName()), ctx);
     }
 };
 

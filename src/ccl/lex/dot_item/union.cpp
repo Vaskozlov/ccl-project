@@ -4,8 +4,7 @@ namespace ccl::lex::dot_item
 {
     using namespace ccl::string_view_literals;
 
-    Union::Union(TextIterator &rule_iterator_, size_t id_)
-      : BasicItem(id_)
+    Union::Union(TextIterator &rule_iterator_, size_t id_) : BasicItem(id_)
     {
         auto is_range = false;
         auto previous_chr = static_cast<char32_t>(0);
@@ -100,13 +99,14 @@ namespace ccl::lex::dot_item
 
     CCL_INLINE auto Union::throwUnterminatedUnion(TextIterator &rule_iterator) -> void
     {
-        rule_iterator.throwPanicError("unterminated union item"_sv);
+        rule_iterator.throwPanicError(
+            AnalysationStage::LEXICAL_ANALYSIS, "unterminated union item"_sv);
         throw UnrecoverableError{ "unrecoverable error in Union" };
     }
 
     CCL_INLINE auto Union::throwUnterminatedRangeException(TextIterator &rule_iterator) -> void
     {
-        rule_iterator.throwPanicError("unterminated range"_sv);
+        rule_iterator.throwPanicError(AnalysationStage::LEXICAL_ANALYSIS, "unterminated range"_sv);
         throw UnrecoverableError{ "unrecoverable error in Union" };
     }
 
@@ -118,7 +118,7 @@ namespace ccl::lex::dot_item
         auto message =
             fmt::format("expected `[` at the beginning of union item declaration, got {}", buffer);
 
-        rule_iterator.throwPanicError(message);
+        rule_iterator.throwPanicError(AnalysationStage::LEXICAL_ANALYSIS, message);
         throw UnrecoverableError{ "unrecoverable error in Union" };
     }
 }// namespace ccl::lex::dot_item

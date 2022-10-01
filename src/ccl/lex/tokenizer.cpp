@@ -8,52 +8,55 @@ namespace ccl::lex
 
     CCL_INLINE auto LexicalAnalyzer::Tokenizer::shouldIgnoreToken(const Token &token) const -> bool
     {
-        const auto &ignore = lexical_analyzer.ignored_ids;
-        return ignore.contains(token.getId());
+        const auto &ignoring_list = lexical_analyzer.ignored_ids;
+        return ignoring_list.contains(token.getId());
     }
 
+    // NOLINTNEXTLINE (recursive function)
     auto LexicalAnalyzer::Tokenizer::nextToken(Token &token) -> void
     {
         auto &chars_to_skip = lexical_analyzer.skipped_characters;
+        auto container_scan = [this, &token](const auto &container) {
+            return container.beginScan(text_iterator, token);
+        };
 
-        while (true) {
-            while (chars_to_skip.contains(text_iterator.getNextCarriageValue())) {
-                text_iterator.skip(1);
-            }
+        while (chars_to_skip.contains(text_iterator.getNextCarriageValue())) {
+            text_iterator.skip(1);
+        }
 
-            if (text_iterator.isEOI()) [[unlikely]] {
-                constructEOIToken(token);
-                break;
-            }
+        if (text_iterator.isEOI()) [[unlikely]] {
+            constructEOIToken(token);
+            return;
+        }
 
-            auto special_item = lexical_analyzer.special_items.specialScan(text_iterator, token);
+        if (lexical_analyzer.special_items.specialScan(text_iterator, token)) {
+            return returnIfNotInIgnored(token);
+        }
 
-            if (special_item) {
-                goto EndYielding;// NOLINT
-            }
+        if (std::ranges::any_of(lexical_analyzer.items, container_scan)) {
+            return returnIfNotInIgnored(token);
+        }
 
-            for (auto &&container : lexical_analyzer.items) {
-                auto scan_result = container.beginScan(text_iterator, token);
+        auto next_carriage_value = text_iterator.getNextCarriageValue();
 
-                if (scan_result) {
-                    goto EndYielding;// NOLINT
-                }
-            }
+        if (isLayout(next_carriage_value)) {
+            chars_to_skip.push_back(next_carriage_value);
+            text_iterator.skip(1);
+            return nextToken(token);
+        }
 
-            if (isLayout(text_iterator.getNextCarriageValue())) {
-                chars_to_skip.push_back(text_iterator.getNextCarriageValue());
-                text_iterator.skip(1);
-                continue;
-            }
+        constructBadToken(token);
 
-            constructBadToken(token);
+        if (shouldIgnoreToken(token)) [[unlikely]] {
+            return nextToken(token);
+        }
+    }
 
-        EndYielding:
-            if (shouldIgnoreToken(token)) {
-                continue;
-            }
-
-            break;
+    // NOLINTNEXTLINE (recursive function)
+    CCL_INLINE auto LexicalAnalyzer::Tokenizer::returnIfNotInIgnored(Token &token) -> void
+    {
+        if (shouldIgnoreToken(token)) [[unlikely]] {
+            return nextToken(token);
         }
     }
 

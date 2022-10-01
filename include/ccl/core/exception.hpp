@@ -33,15 +33,15 @@ namespace ccl
     class CclException : public std::exception
     {
     public:
-        [[nodiscard]] auto what() const noexcept -> const char * override
-        {
-            return message.data();
-        }
-
         CclException() = default;
 
         explicit CclException(std::string_view message_) : message(message_)
         {}
+
+        [[nodiscard]] auto what() const noexcept -> const char * override
+        {
+            return message.data();
+        }
 
     private:
         std::string_view message{};

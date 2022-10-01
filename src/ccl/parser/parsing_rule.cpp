@@ -5,7 +5,7 @@ namespace ccl::parser
     std::atomic<size_t> ParsingRule::uuid_counter{ 0 };// NOLINT (global variable)
 
     ParsingRule::ParsingRule(
-        RuleId type_, std::string_view name_, NodePtr (*rule_constructor_)(ParsingStack),
+        RuleId type_, std::string_view name_, UniquePtr<Node> (*rule_constructor_)(ParsingStack),
         InitializerList<RuleId> ids_to_constructs_,
         InitializerList<RuleId> ids_that_forbid_construction_)
       : ids_to_construct(ids_to_constructs_),

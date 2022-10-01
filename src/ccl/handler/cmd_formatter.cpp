@@ -7,7 +7,7 @@ namespace ccl::handler
     static auto replaceTabWithSpaces(const string_view &string) -> std::pair<size_t, std::string>
     {
         auto result = std::string{};
-        size_t replaced_tabs = 0;
+        auto replaced_tabs = 0ZU;
 
         for (auto &&chr : string) {
             if (chr == '\t') {
@@ -51,13 +51,13 @@ namespace ccl::handler
     auto Cmd::CmdFormatter::formatArrow(size_t tabs_number) -> size_t
     {
         constexpr auto total_line_number_width = 6U;
-        auto arrow_position = column + tabs_number * (4 - 1) + total_line_number_width - 1;
+        auto arrow_position = column + length + tabs_number * (4 - 1) + total_line_number_width - 1;
 
         format_to(std::back_inserter(formatting_buffer), "{:>6}", '|');
 
         format_to(
-            std::back_inserter(formatting_buffer), fg(color::light_green), "{:>{}}\n", "^",
-            arrow_position);
+            std::back_inserter(formatting_buffer), fg(color::light_green), "{:>{}}\n",
+            std::string(length, '^'), arrow_position);
 
         return arrow_position;
     }
@@ -68,7 +68,7 @@ namespace ccl::handler
             format_to(std::back_inserter(formatting_buffer), "{:>6}", '|');
             format_to(
                 std::back_inserter(formatting_buffer), "{1:>{0}} {2}\n",
-                std::max<size_t>(1, arrow_position), "Suggest to", suggestion);
+                std::max(1ZU, arrow_position), "Suggest to", suggestion);
         }
     }
 }// namespace ccl::handler

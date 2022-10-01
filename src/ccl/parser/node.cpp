@@ -12,7 +12,7 @@ namespace ccl::parser
     {
         auto result = prefix + (is_left ? "\u2502   " : "    ");
 
-        for (size_t i = 0; i != extra_expansion; ++i) {
+        for (auto i = 0ZU; i != extra_expansion; ++i) {
             result.append("   ");
         }
 

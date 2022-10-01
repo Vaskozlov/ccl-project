@@ -8,8 +8,8 @@
 
 namespace ccl
 {
-    template<CharacterArray T>
-    constexpr auto strlen(const T &str) noexcept -> size_t
+    template<typename T>
+    constexpr auto strlen(T &&str) noexcept -> size_t
     {
         if constexpr (std::is_pointer_v<T>) {
             if (str == nullptr) {
@@ -239,17 +239,18 @@ namespace ccl
             return { string, length };
         }
 
-        CCL_DECL auto operator==(const CharT *other) const noexcept -> bool
+        CCL_DECL CCL_INLINE auto operator==(const CharT *other) const noexcept -> bool
         {
             return this->operator==(BasicStringView{ other });
         }
 
-        CCL_DECL auto operator==(const StringLike<CharT> auto &other) const noexcept -> bool
+        CCL_DECL CCL_INLINE auto operator==(const StringLike<CharT> auto &other) const noexcept
+            -> bool
         {
             return std::ranges::equal(*this, other);
         }
 
-        CCL_DECL auto operator<=>(const CharT *other) const noexcept -> bool
+        CCL_DECL CCL_INLINE auto operator<=>(const CharT *other) const noexcept -> bool
         {
             return this->operator<=>(BasicStringView{ other });
         }
@@ -257,15 +258,8 @@ namespace ccl
         CCL_DECL auto operator<=>(const StringLike<CharT> auto &other) const noexcept
             -> std::weak_ordering
         {
-            auto max_length = std::min(size(), std::size(other));
-
-            for (size_t i = 0; i != max_length; ++i) {
-                if (operator[](i) != other[i]) {
-                    return operator[](i) <=> other[i];
-                }
-            }
-
-            return size() <=> std::size(other);
+            return std::lexicographical_compare_three_way(
+                begin(), end(), other.begin(), other.end(), std::weak_order);
         }
 
         BasicStringView() noexcept = default;

@@ -4,7 +4,7 @@
 #include <ccl/ccl.hpp>
 #include <string>
 
-namespace ccl::text::module
+namespace ccl::text
 {
     class TsTracker
     {
@@ -54,6 +54,6 @@ namespace ccl::text::module
         std::string tabs_and_spaces{};
         bool need_to_clear{};
     };
-}// namespace ccl::text::module
+}// namespace ccl::text
 
 #endif /* CCL_PROJECT_TS_TRACKER_HPP */

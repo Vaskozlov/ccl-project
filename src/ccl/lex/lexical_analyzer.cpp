@@ -9,7 +9,7 @@ namespace ccl::lex
         std::basic_string<size_t> ignored_ids_)
       : ignored_ids(std::move(ignored_ids_)), exception_handler(exception_handler_)
     {
-        std::ranges::for_each(rules_, [this, filename](const Rule &rule) {
+        std::ranges::for_each(rules_, [this, &filename](const Rule &rule) {
             createContainer(rule.repr, rule.id, filename);
         });
     }
@@ -24,5 +24,16 @@ namespace ccl::lex
         } else if (not container.empty()) {
             items.emplace_back(std::move(container));
         }
+    }
+
+    auto LexicalAnalyzer::getTokenizer(string_view text, string_view filename) -> Tokenizer
+    {
+        return { *this, text, filename };
+    }
+
+    auto LexicalAnalyzer::getTokenizer(
+        string_view text, string_view filename, ExceptionHandler &handler) -> Tokenizer
+    {
+        return { *this, text, filename, handler };
     }
 }// namespace ccl::lex

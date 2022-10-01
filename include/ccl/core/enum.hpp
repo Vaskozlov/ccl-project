@@ -22,7 +22,7 @@ case name:                                                                      
 #define CCL_DECLARATION(name) static constexpr size_t name = __COUNTER__ - counter_begin - 1;
 
 #define CCL_ENUM(Name, Type, ...)                                                                  \
-    struct Name                                                                                    \
+    struct CCL_TRIVIAL_ABI Name                                                                    \
     {                                                                                              \
     private:                                                                                       \
         static constexpr auto counter_begin = __COUNTER__;                                         \

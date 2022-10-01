@@ -6,15 +6,17 @@ namespace ccl::lex::dot_item
 {
     auto BasicItem::alwaysRecognizedSuggestion(TextIterator &text_iterator, bool condition) -> void
     {
-        if (condition) {
-            text_iterator.throwSuggestion("item will be always recognized", "delete it");
+        if (condition) [[unlikely]] {
+            text_iterator.throwSuggestion(
+                AnalysationStage::LEXICAL_ANALYSIS, "item will be always recognized", "delete it");
         }
     }
 
     auto BasicItem::neverRecognizedSuggestion(TextIterator &text_iterator, bool condition) -> void
     {
-        if (condition) {
-            text_iterator.throwSuggestion("item will never be recognized");
+        if (condition) [[unlikely]] {
+            text_iterator.throwSuggestion(
+                AnalysationStage::LEXICAL_ANALYSIS, "item will never be recognized");
         }
     }
 

@@ -63,7 +63,7 @@ namespace ccl::text
         auto it =
             std::ranges::find_if(extra_symbols, [chr](auto elem) { return elem.first == chr; });
 
-        if (it == extra_symbols.end()) {
+        if (it == extra_symbols.end()) [[unlikely]] {
             throwMatchException();
             return U'?';
         }
@@ -73,6 +73,7 @@ namespace ccl::text
 
     auto TextIterator::EscapingSymbolizer::throwMatchException() -> void
     {
-        text_iterator.throwUncriticalError("unable to matchNextChar any escaping symbol");
+        text_iterator.throwUncriticalError(
+            AnalysationStage::LEXICAL_ANALYSIS, "unable to matchNextChar any escaping symbol");
     }
 }// namespace ccl::text

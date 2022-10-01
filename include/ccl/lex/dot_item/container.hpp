@@ -9,7 +9,7 @@
 
 namespace ccl::lex::dot_item
 {
-    CCL_ENUM(ScanningType, u16, MAIN_SCAN, BASIC, SPECIAL, CHECK);
+    CCL_ENUM(ScanningType, u16, MAIN_SCAN, BASIC, SPECIAL, CHECK);// NOLINT
 
     class Container final : public BasicItem
     {
@@ -20,7 +20,7 @@ namespace ccl::lex::dot_item
         using typename BasicItem::TextIterator;
 
         using ForkedGen = typename TextIterator::ForkedTextIterator;
-        using storage_t = boost::container::small_vector<BasicItemPtr, 4>;
+        using storage_t = boost::container::small_vector<UniquePtr<BasicItem>, 4>;
 
         struct RuleParser;
 
@@ -110,15 +110,15 @@ namespace ccl::lex::dot_item
 
         [[nodiscard]] auto hasMovedToTheNextChar() -> bool;
 
-        [[nodiscard]] auto constructLogicalUnit() -> BasicItemPtr;
+        [[nodiscard]] auto constructLogicalUnit() -> UniquePtr<BasicItem>;
 
-        [[nodiscard]] auto constructNewSequence() -> BasicItemPtr;
+        [[nodiscard]] auto constructNewSequence() -> UniquePtr<BasicItem>;
 
-        [[nodiscard]] auto constructNewUnion() -> BasicItemPtr;
+        [[nodiscard]] auto constructNewUnion() -> UniquePtr<BasicItem>;
 
-        [[nodiscard]] auto constructNewContainer() -> BasicItemPtr;
+        [[nodiscard]] auto constructNewContainer() -> UniquePtr<BasicItem>;
 
-        auto emplaceItem(BasicItemPtr &&item) -> void;
+        auto emplaceItem(UniquePtr<BasicItem> &&item) -> void;
 
         auto addPrefixPostfix() -> void;
 
@@ -144,7 +144,7 @@ namespace ccl::lex::dot_item
         TextIterator &rule_iterator;
         storage_t &items{ container.items };
         SpecialItems &special_items{ container.special_items };
-        std::optional<BasicItemPtr> reserved_lhs{ std::nullopt };
+        std::optional<UniquePtr<BasicItem>> reserved_lhs{ std::nullopt };
         LogicalOperation logical_operation{};
         bool rhs_item_constructed{ false };
     };

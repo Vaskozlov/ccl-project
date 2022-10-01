@@ -18,11 +18,12 @@ namespace ccl::lex
 
         explicit TokenAttributes(const text::TextIterator &text_iterator_)
           : tabs_and_spaces(text_iterator_.getTabsAndSpaces()),
-            location(text_iterator_.getLocation())
+            location(text_iterator_.getLocation()), working_line(text_iterator_.getWorkingLine())
         {}
 
         std::string tabs_and_spaces{};
         text::Location location{};
+        string_view working_line{};
     };
 
     class Token
@@ -58,6 +59,11 @@ namespace ccl::lex
         [[nodiscard]] explicit operator bool() const noexcept
         {
             return getId() != 0;
+        }
+
+        [[nodiscard]] auto getReprSize() const noexcept -> size_t
+        {
+            return repr.size();
         }
 
         [[nodiscard]] auto getLocation() const noexcept -> const text::Location &
@@ -98,6 +104,11 @@ namespace ccl::lex
         [[nodiscard]] auto getPostfixes() noexcept -> const Vector<string_view> &
         {
             return postfixes;
+        }
+
+        [[nodiscard]] auto getWorkingLine() const noexcept -> const string_view &
+        {
+            return attributes.working_line;
         }
 
         [[nodiscard]] auto getTabsAndSpaces() const noexcept -> const std::string &

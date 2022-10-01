@@ -7,8 +7,8 @@ using namespace ccl;
 
 // NOLINTNEXTLINE
 CCL_ENUM(// NOLINTNEXTLINE
-    TestToken, size_t, EOI, BAD_TOKEN, ROOT, ID, NUM, MUL, ADD, NOT, ANGLE_OPENING, ANGLE_CLOSING,
-    FACTOR, EXPR);
+    TestToken, size_t, EOI, BAD_TOKEN, ROOT, FUNC, ID, NUM, MUL, ADD, NOT, ANGLE_OPENING,
+    ANGLE_CLOSING, FACTOR, EXPR);
 
 // NOLINTNEXTLINE
 lex::LexicalAnalyzer LexicalAnalyzer(
@@ -104,10 +104,11 @@ BOOST_AUTO_TEST_CASE(CclParser)
           CCL_PARSING_RULE(
               TestToken::EXPR, constructBinaryExpression, TestToken::EXPR, TestToken::MUL,
               TestToken::EXPR),
-          CCL_PARSING_RULE(TestToken::ROOT, constructRoot, TestToken::EXPR, TestToken::EOI) });
+          CCL_PARSING_RULE(TestToken::ROOT, constructRoot, TestToken::EXPR, TestToken::EOI),
+          CCL_PARSING_RULE(TestToken::ROOT, constructRoot, TestToken::EOI) });
 
 
-    auto tokenizer = LexicalAnalyzer.getTokenizer("a[1] + 2 * 4");
+    auto tokenizer = LexicalAnalyzer.getTokenizer("");
 
     auto parser = parser::Parser(rules, tokenizer);
     parser.parse();

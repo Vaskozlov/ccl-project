@@ -4,7 +4,7 @@
 #include <ccl/string_view.hpp>
 #include <string>
 
-namespace ccl::text::module
+namespace ccl::text
 {
     class LineTracker
     {
@@ -16,7 +16,7 @@ namespace ccl::text::module
 
         constexpr auto next(char32_t chr) noexcept -> void
         {
-            if (new_line_passed) {
+            if (new_line_passed) [[unlikely]] {
                 updateLine();
                 new_line_passed = false;
             }
@@ -41,6 +41,6 @@ namespace ccl::text::module
         string_view line{};
         bool new_line_passed{ false };
     };
-}// namespace ccl::text::module
+}// namespace ccl::text
 
 #endif /* CCL_PROJECT_LINE_TRACKER_HPP */

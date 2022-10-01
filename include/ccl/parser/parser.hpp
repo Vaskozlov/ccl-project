@@ -19,7 +19,7 @@ namespace ccl::parser
         CCL_ENUM(// NOLINTNEXTLINE
             TerminalMatchResult, size_t, FALSE, TRUE, CONTINUE);
 
-        struct MismatchResult
+        struct CCL_TRIVIAL_ABI MismatchResult
         {
             std::optional<RuleId> stack_version;
             std::optional<RuleId> rule_version;
@@ -71,7 +71,10 @@ namespace ccl::parser
 
         auto pushNewToken(Stack &stack) -> void;
 
+        auto throwError(Stack &stack, const FollowSet &follow_set) -> void;
+
         Tokenizer &tokenizer;
+        ExceptionHandler &exception_handler{ tokenizer.getHandler() };
         const Set<RuleId> &terminals{};
         const Set<RuleId> &non_terminals{};
         const Map<RuleId, SmallVector<ParsingRule, 4>> &parsing_rules;

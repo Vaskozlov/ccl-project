@@ -34,11 +34,11 @@ namespace ccl::text
 
     auto TextIterator::throwToHandle(
         const TextIterator &iterator_location, ExceptionCriticality criticality,
-        const string_view &message, const string_view &suggestion) -> void
+        AnalysationStage stage, const string_view &message, const string_view &suggestion) -> void
     {
         auto exception = TextIteratorException(
-            criticality, iterator_location.getLocation(), iterator_location.getWorkingLine(),
-            message, suggestion);
+            criticality, stage, iterator_location.getLocation(), 1,
+            iterator_location.getWorkingLine(), message, suggestion);
 
         if (exception_handler == nullptr) {
             throw std::move(exception);

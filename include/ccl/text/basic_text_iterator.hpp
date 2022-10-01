@@ -21,8 +21,6 @@ namespace ccl::text
 
         struct ForkedTextIterator final : public CrtpBasicTextIterator<ForkedTextIterator>
         {
-            ForkedTextIterator() noexcept = default;
-
             constexpr explicit ForkedTextIterator(string_view text_) noexcept
               : CrtpBasicTextIterator<ForkedTextIterator>(text_)
             {}
@@ -30,9 +28,6 @@ namespace ccl::text
             template<typename T>
             constexpr explicit ForkedTextIterator(CrtpForkType /* unused */, T &other) noexcept
               : CrtpBasicTextIterator<ForkedTextIterator>(CrtpFork, other)
-            {}
-
-            virtual constexpr ~ForkedTextIterator()// NOLINT (for GCC)
             {}
 
             constexpr static auto onMove(char /* chr */) noexcept -> void
@@ -52,10 +47,8 @@ namespace ccl::text
         static constexpr auto noexcept_carriage_move = std::is_same_v<CRTP, ForkedTextIterator>;
 
         CrtpBasicTextIterator() noexcept = default;
-        CrtpBasicTextIterator(CrtpBasicTextIterator &&) noexcept = default;
-        CrtpBasicTextIterator(const CrtpBasicTextIterator &) noexcept = default;
 
-        constexpr explicit CrtpBasicTextIterator(string_view text_) noexcept
+        CCL_INLINE constexpr explicit CrtpBasicTextIterator(string_view text_) noexcept
           : carriage{ text_.begin() }, end{ text_.end() }
         {}
 
@@ -65,12 +58,6 @@ namespace ccl::text
             remaining_to_finish_utf(from.getRemainingToFinishUtf()),
             initialized(from.isInitialized())
         {}
-
-        constexpr virtual ~CrtpBasicTextIterator(){};// NOLINT gcc says, that destructor is used
-                                                     // before its definition
-
-        auto operator=(CrtpBasicTextIterator &&) noexcept -> CrtpBasicTextIterator & = default;
-        auto operator=(const CrtpBasicTextIterator &) noexcept -> CrtpBasicTextIterator & = default;
 
         CCL_DECL auto fork() const noexcept -> ForkedTextIterator
         {
@@ -132,7 +119,6 @@ namespace ccl::text
             return getRemainingAsCarriage() == end;
         }
 
-
         template<typename T = string_view>
         CCL_DECL auto getFutureRemaining() const noexcept -> T
         {
@@ -162,14 +148,14 @@ namespace ccl::text
         constexpr auto skip(size_t n) noexcept(noexcept_carriage_move) -> void
         {
             CCL_UNROLL_N(4)
-            for (size_t i = 0; i != n; ++i) {
+            for (auto i = 0ZU; i != n; ++i) {
                 moveCarriage();
             }
         }
 
         constexpr auto skipCharacters(size_t n) noexcept(noexcept_carriage_move) -> void
         {
-            for (size_t i = 0; i != n; ++i) {
+            for (auto i = 0ZU; i != n; ++i) {
                 next();
             }
         }
@@ -202,6 +188,7 @@ namespace ccl::text
             return fork.getCurrentChar();
         }
 
+    private:
         constexpr auto onCarriageMove(char chr) -> void
         {
             static_cast<CRTP &>(*this).onMove(chr);
@@ -217,7 +204,6 @@ namespace ccl::text
             static_cast<CRTP &>(*this).utfError(chr);
         }
 
-    private:
         constexpr auto moveCarriage() noexcept(noexcept_carriage_move) -> char
         {
             if (not initialized) {
@@ -296,18 +282,9 @@ namespace ccl::text
 
         BasicTextIterator() noexcept = default;
 
-        BasicTextIterator(BasicTextIterator &&) noexcept = default;
-        BasicTextIterator(const BasicTextIterator &) noexcept = default;
-
         constexpr explicit BasicTextIterator(string_view text_) noexcept
           : CrtpBasicTextIterator<BasicTextIterator>(text_)
         {}
-
-        virtual constexpr ~BasicTextIterator()// NOLINT (for GCC)
-        {}
-
-        auto operator=(BasicTextIterator &&) noexcept -> BasicTextIterator & = default;
-        auto operator=(const BasicTextIterator &) noexcept -> BasicTextIterator & = default;
 
         constexpr static auto onMove(char /* chr */) noexcept -> void
         {}

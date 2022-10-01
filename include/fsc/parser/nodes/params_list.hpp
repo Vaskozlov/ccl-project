@@ -14,7 +14,7 @@ namespace fsc::ast
             fmt::print(
                 "{}{}ParameterList\n", prefix, isLeft ? "\u251c\u2500\u2500" : "\u2514\u2500\u2500");
 
-            for (size_t i = 0; i < params.size(); i++) {
+            for (auto i = 0ZU; i < params.size(); i++) {
                 params[i]->print(prefix + (isLeft ? "\u2502   " : "    "), i != params.size() - 1);
             }
         }

@@ -19,7 +19,10 @@ namespace ccl::parser
         auto detectTerminals() -> void;
 
         auto fixConflicts() -> void;
-        auto fixConflict(ParsingRule &rule, const ParsingRule &other) -> void;
+        auto fixConflict(ParsingRule &rule, const ParsingRule &other_rule) -> void;
+
+        auto fixUsingPrecedence(ParsingRule &rule, RuleId first_mismatch, RuleId second_mismatch) const
+            -> void;
 
         auto checkThereAreNoCloseNonTerminals(const ParsingRule &rule) -> void;
 
@@ -27,7 +30,7 @@ namespace ccl::parser
         Set<RuleId> terminals{};
         Set<RuleId> non_terminals{};
         Map<RuleId, SmallVector<ParsingRule, 4>> parsing_rules{};
-        bool errors_in_rules{false};
+        bool errors_in_rules{ false };
     };
 }// namespace ccl::parser
 
