@@ -6,23 +6,23 @@
 #include <string>
 
 #define FactorConstructor(Name, Id)                                                                \
-    explicit Name(parser::UniquePtr<Node> value_) : parser::Factor<Id>(std::move(value_))          \
+    explicit Name(ccl::UniquePtr<Node> value_) : ccl::parser::Factor<Id>(std::move(value_))        \
     {}
 
 #define ValueExpressionConstructor(Name, Id)                                                       \
-    explicit Name(parser::UniquePtr<Node> value_) : parser::ValueExpression<Id>(std::move(value_)) \
+    explicit Name(ccl::UniquePtr<Node> value_)                                                     \
+      : ccl::parser::ValueExpression<Id>(std::move(value_))                                        \
     {}
 
 #define UnaryExpressionConstructor(Name, Id)                                                       \
-    Name(parser::UniquePtr<Node> value_, parser::UniquePtr<Node> operation_)                       \
-      : parser::UnaryExpression<Id>(std::move(value_), std::move(operation_))                      \
+    Name(ccl::UniquePtr<Node> value_, ccl::UniquePtr<Node> operation_)                             \
+      : ccl::parser::UnaryExpression<Id>(std::move(value_), std::move(operation_))                 \
     {}
 
 #define BinaryExpressionConstructor(Name, Id)                                                      \
-    Name(                                                                                          \
-        parser::UniquePtr<Node> left_, parser::UniquePtr<Node> operation_,                         \
-        parser::UniquePtr<Node> right_)                                                            \
-      : parser::BinaryExpression<Id>(std::move(left_), std::move(operation_), std::move(right_))   \
+    Name(ccl::UniquePtr<Node> left_, ccl::UniquePtr<Node> operation_, ccl::UniquePtr<Node> right_) \
+      : ccl::parser::BinaryExpression<Id>(                                                         \
+            std::move(left_), std::move(operation_), std::move(right_))                            \
     {}
 
 namespace ccl::parser

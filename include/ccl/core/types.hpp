@@ -28,9 +28,20 @@ namespace ccl
 
     using ssize_t = intmax_t;
 
+
+    template<typename T>
+    using Vector = std::vector<T>;
+
     template<size_t N>
     using SmallBitset = std::bitset<N>;
 
+    template<typename T>
+    using UnorderedSet = std::unordered_set<T>;
+
+    template<typename Key, typename Value>
+    using UnorderedMap = std::unordered_map<Key, Value>;
+
+#ifndef CCL_DEBUG
     template<typename T>
     using Set = boost::container::set<T>;
 
@@ -44,9 +55,6 @@ namespace ccl
     using UnorderedMap = std::unordered_map<Key, Value>;
 
     template<typename T>
-    using Vector = std::vector<T>;
-
-    template<typename T>
     using FlatSet = boost::container::flat_set<T>;
 
     template<typename Key, typename Value>
@@ -54,6 +62,22 @@ namespace ccl
 
     template<typename T, size_t N>
     using SmallVector = boost::container::small_vector<T, N>;
+#else
+    template<typename T>
+    using Set = std::set<T>;
+
+    template<typename Key, typename Value>
+    using Map = std::map<Key, Value>;
+
+    template<typename T>
+    using FlatSet = std::set<T>;
+
+    template<typename Key, typename Value>
+    using Flatmap = std::map<Key, Value>;
+
+    template<typename T, size_t N>
+    using SmallVector = std::vector<T>;
+#endif
 
     template<typename T>
     using InitializerList = const std::initializer_list<T> &;
@@ -68,7 +92,7 @@ namespace ccl
     }
 
     template<typename Target, typename Constructed, typename... Ts>
-    requires std::derived_from<Constructed, Target>
+        requires std::derived_from<Constructed, Target>
     constexpr auto makeUnique(Ts &&...args) -> UniquePtr<Target>
     {
         return UniquePtr<Target>{ static_cast<Target *>(

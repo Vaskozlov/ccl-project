@@ -47,7 +47,8 @@ namespace ccl::parser
             const ParsingRule &rule) -> TerminalMatchResult;
 
         auto parseWithNewFollowSet(
-            RuleId expected_type, Stack &stack, bool pass_all = false,
+            RuleId expected_type, Stack &stack,
+            size_t passing_elements = std::numeric_limits<size_t>::max(),
             const std::function<bool(const ParsingRule &)> &pred = [](const ParsingRule &) {
                 return true;
             }) -> bool;

@@ -108,7 +108,7 @@ BOOST_AUTO_TEST_CASE(CclParser)
           CCL_PARSING_RULE(TestToken::ROOT, constructRoot, TestToken::EOI) });
 
 
-    auto tokenizer = LexicalAnalyzer.getTokenizer("");
+    auto tokenizer = LexicalAnalyzer.getTokenizer("a[2 + 3 * 4] + 5 * 6");
 
     auto parser = parser::Parser(rules, tokenizer);
     parser.parse();

@@ -27,11 +27,16 @@ namespace ccl::parser
             node->print();
         }
 
+        fmt::print("Follow set: [");
+        for (const ParsingRule *node : follow_set) {
+            fmt::print("{}, ", node->type);
+        }
+        fmt::print("]\n");
+
         for (const auto &rule : follow_set) {
             auto mismatch_result = mismatch(stack, *rule);
-            const bool fully_matched = fullyMatched(mismatch_result);
 
-            if (fully_matched) {
+            if (fullyMatched(mismatch_result)) {
                 return fullMatchCase(stack, follow_set, *rule);
             }
 
@@ -65,18 +70,26 @@ namespace ccl::parser
         }
 
         const auto &ids_to_construct = rule.ids_to_construct;
-        auto target_type = ids_to_construct.front();// check THIS!
+
+        auto mis = std::ranges::mismatch(
+            stack, ids_to_construct,
+            [](const UniquePtr<Node> &node, RuleId id) { return id == node->getId(); });
+
+        auto target_type = 0ZU;
+
+        if (mis.in2 != ids_to_construct.end()) {
+            target_type = *(mis.in2 - 1);
+        }
 
         if (follow_set.front()->type == target_type) {
             return TerminalMatchResult::CONTINUE;
         }
 
-        auto pred = [&ids_to_construct](const ParsingRule &future_rule) {
-            return future_rule.ids_to_construct.front() == ids_to_construct.front();
+        auto pred = [target_type](const ParsingRule &future_rule) {
+            return future_rule.ids_to_construct.front() == target_type;
         };
 
-        parseWithNewFollowSet(ids_to_construct.front(), stack, true, pred);
-
+        parseWithNewFollowSet(target_type, stack, 2, pred);
         return static_cast<size_t>(parse(stack, follow_set));
     }
 
@@ -89,7 +102,7 @@ namespace ccl::parser
         }
 
         // NOLINTNEXTLINE access is checked by calle function
-        parseWithNewFollowSet(*mismatch_result.rule_version, stack);
+        parseWithNewFollowSet(*mismatch_result.rule_version, stack, 1);
         return parse(stack, follow_set);
     }
 
@@ -106,7 +119,7 @@ namespace ccl::parser
                 return future_rule.ids_to_construct.front() == ids_to_construct.back();
             };
 
-            parseWithNewFollowSet(ids_to_construct.back(), stack, false, pred);
+            parseWithNewFollowSet(ids_to_construct.back(), stack, 1, pred);
             return parse(stack, follow_set);
         }
 
@@ -115,34 +128,47 @@ namespace ccl::parser
     }
 
     auto Parser::parseWithNewFollowSet(// NOLINT
-        RuleId expected_type, Stack &stack, bool pass_all,
+        RuleId expected_type, Stack &stack, size_t passing_elements,
         const std::function<bool(const ParsingRule &)> &pred) -> bool
     {
         auto new_stack = Stack{};
         auto follow_set = formFollowSet(expected_type, pred);
 
-        if (pass_all) {
+        if (follow_set.empty()) {
+            return false;
+        }
+
+        if (passing_elements == std::numeric_limits<size_t>::max()) {
             return parse(stack, follow_set);
         }
 
-        const auto &last_elem = stack.back();
-        new_stack.push_back(last_elem->clone());
+        for (auto i = 0ZU; i != passing_elements; ++i) {
+            new_stack.insert(new_stack.begin(), std::move(stack.back()));
+            stack.pop_back();
+        }
+
+        fmt::print("new stack: \n");
+        for (const auto &node : new_stack) {
+            node->print();
+        }
 
         if (parse(new_stack, follow_set)) {
-            stack.pop_back();
             std::ranges::move(new_stack, std::back_inserter(stack));
-
             return true;
         }
 
         return false;
     }
 
-    [[nodiscard]] auto Parser::formFollowSet(
+    auto Parser::formFollowSet(
         RuleId expected_type, const std::function<bool(const ParsingRule &)> &pred) const
         -> FollowSet
     {
         auto follow_set = FollowSet{};
+
+        if (not parsing_rules.contains(expected_type)) {
+            return {};
+        }
 
         for (auto &&rule : parsing_rules.at(expected_type) | std::views::filter(pred)) {
             follow_set.push_back(&rule);
@@ -193,10 +219,9 @@ namespace ccl::parser
 
     CCL_INLINE auto Parser::mismatch(const Stack &stack, const ParsingRule &rule) -> MismatchResult
     {
-        auto mismatch_result =
-            std::ranges::mismatch(stack, rule.ids_to_construct, [](const UniquePtr<Node> &node, RuleId id) {
-                return id == node->getId();
-            });
+        auto mismatch_result = std::ranges::mismatch(
+            stack, rule.ids_to_construct,
+            [](const UniquePtr<Node> &node, RuleId id) { return id == node->getId(); });
 
         auto result = MismatchResult{};
 
