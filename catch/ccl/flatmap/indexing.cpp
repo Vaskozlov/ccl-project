@@ -14,6 +14,6 @@ BOOST_AUTO_TEST_CASE(FlatmapIndexing)
     BOOST_CHECK_EQUAL(flatmap[30], 40);
 
     BOOST_CHECK_EXCEPTION(
-        DEBUG_VAR _ = flatmap.at(40), ccl::KeyNotFound,
-        [](const KeyNotFound &exception) { return "key not found"sv == exception.what(); });
+        DEBUG_VAR _ = flatmap.at(40), std::out_of_range,
+        [](const std::out_of_range &exception) { return "key not found"sv == exception.what(); });
 }

@@ -33,7 +33,7 @@ namespace ccl
             break;
 
         default:
-            throw InvalidArgument{ "Invalid criticality" };
+            throw std::invalid_argument{ "Invalid criticality" };
         }
 
         onHandle(error);

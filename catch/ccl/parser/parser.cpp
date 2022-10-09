@@ -23,27 +23,27 @@ lex::LexicalAnalyzer LexicalAnalyzer(
         { TestToken::ANGLE_OPENING, R"(! "[" )" },
     });
 
-struct FactorWithValue : parser::Factor<TestToken::FACTOR>
+struct FactorWithValue : parser::Factor
 {
     FactorConstructor(FactorWithValue, TestToken::FACTOR);
 };
 
-struct ExpressionWithValue : parser::ValueExpression<TestToken::EXPR>
+struct ExpressionWithValue : parser::ValueExpression
 {
     ValueExpressionConstructor(ExpressionWithValue, TestToken::EXPR);
 };
 
-struct UnaryExpression : parser::UnaryExpression<TestToken::FACTOR>
+struct UnaryExpression : parser::UnaryExpression
 {
     UnaryExpressionConstructor(UnaryExpression, TestToken::FACTOR);
 };
 
-struct BinaryExpression : parser::BinaryExpression<TestToken::EXPR>
+struct BinaryExpression : parser::BinaryExpression
 {
     BinaryExpressionConstructor(BinaryExpression, TestToken::EXPR);
 };
 
-struct Root : parser::ValueExpression<TestToken::ROOT>
+struct Root : parser::ValueExpression
 {
     ValueExpressionConstructor(Root, TestToken::ROOT);
 };
@@ -108,7 +108,7 @@ BOOST_AUTO_TEST_CASE(CclParser)
           CCL_PARSING_RULE(TestToken::ROOT, constructRoot, TestToken::EOI) });
 
 
-    auto tokenizer = LexicalAnalyzer.getTokenizer("a[2 + 3 * 4] + 5 * 6");
+    auto tokenizer = LexicalAnalyzer.getTokenizer("a[2 + 3 * 4 + 1] + 5 * 6");
 
     auto parser = parser::Parser(rules, tokenizer);
     parser.parse();

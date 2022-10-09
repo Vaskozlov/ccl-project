@@ -7,19 +7,20 @@
 
 namespace ccl::text
 {
-    struct CrtpForkType : std::true_type
+    struct CCL_TRIVIAL_ABI CrtpForkType : std::true_type
     {
     };
 
     constexpr auto CrtpFork = CrtpForkType{};
 
     template<typename CRTP>
-    class CrtpBasicTextIterator
+    class CCL_TRIVIAL_ABI CrtpBasicTextIterator
     {
     public:
         using iterator = typename string_view::iterator;
 
-        struct ForkedTextIterator final : public CrtpBasicTextIterator<ForkedTextIterator>
+        struct CCL_TRIVIAL_ABI ForkedTextIterator final
+          : public CrtpBasicTextIterator<ForkedTextIterator>
         {
             constexpr explicit ForkedTextIterator(string_view text_) noexcept
               : CrtpBasicTextIterator<ForkedTextIterator>(text_)
@@ -54,10 +55,9 @@ namespace ccl::text
 
         template<typename T>
         constexpr explicit CrtpBasicTextIterator(CrtpForkType /* unused */, T &from) noexcept
-          : carriage(from.getCarriage()), end(from.getEnd()), current_char(from.getCurrentChar()),
-            remaining_to_finish_utf(from.getRemainingToFinishUtf()),
-            initialized(from.isInitialized())
-        {}
+        {
+            *this = std::bit_cast<CrtpBasicTextIterator>(from);
+        }
 
         CCL_DECL auto fork() const noexcept -> ForkedTextIterator
         {
@@ -86,7 +86,7 @@ namespace ccl::text
 
         CCL_DECL CCL_INLINE auto getRemainingAsCarriage() const noexcept -> iterator
         {
-            if (initialized) {
+            if (isInitialized()) {
                 return std::min(carriage + 1, end);
             }
 
@@ -122,7 +122,7 @@ namespace ccl::text
         template<typename T = string_view>
         CCL_DECL auto getFutureRemaining() const noexcept -> T
         {
-            auto carriage_move = initialized ? utf8::utfSize(getNextCarriageValue()) : 0;
+            auto carriage_move = isInitialized() ? utf8::utfSize(getNextCarriageValue()) : 0;
             return { carriage + carriage_move, end };
         }
 
@@ -139,7 +139,7 @@ namespace ccl::text
         constexpr auto setEnd(iterator new_end) -> void
         {
             if (new_end < carriage) {
-                throw InvalidArgument{ "end must be above carriage" };
+                throw std::invalid_argument{ "end must be above carriage" };
             }
 
             end = new_end;
@@ -206,7 +206,7 @@ namespace ccl::text
 
         constexpr auto moveCarriage() noexcept(noexcept_carriage_move) -> char
         {
-            if (not initialized) {
+            if (not isInitialized()) {
                 if (carriage == end) {
                     current_char = 0;
                     return 0;
@@ -276,7 +276,7 @@ namespace ccl::text
         bool initialized{};
     };
 
-    struct BasicTextIterator final : public CrtpBasicTextIterator<BasicTextIterator>
+    struct CCL_TRIVIAL_ABI BasicTextIterator final : public CrtpBasicTextIterator<BasicTextIterator>
     {
         using Base = CrtpBasicTextIterator<BasicTextIterator>;
 
@@ -294,9 +294,7 @@ namespace ccl::text
 
         static auto utfError(char /* chr */) -> void
         {
-            using namespace std::string_view_literals;
-
-            throw utf8::Utf8ConvertionError{ "unable to convert character to utf8"sv };
+            throw std::logic_error{ "unable to convert character to utf8" };
         }
     };
 }// namespace ccl::text

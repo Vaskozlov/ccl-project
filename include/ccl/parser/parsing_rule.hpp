@@ -33,13 +33,19 @@ namespace ccl::parser
         ParsingRule() = default;
 
         ParsingRule(
-            RuleId type_, std::string_view name_, UniquePtr<Node> (*rule_constructor_)(ParsingStack),
+            RuleId type_, std::string_view name_,
+            UniquePtr<Node> (*rule_constructor_)(ParsingStack),
             InitializerList<RuleId> ids_to_constructs_,
             InitializerList<RuleId> ids_that_forbid_construction_ = {});
 
         [[nodiscard]] auto getName() const noexcept -> string_view
         {
             return name;
+        }
+
+        [[nodiscard]] auto getType() const noexcept -> RuleId
+        {
+            return type;
         }
 
         [[nodiscard]] auto getIdsToConstruct() const noexcept -> const SmallVector<RuleId, 4> &

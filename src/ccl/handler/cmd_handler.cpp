@@ -32,4 +32,10 @@ namespace ccl::handler
         fmt::print("{}\n", formatter.format<Color>(std::forward<HandleType>(handle_type)));
         std::cout.flush();
     }
+
+    Cmd::CmdFormatter::CmdFormatter(const ExceptionT *exception) noexcept
+      : working_line(exception->getWorkingLine()), filename(exception->getFilename()),
+        message(exception->getMessage()), suggestion(exception->getSuggestion()),
+        length(exception->getLength()), line(exception->getLine()), column(exception->getColumn())
+    {}
 }// namespace ccl::handler

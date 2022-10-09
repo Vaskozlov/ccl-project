@@ -28,12 +28,7 @@ namespace ccl::handler
 
     struct Cmd::CmdFormatter
     {
-        explicit CmdFormatter(const ExceptionT *exception) noexcept
-          : working_line(exception->getWorkingLine()), filename(exception->getFilename()),
-            message(exception->getMessage()), suggestion(exception->getSuggestion()),
-            length(exception->getLength()), line(exception->getLine()),
-            column(exception->getColumn())
-        {}
+        explicit CmdFormatter(const ExceptionT *exception) noexcept;
 
         template<fmt::color Color, typename HandleType>
         auto format(HandleType &&handle_type) -> std::string

@@ -6,7 +6,7 @@
 
 namespace ccl
 {
-    CCL_EXCEPTION(BasicTextIteratorException, CclException);
+    CCL_EXCEPTION(BasicTextIteratorException, std::exception);
 
     CCL_ENUM(// NOLINTNEXTLINE
         ExceptionCriticality, u32, NONE, SUGGESTION, WARNING, UNCRITICAL, CRITICAL, PANIC);

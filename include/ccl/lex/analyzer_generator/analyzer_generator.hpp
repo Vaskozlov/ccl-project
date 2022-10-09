@@ -18,9 +18,9 @@ namespace ccl::lex
     {
     public:
         static auto generateStaticVersion(const std::filesystem::path &path)
-            -> std::pair<std::string, std::string>;
+            -> Pair<std::string, std::string>;
         static auto generateStaticVersion(string_view filename, string_view text)
-            -> std::pair<std::string, std::string>;
+            -> Pair<std::string, std::string>;
 
     private:
         static LexicalAnalyzer LexForGenerator;// NOLINT non const variable

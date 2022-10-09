@@ -7,6 +7,7 @@
 #include <boost/container/map.hpp>
 #include <boost/container/set.hpp>
 #include <boost/container/small_vector.hpp>
+#include <ccl/core/pair.hpp>
 #include <cinttypes>
 #include <initializer_list>
 #include <memory>
@@ -27,7 +28,6 @@ namespace ccl
     using u64 = std::uint64_t;
 
     using ssize_t = intmax_t;
-
 
     template<typename T>
     using Vector = std::vector<T>;
@@ -85,6 +85,9 @@ namespace ccl
     template<typename T>
     using UniquePtr = std::unique_ptr<T>;
 
+    template<typename T>
+    using SharedPtr = std::shared_ptr<T>;
+
     template<typename T, typename... Ts>
     constexpr auto makeUnique(Ts &&...args) -> UniquePtr<T>
     {
@@ -96,6 +99,20 @@ namespace ccl
     constexpr auto makeUnique(Ts &&...args) -> UniquePtr<Target>
     {
         return UniquePtr<Target>{ static_cast<Target *>(
+            new Constructed(std::forward<Ts>(args)...)) };
+    }
+
+    template<typename T, typename... Ts>
+    constexpr auto makeShared(Ts &&...args) -> SharedPtr<T>
+    {
+        return std::make_shared<T>(std::forward<Ts>(args)...);
+    }
+
+    template<typename Target, typename Constructed, typename... Ts>
+        requires std::derived_from<Constructed, Target>
+    constexpr auto makeShared(Ts &&...args) -> SharedPtr<Target>
+    {
+        return SharedPtr<Target>{ static_cast<Target *>(
             new Constructed(std::forward<Ts>(args)...)) };
     }
 

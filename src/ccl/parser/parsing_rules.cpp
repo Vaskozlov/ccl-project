@@ -60,12 +60,11 @@ namespace ccl::parser
                 return rule->uuid != other_rule->uuid;
             };
 
-            auto fix_conflict = [this, rule](const ParsingRule *other_rule) {
-                fixConflict(*rule, *other_rule);
-            };
-
             checkThereAreNoCloseNonTerminals(*rule);
-            std::ranges::for_each(all_rules | std::views::filter(check_not_on_self), fix_conflict);
+
+            for (const auto *other_rule : all_rules | std::views::filter(check_not_on_self)) {
+                fixConflict(*rule, *other_rule);
+            }
         }
     }
 

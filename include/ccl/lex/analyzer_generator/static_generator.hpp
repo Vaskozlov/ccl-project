@@ -20,7 +20,7 @@ namespace ccl::lex::gen
             generate();
         }
 
-        [[nodiscard]] auto get() const noexcept -> std::pair<std::string, std::string>
+        [[nodiscard]] auto get() const noexcept -> Pair<std::string, std::string>
         {
             return { generated_header, generated_source };
         }

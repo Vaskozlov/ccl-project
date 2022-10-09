@@ -9,12 +9,8 @@
 #define CCL_EXCEPTION(name, base_exception)                                                        \
     struct name : base_exception                                                                   \
     {                                                                                              \
-        static_assert(std::is_base_of_v<ccl::CclException, base_exception>);                       \
-                                                                                                   \
-        name() = default;                                                                          \
-                                                                                                   \
         template<typename... Ts>                                                                   \
-        explicit name(Ts &&...args) : base_exception{ std::forward<Ts>(args)... }                  \
+        explicit name(Ts &&...args) : base_exception(std::forward<Ts>(args)...)                    \
         {}                                                                                         \
     }
 
@@ -30,34 +26,13 @@
 
 namespace ccl
 {
-    class CclException : public std::exception
-    {
-    public:
-        CclException() = default;
-
-        explicit CclException(std::string_view message_) : message(message_)
-        {}
-
-        [[nodiscard]] auto what() const noexcept -> const char * override
-        {
-            return message.data();
-        }
-
-    private:
-        std::string_view message{};
-    };
-
     enum UsageMode : bool
     {
         SAFE,
         UNSAFE
     };
 
-    CCL_EXCEPTION(LogicError, CclException);
-    CCL_EXCEPTION(OutOfRange, CclException);
-    CCL_EXCEPTION(KeyNotFound, CclException);
-    CCL_EXCEPTION(InvalidArgument, CclException);
-    CCL_EXCEPTION(UnrecoverableError, CclException);
+    CCL_EXCEPTION(UnrecoverableError, std::runtime_error);
 }// namespace ccl
 
 #endif /* CCL_PROJECT_EXCEPTION_HPP */

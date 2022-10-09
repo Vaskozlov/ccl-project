@@ -41,7 +41,7 @@ namespace ccl::text
 
     auto TextIterator::NotationEscapingSymbolizer::checkNotation() const -> void
     {
-        assert(land(notation_power > 0, notation_power <= 4));
+        CCL_ASSERT(land(notation_power > 0, notation_power <= 4));
     }
 
     auto TextIterator::NotationEscapingSymbolizer::isOutOfNotation(char32_t chr) const -> bool

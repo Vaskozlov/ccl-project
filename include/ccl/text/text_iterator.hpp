@@ -1,9 +1,8 @@
 #ifndef CCL_PROJECT_TEXT_ITERATOR_HPP
 #define CCL_PROJECT_TEXT_ITERATOR_HPP
 
-#include "basic_text_iterator.hpp"
 #include <ccl/handler/exception_handler.hpp>
-#include <ccl/pair.hpp>
+#include <ccl/text/basic_text_iterator.hpp>
 #include <ccl/text/iterator_exception.hpp>
 #include <ccl/text/location.hpp>
 #include <ccl/text/text_iterator_modules/line_tracker.hpp>
@@ -205,8 +204,7 @@ namespace ccl::text
 
         explicit EscapingSymbolizer(
             TextIterator &text_iterator_,
-            extra_symbols_t
-                extra_symbols_) noexcept(std::is_nothrow_move_constructible_v<extra_symbols_t>)
+            extra_symbols_t extra_symbols_) noexcept
           : extra_symbols{ std::move(extra_symbols_) }, text_iterator{ text_iterator_ }
         {}
 

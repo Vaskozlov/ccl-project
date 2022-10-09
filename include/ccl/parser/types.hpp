@@ -1,7 +1,7 @@
 #ifndef CCL_PROJECT_PARSER_TYPES_HPP
 #define CCL_PROJECT_PARSER_TYPES_HPP
 
-#include <ccl/parser/node.hpp>
+#include <ccl/parser/node_templates.hpp>
 
 namespace ccl::parser
 {

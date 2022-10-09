@@ -2,6 +2,20 @@
 
 namespace ccl::parser
 {
+    using namespace std::string_literals;
+
+    static auto operator*(const std::string &str, std::size_t repeat) -> std::string
+    {
+        auto ret = std::string{};
+        ret.reserve(str.size() * repeat);
+
+        for (size_t i = 0; i != repeat; ++i) {
+            ret += str;
+        }
+
+        return ret;
+    }
+
     auto Node::getPrintingPrefix(const std::string &prefix, bool is_left) -> std::string
     {
         return prefix + (is_left ? "\u251c\u2500\u2500" : "\u2514\u2500\u2500");
@@ -11,10 +25,7 @@ namespace ccl::parser
         -> std::string
     {
         auto result = prefix + (is_left ? "\u2502   " : "    ");
-
-        for (auto i = 0ZU; i != extra_expansion; ++i) {
-            result.append("   ");
-        }
+        result.append("   "s * extra_expansion);
 
         return result;
     }
@@ -22,10 +33,5 @@ namespace ccl::parser
     auto Node::print(const std::string &prefix, bool is_left) const -> void
     {
         fmt::print("{}{}\n", getPrintingPrefix(prefix, is_left), "Node");
-    }
-
-    auto TokenNode::print(const std::string &prefix, bool is_left) const -> void
-    {
-        fmt::print("{}{}\n", getPrintingPrefix(prefix, is_left), token.getRepr());
     }
 }// namespace ccl::parser

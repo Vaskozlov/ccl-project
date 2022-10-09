@@ -25,10 +25,7 @@ namespace ccl::parser
             std::optional<RuleId> rule_version;
         };
 
-        explicit Parser(const ParsingRules &parsing_rules_, Tokenizer &tokenizer_)
-          : tokenizer(tokenizer_), terminals(parsing_rules_.terminals),
-            non_terminals(parsing_rules_.non_terminals), parsing_rules(parsing_rules_.parsing_rules)
-        {}
+        explicit Parser(const ParsingRules &parsing_rules_, Tokenizer &tokenizer_);
 
         auto parse() -> void;
 
@@ -62,9 +59,7 @@ namespace ccl::parser
 
         [[nodiscard]] static auto fullyMatched(const MismatchResult &mismatch_result) -> bool;
 
-        [[nodiscard]] auto isTerminal(
-            const MismatchResult &mismatch_result, const Stack &stack, const FollowSet &follow_set)
-            -> bool;
+        [[nodiscard]] auto isTerminal(const MismatchResult &mismatch_result) -> bool;
 
         [[nodiscard]] auto isNonTerminal(const MismatchResult &mismatch_result) const -> bool;
 

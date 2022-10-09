@@ -13,7 +13,7 @@ namespace ccl
     public:
         using key_type = Key;
         using mapped_type = Value;
-        using value_type = std::pair<Key, Value>;
+        using value_type = Pair<Key, Value>;
         using storage_t = std::array<value_type, Size>;
         using iterator = typename storage_t::iterator;
         using const_iterator = typename storage_t::const_iterator;
@@ -82,7 +82,7 @@ namespace ccl
         constexpr auto emplace(Ts &&...args) -> value_type &
         {
             if (occupied == capacity()) {
-                throw OutOfRange("flatmap is full");
+                throw std::out_of_range("flatmap is full");
             }
 
             storage[occupied] = value_type(std::forward<Ts>(args)...);
@@ -149,7 +149,7 @@ namespace ccl
             auto elem = self.find(key);
 
             if (elem == self.end()) {
-                throw KeyNotFound("key not found");
+                throw std::out_of_range("key not found");
             }
 
             return elem->second;

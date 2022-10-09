@@ -4,9 +4,7 @@ namespace ccl::text
 {
     auto TextIterator::EscapingSymbolizer::matchNextChar() -> char32_t
     {
-        if (text_iterator.getCurrentChar() != '\\') {
-            throw LogicError("called EscapingSymbolizer::matchNextChar() without preceding `\\`");
-        }
+        CCL_ASSERT_MSG(text_iterator.getCurrentChar() == '\\', "called without preceding `\\`");
 
         auto chr = text_iterator.next();
 

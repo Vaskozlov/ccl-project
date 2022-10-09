@@ -223,7 +223,7 @@ namespace ccl
         CCL_DECL auto at(size_t index) const -> CharT
         {
             if (index >= length) {
-                throw OutOfRange("index out of range");
+                throw std::out_of_range("index out of range");
             }
 
             return string[index];

@@ -30,6 +30,9 @@
 #define CCL_FORCE_EXPAND(x, y) CCL_CONCATENATE(x, y)
 #define CCL_CONCATENATE(x, y) x##y
 
+#define CCL_ASSERT(x) assert(x)
+#define CCL_ASSERT_MSG(x, message) assert(x && message)
+
 #if INTPTR_MAX == INT32_MAX
 #    define CCL_64BIT false
 #else

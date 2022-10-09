@@ -5,8 +5,6 @@
 
 namespace ccl::utf8
 {
-    CCL_EXCEPTION(Utf8ConvertionError, CclException);
-
     template<typename T>
     concept ValueTypeUtf8 = std::is_same_v<char, typename T::value_type>;
 
@@ -80,15 +78,6 @@ namespace ccl::utf8
         return 0U;
     }
 
-    constexpr auto checkTrailingCharacterMask(char chr) -> void
-    {
-        using namespace std::string_view_literals;
-
-        if ((chr & ContinuationMask) != ContinuationSignature) {
-            throw Utf8ConvertionError{ "unable to convert symbol to utf8"sv };
-        }
-    }
-
     template<ValueTypeUtf8 T>
     constexpr auto appendUtf32ToUtf8Container(T &string, char32_t chr) -> void
     {
@@ -113,7 +102,7 @@ namespace ccl::utf8
             string.push_back(cast(ContinuationSignature | ((chr >> 6) & 0b0011'1111)));
             string.push_back(cast(ContinuationSignature | (chr & 0b0011'1111)));
         } else [[unlikely]] {
-            throw Utf8ConvertionError{ "unable to convert symbol to utf8"sv };
+            throw std::invalid_argument{ "unable to convert symbol to utf8" };
         }
 
         // NOLINTEND
