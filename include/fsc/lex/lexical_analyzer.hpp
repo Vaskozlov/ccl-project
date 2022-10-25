@@ -1,7 +1,7 @@
 #pragma once
 
-#include <unordered_map>
 #include <ccl/lex/lexical_analyzer.hpp>
+#include <unordered_map>
 
 namespace fsc
 {

@@ -4,8 +4,6 @@
 #include <exception>
 #include <string_view>
 
-// NOLINTBEGIN define argument should be in ()
-
 #define CCL_EXCEPTION(name, base_exception)                                                        \
     struct name : base_exception                                                                   \
     {                                                                                              \
@@ -13,8 +11,6 @@
         explicit name(Ts &&...args) : base_exception(std::forward<Ts>(args)...)                    \
         {}                                                                                         \
     }
-
-// NOLINTEND
 
 #define CCL_SAFE_VERSION                                                                           \
     template<UsageMode Mode = SAFE>                                                                \

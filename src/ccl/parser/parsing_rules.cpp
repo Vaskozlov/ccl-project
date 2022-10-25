@@ -40,7 +40,7 @@ namespace ccl::parser
             for (const auto &rule : rules) {
                 const auto &ids_to_construct = rule.ids_to_construct;
                 std::ranges::copy_if(
-                    ids_to_construct | std::views::drop(1), inserter, insert_condition);
+                    ids_to_construct | std::views::drop(0), inserter, insert_condition);
             }
         }
     }

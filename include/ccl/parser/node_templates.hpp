@@ -23,10 +23,8 @@
             Id, std::move(left_), std::move(operation_), std::move(right_))                        \
     {}
 
-
 namespace ccl::parser
 {
-
     struct TokenNode : Node
     {
         CCL_PERFECT_FORWARDING(T, lex::Token)// NOLINTNEXTLINE

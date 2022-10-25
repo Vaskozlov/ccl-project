@@ -29,8 +29,7 @@ namespace fsc
             { FscLexerToken::IDENTIFIER, R"( [a-zA-Z_][a-zA-Z0-9_]* )" },
         });
 
-    const std::unordered_map<size_t, ccl::string_view> ToStringFscLexerToken
-{
+    const std::unordered_map<size_t, ccl::string_view> ToStringFscLexerToken{
         { FscLexerToken::EOI, "EOI" },
         { FscLexerToken::BAD_TOKEN, "BAD_TOKEN" },
         { FscLexerToken::NEW_LINE, "NEW_LINE" },

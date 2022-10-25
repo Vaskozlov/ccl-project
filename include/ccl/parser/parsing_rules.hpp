@@ -21,8 +21,8 @@ namespace ccl::parser
         auto fixConflicts() -> void;
         auto fixConflict(ParsingRule &rule, const ParsingRule &other_rule) -> void;
 
-        auto fixUsingPrecedence(ParsingRule &rule, RuleId first_mismatch, RuleId second_mismatch) const
-            -> void;
+        auto fixUsingPrecedence(
+            ParsingRule &rule, RuleId first_mismatch, RuleId second_mismatch) const -> void;
 
         auto checkThereAreNoCloseNonTerminals(const ParsingRule &rule) -> void;
 

@@ -104,11 +104,12 @@ BOOST_AUTO_TEST_CASE(CclParser)
           CCL_PARSING_RULE(
               TestToken::EXPR, constructBinaryExpression, TestToken::EXPR, TestToken::MUL,
               TestToken::EXPR),
-          CCL_PARSING_RULE(TestToken::ROOT, constructRoot, TestToken::EXPR, TestToken::EOI),
-          CCL_PARSING_RULE(TestToken::ROOT, constructRoot, TestToken::EOI) });
+          CCL_PARSING_RULE(
+              TestToken::EXPR, constructUnaryExpression, TestToken::NOT, TestToken::EXPR),
+          CCL_PARSING_RULE(TestToken::ROOT, constructRoot, TestToken::EXPR, TestToken::EOI) });
 
 
-    auto tokenizer = LexicalAnalyzer.getTokenizer("a[2 + 3 * 4 + 1] + 5 * 6");
+    auto tokenizer = LexicalAnalyzer.getTokenizer("!10");
 
     auto parser = parser::Parser(rules, tokenizer);
     parser.parse();

@@ -34,7 +34,7 @@ namespace ccl::parser
 
         ParsingRule(
             RuleId type_, std::string_view name_,
-            UniquePtr<Node> (*rule_constructor_)(ParsingStack),
+            UniquePtr<Node> (*rule_construction_call_)(ParsingStack),
             InitializerList<RuleId> ids_to_constructs_,
             InitializerList<RuleId> ids_that_forbid_construction_ = {});
 
@@ -71,7 +71,7 @@ namespace ccl::parser
         SmallVector<RuleId, 4> ids_to_construct{};
         FlatSet<RuleId> ids_that_forbid_construction{};
         string_view name{ "set name for ccl::parser::ParsingRule" };
-        UniquePtr<Node> (*rule_constructor)(ParsingStack) = nullptr;
+        UniquePtr<Node> (*rule_construction_call)(ParsingStack) = nullptr;
         RuleId type{};
         size_t uuid{};
     };

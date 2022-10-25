@@ -15,13 +15,16 @@ namespace ccl::lex::dot_item
 
         [[nodiscard]] auto empty() const noexcept -> bool final;
 
-        LogicalUnit(UniquePtr<BasicItem> lhs_, UniquePtr<BasicItem> rhs_, LogicalOperation type_, size_t id_)
+        LogicalUnit(
+            UniquePtr<BasicItem> lhs_, UniquePtr<BasicItem> rhs_, LogicalOperation type_,
+            size_t id_)
           : BasicItem(id_), lhs_item(std::move(lhs_)), rhs_item(std::move(rhs_)),
             logical_operation(type_)
         {}
 
     private:
-        auto scanIteration(const ForkedGenerator &text_iterator) const -> size_t final;
+        [[nodiscard]] auto scanIteration(const ForkedGenerator &text_iterator) const
+            -> size_t final;
 
         UniquePtr<BasicItem> lhs_item{};
         UniquePtr<BasicItem> rhs_item{};

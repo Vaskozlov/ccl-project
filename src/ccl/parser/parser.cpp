@@ -235,7 +235,7 @@ namespace ccl::parser
 
     CCL_INLINE auto Parser::reduce(Stack &stack, const ParsingRule &rule) -> void
     {
-        stack.push_back(rule.rule_constructor(ParsingStack(stack)));
+        stack.push_back(rule.rule_construction_call(ParsingStack(stack)));
     }
 
     CCL_INLINE auto Parser::pushNewToken(Stack &stack) -> void
