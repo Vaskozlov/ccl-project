@@ -6,7 +6,8 @@
 namespace ccl::utf8
 {
     template<typename T>
-    concept ValueTypeUtf8 = std::is_same_v<char, typename T::value_type>;
+    concept ValueTypeUtf8 = std::is_same_v<char, typename T::value_type> ||
+                            std::is_same_v<char8_t, typename T::value_type>;
 
     constexpr u32 OneByteMax = 127;
     constexpr u32 TwoBytesMax = 2047;

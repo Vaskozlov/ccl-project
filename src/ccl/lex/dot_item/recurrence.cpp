@@ -8,11 +8,10 @@ namespace ccl::lex::dot_item
     Repetition::Repetition(TextIterator &text_iterator)
     {
         checkRangeStart(text_iterator);
-
         auto iterator_copy = text_iterator;
 
-        from = parseNumber(text_iterator, U',');// NOLINT initialization via =
-        to = parseNumber(text_iterator, U'}');  // NOLINT
+        from = parseNumber(text_iterator, ',');// NOLINT initialization via =
+        to = parseNumber(text_iterator, '}');  // NOLINT
 
         checkCorrectnessOfValues(iterator_copy);
     }
@@ -28,7 +27,7 @@ namespace ccl::lex::dot_item
             auto chr = text_iterator.getCurrentChar();
 
             if (isDigit(chr)) {
-                result = result * decimal_base + static_cast<size_t>(chr - U'0');
+                result = result * decimal_base + static_cast<size_t>(chr - '0');
                 continue;
             }
 
@@ -40,7 +39,7 @@ namespace ccl::lex::dot_item
 
     auto Repetition::checkRangeStart(TextIterator &text_iterator) -> void
     {
-        if (text_iterator.getCurrentChar() != U'{') {
+        if (text_iterator.getCurrentChar() != '{') {
             throwRangeBeginException(text_iterator);
         }
     }

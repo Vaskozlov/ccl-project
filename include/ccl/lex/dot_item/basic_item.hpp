@@ -20,9 +20,17 @@ namespace ccl::lex::dot_item
         using ForkedGenerator = typename text::TextIterator::ForkedTextIterator;
         using ScanResult = std::optional<Pair<TextIterator, Token>>;
 
-        struct SpecialItems;
+        class SpecialItems;
 
-        explicit BasicItem(size_t id_) : id(id_)
+    protected:
+        Repetition repetition{ Repetition::basic() };
+        size_t id{};
+        bool reversed{ false };
+        bool prefix{};
+        bool postfix{};
+
+    public:
+        explicit BasicItem(const size_t id_) : id(id_)
         {}
 
         BasicItem(const BasicItem &) = default;
@@ -92,13 +100,6 @@ namespace ccl::lex::dot_item
     private:
         [[nodiscard]] virtual auto scanIteration(const ForkedGenerator &text_iterator) const
             -> size_t = 0;
-
-    protected:
-        Repetition repetition{ Repetition::basic() };
-        size_t id{};
-        bool reversed{ false };
-        bool prefix{};
-        bool postfix{};
     };
 }// namespace ccl::lex::dot_item
 

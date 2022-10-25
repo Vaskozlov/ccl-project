@@ -135,11 +135,10 @@ namespace ccl
 
     private:
         template<typename Self>
-        CCL_DECL static auto staticFind(Self &self, const Key &key) noexcept
-            -> std::conditional_t<std::is_const_v<Self>, const_iterator, iterator>
+        CCL_DECL static auto staticFind(Self &&self, const Key &key) noexcept -> decltype(auto)
         {
             return std::ranges::find_if(
-                self, [key](const value_type &value) { return value.first == key; });
+                self, [&key](const value_type &value) { return value.first == key; });
         }
 
         template<typename Self>

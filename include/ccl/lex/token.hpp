@@ -12,26 +12,33 @@ namespace ccl::lex
     // NOLINTNEXTLINE
     CCL_ENUM(ReservedTokenType, size_t, EOI, BAD_TOKEN);
 
-    struct TokenAttributes
+    class TokenAttributes
     {
+    public:
+        std::string tabsAndSpaces{};
+        text::Location location{};
+        string_view workingLine{};
+
         TokenAttributes() = default;
 
         explicit TokenAttributes(const text::TextIterator &text_iterator_)
-          : tabs_and_spaces(text_iterator_.getTabsAndSpaces()),
-            location(text_iterator_.getLocation()), working_line(text_iterator_.getWorkingLine())
+          : tabsAndSpaces(text_iterator_.getTabsAndSpaces()),
+            location(text_iterator_.getLocation()), workingLine(text_iterator_.getWorkingLine())
         {}
-
-        std::string tabs_and_spaces{};
-        text::Location location{};
-        string_view working_line{};
     };
 
     class Token
     {
+        Vector<string_view> prefixes{};
+        Vector<string_view> postfixes{};
+        TokenAttributes attributes{};
+        string_view repr{};
+        size_t id{};
+
     public:
         Token() = default;
 
-        explicit Token(size_t id_) : id(id_)
+        explicit Token(const size_t id_) : id(id_)
         {}
 
         Token(TokenAttributes &&attributes_, const string_view &repr_, size_t id_)
@@ -108,12 +115,12 @@ namespace ccl::lex
 
         [[nodiscard]] auto getWorkingLine() const noexcept -> const string_view &
         {
-            return attributes.working_line;
+            return attributes.workingLine;
         }
 
         [[nodiscard]] auto getTabsAndSpaces() const noexcept -> const std::string &
         {
-            return attributes.tabs_and_spaces;
+            return attributes.tabsAndSpaces;
         }
 
         auto setEnd(typename string_view::iterator end_) noexcept -> void
@@ -148,13 +155,6 @@ namespace ccl::lex
             prefixes.clear();
             postfixes.clear();
         }
-
-    private:
-        Vector<string_view> prefixes{};
-        Vector<string_view> postfixes{};
-        TokenAttributes attributes{};
-        string_view repr{};
-        size_t id{};
     };
 }// namespace ccl::lex
 

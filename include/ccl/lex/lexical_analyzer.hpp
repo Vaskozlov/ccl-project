@@ -9,7 +9,7 @@ namespace ccl::lex
 {
     class LexicalAnalyzer
     {
-    public:
+    private:
         using Container = dot_item::Container;
         using BasicItem = dot_item::BasicItem;
         using TextIterator = typename BasicItem::TextIterator;
@@ -20,7 +20,14 @@ namespace ccl::lex
             string_view repr{};
         };
 
-        struct Tokenizer;
+        Vector<Container> items{};
+        SpecialItems special_items{};
+        std::string skipped_characters{};
+        std::basic_string<size_t> ignored_ids{};
+        ExceptionHandler &exception_handler;
+
+    public:
+        class Tokenizer;
 
         LexicalAnalyzer(
             ExceptionHandler &exception_handler_, InitializerList<Rule> rules_,
@@ -39,16 +46,17 @@ namespace ccl::lex
 
     private:
         auto createContainer(string_view rule, size_t id, string_view filename) -> void;
-
-        Vector<Container> items{};
-        SpecialItems special_items{};
-        std::string skipped_characters{};
-        std::basic_string<size_t> ignored_ids{};
-        ExceptionHandler &exception_handler;
     };
 
-    struct LexicalAnalyzer::Tokenizer
+    class LexicalAnalyzer::Tokenizer
     {
+        Token current_token{};
+        Token future_token{};
+        LexicalAnalyzer &lexical_analyzer;
+        TextIterator text_iterator;
+        bool has_future_token{ false };
+
+    public:
         Tokenizer(LexicalAnalyzer &lexical_analyzer_, string_view text, string_view filename_ = {})
           : lexical_analyzer(lexical_analyzer_),
             text_iterator(text, lexical_analyzer_.exception_handler, filename_)
@@ -95,12 +103,6 @@ namespace ccl::lex
 
         auto constructBadToken(Token &token) -> void;
         auto constructEOIToken(Token &token) -> void;
-
-        Token current_token{};
-        Token future_token{};
-        LexicalAnalyzer &lexical_analyzer;
-        TextIterator text_iterator;
-        bool has_future_token{ false };
     };
 }// namespace ccl::lex
 

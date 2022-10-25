@@ -17,6 +17,11 @@ namespace ccl::text
         using Base = CrtpBasicTextIterator<TextIterator>;
         using extra_symbols_t = std::basic_string<Pair<char32_t, char32_t>>;
 
+        Location location{};
+        TsTracker ts_tracker{};
+        LineTracker line_tracker;
+        ExceptionHandler *exception_handler{};
+
     public:
         class EscapingSymbolizer;
         class NotationEscapingSymbolizer;
@@ -32,10 +37,7 @@ namespace ccl::text
         explicit TextIterator(
             const string_view &input,
             ExceptionHandler &exception_handler_ = ExceptionHandler::instance(),
-            const string_view &filename = {})
-          : Base(input), location(filename), line_tracker(input),
-            exception_handler(&exception_handler_)
-        {}
+            const string_view &filename = {});
 
         [[nodiscard]] auto getLocation() const noexcept -> const Location &
         {
@@ -177,12 +179,6 @@ namespace ccl::text
             const TextIterator &iterator_location, ExceptionCriticality criticality,
             AnalysationStage stage, const string_view &message, const string_view &suggestion = {})
             -> void;
-
-    private:
-        Location location{};
-        TsTracker ts_tracker{};
-        LineTracker line_tracker;
-        ExceptionHandler *exception_handler{};
     };
 
     class TextIterator::EscapingSymbolizer

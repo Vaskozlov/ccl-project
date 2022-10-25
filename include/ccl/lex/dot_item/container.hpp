@@ -22,13 +22,17 @@ namespace ccl::lex::dot_item
         using ForkedGen = typename TextIterator::ForkedTextIterator;
         using storage_t = boost::container::small_vector<UniquePtr<BasicItem>, 4>;
 
-        struct RuleParser;
+        class RuleParser;
 
         struct ContainerFlags
         {
             bool is_main : 1 = false;
             bool is_special : 1 = false;
         };
+
+        storage_t items{};
+        SpecialItems &special_items;
+        ContainerFlags flags{};
 
     public:
         Container(
@@ -55,7 +59,7 @@ namespace ccl::lex::dot_item
             return id == other.id;
         }
 
-        [[nodiscard]] auto operator<=>(const Container &other) const noexcept
+        [[nodiscard]] auto operator<=>(const Container &other) const noexcept -> std::weak_ordering
         {
             return id <=> other.id;
         }
@@ -79,14 +83,19 @@ namespace ccl::lex::dot_item
         auto parseRule(TextIterator &rule_iterator) -> void;
 
         [[nodiscard]] auto failedToEndItem(const ForkedGenerator &text_iterator) const -> bool;
-
-        storage_t items{};
-        SpecialItems &special_items;
-        ContainerFlags flags{};
     };
 
-    struct Container::RuleParser
+    class Container::RuleParser
     {
+        Container &container;
+        TextIterator &rule_iterator;
+        storage_t &items{ container.items };
+        SpecialItems &special_items{ container.special_items };
+        std::optional<UniquePtr<BasicItem>> reserved_lhs{ std::nullopt };
+        LogicalOperation logical_operation{};
+        bool rhs_item_constructed{ false };
+
+    public:
         RuleParser(Container &container_, TextIterator &rule_iterator_);
 
     private:
@@ -139,22 +148,15 @@ namespace ccl::lex::dot_item
         auto throwUnableToApply(string_view reason, string_view suggestion = {}) -> void;
 
         auto throwUndefinedAction() -> void;
-
-        Container &container;
-        TextIterator &rule_iterator;
-        storage_t &items{ container.items };
-        SpecialItems &special_items{ container.special_items };
-        std::optional<UniquePtr<BasicItem>> reserved_lhs{ std::nullopt };
-        LogicalOperation logical_operation{};
-        bool rhs_item_constructed{ false };
     };
 
-    struct BasicItem::SpecialItems
+    class BasicItem::SpecialItems
     {
+    public:
+        Vector<Container> special_items;
+
         auto specialScan(TextIterator &text_iterator, Token &token) const -> bool;
         [[nodiscard]] auto checkForSpecial(const ForkedGenerator &text_iterator) const -> bool;
-
-        Vector<Container> special_items;
     };
 }// namespace ccl::lex::dot_item
 

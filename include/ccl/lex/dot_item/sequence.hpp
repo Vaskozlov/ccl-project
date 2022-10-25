@@ -7,9 +7,6 @@ namespace ccl::lex::dot_item
 {
     class Sequence final : public BasicItem
     {
-    private:
-        using typename BasicItem::TextIterator;
-
     public:
         struct CCL_TRIVIAL_ABI SequenceFlags
         {
@@ -17,6 +14,15 @@ namespace ccl::lex::dot_item
             bool no_escaping_symbols : 1 = false;
         };
 
+    private:
+        using typename BasicItem::TextIterator;
+
+        std::string sequence_value{};
+        string_view str_begin{};
+        string_view str_end{};
+        SequenceFlags sequence_flags{};
+
+    public:
         Sequence(
             SequenceFlags flags_, const string_view &str_begin_, const string_view &str_end,
             TextIterator &rule_iterator_, size_t id_ = 0);
@@ -66,11 +72,6 @@ namespace ccl::lex::dot_item
             TextIterator &rule_iterator,
             const string_view &message,
             const string_view &suggestion = {}) -> void;
-
-        std::string sequence_value{};
-        string_view str_begin{};
-        string_view str_end{};
-        SequenceFlags sequence_flags{};
     };
 }// namespace ccl::lex::dot_item
 

@@ -16,12 +16,12 @@ namespace ccl::text
 
         constexpr auto next(char32_t chr) noexcept -> void
         {
-            if (new_line_passed) [[unlikely]] {
+            if (newLinePassed) [[unlikely]] {
                 updateLine();
-                new_line_passed = false;
+                newLinePassed = false;
             }
 
-            new_line_passed = chr == U'\n';
+            newLinePassed = chr == '\n';
         }
 
         constexpr explicit LineTracker(const string_view &text_) noexcept
@@ -31,15 +31,20 @@ namespace ccl::text
     private:
         constexpr auto updateLine() -> void
         {
+            auto end_offset = text.size();
             const auto *new_line_begin = std::min(text.end(), line.end() + 1);
-            auto end_offset = std::min(text.size(), text.find<UNSAFE>(U'\n', new_line_begin));
+            const auto new_line_index = text.find('\n', new_line_begin);
+
+            if (new_line_index.has_value()) {
+                end_offset = *new_line_index;
+            }
 
             line = { new_line_begin, text.begin() + end_offset };
         }
 
         string_view text{};
         string_view line{};
-        bool new_line_passed{ false };
+        bool newLinePassed{ false };
     };
 }// namespace ccl::text
 

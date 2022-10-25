@@ -8,6 +8,8 @@ namespace ccl::lex::dot_item
 {
     class Union final : public BasicItem
     {
+        UtfSet bitset{};
+
     public:
         using typename BasicItem::TextIterator;
 
@@ -42,8 +44,6 @@ namespace ccl::lex::dot_item
         static auto throwUnterminatedUnion(TextIterator &rule_iterator) -> void;
         static auto throwUnterminatedRangeException(TextIterator &rule_iterator) -> void;
         static auto throwUnionBeginException(TextIterator &rule_iterator) -> void;
-
-        UtfSet bitset{};
     };
 }// namespace ccl::lex::dot_item
 

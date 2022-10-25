@@ -9,6 +9,11 @@ namespace ccl::text
 {
     class Location
     {
+        string_view filename{};
+        size_t line{ 1 };
+        size_t column{ 0 };
+        size_t real_column{ 0 };
+
     public:
         Location() noexcept = default;
 
@@ -54,12 +59,6 @@ namespace ccl::text
                 ++column;
             }
         }
-
-    private:
-        string_view filename{};
-        size_t line{ 1 };
-        size_t column{ 0 };
-        size_t real_column{ 0 };
     };
 }// namespace ccl::text
 

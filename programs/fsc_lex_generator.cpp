@@ -2,9 +2,9 @@
 #include <fstream>
 #include <iostream>
 
-const char *const ConfigurationFile = PROJECT_SOURCE_DIR "/programs/fsc_lex_rule.ccll";
-const char *const TargetHeaderFile = PROJECT_SOURCE_DIR "/include/fsc/lex/lexical_analyzer.hpp";
-const char *const TargetSourceFile = PROJECT_SOURCE_DIR "/src/fsc/lex/lexical_analyzer.cpp";
+const char *const ConfigurationFile = "programs/fsc_lex_rule.ccll";
+const char *const TargetHeaderFile = "include/fsc/lex/lexical_analyzer.hpp";
+const char *const TargetSourceFile = "src/fsc/lex/lexical_analyzer.cpp";
 
 auto main() -> int
 {

@@ -5,9 +5,13 @@
 
 namespace ccl::lex::dot_item
 {
-    struct CCL_TRIVIAL_ABI Repetition
+    class CCL_TRIVIAL_ABI Repetition
     {
-        constexpr Repetition(size_t from_, size_t to_) noexcept : from(from_), to(to_)
+    public:
+        size_t from{};
+        size_t to{};
+
+        constexpr Repetition(const size_t from_, const size_t to_) noexcept : from(from_), to(to_)
         {}
 
         explicit Repetition(text::TextIterator &text_iterator);
@@ -56,10 +60,6 @@ namespace ccl::lex::dot_item
         static auto throwRangeBeginException(text::TextIterator &text_iterator) -> void;
         static auto throwUnexpectedCharacter(text::TextIterator &text_iterator, char32_t chr)
             -> void;
-
-    public:
-        size_t from{};
-        size_t to{};
     };
 }// namespace ccl::lex::dot_item
 

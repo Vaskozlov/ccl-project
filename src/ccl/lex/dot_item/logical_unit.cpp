@@ -2,8 +2,6 @@
 
 namespace ccl::lex::dot_item
 {
-    static const Token EmptyToken{};
-
     auto LogicalUnit::empty() const noexcept -> bool
     {
         return lhs_item->empty() && rhs_item->empty();

@@ -6,9 +6,13 @@
 namespace ccl
 {
     template<typename T1, typename T2>
-    struct CCL_TRIVIAL_ABI TrivialPair
+    class CCL_TRIVIAL_ABI TrivialPair
     {
         static_assert(std::is_trivial_v<T1> && std::is_trivial_v<T2>);
+
+    public:
+        T1 first;
+        T2 second;
 
         TrivialPair() = default;
 
@@ -17,9 +21,6 @@ namespace ccl
 
         constexpr auto operator<=>(const TrivialPair &other) const noexcept
             -> std::weak_ordering = default;
-
-        T1 first;
-        T2 second;
     };
 
     template<typename T1, typename T2>

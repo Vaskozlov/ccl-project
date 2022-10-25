@@ -11,17 +11,17 @@ namespace ccl::text
     public:
         CCL_DECL auto size() const noexcept -> size_t
         {
-            return tabs_and_spaces.size();
+            return tabsAnsSpaces.size();
         }
 
         CCL_DECL auto empty() const noexcept -> bool
         {
-            return tabs_and_spaces.empty();
+            return tabsAnsSpaces.empty();
         }
 
         CCL_DECL auto get() const noexcept -> const std::string &
         {
-            return tabs_and_spaces;
+            return tabsAnsSpaces;
         }
 
         constexpr auto next(char32_t chr) -> void
@@ -29,9 +29,9 @@ namespace ccl::text
             clearIfNeed();
 
             if (isTabOrSpace(chr)) {
-                tabs_and_spaces.push_back(static_cast<char>(chr));
+                tabsAnsSpaces.push_back(static_cast<char>(chr));
             } else {
-                need_to_clear = true;
+                needToClear = true;
             }
         }
 
@@ -40,9 +40,9 @@ namespace ccl::text
     private:
         constexpr auto clearIfNeed() noexcept -> void
         {
-            if (need_to_clear) {
-                need_to_clear = false;
-                tabs_and_spaces.clear();
+            if (needToClear) {
+                needToClear = false;
+                tabsAnsSpaces.clear();
             }
         }
 
@@ -51,8 +51,8 @@ namespace ccl::text
             return lor(chr == '\t', chr == ' ');
         }
 
-        std::string tabs_and_spaces{};
-        bool need_to_clear{};
+        std::string tabsAnsSpaces{};
+        bool needToClear{};
     };
 }// namespace ccl::text
 

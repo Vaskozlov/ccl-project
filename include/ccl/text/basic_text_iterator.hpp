@@ -122,7 +122,7 @@ namespace ccl::text
         template<typename T = string_view>
         CCL_DECL auto getFutureRemaining() const noexcept -> T
         {
-            auto carriage_move = isInitialized() ? utf8::utfSize(getNextCarriageValue()) : 0;
+            const auto carriage_move = isInitialized() ? utf8::utfSize(getNextCarriageValue()) : 0;
             return { carriage + carriage_move, end };
         }
 

@@ -10,9 +10,13 @@ namespace ccl::lex::dot_item
 
     class LogicalUnit final : public BasicItem
     {
-    public:
         using typename BasicItem::TextIterator;
 
+        UniquePtr<BasicItem> lhs_item{};
+        UniquePtr<BasicItem> rhs_item{};
+        LogicalOperation logical_operation{ LogicalOperation::NONE };
+
+    public:
         [[nodiscard]] auto empty() const noexcept -> bool final;
 
         LogicalUnit(
@@ -25,10 +29,6 @@ namespace ccl::lex::dot_item
     private:
         [[nodiscard]] auto scanIteration(const ForkedGenerator &text_iterator) const
             -> size_t final;
-
-        UniquePtr<BasicItem> lhs_item{};
-        UniquePtr<BasicItem> rhs_item{};
-        LogicalOperation logical_operation{ LogicalOperation::NONE };
     };
 }// namespace ccl::lex::dot_item
 

@@ -31,7 +31,6 @@ namespace ccl
     {
         return land(chr >= '0', chr <= '9');
     }
-
 }// namespace ccl
 
 #endif /* CCL_PROJECT_CHAR_HPP */

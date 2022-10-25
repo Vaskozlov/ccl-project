@@ -10,7 +10,7 @@ namespace ccl::handler
     struct Cmd final : ExceptionHandler
     {
     private:
-        struct CmdFormatter;
+        class CmdFormatter;
 
     public:
         using ExceptionHandler::ExceptionT;
@@ -26,8 +26,18 @@ namespace ccl::handler
         auto formatAndPrint(const ExceptionT *value, HandleType &&handle_type) -> void;
     };
 
-    struct Cmd::CmdFormatter
+    class Cmd::CmdFormatter
     {
+        std::string formatting_buffer{};
+        string_view working_line{};
+        string_view filename{};
+        string_view message{};
+        string_view suggestion{};
+        size_t length{};
+        size_t line{};
+        size_t column{};
+
+    public:
         explicit CmdFormatter(const ExceptionT *exception) noexcept;
 
         template<fmt::color Color, typename HandleType>
@@ -64,15 +74,6 @@ namespace ccl::handler
         auto formatArrow(size_t tabs_number) -> size_t;
 
         auto formatSuggestion(size_t arrow_position) -> void;
-
-        std::string formatting_buffer{};
-        string_view working_line{};
-        string_view filename{};
-        string_view message{};
-        string_view suggestion{};
-        size_t length{};
-        size_t line{};
-        size_t column{};
     };
 }// namespace ccl::handler
 

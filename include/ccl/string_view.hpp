@@ -13,15 +13,15 @@ namespace ccl
     {
         if constexpr (std::is_pointer_v<T>) {
             if (str == nullptr) {
-                return 0;
+                return 0ZU;
             }
         }
 
-        return std::basic_string_view{ str }.size();
+        return std::basic_string_view{ std::forward<T>(str) }.size();
     }
 
     template<CharacterLiteral CharT>
-    struct BasicStringView;
+    class BasicStringView;
 
     using string_view = BasicStringView<char>;
     using u8string_view = BasicStringView<char8_t>;
@@ -31,16 +31,49 @@ namespace ccl
 
     template<typename T, typename CharT>
     concept StringLike = std::is_same_v<T, BasicStringView<CharT>> ||
-        std::is_same_v<T, std::basic_string_view<CharT>> ||
-        std::is_same_v<T, std::basic_string<CharT>>;
+                         std::is_same_v<T, std::basic_string_view<CharT>> ||
+                         std::is_same_v<T, std::basic_string<CharT>>;
 
     template<CharacterLiteral CharT>
-    struct BasicStringView
+    class BasicStringView
     {
+    public:
         using pointer = const CharT *;
         using iterator = pointer;
         using const_iterator = iterator;
         using reverse_iterator = std::reverse_iterator<iterator>;
+
+        static constexpr auto npos = std::string_view::npos;
+
+    private:
+        pointer string{ nullptr };
+        size_t length{ 0 };
+
+    public:
+        BasicStringView() noexcept = default;
+
+        template<size_t N>
+        constexpr explicit BasicStringView(const std::array<CharT, N> &array_) noexcept
+          : string{ array_.data() }, length{ array_.size() }
+        {}
+
+        constexpr BasicStringView(pointer string_, size_t length_) noexcept
+          : string{ string_ }, length{ length_ }
+        {}
+
+        constexpr BasicStringView(iterator first, iterator last) noexcept
+          : string{ first }, length{ distance(first, last) }
+        {}
+
+        // NOLINTNEXTLINE
+        constexpr BasicStringView(const CharacterArray auto &str) noexcept
+          : string{ str }, length{ strlen(str) }
+        {}
+
+        // NOLINTNEXTLINE
+        constexpr BasicStringView(const StringLike<CharT> auto &str) noexcept
+          : string{ std::data(str) }, length{ std::size(str) }
+        {}
 
         CCL_DECL auto size() const noexcept -> size_t
         {
@@ -250,7 +283,8 @@ namespace ccl
             return std::ranges::equal(*this, other);
         }
 
-        CCL_DECL CCL_INLINE auto operator<=>(const CharT *other) const noexcept -> bool
+        CCL_DECL CCL_INLINE auto operator<=>(const CharT *other) const noexcept
+            -> std::weak_ordering
         {
             return this->operator<=>(BasicStringView{ other });
         }
@@ -262,43 +296,18 @@ namespace ccl
                 begin(), end(), other.begin(), other.end(), std::weak_order);
         }
 
-        BasicStringView() noexcept = default;
-
-        template<size_t N>
-        constexpr explicit BasicStringView(const std::array<CharT, N> &array_) noexcept
-          : string{ array_.data() }, length{ array_.size() }
-        {}
-
-        constexpr BasicStringView(pointer string_, size_t length_) noexcept
-          : string{ string_ }, length{ length_ }
-        {}
-
-        constexpr BasicStringView(iterator first, iterator last) noexcept
-          : string{ first }, length{ distance(first, last) }
-        {}
-
-        // NOLINTNEXTLINE
-        constexpr BasicStringView(const CharacterArray auto &str) noexcept
-          : string{ str }, length{ strlen(str) }
-        {}
-
-        // NOLINTNEXTLINE
-        constexpr BasicStringView(const StringLike<CharT> auto &str) noexcept
-          : string{ std::data(str) }, length{ std::size(str) }
-        {}
-
-        static constexpr auto npos = std::string_view::npos;
-
     private:
         template<typename T>
         CCL_DECL static auto distance(T first, T last) noexcept -> size_t
         {
             return static_cast<size_t>(std::distance(first, last));
         }
-
-        pointer string{ nullptr };
-        size_t length{ 0 };
     };
+
+    extern template class BasicStringView<char>;
+    extern template class BasicStringView<char8_t>;
+    extern template class BasicStringView<char16_t>;
+    extern template class BasicStringView<char32_t>;
 
     namespace string_view_literals
     {
@@ -332,7 +341,6 @@ namespace ccl
         }
     }// namespace string_view_literals
 }// namespace ccl
-
 
 template<>
 struct fmt::formatter<ccl::string_view> : fmt::formatter<std::string_view>
