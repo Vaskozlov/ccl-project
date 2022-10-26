@@ -13,7 +13,6 @@ namespace ccl::lex::dot_item
 
     class Container final : public BasicItem
     {
-    private:
         using BasicItem::canBeOptimized;
         using BasicItem::repetition;
 
@@ -31,7 +30,7 @@ namespace ccl::lex::dot_item
         };
 
         storage_t items{};
-        SpecialItems &special_items;
+        SpecialItems &specialItems;
         ContainerFlags flags{};
 
     public:
@@ -88,12 +87,12 @@ namespace ccl::lex::dot_item
     class Container::RuleParser
     {
         Container &container;
-        TextIterator &rule_iterator;
+        TextIterator &ruleIterator;
         storage_t &items{ container.items };
-        SpecialItems &special_items{ container.special_items };
-        std::optional<UniquePtr<BasicItem>> reserved_lhs{ std::nullopt };
-        LogicalOperation logical_operation{};
-        bool rhs_item_constructed{ false };
+        SpecialItems &specialItems{ container.specialItems };
+        std::optional<UniquePtr<BasicItem>> constructedLhs{ std::nullopt };
+        LogicalOperation logicalOperation{};
+        bool rhsItemConstructed{ false };
 
     public:
         RuleParser(Container &container_, TextIterator &rule_iterator_);
@@ -106,14 +105,14 @@ namespace ccl::lex::dot_item
 
         [[nodiscard]] auto isReversed() const noexcept -> bool
         {
-            return container.reversed;
+            return container.isReversed();
         }
 
         auto checkId() const -> void;
 
         auto recognizeAction() -> void;
 
-        auto prepareForLogicalOperation(LogicalOperation type) -> void;
+        auto startLogicalOperationConstruction(LogicalOperation type) -> void;
 
         auto tryToFinishLogicalOperation() -> void;
 
@@ -139,7 +138,7 @@ namespace ccl::lex::dot_item
 
         auto postCreationCheck() -> void;
 
-        auto findContainerEnd(string_view repr) -> size_t;
+        [[nodiscard]] auto findContainerEnd(string_view repr) -> size_t;
 
         auto checkThereIsLhsItem() -> void;
 
@@ -155,7 +154,7 @@ namespace ccl::lex::dot_item
     public:
         Vector<Container> special_items;
 
-        auto specialScan(TextIterator &text_iterator, Token &token) const -> bool;
+        [[nodiscard]] auto specialScan(TextIterator &text_iterator, Token &token) const -> bool;
         [[nodiscard]] auto checkForSpecial(const ForkedGenerator &text_iterator) const -> bool;
     };
 }// namespace ccl::lex::dot_item

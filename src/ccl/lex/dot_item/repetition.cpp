@@ -7,8 +7,11 @@ namespace ccl::lex::dot_item
     Sequence::Sequence(
         SequenceFlags flags_, const string_view &str_begin_, const string_view &str_end_,
         TextIterator &rule_iterator_, size_t id_)
-      : BasicItem(id_), str_begin(str_begin_), str_end(str_end_), sequence_flags(flags_)
+      : BasicItem(id_), str_begin(str_begin_), str_end(str_end_)
     {
+        flags.sequenceIsMultiline = flags_.multiline;
+        flags.sequenceNoEscapingSymbols = flags_.noEscapingSymbols;
+
         auto &rule_iterator = rule_iterator_;
         auto begin_iterator_state = rule_iterator;
 
@@ -19,7 +22,7 @@ namespace ccl::lex::dot_item
             auto chr = U'\0';
             auto is_escaping = false;
 
-            if (sequence_flags.no_escaping_symbols) {
+            if (flags.sequenceNoEscapingSymbols) {
                 chr = rule_iterator.next();
             } else {
                 auto [escaping, character] = rule_iterator.nextRawCharWithEscapingSymbols();
@@ -42,8 +45,8 @@ namespace ccl::lex::dot_item
     {
         auto future_text = text_iterator.getFutureRemaining<std::string_view>();
 
-        if (future_text.starts_with(sequence_value) ^ reversed) {
-            return reversed ? utf8::utfSize(future_text[0]) : sequence_value.size();
+        if (future_text.starts_with(sequence_value) ^ isReversed()) {
+            return isReversed() ? utf8::size(future_text[0]) : sequence_value.size();
         }
 
         return {};
@@ -71,7 +74,7 @@ namespace ccl::lex::dot_item
             throwUnterminatedString(rule_iterator, "unterminated sequence");
         }
 
-        if (land(chr == '\n', not sequence_flags.multiline)) [[unlikely]] {
+        if (land(chr == '\n', not flags.sequenceIsMultiline)) [[unlikely]] {
             auto message = "new line is reached, but sequence has not been terminated"_sv;
             auto suggestion = fmt::format("use multiline sequence or close it with `{}`", str_end);
 

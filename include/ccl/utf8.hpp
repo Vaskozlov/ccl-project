@@ -58,7 +58,7 @@ namespace ccl::utf8
         return UtfMasks.at(size);
     }
 
-    CCL_DECL auto utfSize(char chr) noexcept -> u16
+    CCL_DECL auto size(char chr) noexcept -> u16
     {
         if (isOneByteSize(chr)) [[likely]] {
             return 1U;

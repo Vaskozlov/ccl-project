@@ -11,7 +11,7 @@ namespace ccl::lex::dot_item
         struct CCL_TRIVIAL_ABI SequenceFlags
         {
             bool multiline : 1 = false;
-            bool no_escaping_symbols : 1 = false;
+            bool noEscapingSymbols : 1 = false;
         };
 
     private:
@@ -20,7 +20,6 @@ namespace ccl::lex::dot_item
         std::string sequence_value{};
         string_view str_begin{};
         string_view str_end{};
-        SequenceFlags sequence_flags{};
 
     public:
         Sequence(

@@ -41,8 +41,8 @@ namespace ccl::lex::dot_item
 
         if ((bitset.at(std::bit_cast<char8_t>(next_carriage_value)) ||
              bitset.at(text_iterator.futureChar(1))) ^
-            reversed) {
-            return utf8::utfSize(next_carriage_value);
+            isReversed()) {
+            return utf8::size(next_carriage_value);
         }
 
         return 0;

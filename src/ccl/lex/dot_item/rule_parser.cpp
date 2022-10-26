@@ -8,15 +8,15 @@ namespace ccl::lex::dot_item
     using namespace ccl::string_view_literals;
 
     Container::RuleParser::RuleParser(Container &container_, TextIterator &rule_iterator_)
-      : container(container_), rule_iterator(rule_iterator_)
+      : container(container_), ruleIterator(rule_iterator_)
     {
         checkId();
 
-        rule_iterator.moveToCleanChar();
+        ruleIterator.moveToCleanChar();
 
         while (hasMovedToTheNextChar()) {
             recognizeAction();
-            rule_iterator.moveToCleanChar();
+            ruleIterator.moveToCleanChar();
         }
 
         postCreationCheck();
@@ -24,13 +24,13 @@ namespace ccl::lex::dot_item
 
     auto Container::RuleParser::hasMovedToTheNextChar() -> bool
     {
-        return not isEoF(rule_iterator.next());
+        return not isEoF(ruleIterator.next());
     }
 
     // NOLINTNEXTLINE recursive function
     auto Container::RuleParser::recognizeAction() -> void
     {
-        switch (rule_iterator.getCurrentChar()) {
+        switch (ruleIterator.getCurrentChar()) {
         case '!':
             makeSpecial();
             break;
@@ -60,7 +60,7 @@ namespace ccl::lex::dot_item
             break;
 
         case U'{':
-            addRepetition(Repetition{ rule_iterator });
+            addRepetition(Repetition{ ruleIterator });
             break;
 
         case U'^':
@@ -72,11 +72,11 @@ namespace ccl::lex::dot_item
             break;
 
         case U'&':
-            prepareForLogicalOperation(LogicalOperation::AND);
+            startLogicalOperationConstruction(LogicalOperation::AND);
             break;
 
         case U'|':
-            prepareForLogicalOperation(LogicalOperation::OR);
+            startLogicalOperationConstruction(LogicalOperation::OR);
             break;
 
         default:
@@ -85,22 +85,22 @@ namespace ccl::lex::dot_item
         }
     }
 
-    auto Container::RuleParser::prepareForLogicalOperation(LogicalOperation type) -> void
+    auto Container::RuleParser::startLogicalOperationConstruction(LogicalOperation type) -> void
     {
         checkThereIsLhsItem();
-        logical_operation = type;
+        logicalOperation = type;
 
-        reserved_lhs = std::move(items.back());
+        constructedLhs = std::move(items.back());
         items.pop_back();
     }
 
     auto Container::RuleParser::tryToFinishLogicalOperation() -> void
     {
-        if (reserved_lhs.has_value() && not rhs_item_constructed) {
-            rhs_item_constructed = true;
-        } else if (rhs_item_constructed && reserved_lhs.has_value()) {
+        if (constructedLhs.has_value() && not rhsItemConstructed) {
+            rhsItemConstructed = true;
+        } else if (rhsItemConstructed && constructedLhs.has_value()) {
             emplaceItem(constructLogicalUnit());
-            logical_operation = LogicalOperation::NONE;
+            logicalOperation = LogicalOperation::NONE;
         }
     }
 
@@ -110,7 +110,7 @@ namespace ccl::lex::dot_item
         items.pop_back();
 
         return makeUnique<BasicItem, LogicalUnit>(
-            std::move(reserved_lhs.value()), std::move(rhs), logical_operation, getId());
+            std::move(constructedLhs.value()), std::move(rhs), logicalOperation, getId());
     }
 
     auto Container::RuleParser::constructNewSequence() -> UniquePtr<BasicItem>
@@ -118,14 +118,14 @@ namespace ccl::lex::dot_item
         tryToFinishLogicalOperation();
 
         return makeUnique<BasicItem, Sequence>(
-            Sequence::SequenceFlags{}, "\"", rule_iterator, getId());
+            Sequence::SequenceFlags{}, "\"", ruleIterator, getId());
     }
 
     auto Container::RuleParser::constructNewUnion() -> UniquePtr<BasicItem>
     {
         tryToFinishLogicalOperation();
 
-        return makeUnique<BasicItem, Union>(rule_iterator, getId());
+        return makeUnique<BasicItem, Union>(ruleIterator, getId());
     }
 
     // NOLINTNEXTLINE (recursive function)
@@ -133,15 +133,15 @@ namespace ccl::lex::dot_item
     {
         tryToFinishLogicalOperation();
 
-        auto text = rule_iterator.getRemainingWithCurrent();
-        const auto *saved_end = rule_iterator.getEnd();
+        auto text = ruleIterator.getRemainingWithCurrent();
+        const auto *saved_end = ruleIterator.getEnd();
         auto bracket_index = findContainerEnd(text);
 
-        rule_iterator.setEnd(text.begin() + bracket_index);
+        ruleIterator.setEnd(text.begin() + bracket_index);
 
         auto new_container = makeUnique<BasicItem, Container>(
-            rule_iterator, special_items, getId(), false, container.isSpecial());
-        rule_iterator.setEnd(saved_end);
+            ruleIterator, specialItems, getId(), false, container.isSpecial());
+        ruleIterator.setEnd(saved_end);
 
         return new_container;
     }
@@ -152,9 +152,9 @@ namespace ccl::lex::dot_item
             auto item_repetition = item->getRepetition();
 
             BasicItem::neverRecognizedSuggestion(
-                rule_iterator, item_repetition.from == 0 && not isReversed() && not item->empty());
+                ruleIterator, item_repetition.from == 0 && not isReversed() && not item->empty());
 
-            BasicItem::alwaysRecognizedSuggestion(rule_iterator, not isReversed() && item->empty());
+            BasicItem::alwaysRecognizedSuggestion(ruleIterator, not isReversed() && item->empty());
 
             items.emplace_back(std::move(item));
         }
@@ -240,18 +240,18 @@ namespace ccl::lex::dot_item
             return;
         }
 
-        if (reserved_lhs.has_value() && not rhs_item_constructed) {
+        if (constructedLhs.has_value() && not rhsItemConstructed) {
             throwUnableToApply("no rhs items to apply operation");
             return;
         }
 
-        if (reserved_lhs.has_value() && rhs_item_constructed) {
+        if (constructedLhs.has_value() && rhsItemConstructed) {
             tryToFinishLogicalOperation();
             return;
         }
 
-        BasicItem::neverRecognizedSuggestion(rule_iterator, items.empty() && not isReversed());
-        BasicItem::alwaysRecognizedSuggestion(rule_iterator, items.empty() && isReversed());
+        BasicItem::neverRecognizedSuggestion(ruleIterator, items.empty() && not isReversed());
+        BasicItem::alwaysRecognizedSuggestion(ruleIterator, items.empty() && isReversed());
     }
 
     auto Container::RuleParser::findContainerEnd(string_view repr) -> size_t
@@ -259,7 +259,7 @@ namespace ccl::lex::dot_item
         auto bracket_index = repr.openCloseFind('(', ')');
 
         if (not bracket_index.has_value()) [[unlikely]] {
-            rule_iterator.throwPanicError(
+            ruleIterator.throwPanicError(
                 AnalysationStage::LEXICAL_ANALYSIS, "unterminated dot item");
             throw UnrecoverableError{ "unrecoverable error in ContainerType" };
         }
@@ -305,7 +305,7 @@ namespace ccl::lex::dot_item
     {
         auto message = fmt::format("unable to apply: {}", reason);
 
-        rule_iterator.throwCriticalError(AnalysationStage::LEXICAL_ANALYSIS, message, suggestion);
+        ruleIterator.throwCriticalError(AnalysationStage::LEXICAL_ANALYSIS, message, suggestion);
         throw UnrecoverableError{ "unrecoverable error in ContainerType" };
     }
 
@@ -316,7 +316,7 @@ namespace ccl::lex::dot_item
             "use `!` to declare special symbol, `\"` for string, `[` for unions, `(` for "
             "containers "_sv;
 
-        rule_iterator.throwPanicError(AnalysationStage::LEXICAL_ANALYSIS, message, suggestion);
+        ruleIterator.throwPanicError(AnalysationStage::LEXICAL_ANALYSIS, message, suggestion);
         throw UnrecoverableError{ "unrecoverable error in ContainerType" };
     }
 

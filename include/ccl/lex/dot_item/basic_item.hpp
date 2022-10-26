@@ -22,12 +22,19 @@ namespace ccl::lex::dot_item
 
         class SpecialItems;
 
+        struct CCL_TRIVIAL_ABI Flags
+        {
+            bool reversed : 1 = false;
+            bool isPrefix : 1 = false;
+            bool isPostfix : 1 = false;
+            bool sequenceIsMultiline : 1 = false;
+            bool sequenceNoEscapingSymbols : 1 = false;
+        };
+
     protected:
         Repetition repetition{ Repetition::basic() };
         size_t id{};
-        bool reversed{ false };
-        bool prefix{};
-        bool postfix{};
+        Flags flags;
 
     public:
         explicit BasicItem(const size_t id_) : id(id_)
@@ -48,32 +55,32 @@ namespace ccl::lex::dot_item
 
         [[nodiscard]] auto isReversed() const noexcept -> bool
         {
-            return reversed;
+            return flags.reversed;
         }
 
         [[nodiscard]] auto hasPrefix() const noexcept -> bool
         {
-            return prefix;
+            return flags.isPrefix;
         }
 
         [[nodiscard]] auto hasPostfix() const noexcept -> bool
         {
-            return postfix;
+            return flags.isPostfix;
         }
 
         void setPrefix() noexcept
         {
-            prefix = true;
+            flags.isPrefix = true;
         }
 
         void setPostfix() noexcept
         {
-            postfix = true;
+            flags.isPostfix = true;
         }
 
         auto reverse() noexcept -> void
         {
-            reversed = not reversed;
+            flags.reversed = !flags.reversed;
         }
 
         auto setRepetition(Repetition new_repetition) noexcept -> void
@@ -83,7 +90,7 @@ namespace ccl::lex::dot_item
 
         [[nodiscard]] auto canBeOptimized() const noexcept -> bool
         {
-            return not reversed && repetition.from == 0 && empty();
+            return !isReversed() && repetition.from == 0 && empty();
         }
 
         [[nodiscard]] auto getId() const noexcept -> size_t

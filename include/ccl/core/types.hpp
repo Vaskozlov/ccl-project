@@ -137,11 +137,6 @@ namespace ccl
         {
             return static_cast<u64>(value);
         }
-
-        constexpr auto operator"" _ZU(unsigned long long value) -> size_t
-        {
-            return static_cast<size_t>(value);
-        }
     }// namespace integral_literals
 }// namespace ccl
 

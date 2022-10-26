@@ -21,14 +21,14 @@ namespace ccl::lex::dot_item
 
         LogicalUnit(
             UniquePtr<BasicItem> lhs_, UniquePtr<BasicItem> rhs_, LogicalOperation type_,
-            size_t id_)
-          : BasicItem(id_), lhs_item(std::move(lhs_)), rhs_item(std::move(rhs_)),
-            logical_operation(type_)
-        {}
+            size_t id_);
 
     private:
         [[nodiscard]] auto scanIteration(const ForkedGenerator &text_iterator) const
             -> size_t final;
+
+        [[nodiscard]] auto orIteration(const ForkedGenerator &text_iterator) const -> size_t;
+        [[nodiscard]] auto andIteration(const ForkedGenerator &text_iterator) const -> size_t;
     };
 }// namespace ccl::lex::dot_item
 

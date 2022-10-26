@@ -9,8 +9,8 @@ namespace ccl::text
       : Base(input), location(filename), line_tracker(input), exception_handler(&exception_handler_)
     {}
 
-    auto TextIterator::nextRawCharWithEscapingSymbols(
-        const TextIterator::extra_symbols_t &extra_symbols) -> Pair<bool, char32_t>
+    auto TextIterator::nextRawCharWithEscapingSymbols(const extra_symbols_t &extra_symbols)
+        -> Pair<bool, char32_t>
     {
         auto escaping = false;
         auto chr = next();
@@ -25,8 +25,7 @@ namespace ccl::text
     }
 
     auto TextIterator::doEscapeSymbolizing(
-        TextIterator &text_iterator, TextIterator::extra_symbols_t const &extra_symbols_)
-        -> char32_t
+        TextIterator &text_iterator, const extra_symbols_t &extra_symbols_) -> char32_t
     {
         return EscapingSymbolizer(text_iterator, extra_symbols_).matchNextChar();
     }
