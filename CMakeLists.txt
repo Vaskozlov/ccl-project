@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 3.20.0)
 
-project(ccl VERSION 0.0.2.0 LANGUAGES CXX)
-
-include(GNUInstallDirs)
+project(ccl-project VERSION 0.0.2.0 LANGUAGES CXX)
 
 include(cmake/project-options.cmake)
 include(cmake/compile-options.cmake)
@@ -32,7 +30,7 @@ install(FILES
 install(EXPORT cclTargets
         FILE cclTargets.cmake
         NAMESPACE ccl::
-        DESTINATION ${main_lib_dest}/cmake
+        DESTINATION ${main_lib_dest}/cmake/ccl
         )
 
 include(CMakePackageConfigHelpers)
@@ -65,7 +63,6 @@ install(FILES
         DESTINATION ${main_lib_dest}/cmake/ccl
         )
 
-# generate the export targets for the build tree
 export(EXPORT cclTargets
         FILE "${CMAKE_CURRENT_BINARY_DIR}/cmake/cclTargets.cmake"
         NAMESPACE ccl::
