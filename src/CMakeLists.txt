@@ -14,7 +14,7 @@ endif ()
 
 target_link_libraries(
         ccl
-        fmt::fmt-header-only
+        fmt::fmt
 )
 
 if (${PRECOMPILED_HEADERS})
@@ -27,30 +27,8 @@ endif ()
 
 include(programs/CMakeLists.txt)
 
-file(
-        GLOB_RECURSE
-        FSC_OBJECTS
-        "src/fsc/*.cpp"
-)
-
-if (CREATE_STATIC_LIBRARY)
-    add_library(fsc STATIC ${FSC_OBJECTS})
-else ()
-    add_library(fsc SHARED ${FSC_OBJECTS})
-endif ()
-
-target_link_libraries(
-        fsc
-        fmt::fmt-header-only
-)
-
-target_link_libraries(
-        fsc
-        ccl
-)
-
-set(tool_dest "bin")
 set(include_dest "include/ccl")
+set(ccl_lib_dest "lib/ccl/${CMAKE_BUILD_TYPE}")
 
 file(
         GLOB_RECURSE
@@ -58,5 +36,5 @@ file(
         "include/ccl/*.hpp"
 )
 
-install(TARGETS ccl DESTINATION bin)
+install(TARGETS ccl EXPORT ccl DESTINATION "${ccl_lib_dest}")
 install(FILES ${CCL_HEADERS} DESTINATION "${include_dest}")
