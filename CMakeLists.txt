@@ -22,7 +22,7 @@ install(TARGETS ccl
 
 install(FILES
         ${CCL_HEADERS}
-        DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/ccl
         )
 
 install(EXPORT cclTargets
@@ -34,16 +34,7 @@ install(EXPORT cclTargets
 include(CMakePackageConfigHelpers)
 
 set_property(TARGET ccl PROPERTY VERSION ${version})
-set_property(TARGET ccl PROPERTY SOVERSION 3)
 
-set_property(TARGET ccl PROPERTY
-        INTERFACE_ccl_MAJOR_VERSION 3)
-
-set_property(TARGET ccl APPEND PROPERTY
-        COMPATIBLE_INTERFACE_STRING ccl_MAJOR_VERSION
-        )
-
-# generate the version file for the config file
 write_basic_package_version_file(
         "${CMAKE_CURRENT_BINARY_DIR}/cclConfigVersion.cmake"
         VERSION "${version}"
@@ -52,7 +43,7 @@ write_basic_package_version_file(
 
 configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/Config.cmake.in
         "${CMAKE_CURRENT_BINARY_DIR}/cclConfig.cmake"
-        INSTALL_DESTINATION ${main_lib_dest}/cmake/ccl
+        INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/ccl
         )
 
 install(FILES
