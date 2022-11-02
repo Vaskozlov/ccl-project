@@ -27,12 +27,6 @@ endif ()
 
 include(programs/CMakeLists.txt)
 
-file(
-        GLOB_RECURSE
-        CCL_HEADERS
-        "include/ccl/*.hpp"
-)
-
 target_include_directories(ccl
         PUBLIC
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"

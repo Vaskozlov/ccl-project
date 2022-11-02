@@ -20,10 +20,9 @@ install(TARGETS ccl
         INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
         )
 
-install(FILES
-        ${CCL_HEADERS}
-        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/ccl
-        )
+install(DIRECTORY include/ccl
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+        FILES_MATCHING PATTERN "*.hpp")
 
 install(EXPORT cclTargets
         FILE cclTargets.cmake
