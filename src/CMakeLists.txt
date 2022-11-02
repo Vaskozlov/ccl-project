@@ -36,5 +36,5 @@ file(
         "include/ccl/*.hpp"
 )
 
-install(TARGETS ccl EXPORT ccl DESTINATION "${ccl_lib_dest}")
+install(TARGETS ccl DESTINATION "${ccl_lib_dest}")
 install(FILES ${CCL_HEADERS} DESTINATION "${include_dest}")
