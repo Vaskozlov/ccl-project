@@ -7,5 +7,3 @@ endif ()
 if (USE_ADDRESS_SANITIZER)
     add_compile_options(/fsanitize=address)
 endif ()
-
-include_directories(${Boost_INCLUDE_DIR})

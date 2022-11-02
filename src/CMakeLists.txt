@@ -36,5 +36,28 @@ file(
         "include/ccl/*.hpp"
 )
 
-install(TARGETS ccl EXPORT ccl DESTINATION "${ccl_lib_dest}")
-install(FILES ${CCL_HEADERS} DESTINATION "${include_dest}")
+target_include_directories(ccl
+        PUBLIC
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>/include"
+        "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>/include"
+)
+
+install(TARGETS ccl
+        EXPORT ccl
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+        INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
+
+install(FILES
+        ${CCL_HEADERS} TYPE
+        INCLUDE
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
+
+install(EXPORT ccl
+        FILE ccl.cmake
+        NAMESPACE ccl::
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake
+)
