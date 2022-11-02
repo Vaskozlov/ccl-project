@@ -52,21 +52,21 @@ namespace ccl::lex::dot_item
         token.clear(getId());
 
         for (auto &&item : items) {
-            auto scan_result = item->scan(local_iterator);
+            auto char_to_skip = item->scan(local_iterator);
 
-            if (not scan_result.has_value() && isReversed()) {
-                scan_result = utf8::size(local_iterator.getNextCarriageValue());
+            if (not char_to_skip.has_value() && isReversed()) {
+                char_to_skip = utf8::size(local_iterator.getNextCarriageValue());
             }
 
-            if (not scan_result.has_value()) {
+            if (not char_to_skip.has_value()) {
                 return false;
             }
 
             addPrefixOrPostfix(
-                *item, token, { local_iterator.getRemainingAsCarriage(), *scan_result });
+                *item, token, { local_iterator.getRemainingAsCarriage(), *char_to_skip });
 
-            totally_skipped += *scan_result;
-            local_iterator.skip(*scan_result);
+            totally_skipped += *char_to_skip;
+            local_iterator.skip(*char_to_skip);
         }
 
         if (special_scan == ScanningType::BASIC) {
@@ -100,7 +100,7 @@ namespace ccl::lex::dot_item
             auto scan_result = item->scan(local_iterator);
 
             if (not scan_result.has_value()) {
-                return 0;
+                return 0ZU;
             }
 
             totally_skipped += *scan_result;

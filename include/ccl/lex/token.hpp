@@ -2,10 +2,6 @@
 #define CCL_PROJECT_TOKEN_HPP
 
 #include <ccl/text/text_iterator.hpp>
-#include <optional>
-#include <string>
-#include <utility>
-#include <vector>
 
 namespace ccl::lex
 {

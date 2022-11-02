@@ -2,7 +2,6 @@
 #define CCL_PROJECT_TIM_EXCEPTION_HPP
 
 #include <ccl/text/location.hpp>
-#include <string>
 
 namespace ccl
 {

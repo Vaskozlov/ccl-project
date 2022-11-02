@@ -13,7 +13,7 @@ add_executable(
 
 target_link_libraries(
         ccl-bench
-        fmt::fmt
+        fmt::fmt-header-only
 )
 
 target_link_libraries(

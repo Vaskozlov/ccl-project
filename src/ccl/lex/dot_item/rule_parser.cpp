@@ -1,7 +1,6 @@
 #include <ccl/lex/dot_item/container.hpp>
 #include <ccl/lex/dot_item/sequence.hpp>
 #include <ccl/lex/dot_item/union.hpp>
-#include <memory_resource>
 
 namespace ccl::lex::dot_item
 {
@@ -98,7 +97,7 @@ namespace ccl::lex::dot_item
     {
         if (constructedLhs.has_value() && not rhsItemConstructed) {
             rhsItemConstructed = true;
-        } else if (rhsItemConstructed && constructedLhs.has_value()) {
+        } else if (constructedLhs.has_value() && rhsItemConstructed) {
             emplaceItem(constructLogicalUnit());
             logicalOperation = LogicalOperation::NONE;
         }
@@ -146,15 +145,15 @@ namespace ccl::lex::dot_item
         return new_container;
     }
 
-    auto Container::RuleParser::emplaceItem(UniquePtr<BasicItem> &&item) -> void
+    auto Container::RuleParser::emplaceItem(UniquePtr<BasicItem> item) -> void
     {
         if (not item->canBeOptimized()) {
             auto item_repetition = item->getRepetition();
 
-            BasicItem::neverRecognizedSuggestion(
+            neverRecognizedSuggestion(
                 ruleIterator, item_repetition.from == 0 && not isReversed() && not item->empty());
 
-            BasicItem::alwaysRecognizedSuggestion(ruleIterator, not isReversed() && item->empty());
+            alwaysRecognizedSuggestion(ruleIterator, not isReversed() && item->empty());
 
             items.emplace_back(std::move(item));
         }
@@ -229,11 +228,11 @@ namespace ccl::lex::dot_item
 
     auto Container::RuleParser::postCreationCheck() -> void
     {
-        auto postfix_elem =
-            std::ranges::find_if(items, [](const auto &elem) { return elem->hasPostfix(); });
+        const auto postfix_elem = std::ranges::find_if(
+            std::as_const(items), [](const auto &elem) { return elem->hasPostfix(); });
 
-        auto are_postfixes_correct = std::all_of(
-            postfix_elem, items.end(), [](const auto &elem) { return elem->hasPostfix(); });
+        const auto are_postfixes_correct = std::all_of(
+            postfix_elem, items.cend(), [](const auto &elem) { return elem->hasPostfix(); });
 
         if (not are_postfixes_correct) {
             throwUnableToApply("item without postfix modifier exists after items with it");
@@ -256,15 +255,11 @@ namespace ccl::lex::dot_item
 
     auto Container::RuleParser::findContainerEnd(string_view repr) -> size_t
     {
-        auto bracket_index = repr.openCloseFind('(', ')');
-
-        if (not bracket_index.has_value()) [[unlikely]] {
+        return *repr.openCloseFind('(', ')').or_else([this]() -> std::optional<size_t> {
             ruleIterator.throwPanicError(
                 AnalysationStage::LEXICAL_ANALYSIS, "unterminated dot item");
             throw UnrecoverableError{ "unrecoverable error in ContainerType" };
-        }
-
-        return *bracket_index;
+        });
     }
 
     auto Container::RuleParser::checkThereIsLhsItem() -> void
@@ -325,7 +320,7 @@ namespace ccl::lex::dot_item
     {
         return std::ranges::any_of(special_items, [&text_iterator](const auto &special_item) {
             auto scan_result = special_item.scan(text_iterator);
-            return scan_result.has_value() && scan_result != 0;
+            return scan_result != 0ZU;
         });
     }
 

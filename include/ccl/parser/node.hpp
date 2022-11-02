@@ -3,7 +3,6 @@
 
 #include <ccl/lex/token.hpp>
 #include <iostream>
-#include <string>
 
 #define FactorConstructor(Name, Id)                                                                \
     explicit Name(ccl::UniquePtr<Node> value_) : ccl::parser::Factor(Id, std::move(value_))        \

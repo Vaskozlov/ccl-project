@@ -126,7 +126,7 @@ namespace ccl::lex::dot_item
 
         [[nodiscard]] auto constructNewContainer() -> UniquePtr<BasicItem>;
 
-        auto emplaceItem(UniquePtr<BasicItem> &&item) -> void;
+        auto emplaceItem(UniquePtr<BasicItem> item) -> void;
 
         auto addPrefixPostfix() -> void;
 

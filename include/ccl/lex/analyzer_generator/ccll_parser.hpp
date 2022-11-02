@@ -30,9 +30,9 @@ namespace ccl::lex::parser
             Rule() = default;
 
             Rule(
-                string_view block_name_, BlockInfo &block_info_, string_view name_,
+                string_view block_name_, BlockInfo &block_info_, string_view rule_name_,
                 string_view definition_)
-              : block_name(block_name_), name(name_), definition(definition_),
+              : block_name(block_name_), name(rule_name_), definition(definition_),
                 block_id(block_info_.block_id), id(block_info_.last_id++)
             {}
         };

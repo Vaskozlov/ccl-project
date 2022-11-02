@@ -90,6 +90,16 @@ const ccl::UnorderedMap<ccl::parser::RuleId, size_t> PrecedenceTable(//
 
 BOOST_AUTO_TEST_CASE(CclParser)
 {
+    fmt::print("{:<8}{}\n", TestToken::toString(TestToken::EOI), TestToken::EOI);
+    fmt::print("{:<8}{}\n", TestToken::toString(TestToken::BAD_TOKEN), TestToken::BAD_TOKEN);
+    fmt::print("{:<8}{}\n", TestToken::toString(TestToken::ROOT), TestToken::ROOT);
+    fmt::print("{:<8}{}\n", TestToken::toString(TestToken::ID), TestToken::ID);
+    fmt::print("{:<8}{}\n", TestToken::toString(TestToken::NUM), TestToken::NUM);
+    fmt::print("{:<8}{}\n", TestToken::toString(TestToken::MUL), TestToken::MUL);
+    fmt::print("{:<8}{}\n", TestToken::toString(TestToken::ADD), TestToken::ADD);
+    fmt::print("{:<8}{}\n", TestToken::toString(TestToken::NOT), TestToken::NOT);
+    fmt::print("{:<8}{}\n", TestToken::toString(TestToken::EXPR), TestToken::EXPR);
+
     auto rules = parser::ParsingRules(
         PrecedenceTable,
         { CCL_PARSING_RULE(TestToken::FACTOR, constructFactorFromID, TestToken::NUM),

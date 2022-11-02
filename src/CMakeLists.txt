@@ -4,6 +4,8 @@ file(
         "src/ccl/*.cpp"
 )
 
+add_compile_definitions(BOOST_NO_CXX98_FUNCTION_BASE=false)
+
 if (CREATE_STATIC_LIBRARY)
     add_library(ccl STATIC ${CCL_OBJECTS})
 else ()
@@ -12,7 +14,7 @@ endif ()
 
 target_link_libraries(
         ccl
-        fmt::fmt
+        fmt::fmt-header-only
 )
 
 if (${PRECOMPILED_HEADERS})
@@ -39,7 +41,7 @@ endif ()
 
 target_link_libraries(
         fsc
-        fmt::fmt
+        fmt::fmt-header-only
 )
 
 target_link_libraries(
@@ -47,11 +49,10 @@ target_link_libraries(
         ccl
 )
 
-if (${PRECOMPILED_HEADER})
-    target_precompile_headers(
-            fsc
-            PUBLIC
-            "pch.hpp"
-            "include/ccl/lex/lexical_analyzer.hpp"
-    )
-endif ()
+install(TARGETS ccl
+        CONFIGURATIONS Debug
+        RUNTIME DESTINATION Debug/bin)
+
+install(TARGETS ccl
+        CONFIGURATIONS Release
+        RUNTIME DESTINATION Release/bin)

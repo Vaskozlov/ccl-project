@@ -3,7 +3,6 @@
 
 #include <ccl/lex/dot_item/container.hpp>
 #include <memory_resource>
-#include <set>
 
 namespace ccl::lex
 {
@@ -57,16 +56,11 @@ namespace ccl::lex
         bool has_future_token{ false };
 
     public:
-        Tokenizer(LexicalAnalyzer &lexical_analyzer_, string_view text, string_view filename_ = {})
-          : lexical_analyzer(lexical_analyzer_),
-            text_iterator(text, lexical_analyzer_.exception_handler, filename_)
-        {}
+        Tokenizer(LexicalAnalyzer &lexical_analyzer_, string_view text, string_view filename_ = {});
 
         Tokenizer(
             LexicalAnalyzer &lexical_analyzer_, string_view text, string_view filename_,
-            ExceptionHandler &exception_handler_)
-          : lexical_analyzer(lexical_analyzer_), text_iterator(text, exception_handler_, filename_)
-        {}
+            ExceptionHandler &exception_handler_);
 
         [[nodiscard]] auto getIterator() const -> const TextIterator &
         {
@@ -85,12 +79,7 @@ namespace ccl::lex
 
         auto throwException(
             ExceptionCriticality criticality, string_view message, string_view suggestion = {})
-            -> void
-        {
-            text_iterator.throwToHandle(
-                text_iterator, criticality, AnalysationStage::LEXICAL_ANALYSIS, message,
-                suggestion);
-        }
+            -> void;
 
         auto yield() -> Token &;
         auto futureToken() -> Token &;

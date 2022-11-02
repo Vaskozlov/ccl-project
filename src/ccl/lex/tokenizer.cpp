@@ -16,7 +16,7 @@ namespace ccl::lex
     auto LexicalAnalyzer::Tokenizer::nextToken(Token &token) -> void
     {
         auto &chars_to_skip = lexical_analyzer.skipped_characters;
-        auto container_scan = [this, &token](const auto &container) {
+        auto scan_container = [this, &token](const auto &container) {
             return container.beginScan(text_iterator, token);
         };
 
@@ -33,7 +33,7 @@ namespace ccl::lex
             return returnIfNotInIgnored(token);
         }
 
-        if (std::ranges::any_of(lexical_analyzer.items, container_scan)) {
+        if (std::ranges::any_of(lexical_analyzer.items, scan_container)) {
             return returnIfNotInIgnored(token);
         }
 
@@ -58,6 +58,25 @@ namespace ccl::lex
         if (shouldIgnoreToken(token)) [[unlikely]] {
             return nextToken(token);
         }
+    }
+
+    LexicalAnalyzer::Tokenizer::Tokenizer(
+        LexicalAnalyzer &lexical_analyzer_, string_view text, string_view filename_)
+      : lexical_analyzer(lexical_analyzer_),
+        text_iterator(text, lexical_analyzer_.exception_handler, filename_)
+    {}
+
+    LexicalAnalyzer::Tokenizer::Tokenizer(
+        LexicalAnalyzer &lexical_analyzer_, string_view text, string_view filename_,
+        ExceptionHandler &exception_handler_)
+      : lexical_analyzer(lexical_analyzer_), text_iterator(text, exception_handler_, filename_)
+    {}
+
+    auto LexicalAnalyzer::Tokenizer::throwException(
+        ExceptionCriticality criticality, string_view message, string_view suggestion) -> void
+    {
+        text_iterator.throwToHandle(
+            text_iterator, criticality, AnalysationStage::LEXICAL_ANALYSIS, message, suggestion);
     }
 
     auto LexicalAnalyzer::Tokenizer::yield() -> Token &

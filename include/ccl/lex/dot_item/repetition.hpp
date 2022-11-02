@@ -16,27 +16,27 @@ namespace ccl::lex::dot_item
 
         explicit Repetition(text::TextIterator &text_iterator);
 
-        consteval static auto basic() noexcept -> Repetition
+        [[nodiscard]] consteval static auto basic() noexcept -> Repetition
         {
             return { 1, 1 };
         }
 
-        consteval static auto question() noexcept -> Repetition
+        [[nodiscard]] consteval static auto question() noexcept -> Repetition
         {
             return { 0, 1 };
         }
 
-        consteval static auto star() noexcept -> Repetition
+        [[nodiscard]] consteval static auto star() noexcept -> Repetition
         {
             return { 0, max() };
         }
 
-        consteval static auto plus() noexcept -> Repetition
+        [[nodiscard]] consteval static auto plus() noexcept -> Repetition
         {
             return { 1, max() };
         }
 
-        consteval static auto max() noexcept -> size_t
+        [[nodiscard]] consteval static auto max() noexcept -> size_t
         {
             return std::numeric_limits<size_t>::max();
         }
@@ -50,7 +50,8 @@ namespace ccl::lex::dot_item
             -> std::weak_ordering = default;
 
     private:
-        static auto parseNumber(text::TextIterator &text_iterator, char32_t terminator) -> size_t;
+        [[nodiscard]] static auto
+            parseNumber(text::TextIterator &text_iterator, char32_t terminator) -> size_t;
 
         static auto checkRangeStart(text::TextIterator &text_iterator) -> void;
         auto checkCorrectnessOfValues(text::TextIterator &text_iterator) const -> void;

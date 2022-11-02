@@ -7,7 +7,7 @@ namespace ccl::lex::dot_item
     Union::Union(TextIterator &rule_iterator_, size_t id_) : BasicItem(id_)
     {
         auto is_range = false;
-        auto previous_chr = static_cast<char32_t>(0);
+        auto previous_chr = U'\0';
         auto &rule_iterator = rule_iterator_;
         auto begin_iterator_state = rule_iterator;
 
@@ -37,12 +37,8 @@ namespace ccl::lex::dot_item
 
     auto Union::scanIteration(const ForkedGenerator &text_iterator) const -> size_t
     {
-        auto next_carriage_value = text_iterator.getNextCarriageValue();
-
-        if ((bitset.at(std::bit_cast<char8_t>(next_carriage_value)) ||
-             bitset.at(text_iterator.futureChar(1))) ^
-            isReversed()) {
-            return utf8::size(next_carriage_value);
+        if (bitset.at(text_iterator.futureChar(1)) ^ isReversed()) {
+            return utf8::size(text_iterator.getNextCarriageValue());
         }
 
         return 0;

@@ -14,9 +14,8 @@ auto main() -> int
     auto file_stream = std::fstream{};
     file_stream.open(TargetHeaderFile, std::ios::out);
 
-    if (not file_stream.is_open()) {
+    if (!file_stream.is_open()) {
         fmt::print("Error: cannot open file {}\n", TargetHeaderFile);
-        std::cout.flush();
         return 1;
     }
 
@@ -25,9 +24,8 @@ auto main() -> int
 
     file_stream.open(TargetSourceFile, std::ios::out);
 
-    if (not file_stream.is_open()) {
+    if (!file_stream.is_open()) {
         fmt::print("Error: cannot open file {}\n", TargetSourceFile);
-        std::cout.flush();
         return 1;
     }
 

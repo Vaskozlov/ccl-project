@@ -5,15 +5,14 @@
 
 namespace ccl
 {
-    template<typename T>
-    concept DerivedFromTextIteratorException = std::derived_from<T, text::TextIteratorException>;
-
     class ExceptionHandler
     {
     protected:
         using ExceptionT = text::TextIteratorException;
 
     private:
+        static ExceptionHandler defaultExceptionHandler;
+
         size_t suggestion_count{};
         size_t warnings_count{};
         size_t uncritical_errors_count{};
@@ -30,17 +29,20 @@ namespace ccl
         auto operator=(const ExceptionHandler &) -> ExceptionHandler & = default;
         auto operator=(ExceptionHandler &&) noexcept -> ExceptionHandler & = default;
 
-        static auto instance() -> ExceptionHandler &;
+        [[nodiscard]] static auto instance() -> ExceptionHandler &
+        {
+            return defaultExceptionHandler;
+        }
 
         auto handle(const ExceptionT *error) -> void;
 
-        template<DerivedFromTextIteratorException T>
+        template<std::derived_from<ExceptionT> T>
         auto handle(const T *error)
         {
             handle(static_cast<const ExceptionT *>(error));
         }
 
-        template<DerivedFromTextIteratorException T>
+        template<std::derived_from<ExceptionT> T>
         auto handle(const T &error)
         {
             handle(static_cast<const ExceptionT *>(&error));

@@ -4,7 +4,6 @@
 #include <ccl/ccl.hpp>
 #include <numeric>
 #include <optional>
-#include <string_view>
 
 namespace ccl
 {
@@ -292,8 +291,15 @@ namespace ccl
         CCL_DECL auto operator<=>(const StringLike<CharT> auto &other) const noexcept
             -> std::weak_ordering
         {
-            return std::lexicographical_compare_three_way(
-                begin(), end(), other.begin(), other.end(), std::weak_order);
+            auto min_size = std::min(size(), std::size(other));
+
+            for (auto i = 0ZU; i != min_size; ++i) {
+                if (this->operator[](i) != other[i]) {
+                    return this->operator[](i) <=> other[i];
+                }
+            }
+
+            return size() <=> std::size(other);
         }
 
     private:
@@ -308,33 +314,34 @@ namespace ccl
     extern template class BasicStringView<char8_t>;
     extern template class BasicStringView<char16_t>;
     extern template class BasicStringView<char32_t>;
+    extern template class BasicStringView<wchar_t>;
 
     namespace string_view_literals
     {
-        constexpr auto operator""_sv(const char *string, size_t length) -> BasicStringView<char>
+        consteval auto operator""_sv(const char *string, size_t length) -> BasicStringView<char>
         {
             return { string, length };
         }
 
-        constexpr auto operator""_sv(const char8_t *string, size_t length)
+        consteval auto operator""_sv(const char8_t *string, size_t length)
             -> BasicStringView<char8_t>
         {
             return { string, length };
         }
 
-        constexpr auto operator""_sv(const char16_t *string, size_t length)
+        consteval auto operator""_sv(const char16_t *string, size_t length)
             -> BasicStringView<char16_t>
         {
             return { string, length };
         }
 
-        constexpr auto operator""_sv(const char32_t *string, size_t length)
+        consteval auto operator""_sv(const char32_t *string, size_t length)
             -> BasicStringView<char32_t>
         {
             return { string, length };
         }
 
-        constexpr auto operator""_sv(const wchar_t *string, size_t length)
+        consteval auto operator""_sv(const wchar_t *string, size_t length)
             -> BasicStringView<wchar_t>
         {
             return { string, length };

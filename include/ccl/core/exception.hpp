@@ -14,11 +14,11 @@
 
 #define CCL_SAFE_VERSION                                                                           \
     template<UsageMode Mode = SAFE>                                                                \
-    requires(Mode == SAFE)
+        requires(Mode == SAFE)
 
 #define CCL_UNSAFE_VERSION                                                                         \
     template<UsageMode Mode>                                                                       \
-    requires(Mode == UNSAFE)
+        requires(Mode == UNSAFE)
 
 namespace ccl
 {

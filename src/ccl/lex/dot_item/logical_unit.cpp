@@ -29,27 +29,22 @@ namespace ccl::lex::dot_item
 
     auto LogicalUnit::orIteration(const ForkedGenerator &text_iterator) const -> size_t
     {
-        const auto lhs = lhs_item->scan(text_iterator);
-
-        if (lhs.has_value()) {
-            return *lhs;
-        }
-
-        const auto rhs = rhs_item->scan(text_iterator);
-
-        if (rhs.has_value()) {
-            return *rhs;
-        }
-
-        return 0;
+        return *lhs_item->scan(text_iterator)
+                    .or_else([this, &text_iterator]() { return rhs_item->scan(text_iterator); })
+                    .or_else([]() { return std::optional(0ZU); });
     }
 
     auto LogicalUnit::andIteration(const ForkedGenerator &text_iterator) const -> size_t
     {
         const auto lhs = lhs_item->scan(text_iterator);
+
+        if (not lhs.has_value()) {
+            return 0;
+        }
+
         const auto rhs = rhs_item->scan(text_iterator);
 
-        if ((lhs.has_value() && rhs.has_value()) && (*lhs == *rhs)) {
+        if (rhs.has_value() && (lhs == rhs)) {
             return *rhs;
         }
 

@@ -3,13 +3,9 @@
 
 namespace ccl
 {
-    auto ExceptionHandler::instance() -> ExceptionHandler &
-    {
-        static auto handler = ExceptionHandler{};
-        return handler;
-    }
+    ExceptionHandler ExceptionHandler::defaultExceptionHandler;
 
-    auto ExceptionHandler::handle(const ExceptionT *error) -> void
+    auto ExceptionHandler::handle(const ExceptionT *const error) -> void
     {
         switch (error->getCriticality()) {
         case ExceptionCriticality::SUGGESTION:
@@ -33,14 +29,14 @@ namespace ccl
             break;
 
         default:
-            throw std::invalid_argument{ "Invalid criticality" };
+            std::unreachable();
         }
 
         onHandle(error);
     }
 
     // NOLINTNEXTLINE recursive call
-    auto ExceptionHandler::onHandle(const ExceptionT *error) -> void
+    auto ExceptionHandler::onHandle(const ExceptionT *const error) -> void
     {
         static auto cmd_handler = handler::Cmd{};
 

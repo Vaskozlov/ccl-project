@@ -4,6 +4,8 @@ using namespace fmt;
 
 namespace ccl::handler
 {
+    using namespace std::string_view_literals;
+
     static auto replaceTabWithSpaces(const string_view &string) -> Pair<size_t, std::string>
     {
         auto result = std::string{};
@@ -12,9 +14,9 @@ namespace ccl::handler
         for (auto &&chr : string) {
             if (chr == '\t') {
                 ++replaced_tabs;
-                result += "    ";
+                result.append("    "sv);
             } else {
-                result += chr;
+                result.push_back(chr);
             }
         }
 

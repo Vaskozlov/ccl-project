@@ -14,6 +14,20 @@ namespace ccl::lex::gen
     public:
         using Tokenizer = typename LexicalAnalyzer::Tokenizer;
 
+    private:
+        Tokenizer &tokenizer;
+        parser::CcllParser ccll_parser;
+        std::string include_dir_for_src{};
+        std::string handler{ "ccl::handler::Cmd::instance()" };
+        std::string variable_name{ "set_me" };
+        std::string filename{ "set_me" };
+        std::string name_space{};
+        std::string enum_name{};
+        std::string generated_header{};
+        std::string generated_source{};
+        std::string extra_spaces{};
+
+    public:
         explicit StaticGenerator(Tokenizer &tokenizer_)
           : tokenizer(tokenizer_), ccll_parser(tokenizer)
         {
@@ -46,18 +60,6 @@ namespace ccl::lex::gen
         auto generateSource() -> void;
 
         auto appendToStr(std::string &dest, const std::string &string) const -> void;
-
-        Tokenizer &tokenizer;
-        parser::CcllParser ccll_parser;
-        std::string include_dir_for_src{};
-        std::string handler{ "ccl::handler::Cmd::instance()" };
-        std::string variable_name{ "set_me" };
-        std::string filename{ "set_me" };
-        std::string name_space{};
-        std::string enum_name{};
-        std::string generated_header{};
-        std::string generated_source{};
-        std::string extra_spaces{};
     };
 }// namespace ccl::lex::gen
 

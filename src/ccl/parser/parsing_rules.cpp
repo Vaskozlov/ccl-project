@@ -36,11 +36,10 @@ namespace ccl::parser
         auto inserter = std::inserter(terminals, terminals.begin());
         auto insert_condition = [this](RuleId id) { return not non_terminals.contains(id); };
 
-        for (const auto &rules : parsing_rules | std::views::values) {
+        for (const auto &[keys, rules] : parsing_rules) {
             for (const auto &rule : rules) {
                 const auto &ids_to_construct = rule.ids_to_construct;
-                std::ranges::copy_if(
-                    ids_to_construct | std::views::drop(0), inserter, insert_condition);
+                std::ranges::copy_if(ids_to_construct, inserter, insert_condition);
             }
         }
     }
@@ -49,7 +48,7 @@ namespace ccl::parser
     {
         auto all_rules = Vector<ParsingRule *>{};
 
-        for (auto &rules : parsing_rules | std::views::values) {
+        for (auto &[keys, rules] : parsing_rules) {
             for (auto &rule : rules) {
                 all_rules.push_back(&rule);
             }

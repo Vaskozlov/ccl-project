@@ -2,7 +2,6 @@
 #define CCL_PROJECT_LINE_TRACKER_HPP
 
 #include <ccl/string_view.hpp>
-#include <string>
 
 namespace ccl::text
 {
@@ -24,22 +23,23 @@ namespace ccl::text
             newLinePassed = chr == '\n';
         }
 
-        constexpr explicit LineTracker(const string_view &text_) noexcept
-          : text(text_), line(text.begin(), std::min(text.size(), text.find<UNSAFE>('\n')))
-        {}
+        constexpr explicit LineTracker(const string_view &text_) noexcept : text(text_)
+        {
+            auto new_line_index = text.find('\n');
+            line = { text.begin(), *new_line_index.or_else(
+                                       [this]() -> std::optional<size_t> { return text.size(); }) };
+        }
 
     private:
         constexpr auto updateLine() -> void
         {
-            auto end_offset = text.size();
             const auto *new_line_begin = std::min(text.end(), line.end() + 1);
             const auto new_line_index = text.find('\n', new_line_begin);
 
-            if (new_line_index.has_value()) {
-                end_offset = *new_line_index;
-            }
-
-            line = { new_line_begin, text.begin() + end_offset };
+            line = { new_line_begin,
+                     text.begin() + *new_line_index.or_else([this]() -> std::optional<size_t> {
+                         return text.size();
+                     }) };
         }
 
         string_view text{};

@@ -2,7 +2,6 @@
 #define CCL_PROJECT_FLATMAP_HPP
 
 #include <ccl/ccl.hpp>
-#include <initializer_list>
 #include <utility>
 
 namespace ccl

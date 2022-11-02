@@ -84,7 +84,8 @@ namespace ccl::utf8
     {
         using namespace std::string_view_literals;
 
-        auto &&cast = [](auto value) { return static_cast<char>(value); };
+        static constexpr auto &&cast = [](auto value) { return static_cast<char>(value); };
+        static constexpr auto non_continuation_mask = cast(~ContinuationMask);
 
         // NOLINTBEGIN
 
@@ -92,16 +93,16 @@ namespace ccl::utf8
             string.push_back(cast(chr));
         } else if (chr <= TwoBytesMax) {
             string.push_back(cast(TwoBytesSignature | (chr >> 6)));
-            string.push_back(cast(ContinuationSignature | (chr & 0b0011'1111)));
+            string.push_back(cast(ContinuationSignature | (chr & non_continuation_mask)));
         } else if (chr <= TreeBytesMax) {
             string.push_back(cast(TreeBytesSignature | (chr >> 12)));
-            string.push_back(cast(ContinuationSignature | ((chr >> 6) & 0b0011'1111)));
-            string.push_back(cast(ContinuationSignature | (chr & 0b0011'1111)));
+            string.push_back(cast(ContinuationSignature | ((chr >> 6) & non_continuation_mask)));
+            string.push_back(cast(ContinuationSignature | (chr & non_continuation_mask)));
         } else if (chr <= FourBytesMax) {
             string.push_back(cast(FourBytesSignature | (chr >> 18)));
-            string.push_back(cast(ContinuationSignature | ((chr >> 12) & 0b0011'1111)));
-            string.push_back(cast(ContinuationSignature | ((chr >> 6) & 0b0011'1111)));
-            string.push_back(cast(ContinuationSignature | (chr & 0b0011'1111)));
+            string.push_back(cast(ContinuationSignature | ((chr >> 12) & non_continuation_mask)));
+            string.push_back(cast(ContinuationSignature | ((chr >> 6) & non_continuation_mask)));
+            string.push_back(cast(ContinuationSignature | (chr & non_continuation_mask)));
         } else [[unlikely]] {
             throw std::invalid_argument{ "unable to convert symbol to utf8" };
         }

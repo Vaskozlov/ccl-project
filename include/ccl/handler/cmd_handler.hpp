@@ -10,6 +10,8 @@ namespace ccl::handler
     struct Cmd final : ExceptionHandler
     {
     private:
+        static Cmd defaultCmdHandler;
+
         class CmdFormatter;
 
     public:
@@ -17,7 +19,10 @@ namespace ccl::handler
 
         Cmd() noexcept = default;
 
-        static auto instance() -> Cmd &;
+        [[nodiscard]] static auto instance() -> Cmd &
+        {
+            return defaultCmdHandler;
+        }
 
     private:
         auto onHandle(const ExceptionT *instance) -> void final;
@@ -41,29 +46,13 @@ namespace ccl::handler
         explicit CmdFormatter(const ExceptionT *exception) noexcept;
 
         template<fmt::color Color, typename HandleType>
-        auto format(HandleType &&handle_type) -> std::string
-        {
-            formatFilename();
-            formatErrorCategory<Color>(std::forward<HandleType>(handle_type));
-            formatMessage();
-            formatLineNumber();
-
-            auto tabs_count = formatWorkingLine();
-            auto arrow_position = formatArrow(tabs_count);
-
-            formatSuggestion(arrow_position);
-
-            return formatting_buffer;
-        }
+        [[nodiscard]] auto format(HandleType &&handle_type) -> std::string;
 
     private:
         auto formatFilename() -> void;
 
         template<fmt::color Color, typename HandleType>
-        auto formatErrorCategory(HandleType &&handle_type) -> void
-        {
-            format_to(std::back_inserter(formatting_buffer), fg(Color), handle_type);
-        }
+        auto formatErrorCategory(HandleType &&handle_type) -> void;
 
         auto formatMessage() -> void;
 
@@ -71,7 +60,7 @@ namespace ccl::handler
 
         auto formatWorkingLine() -> size_t;
 
-        auto formatArrow(size_t tabs_number) -> size_t;
+        [[nodiscard]] auto formatArrow(size_t tabs_number) -> size_t;
 
         auto formatSuggestion(size_t arrow_position) -> void;
     };
