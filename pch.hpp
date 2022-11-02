@@ -29,4 +29,4 @@
 #include <ostream>
 #include <sstream>
 
-#include "include/ccl/ccl.hpp"
+#include <ccl/ccl.hpp>
