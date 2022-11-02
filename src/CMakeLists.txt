@@ -38,24 +38,3 @@ target_include_directories(ccl
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>/include"
         "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>/include"
 )
-
-include(GNUInstallDirs)
-
-install(TARGETS ccl
-        EXPORT ccl
-        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-        INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-)
-
-install(FILES
-        ${CCL_HEADERS}
-        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-)
-
-install(EXPORT ccl
-        FILE ccl-config.cmake
-        NAMESPACE ccl::
-        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake
-)
