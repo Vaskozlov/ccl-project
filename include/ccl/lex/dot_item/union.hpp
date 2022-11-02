@@ -26,7 +26,8 @@ namespace ccl::lex::dot_item
         }
 
     private:
-        [[nodiscard]] auto scanIteration(const ForkedGenerator &text_iterator) const -> size_t final;
+        [[nodiscard]] auto scanIteration(const ForkedGenerator &text_iterator) const
+            -> size_t final;
 
         [[nodiscard]] static auto isRange(bool is_escaping, char32_t chr) noexcept -> bool;
 

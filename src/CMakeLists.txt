@@ -49,10 +49,14 @@ target_link_libraries(
         ccl
 )
 
-install(TARGETS ccl
-        CONFIGURATIONS Debug
-        RUNTIME DESTINATION Debug/bin)
+set(tool_dest "bin")
+set(include_dest "include/ccl")
 
-install(TARGETS ccl
-        CONFIGURATIONS Release
-        RUNTIME DESTINATION Release/bin)
+file(
+        GLOB_RECURSE
+        CCL_HEADERS
+        "include/ccl/*.hpp"
+)
+
+install(TARGETS ccl DESTINATION bin)
+install(FILES ${CCL_HEADERS} DESTINATION "${include_dest}")
