@@ -27,9 +27,6 @@ endif ()
 
 include(programs/CMakeLists.txt)
 
-set(include_dest "include/ccl")
-set(ccl_lib_dest "lib/ccl/${CMAKE_BUILD_TYPE}")
-
 file(
         GLOB_RECURSE
         CCL_HEADERS
@@ -42,6 +39,8 @@ target_include_directories(ccl
         "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>/include"
 )
 
+include(GNUInstallDirs)
+
 install(TARGETS ccl
         EXPORT ccl
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
@@ -51,8 +50,7 @@ install(TARGETS ccl
 )
 
 install(FILES
-        ${CCL_HEADERS} TYPE
-        INCLUDE
+        ${CCL_HEADERS}
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
