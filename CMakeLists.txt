@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.20.0)
 
-project(ccl-project VERSION 0.0.2.0 LANGUAGES CXX)
+project(ccl VERSION 0.0.2.0 LANGUAGES CXX)
 
 include(GNUInstallDirs)
 
@@ -11,7 +11,6 @@ include(cmake/libraries.cmake)
 include(src/CMakeLists.txt)
 include(catch/CMakeLists.txt)
 include(bench/CMakeLists.txt)
-
 
 install(TARGETS ccl
         EXPORT cclTargets
