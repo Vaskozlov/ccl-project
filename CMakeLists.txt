@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.20.0)
 
 project(ccl-project VERSION 0.0.2.0 LANGUAGES CXX)
 
+include(GNUInstallDirs)
+
 include(cmake/project-options.cmake)
 include(cmake/compile-options.cmake)
 include(cmake/libraries.cmake)
@@ -10,27 +12,23 @@ include(src/CMakeLists.txt)
 include(catch/CMakeLists.txt)
 include(bench/CMakeLists.txt)
 
-set(tool_dest "bin")
-set(include_dest "include")
-set(main_lib_dest lib)
-
 install(TARGETS ccl
         EXPORT cclTargets
-        LIBRARY DESTINATION ${main_lib_dest}
-        ARCHIVE DESTINATION ${main_lib_dest}
-        RUNTIME DESTINATION ${tool_dest}
-        INCLUDES DESTINATION ${include_dest}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+        INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
         )
 
 install(FILES
         ${CCL_HEADERS}
-        DESTINATION ${include_dest}
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}
         )
 
 install(EXPORT cclTargets
         FILE cclTargets.cmake
         NAMESPACE ccl::
-        DESTINATION ${main_lib_dest}/cmake/ccl
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/ccl
         )
 
 include(CMakePackageConfigHelpers)
@@ -60,7 +58,7 @@ configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/Config.cmake.in
 install(FILES
         "${CMAKE_CURRENT_BINARY_DIR}/cclConfig.cmake"
         "${CMAKE_CURRENT_BINARY_DIR}/cclConfigVersion.cmake"
-        DESTINATION ${main_lib_dest}/cmake/ccl
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/ccl
         )
 
 export(EXPORT cclTargets
