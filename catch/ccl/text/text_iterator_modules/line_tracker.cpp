@@ -3,7 +3,6 @@
 
 using namespace ccl;
 using namespace text;
-using namespace text::module;
 using namespace string_view_literals;
 
 constexpr static auto Input = "Hello, World!\nIt's a \nTest!\nOf line tracker\n "_sv;
@@ -16,7 +15,7 @@ constexpr static auto Input = "Hello, World!\nIt's a \nTest!\nOf line tracker\n 
 
 BOOST_AUTO_TEST_CASE(LineTrackig)
 {
-    DEBUG_VAR current_line = static_cast<size_t>(0);
+    DEBUG_VAR current_line = 0ZU;
     DEBUG_VAR line_tracker = LineTracker{ Input };
 
     for (auto chr : Input) {

@@ -1,10 +1,11 @@
 #include <ccl/lex/analyzer_generator/static_generator.hpp>
+#include <ranges>
 
 namespace ccl::lex::gen
 {
     auto StaticGenerator::loadDirectives() -> void
     {
-        for (auto &[name, value] : ccll_parser.getDirectives()) {
+        for (const auto &[name, value] : ccll_parser.getDirectives()) {
             if (name == "FILENAME") {
                 filename = value;
             } else if (name == "VAR_NAME") {
@@ -96,11 +97,11 @@ namespace ccl::lex::gen
         appendToStr(string, fmt::format("    {{ {0}::{1}, \"{1}\" }},\n", enum_name, "EOI"));
         appendToStr(string, fmt::format("    {{ {0}::{1}, \"{1}\" }},\n", enum_name, "BAD_TOKEN"));
 
-        for (auto &&rule : ccll_parser.getRules()) {
-            if (generated_rules.contains(rule.name)) {
-                continue;
-            }
+        auto repeat_filter = [&generated_rules](const parser::CcllParser::Rule &rule) {
+            return not generated_rules.contains(rule.name);
+        };
 
+        for (auto &&rule : ccll_parser.getRules() | std::views::filter(repeat_filter)) {
             generated_rules.insert(rule.name);
             appendToStr(
                 string, fmt::format("    {{ {0}::{1}, \"{1}\" }},\n", enum_name, rule.name));
@@ -124,16 +125,18 @@ namespace ccl::lex::gen
 
     auto StaticGenerator::generateEnumCases() -> void
     {
-        constexpr size_t shift_size = 16;
+        constexpr auto shift_size = 16ZU;
 
         std::set<string_view> generated_cases{};
         std::set<string_view> generated_blocks{};
 
-        for (const auto &[block_name, block_info] : ccll_parser.getBlocks()) {
-            if (generated_blocks.contains(block_name)) {
-                continue;
-            }
+        auto single_block_definition = [&generated_blocks](const auto &block) {
+            const auto &block_name = block.first;
+            return not generated_blocks.contains(block_name);
+        };
 
+        for (const auto &[block_name, block_info] :
+             ccll_parser.getBlocks() | std::views::filter(single_block_definition)) {
             auto id = (static_cast<size_t>(block_info.block_id) << shift_size);
 
             generated_blocks.insert(block_name);
@@ -143,11 +146,11 @@ namespace ccl::lex::gen
         generated_header.append(fmt::format(",\n{}    {} = {}", extra_spaces, "EOI", 0));
         generated_header.append(fmt::format(",\n{}    {} = {}", extra_spaces, "BAD_TOKEN", 1));
 
-        for (auto &&rule : ccll_parser.getRules()) {
-            if (generated_cases.contains(rule.name)) {
-                continue;
-            }
+        auto single_rule_definition = [&generated_cases](const auto &rule) {
+            return not generated_cases.contains(rule.name);
+        };
 
+        for (auto &&rule : ccll_parser.getRules() | std::views::filter(single_rule_definition)) {
             auto id = (static_cast<size_t>(rule.block_id) << shift_size) | (rule.id);
 
             generated_cases.insert(rule.name);
@@ -187,7 +190,6 @@ namespace ccl::lex::gen
                 extra_spaces, addition_flags, variable_name, handler));
 
         generateRules(string);
-
         appendToStr(string, "    });\n\n");
     }
 

@@ -4,31 +4,34 @@
 #include <boost/container/small_vector.hpp>
 #include <ccl/lex/dot_item/basic_item.hpp>
 #include <ccl/lex/dot_item/logical_unit.hpp>
-#include <ccl/lex/dot_item/recurrence.hpp>
+#include <ccl/lex/dot_item/repetition.hpp>
 #include <stack>
 
 namespace ccl::lex::dot_item
 {
-    CCL_ENUM(ScanningType, u16, MAIN_SCAN, BASIC, SPECIAL, CHECK);
+    CCL_ENUM(ScanningType, u16, MAIN_SCAN, BASIC, SPECIAL, CHECK);// NOLINT
 
     class Container final : public BasicItem
     {
-    private:
         using BasicItem::canBeOptimized;
-        using BasicItem::recurrence;
+        using BasicItem::repetition;
 
         using typename BasicItem::TextIterator;
 
         using ForkedGen = typename TextIterator::ForkedTextIterator;
-        using storage_t = boost::container::small_vector<BasicItemPtr, 4>;
+        using storage_t = boost::container::small_vector<UniquePtr<BasicItem>, 4>;
 
-        struct RuleParser;
+        class RuleParser;
 
         struct ContainerFlags
         {
             bool is_main : 1 = false;
             bool is_special : 1 = false;
         };
+
+        storage_t items{};
+        SpecialItems &specialItems;
+        ContainerFlags flags{};
 
     public:
         Container(
@@ -55,7 +58,7 @@ namespace ccl::lex::dot_item
             return id == other.id;
         }
 
-        [[nodiscard]] auto operator<=>(const Container &other) const noexcept
+        [[nodiscard]] auto operator<=>(const Container &other) const noexcept -> std::weak_ordering
         {
             return id <=> other.id;
         }
@@ -79,13 +82,19 @@ namespace ccl::lex::dot_item
         auto parseRule(TextIterator &rule_iterator) -> void;
 
         [[nodiscard]] auto failedToEndItem(const ForkedGenerator &text_iterator) const -> bool;
-
-        storage_t items{};
-        ContainerFlags flags{};
     };
 
-    struct Container::RuleParser
+    class Container::RuleParser
     {
+        Container &container;
+        TextIterator &ruleIterator;
+        storage_t &items{ container.items };
+        SpecialItems &specialItems{ container.specialItems };
+        std::optional<UniquePtr<BasicItem>> constructedLhs{ std::nullopt };
+        LogicalOperation logicalOperation{};
+        bool rhsItemConstructed{ false };
+
+    public:
         RuleParser(Container &container_, TextIterator &rule_iterator_);
 
     private:
@@ -96,32 +105,32 @@ namespace ccl::lex::dot_item
 
         [[nodiscard]] auto isReversed() const noexcept -> bool
         {
-            return container.reversed;
+            return container.isReversed();
         }
 
         auto checkId() const -> void;
 
         auto recognizeAction() -> void;
 
-        auto prepareForLogicalOperation(LogicalOperation type) -> void;
+        auto startLogicalOperationConstruction(LogicalOperation type) -> void;
 
         auto tryToFinishLogicalOperation() -> void;
 
         [[nodiscard]] auto hasMovedToTheNextChar() -> bool;
 
-        [[nodiscard]] auto constructLogicalUnit() -> BasicItemPtr;
+        [[nodiscard]] auto constructLogicalUnit() -> UniquePtr<BasicItem>;
 
-        [[nodiscard]] auto constructNewSequence() -> BasicItemPtr;
+        [[nodiscard]] auto constructNewSequence() -> UniquePtr<BasicItem>;
 
-        [[nodiscard]] auto constructNewUnion() -> BasicItemPtr;
+        [[nodiscard]] auto constructNewUnion() -> UniquePtr<BasicItem>;
 
-        [[nodiscard]] auto constructNewContainer() -> BasicItemPtr;
+        [[nodiscard]] auto constructNewContainer() -> UniquePtr<BasicItem>;
 
-        auto emplaceItem(BasicItemPtr &&item) -> void;
+        auto emplaceItem(UniquePtr<BasicItem> item) -> void;
 
         auto addPrefixPostfix() -> void;
 
-        auto addRecurrence(Recurrence new_recurrence) -> void;
+        auto addRepetition(Repetition new_repetition) -> void;
 
         auto makeSpecial() -> void;
 
@@ -129,7 +138,7 @@ namespace ccl::lex::dot_item
 
         auto postCreationCheck() -> void;
 
-        auto findContainerEnd(string_view repr) -> size_t;
+        [[nodiscard]] auto findContainerEnd(string_view repr) -> size_t;
 
         auto checkThereIsLhsItem() -> void;
 
@@ -138,41 +147,15 @@ namespace ccl::lex::dot_item
         auto throwUnableToApply(string_view reason, string_view suggestion = {}) -> void;
 
         auto throwUndefinedAction() -> void;
-
-        Container &container;
-        TextIterator &rule_iterator;
-        storage_t &items{ container.items };
-        SpecialItems &special_items{ container.special_items };
-        std::optional<BasicItemPtr> reserved_lhs{ std::nullopt };
-        LogicalOperation logical_operation{};
-        bool rhs_item_constructed{ false };
     };
 
-    struct BasicItem::SpecialItems
+    class BasicItem::SpecialItems
     {
-        [[nodiscard]] auto checkForSpecial(const ForkedGenerator &text_iterator) const -> bool
-        {
-            return std::ranges::any_of(special_items, [text_iterator](const auto &special_item) {
-                auto scan_result = special_item.scan(text_iterator);
-                return scan_result.has_value() && scan_result != 0;
-            });
-        }
+    public:
+        Vector<Container> special_items;
 
-        auto specialScan(TextIterator &text_iterator, Token &token) const -> bool
-        {
-            for (auto &&special_item : special_items) {
-                auto scan_result =
-                    special_item.beginScan(text_iterator, token, ScanningType::SPECIAL);
-
-                if (scan_result) {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        std::vector<Container> special_items;
+        [[nodiscard]] auto specialScan(TextIterator &text_iterator, Token &token) const -> bool;
+        [[nodiscard]] auto checkForSpecial(const ForkedGenerator &text_iterator) const -> bool;
     };
 }// namespace ccl::lex::dot_item
 

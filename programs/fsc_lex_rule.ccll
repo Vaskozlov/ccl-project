@@ -1,0 +1,34 @@
+NAMESPACE           =   fsc
+VAR_NAME            =   FscLexer
+FILENAME            =   'lexical_analyzer.hpp'
+INCLUDE_DIR_FOR_SRC =   'fsc/lex'
+
+NEW_LINE:               ! "\n"
+COMMENT:                ! "//"[\n]*^
+COMMENT:                ! "/*" "*/"^* "*/"
+
+{KEYWORD}
+FUNC:                   "func"
+VAR:                    "var"
+CLASS:                  "class"
+ARROW:                  "->"
+
+{SEPARATORS}
+LEFT_PARENTHESIS:       ! [(]
+RIGHT_PARENTHESIS:      ! [)]
+ANGLE_OPENING:          ! "["
+ANGLE_CLOSING:          ! "]"
+COMMA:                  ! [,]
+COLON:                  ! [:]
+
+{BINARY_OPERATOR}
+ADDITION:               ! "+"
+SUBTRACTION:            ! "-"
+MULTIPLICATION:         ! "*"
+DIVISION:               ! "/"
+
+ASSIGNMENT:             ! "="
+
+{VALUE}
+NUMBER:                 [0-9]+
+IDENTIFIER:             [a-zA-Z_][a-zA-Z0-9_]*

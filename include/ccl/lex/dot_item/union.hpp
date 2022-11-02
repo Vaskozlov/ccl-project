@@ -8,10 +8,12 @@ namespace ccl::lex::dot_item
 {
     class Union final : public BasicItem
     {
+        UtfSet bitset{};
+
     public:
         using typename BasicItem::TextIterator;
 
-        Union(TextIterator &rule_iterator_, SpecialItems &special_items_, size_t id_ = 0);
+        explicit Union(TextIterator &rule_iterator_, size_t id_ = 0);
 
         [[nodiscard]] auto getBitset() const noexcept -> const UtfSet &
         {
@@ -24,7 +26,8 @@ namespace ccl::lex::dot_item
         }
 
     private:
-        auto scanIteration(const ForkedGenerator &text_iterator) const -> size_t final;
+        [[nodiscard]] auto scanIteration(const ForkedGenerator &text_iterator) const
+            -> size_t final;
 
         [[nodiscard]] static auto isRange(bool is_escaping, char32_t chr) noexcept -> bool;
 
@@ -42,8 +45,6 @@ namespace ccl::lex::dot_item
         static auto throwUnterminatedUnion(TextIterator &rule_iterator) -> void;
         static auto throwUnterminatedRangeException(TextIterator &rule_iterator) -> void;
         static auto throwUnionBeginException(TextIterator &rule_iterator) -> void;
-
-        UtfSet bitset{};
     };
 }// namespace ccl::lex::dot_item
 

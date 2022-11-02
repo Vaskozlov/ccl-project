@@ -1,9 +1,8 @@
 #ifndef CCL_PROJECT_TEXT_ITERATOR_HPP
 #define CCL_PROJECT_TEXT_ITERATOR_HPP
 
-#include "basic_text_iterator.hpp"
 #include <ccl/handler/exception_handler.hpp>
-#include <ccl/pair.hpp>
+#include <ccl/text/basic_text_iterator.hpp>
 #include <ccl/text/iterator_exception.hpp>
 #include <ccl/text/location.hpp>
 #include <ccl/text/text_iterator_modules/line_tracker.hpp>
@@ -17,6 +16,11 @@ namespace ccl::text
     private:
         using Base = CrtpBasicTextIterator<TextIterator>;
         using extra_symbols_t = std::basic_string<Pair<char32_t, char32_t>>;
+
+        Location location{};
+        TsTracker ts_tracker{};
+        LineTracker line_tracker;
+        ExceptionHandler *exception_handler{};
 
     public:
         class EscapingSymbolizer;
@@ -33,10 +37,7 @@ namespace ccl::text
         explicit TextIterator(
             const string_view &input,
             ExceptionHandler &exception_handler_ = ExceptionHandler::instance(),
-            const string_view &filename = {})
-          : Base(input), location(filename), line_tracker(input),
-            exception_handler(&exception_handler_)
-        {}
+            const string_view &filename = {});
 
         [[nodiscard]] auto getLocation() const noexcept -> const Location &
         {
@@ -95,81 +96,89 @@ namespace ccl::text
 
         auto utfError(char /* unused */) -> void
         {
-            throwPanicError("invalid utf symbol");
+            throwPanicError(AnalysationStage::LEXICAL_ANALYSIS, "invalid utf symbol");
             throw UnrecoverableError{ "unable to recover, because of invalid utf symbol" };
         }
 
         auto throwSuggestion(
-            const TextIterator &iterator_location, const string_view &message,
-            const string_view &suggestion = {}) -> void
+            AnalysationStage stage, const TextIterator &iterator_location,
+            const string_view &message, const string_view &suggestion = {}) -> void
         {
-            throwToHandle(iterator_location, ExceptionCriticality::SUGGESTION, message, suggestion);
+            throwToHandle(
+                iterator_location, ExceptionCriticality::SUGGESTION, stage, message, suggestion);
         }
 
         auto throwWarning(
-            const TextIterator &iterator_location, const string_view &message,
-            const string_view &suggestion = {}) -> void
+            AnalysationStage stage, const TextIterator &iterator_location,
+            const string_view &message, const string_view &suggestion = {}) -> void
         {
-            throwToHandle(iterator_location, ExceptionCriticality::WARNING, message, suggestion);
+            throwToHandle(
+                iterator_location, ExceptionCriticality::WARNING, stage, message, suggestion);
         }
 
         auto throwUncriticalError(
-            const TextIterator &iterator_location, const string_view &message,
-            const string_view &suggestion = {}) -> void
+            AnalysationStage stage, const TextIterator &iterator_location,
+            const string_view &message, const string_view &suggestion = {}) -> void
         {
-            throwToHandle(iterator_location, ExceptionCriticality::SUGGESTION, message, suggestion);
+            throwToHandle(
+                iterator_location, ExceptionCriticality::SUGGESTION, stage, message, suggestion);
         }
 
         auto throwCriticalError(
-            const TextIterator &iterator_location, const string_view &message,
-            const string_view &suggestion = {}) -> void
+            AnalysationStage stage, const TextIterator &iterator_location,
+            const string_view &message, const string_view &suggestion = {}) -> void
         {
-            throwToHandle(iterator_location, ExceptionCriticality::CRITICAL, message, suggestion);
+            throwToHandle(
+                iterator_location, ExceptionCriticality::CRITICAL, stage, message, suggestion);
         }
 
         auto throwPanicError(
-            const TextIterator &iterator_location, const string_view &message,
-            const string_view &suggestion = {}) -> void
+            AnalysationStage stage, const TextIterator &iterator_location,
+            const string_view &message, const string_view &suggestion = {}) -> void
         {
-            throwToHandle(iterator_location, ExceptionCriticality::PANIC, message, suggestion);
+            throwToHandle(
+                iterator_location, ExceptionCriticality::PANIC, stage, message, suggestion);
         }
 
-        auto throwSuggestion(const string_view &message, const string_view &suggestion = {}) -> void
-        {
-            throwToHandle(*this, ExceptionCriticality::SUGGESTION, message, suggestion);
-        }
-
-        auto throwWarning(const string_view &message, const string_view &suggestion = {}) -> void
-        {
-            throwToHandle(*this, ExceptionCriticality::WARNING, message, suggestion);
-        }
-
-        auto throwUncriticalError(const string_view &message, const string_view &suggestion = {})
+        auto throwSuggestion(
+            AnalysationStage stage, const string_view &message, const string_view &suggestion = {})
             -> void
         {
-            throwToHandle(*this, ExceptionCriticality::SUGGESTION, message, suggestion);
+            throwToHandle(*this, ExceptionCriticality::SUGGESTION, stage, message, suggestion);
         }
 
-        auto throwCriticalError(const string_view &message, const string_view &suggestion = {})
+        auto throwWarning(
+            AnalysationStage stage, const string_view &message, const string_view &suggestion = {})
             -> void
         {
-            throwToHandle(*this, ExceptionCriticality::CRITICAL, message, suggestion);
+            throwToHandle(*this, ExceptionCriticality::WARNING, stage, message, suggestion);
         }
 
-        auto throwPanicError(const string_view &message, const string_view &suggestion = {}) -> void
+        auto throwUncriticalError(
+            AnalysationStage stage, const string_view &message, const string_view &suggestion = {})
+            -> void
         {
-            throwToHandle(*this, ExceptionCriticality::PANIC, message, suggestion);
+            throwToHandle(*this, ExceptionCriticality::SUGGESTION, stage, message, suggestion);
+        }
+
+        auto throwCriticalError(
+            AnalysationStage stage, const string_view &message, const string_view &suggestion = {})
+            -> void
+        {
+            throwToHandle(*this, ExceptionCriticality::CRITICAL, stage, message, suggestion);
+        }
+
+        auto throwPanicError(
+            AnalysationStage stage, const string_view &message, const string_view &suggestion = {})
+            -> void
+        {
+            throwToHandle(*this, ExceptionCriticality::PANIC, stage, message, suggestion);
         }
 
         auto throwToHandle(
             const TextIterator &iterator_location, ExceptionCriticality criticality,
-            const string_view &message, const string_view &suggestion = {}) -> void;
-
-    private:
-        Location location{};
-        module::TsTracker ts_tracker{};
-        module::LineTracker line_tracker;
-        ExceptionHandler *exception_handler{};
+            AnalysationStage stage, const string_view &message, const string_view &suggestion = {})
+            -> void;
     };
 
     class TextIterator::EscapingSymbolizer
@@ -191,8 +200,7 @@ namespace ccl::text
 
         explicit EscapingSymbolizer(
             TextIterator &text_iterator_,
-            extra_symbols_t
-                extra_symbols_) noexcept(std::is_nothrow_move_constructible_v<extra_symbols_t>)
+            extra_symbols_t extra_symbols_) noexcept
           : extra_symbols{ std::move(extra_symbols_) }, text_iterator{ text_iterator_ }
         {}
 
@@ -223,7 +231,7 @@ namespace ccl::text
 
         NotationEscapingSymbolizer(
             TextIterator &text_iterator_, u16 max_times_, u16 notation_power_,
-            bool need_all_chars_) noexcept;
+            bool need_all_chars_);
 
         ~NotationEscapingSymbolizer() = default;
 

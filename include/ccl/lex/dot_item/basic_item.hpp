@@ -1,7 +1,7 @@
 #ifndef CCL_PROJECT_BASIC_ITEM_HPP
 #define CCL_PROJECT_BASIC_ITEM_HPP
 
-#include <ccl/lex/dot_item/recurrence.hpp>
+#include <ccl/lex/dot_item/repetition.hpp>
 #include <ccl/lex/token.hpp>
 #include <ccl/text/text_iterator.hpp>
 #include <optional>
@@ -18,12 +18,26 @@ namespace ccl::lex::dot_item
     public:
         using TextIterator = text::TextIterator;
         using ForkedGenerator = typename text::TextIterator::ForkedTextIterator;
-        using BasicItemPtr = std::unique_ptr<BasicItem>;
-        using ScanResult = std::optional<std::pair<TextIterator, Token>>;
+        using ScanResult = std::optional<Pair<TextIterator, Token>>;
 
-        struct SpecialItems;
+        class SpecialItems;
 
-        BasicItem(SpecialItems &special_items_, size_t id_) : id(id_), special_items(special_items_)
+        struct CCL_TRIVIAL_ABI Flags
+        {
+            bool reversed : 1 = false;
+            bool isPrefix : 1 = false;
+            bool isPostfix : 1 = false;
+            bool sequenceIsMultiline : 1 = false;
+            bool sequenceNoEscapingSymbols : 1 = false;
+        };
+
+    protected:
+        Repetition repetition{ Repetition::basic() };
+        size_t id{};
+        Flags flags;
+
+    public:
+        explicit BasicItem(const size_t id_) : id(id_)
         {}
 
         BasicItem(const BasicItem &) = default;
@@ -34,49 +48,49 @@ namespace ccl::lex::dot_item
         auto operator=(const BasicItem &) -> void = delete;
         auto operator=(BasicItem &&) noexcept -> void = delete;
 
-        [[nodiscard]] auto getRecurrence() const noexcept -> Recurrence
+        [[nodiscard]] auto getRepetition() const noexcept -> Repetition
         {
-            return recurrence;
+            return repetition;
         }
 
         [[nodiscard]] auto isReversed() const noexcept -> bool
         {
-            return reversed;
+            return flags.reversed;
         }
 
         [[nodiscard]] auto hasPrefix() const noexcept -> bool
         {
-            return prefix;
+            return flags.isPrefix;
         }
 
         [[nodiscard]] auto hasPostfix() const noexcept -> bool
         {
-            return postfix;
+            return flags.isPostfix;
         }
 
         void setPrefix() noexcept
         {
-            prefix = true;
+            flags.isPrefix = true;
         }
 
         void setPostfix() noexcept
         {
-            postfix = true;
+            flags.isPostfix = true;
         }
 
         auto reverse() noexcept -> void
         {
-            reversed = not reversed;
+            flags.reversed = !flags.reversed;
         }
 
-        auto setRecurrence(Recurrence new_recurrence) noexcept -> void
+        auto setRepetition(Repetition new_repetition) noexcept -> void
         {
-            recurrence = new_recurrence;
+            repetition = new_repetition;
         }
 
         [[nodiscard]] auto canBeOptimized() const noexcept -> bool
         {
-            return not reversed && recurrence.from == 0 && empty();
+            return !isReversed() && repetition.from == 0 && empty();
         }
 
         [[nodiscard]] auto getId() const noexcept -> size_t
@@ -93,14 +107,6 @@ namespace ccl::lex::dot_item
     private:
         [[nodiscard]] virtual auto scanIteration(const ForkedGenerator &text_iterator) const
             -> size_t = 0;
-
-    protected:
-        Recurrence recurrence{ Recurrence::basic() };
-        size_t id{};
-        SpecialItems &special_items;
-        bool reversed{ false };
-        bool prefix{};
-        bool postfix{};
     };
 }// namespace ccl::lex::dot_item
 

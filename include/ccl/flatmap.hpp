@@ -2,18 +2,17 @@
 #define CCL_PROJECT_FLATMAP_HPP
 
 #include <ccl/ccl.hpp>
-#include <initializer_list>
 #include <utility>
 
 namespace ccl
 {
     template<typename Key, typename Value, size_t Size>
-    class Flatmap
+    class StaticFlatmap
     {
     public:
         using key_type = Key;
         using mapped_type = Value;
-        using value_type = std::pair<Key, Value>;
+        using value_type = Pair<Key, Value>;
         using storage_t = std::array<value_type, Size>;
         using iterator = typename storage_t::iterator;
         using const_iterator = typename storage_t::const_iterator;
@@ -82,7 +81,7 @@ namespace ccl
         constexpr auto emplace(Ts &&...args) -> value_type &
         {
             if (occupied == capacity()) {
-                throw OutOfRange("flatmap is full");
+                throw std::out_of_range("flatmap is full");
             }
 
             storage[occupied] = value_type(std::forward<Ts>(args)...);
@@ -124,9 +123,9 @@ namespace ccl
             return staticFind(*this, key);
         }
 
-        Flatmap() = default;
+        StaticFlatmap() = default;
 
-        constexpr Flatmap(const std::initializer_list<value_type> &initial_data)
+        constexpr StaticFlatmap(InitializerList<value_type> initial_data)
         {
             for (auto &value : initial_data) {
                 insert(value);
@@ -135,11 +134,10 @@ namespace ccl
 
     private:
         template<typename Self>
-        CCL_DECL static auto staticFind(Self &self, const Key &key) noexcept
-            -> std::conditional_t<std::is_const_v<Self>, const_iterator, iterator>
+        CCL_DECL static auto staticFind(Self &&self, const Key &key) noexcept -> decltype(auto)
         {
             return std::ranges::find_if(
-                self, [key](const value_type &value) { return value.first == key; });
+                self, [&key](const value_type &value) { return value.first == key; });
         }
 
         template<typename Self>
@@ -149,7 +147,7 @@ namespace ccl
             auto elem = self.find(key);
 
             if (elem == self.end()) {
-                throw KeyNotFound("key not found");
+                throw std::out_of_range("key not found");
             }
 
             return elem->second;

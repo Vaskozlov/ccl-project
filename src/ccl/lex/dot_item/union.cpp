@@ -4,11 +4,10 @@ namespace ccl::lex::dot_item
 {
     using namespace ccl::string_view_literals;
 
-    Union::Union(TextIterator &rule_iterator_, SpecialItems &special_items_, size_t id_)
-      : BasicItem(special_items_, id_)
+    Union::Union(TextIterator &rule_iterator_, size_t id_) : BasicItem(id_)
     {
         auto is_range = false;
-        auto previous_chr = static_cast<char32_t>(0);
+        auto previous_chr = U'\0';
         auto &rule_iterator = rule_iterator_;
         auto begin_iterator_state = rule_iterator;
 
@@ -38,12 +37,8 @@ namespace ccl::lex::dot_item
 
     auto Union::scanIteration(const ForkedGenerator &text_iterator) const -> size_t
     {
-        auto next_carriage_value = text_iterator.getNextCarriageValue();
-
-        if ((bitset.at(std::bit_cast<char8_t>(next_carriage_value)) ||
-             bitset.at(text_iterator.futureChar(1))) ^
-            reversed) {
-            return utf8::utfSize(next_carriage_value);
+        if (bitset.at(text_iterator.futureChar(1)) ^ isReversed()) {
+            return utf8::size(text_iterator.getNextCarriageValue());
         }
 
         return 0;
@@ -100,13 +95,14 @@ namespace ccl::lex::dot_item
 
     CCL_INLINE auto Union::throwUnterminatedUnion(TextIterator &rule_iterator) -> void
     {
-        rule_iterator.throwPanicError("unterminated union item"_sv);
+        rule_iterator.throwPanicError(
+            AnalysationStage::LEXICAL_ANALYSIS, "unterminated union item"_sv);
         throw UnrecoverableError{ "unrecoverable error in Union" };
     }
 
     CCL_INLINE auto Union::throwUnterminatedRangeException(TextIterator &rule_iterator) -> void
     {
-        rule_iterator.throwPanicError("unterminated range"_sv);
+        rule_iterator.throwPanicError(AnalysationStage::LEXICAL_ANALYSIS, "unterminated range"_sv);
         throw UnrecoverableError{ "unrecoverable error in Union" };
     }
 
@@ -118,7 +114,7 @@ namespace ccl::lex::dot_item
         auto message =
             fmt::format("expected `[` at the beginning of union item declaration, got {}", buffer);
 
-        rule_iterator.throwPanicError(message);
+        rule_iterator.throwPanicError(AnalysationStage::LEXICAL_ANALYSIS, message);
         throw UnrecoverableError{ "unrecoverable error in Union" };
     }
 }// namespace ccl::lex::dot_item

@@ -28,7 +28,7 @@ namespace ccl::lex
         if (!stream.is_open()) {
             fmt::print("Error: cannot open file {}\n", path.string());
             std::cout.flush();
-            throw InvalidArgument("Failed to open file");
+            throw std::invalid_argument("Failed to open file");
         }
 
         auto buffer = std::stringstream{};
@@ -38,7 +38,7 @@ namespace ccl::lex
     }
 
     auto AnalyzerGenerator::generateStaticVersion(const std::filesystem::path &path)
-        -> std::pair<std::string, std::string>
+        -> Pair<std::string, std::string>
     {
         auto filename = path.string();
         auto file_content = readFile(path);
@@ -47,7 +47,7 @@ namespace ccl::lex
     }
 
     auto AnalyzerGenerator::generateStaticVersion(string_view filename, string_view text)
-        -> std::pair<std::string, std::string>
+        -> Pair<std::string, std::string>
     {
         auto tokenizer = LexForGenerator.getTokenizer(text, filename);
         auto static_generator = gen::StaticGenerator{ tokenizer };

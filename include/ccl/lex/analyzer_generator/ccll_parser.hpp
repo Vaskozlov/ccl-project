@@ -18,38 +18,50 @@ namespace ccl::lex::parser
             u16 last_id{};
         };
 
-        struct Rule
+        class Rule
         {
-            Rule() = default;
-
-            Rule(
-                string_view block_name_, BlockInfo &block_info_, string_view name_,
-                string_view definition_)
-              : block_name(block_name_), name(name_), definition(definition_),
-                block_id(block_info_.block_id), id(block_info_.last_id++)
-            {}
-
+        public:
             string_view block_name;
             string_view name;
             string_view definition;
             u16 block_id{};
             u16 id{};
+
+            Rule() = default;
+
+            Rule(
+                string_view block_name_, BlockInfo &block_info_, string_view rule_name_,
+                string_view definition_)
+              : block_name(block_name_), name(rule_name_), definition(definition_),
+                block_id(block_info_.block_id), id(block_info_.last_id++)
+            {}
         };
 
+    private:
+        Vector<Rule> rules{};
+        std::stack<Token> token_stack{};
+        Map<string_view, std::string> directives{};
+        Map<string_view, BlockInfo> blocks{ { "NONE", { 0, 2 } } };
+        SpecialItems special_items{};
+        string_view current_block = "NONE";
+        Tokenizer &tokenizer;
+        size_t last_block_id{ 1 };
+
+    public:
         explicit CcllParser(Tokenizer &tokenizer_) : tokenizer(tokenizer_)
         {}
 
-        [[nodiscard]] auto getRules() const -> const std::vector<Rule> &
+        [[nodiscard]] auto getRules() const -> const Vector<Rule> &
         {
             return rules;
         }
 
-        [[nodiscard]] auto getBlocks() const -> const std::map<string_view, BlockInfo> &
+        [[nodiscard]] auto getBlocks() const -> const Map<string_view, BlockInfo> &
         {
             return blocks;
         }
 
-        [[nodiscard]] auto getDirectives() const -> const std::map<string_view, std::string> &
+        [[nodiscard]] auto getDirectives() const -> const Map<string_view, std::string> &
         {
             return directives;
         }
@@ -77,16 +89,6 @@ namespace ccl::lex::parser
 
         auto parsingError(
             string_view expected_types, GenToken given_token, string_view suggestion = {}) -> void;
-
-    private:
-        std::vector<Rule> rules{};
-        std::stack<Token> token_stack{};
-        std::map<string_view, std::string> directives{};
-        std::map<string_view, BlockInfo> blocks{ { "NONE", { 0, 2 } } };
-        SpecialItems special_items{};
-        string_view current_block = "NONE";
-        Tokenizer &tokenizer;
-        size_t last_block_id{ 1 };
     };
 }// namespace ccl::lex::parser
 

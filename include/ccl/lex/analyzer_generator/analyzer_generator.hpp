@@ -4,7 +4,6 @@
 #include <ccl/lex/lexical_analyzer.hpp>
 #include <ccl/string_view.hpp>
 #include <filesystem>
-#include <string>
 
 namespace ccl::lex
 {
@@ -16,14 +15,13 @@ namespace ccl::lex
 
     class AnalyzerGenerator
     {
+        static LexicalAnalyzer LexForGenerator;// NOLINT non const variable
+
     public:
         static auto generateStaticVersion(const std::filesystem::path &path)
-            -> std::pair<std::string, std::string>;
+            -> Pair<std::string, std::string>;
         static auto generateStaticVersion(string_view filename, string_view text)
-            -> std::pair<std::string, std::string>;
-
-    private:
-        static LexicalAnalyzer LexForGenerator;// NOLINT non const variable
+            -> Pair<std::string, std::string>;
     };
 }// namespace ccl::lex
 

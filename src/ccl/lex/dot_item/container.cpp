@@ -18,7 +18,8 @@ namespace ccl::lex::dot_item
     Container::Container(
         TextIterator &rule_iterator_, SpecialItems &special_items_, size_t id_, bool main_item_,
         bool is_special_)
-      : BasicItem(special_items_, id_), flags({ .is_main = main_item_, .is_special = is_special_ })
+      : BasicItem(id_), specialItems(special_items_),
+        flags({ .is_main = main_item_, .is_special = is_special_ })
     {
         parseRule(rule_iterator_);
     }
@@ -26,7 +27,8 @@ namespace ccl::lex::dot_item
     Container::Container(
         TextIterator &&rule_iterator_, SpecialItems &special_items_, size_t id_, bool main_item_,
         bool is_special_)
-      : BasicItem(special_items_, id_), flags({ .is_main = main_item_, .is_special = is_special_ })
+      : BasicItem(id_), specialItems(special_items_),
+        flags({ .is_main = main_item_, .is_special = is_special_ })
     {
         parseRule(rule_iterator_);
     }
@@ -34,7 +36,8 @@ namespace ccl::lex::dot_item
     Container::Container(
         const TextIterator &rule_iterator_, SpecialItems &special_items_, size_t id_,
         bool main_item_, bool is_special_)
-      : BasicItem(special_items_, id_), flags({ .is_main = main_item_, .is_special = is_special_ })
+      : BasicItem(id_), specialItems(special_items_),
+        flags({ .is_main = main_item_, .is_special = is_special_ })
     {
         auto rule_iterator = rule_iterator_;
         parseRule(rule_iterator);
@@ -43,27 +46,27 @@ namespace ccl::lex::dot_item
     auto Container::beginScan(
         TextIterator &text_iterator, Token &token, ScanningType special_scan) const -> bool
     {
-        size_t totally_skipped = 0;
+        auto totally_skipped = 0ZU;
         auto local_iterator = text_iterator.fork();
 
         token.clear(getId());
 
         for (auto &&item : items) {
-            auto scan_result = item->scan(local_iterator);
+            auto char_to_skip = item->scan(local_iterator);
 
-            if (not scan_result.has_value() && reversed) {
-                scan_result = utf8::utfSize(local_iterator.getNextCarriageValue());
+            if (not char_to_skip.has_value() && isReversed()) {
+                char_to_skip = utf8::size(local_iterator.getNextCarriageValue());
             }
 
-            if (not scan_result.has_value()) {
+            if (not char_to_skip.has_value()) {
                 return false;
             }
 
             addPrefixOrPostfix(
-                *item, token, { local_iterator.getRemainingAsCarriage(), *scan_result });
+                *item, token, { local_iterator.getRemainingAsCarriage(), *char_to_skip });
 
-            totally_skipped += *scan_result;
-            local_iterator.skip(*scan_result);
+            totally_skipped += *char_to_skip;
+            local_iterator.skip(*char_to_skip);
         }
 
         if (special_scan == ScanningType::BASIC) {
@@ -85,19 +88,19 @@ namespace ccl::lex::dot_item
     {
         return not(
             isLayoutOrEoF(text_iterator.getNextCarriageValue()) ||
-            special_items.checkForSpecial(text_iterator));
+            specialItems.checkForSpecial(text_iterator));
     }
 
     auto Container::scanIteration(const ForkedGenerator &text_iterator) const -> size_t
     {
+        auto totally_skipped = 0ZU;
         auto local_iterator = text_iterator;
-        size_t totally_skipped = 0;
 
         for (auto &&item : items) {
             auto scan_result = item->scan(local_iterator);
 
             if (not scan_result.has_value()) {
-                return 0;
+                return 0ZU;
             }
 
             totally_skipped += *scan_result;

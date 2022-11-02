@@ -2,9 +2,8 @@
 #define CCL_PROJECT_LINE_TRACKER_HPP
 
 #include <ccl/string_view.hpp>
-#include <string>
 
-namespace ccl::text::module
+namespace ccl::text
 {
     class LineTracker
     {
@@ -16,31 +15,37 @@ namespace ccl::text::module
 
         constexpr auto next(char32_t chr) noexcept -> void
         {
-            if (new_line_passed) {
+            if (newLinePassed) [[unlikely]] {
                 updateLine();
-                new_line_passed = false;
+                newLinePassed = false;
             }
 
-            new_line_passed = chr == U'\n';
+            newLinePassed = chr == '\n';
         }
 
-        constexpr explicit LineTracker(const string_view &text_) noexcept
-          : text(text_), line(text.begin(), std::min(text.size(), text.find<UNSAFE>('\n')))
-        {}
+        constexpr explicit LineTracker(const string_view &text_) noexcept : text(text_)
+        {
+            auto new_line_index = text.find('\n');
+            line = { text.begin(), *new_line_index.or_else(
+                                       [this]() -> std::optional<size_t> { return text.size(); }) };
+        }
 
     private:
         constexpr auto updateLine() -> void
         {
             const auto *new_line_begin = std::min(text.end(), line.end() + 1);
-            auto end_offset = std::min(text.size(), text.find<UNSAFE>(U'\n', new_line_begin));
+            const auto new_line_index = text.find('\n', new_line_begin);
 
-            line = { new_line_begin, text.begin() + end_offset };
+            line = { new_line_begin,
+                     text.begin() + *new_line_index.or_else([this]() -> std::optional<size_t> {
+                         return text.size();
+                     }) };
         }
 
         string_view text{};
         string_view line{};
-        bool new_line_passed{ false };
+        bool newLinePassed{ false };
     };
-}// namespace ccl::text::module
+}// namespace ccl::text
 
 #endif /* CCL_PROJECT_LINE_TRACKER_HPP */

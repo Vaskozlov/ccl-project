@@ -6,38 +6,36 @@ namespace ccl::lex::parser
 {
     auto CcllParser::parse() -> bool
     {
-        while (true) {
-            auto token = tokenizer.yield();
-            auto token_id = token.getId();
+        auto token = tokenizer.yield();
+        auto token_id = token.getId();
 
-            switch (token_id) {
-            case GenToken::IDENTIFIER:
-                token_stack.push(std::move(token));
+        switch (token_id) {
+        case GenToken::IDENTIFIER:
+            token_stack.push(std::move(token));
 
-                if (not parseDeclaration()) {
-                    recoverFromError();
-                }
-
-                break;
-
-            case GenToken::CURLY_OPENING:
-                if (not parseBlockDefinition()) {
-                    recoverFromError();
-                }
-
-                break;
-
-            case GenToken::NEW_LINE:
-                break;
-
-            case GenToken::EOI:
-                return true;
-
-            default:
-                parsingError("identifier or block definition (`{`)", token_id);
+            if (not parseDeclaration()) {
                 recoverFromError();
-                break;
             }
+
+            return parse();
+
+        case GenToken::CURLY_OPENING:
+            if (not parseBlockDefinition()) {
+                recoverFromError();
+            }
+
+            return parse();
+
+        case GenToken::NEW_LINE:
+            return parse();
+
+        case GenToken::EOI:
+            return true;
+
+        default:
+            parsingError("identifier or block definition (`{`)", token_id);
+            recoverFromError();
+            return parse();
         }
     }
 

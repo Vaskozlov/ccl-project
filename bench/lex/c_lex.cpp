@@ -202,7 +202,7 @@ static void lexicalAnalysisOfC()
 {
     auto begin = std::chrono::high_resolution_clock::now();
 
-    for (size_t i = 0; i != 1000; ++i) {
+    for (auto i = 0; i != 1000ZU; ++i) {
         auto tokenizer = C_Lexer.getTokenizer(C_Program);
         auto token = tokenizer.yield();
 

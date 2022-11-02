@@ -24,14 +24,17 @@ set_source_files_properties(
 
 target_link_libraries(
         ccl-catch
-        fmt::fmt
+        fmt::fmt-header-only
 )
-
-target_link_libraries(ccl-catch ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
 target_link_libraries(
         ccl-catch
         ccl
+)
+
+target_link_libraries(
+        ccl-catch
+        fsc
 )
 
 if (${PRECOMPILED_HEADER})

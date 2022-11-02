@@ -7,24 +7,29 @@ namespace ccl::lex::dot_item
 {
     class Sequence final : public BasicItem
     {
-    private:
-        using typename BasicItem::TextIterator;
-
     public:
         struct CCL_TRIVIAL_ABI SequenceFlags
         {
             bool multiline : 1 = false;
-            bool no_escaping_symbols : 1 = false;
+            bool noEscapingSymbols : 1 = false;
         };
 
+    private:
+        using typename BasicItem::TextIterator;
+
+        std::string sequence_value{};
+        string_view str_begin{};
+        string_view str_end{};
+
+    public:
         Sequence(
             SequenceFlags flags_, const string_view &str_begin_, const string_view &str_end,
-            TextIterator &rule_iterator_, SpecialItems &special_items_, size_t id_ = 0);
+            TextIterator &rule_iterator_, size_t id_ = 0);
 
         Sequence(
             SequenceFlags flags_, const string_view &str_begin_, TextIterator &rule_iterator_,
-            SpecialItems &special_items_, size_t id_ = 0)
-          : Sequence(flags_, str_begin_, str_begin_, rule_iterator_, special_items_, id_)
+            size_t id_ = 0)
+          : Sequence(flags_, str_begin_, str_begin_, rule_iterator_, id_)
         {}
 
         [[nodiscard]] auto getValue() noexcept -> std::string &
@@ -66,11 +71,6 @@ namespace ccl::lex::dot_item
             TextIterator &rule_iterator,
             const string_view &message,
             const string_view &suggestion = {}) -> void;
-
-        std::string sequence_value{};
-        string_view str_begin{};
-        string_view str_end{};
-        SequenceFlags sequence_flags{};
     };
 }// namespace ccl::lex::dot_item
 

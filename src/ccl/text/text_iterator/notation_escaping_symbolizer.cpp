@@ -39,12 +39,9 @@ namespace ccl::text
         message.insert(insertion_position, insertion_size, '0');
     }
 
-    // NOLINTNEXTLINE method can not be static
     auto TextIterator::NotationEscapingSymbolizer::checkNotation() const -> void
     {
-        if (not land(notation_power > 0, notation_power <= 4)) {
-            throw InvalidArgument{ "notation power must be in range [1, 4]" };
-        }
+        CCL_ASSERT(land(notation_power > 0, notation_power <= 4));
     }
 
     auto TextIterator::NotationEscapingSymbolizer::isOutOfNotation(char32_t chr) const -> bool
@@ -68,14 +65,15 @@ namespace ccl::text
 
         auto suggestion_message = createSuggestionNotEnoughChars(chars_count);
 
-        text_iterator.throwUncriticalError(exception_message, suggestion_message);
+        text_iterator.throwUncriticalError(
+            AnalysationStage::LEXICAL_ANALYSIS, exception_message, suggestion_message);
     }
 
     TextIterator::NotationEscapingSymbolizer::NotationEscapingSymbolizer(
         TextIterator &text_iterator_,
         u16 max_times_,
         u16 notation_power_,
-        bool need_all_chars_) noexcept
+        bool need_all_chars_)
       : text_iterator{ text_iterator_ }, max_times{ max_times_ }, notation_power{ notation_power_ },
         need_all_chars{ need_all_chars_ }
     {

@@ -5,13 +5,21 @@
 
 namespace ccl
 {
-    template<typename T>
-    concept DerivedFromTextIteratorException = std::derived_from<T, text::TextIteratorException>;
-
-    struct ExceptionHandler
+    class ExceptionHandler
     {
+    protected:
         using ExceptionT = text::TextIteratorException;
 
+    private:
+        static ExceptionHandler defaultExceptionHandler;
+
+        size_t suggestion_count{};
+        size_t warnings_count{};
+        size_t uncritical_errors_count{};
+        size_t critical_errors_count{};
+        size_t panic_error_count{};
+
+    public:
         ExceptionHandler() noexcept = default;
         ExceptionHandler(ExceptionHandler &&) noexcept = default;
         ExceptionHandler(const ExceptionHandler &) noexcept = default;
@@ -21,17 +29,20 @@ namespace ccl
         auto operator=(const ExceptionHandler &) -> ExceptionHandler & = default;
         auto operator=(ExceptionHandler &&) noexcept -> ExceptionHandler & = default;
 
-        static auto instance() -> ExceptionHandler &;
+        [[nodiscard]] static auto instance() -> ExceptionHandler &
+        {
+            return defaultExceptionHandler;
+        }
 
         auto handle(const ExceptionT *error) -> void;
 
-        template<DerivedFromTextIteratorException T>
+        template<std::derived_from<ExceptionT> T>
         auto handle(const T *error)
         {
             handle(static_cast<const ExceptionT *>(error));
         }
 
-        template<DerivedFromTextIteratorException T>
+        template<std::derived_from<ExceptionT> T>
         auto handle(const T &error)
         {
             handle(static_cast<const ExceptionT *>(&error));
@@ -39,12 +50,6 @@ namespace ccl
 
     private:
         virtual auto onHandle(const ExceptionT *error) -> void;
-
-        size_t suggestion_count{};
-        size_t warnings_count{};
-        size_t uncritical_errors_count{};
-        size_t critical_errors_count{};
-        size_t panic_error_count{};
     };
 }// namespace ccl
 

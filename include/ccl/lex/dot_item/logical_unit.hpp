@@ -10,24 +10,25 @@ namespace ccl::lex::dot_item
 
     class LogicalUnit final : public BasicItem
     {
-    public:
         using typename BasicItem::TextIterator;
 
+        UniquePtr<BasicItem> lhs_item{};
+        UniquePtr<BasicItem> rhs_item{};
+        LogicalOperation logical_operation{ LogicalOperation::NONE };
+
+    public:
         [[nodiscard]] auto empty() const noexcept -> bool final;
 
         LogicalUnit(
-            BasicItemPtr lhs_, BasicItemPtr rhs_, LogicalOperation type_,
-            SpecialItems &special_items_, size_t id_)
-          : BasicItem(special_items_, id_), lhs_item(std::move(lhs_)), rhs_item(std::move(rhs_)),
-            logical_operation(type_)
-        {}
+            UniquePtr<BasicItem> lhs_, UniquePtr<BasicItem> rhs_, LogicalOperation type_,
+            size_t id_);
 
     private:
-        auto scanIteration(const ForkedGenerator &text_iterator) const -> size_t final;
+        [[nodiscard]] auto scanIteration(const ForkedGenerator &text_iterator) const
+            -> size_t final;
 
-        std::unique_ptr<BasicItem> lhs_item{};
-        std::unique_ptr<BasicItem> rhs_item{};
-        LogicalOperation logical_operation{ LogicalOperation::NONE };
+        [[nodiscard]] auto orIteration(const ForkedGenerator &text_iterator) const -> size_t;
+        [[nodiscard]] auto andIteration(const ForkedGenerator &text_iterator) const -> size_t;
     };
 }// namespace ccl::lex::dot_item
 

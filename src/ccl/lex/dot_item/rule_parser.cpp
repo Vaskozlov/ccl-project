@@ -1,22 +1,21 @@
 #include <ccl/lex/dot_item/container.hpp>
 #include <ccl/lex/dot_item/sequence.hpp>
 #include <ccl/lex/dot_item/union.hpp>
-#include <memory_resource>
 
 namespace ccl::lex::dot_item
 {
     using namespace ccl::string_view_literals;
 
     Container::RuleParser::RuleParser(Container &container_, TextIterator &rule_iterator_)
-      : container(container_), rule_iterator(rule_iterator_)
+      : container(container_), ruleIterator(rule_iterator_)
     {
         checkId();
 
-        rule_iterator.moveToCleanChar();
+        ruleIterator.moveToCleanChar();
 
         while (hasMovedToTheNextChar()) {
             recognizeAction();
-            rule_iterator.moveToCleanChar();
+            ruleIterator.moveToCleanChar();
         }
 
         postCreationCheck();
@@ -24,13 +23,13 @@ namespace ccl::lex::dot_item
 
     auto Container::RuleParser::hasMovedToTheNextChar() -> bool
     {
-        return not isEoF(rule_iterator.next());
+        return not isEoF(ruleIterator.next());
     }
 
     // NOLINTNEXTLINE recursive function
     auto Container::RuleParser::recognizeAction() -> void
     {
-        switch (rule_iterator.getCurrentChar()) {
+        switch (ruleIterator.getCurrentChar()) {
         case '!':
             makeSpecial();
             break;
@@ -48,19 +47,19 @@ namespace ccl::lex::dot_item
             break;
 
         case U'*':
-            addRecurrence(Recurrence::star());
+            addRepetition(Repetition::star());
             break;
 
         case U'+':
-            addRecurrence(Recurrence::plus());
+            addRepetition(Repetition::plus());
             break;
 
         case U'?':
-            addRecurrence(Recurrence::question());
+            addRepetition(Repetition::question());
             break;
 
         case U'{':
-            addRecurrence(Recurrence{ rule_iterator });
+            addRepetition(Repetition{ ruleIterator });
             break;
 
         case U'^':
@@ -72,11 +71,11 @@ namespace ccl::lex::dot_item
             break;
 
         case U'&':
-            prepareForLogicalOperation(LogicalOperation::AND);
+            startLogicalOperationConstruction(LogicalOperation::AND);
             break;
 
         case U'|':
-            prepareForLogicalOperation(LogicalOperation::OR);
+            startLogicalOperationConstruction(LogicalOperation::OR);
             break;
 
         default:
@@ -85,77 +84,76 @@ namespace ccl::lex::dot_item
         }
     }
 
-    auto Container::RuleParser::prepareForLogicalOperation(LogicalOperation type) -> void
+    auto Container::RuleParser::startLogicalOperationConstruction(LogicalOperation type) -> void
     {
         checkThereIsLhsItem();
-        logical_operation = type;
+        logicalOperation = type;
 
-        reserved_lhs = std::move(items.back());
+        constructedLhs = std::move(items.back());
         items.pop_back();
     }
 
     auto Container::RuleParser::tryToFinishLogicalOperation() -> void
     {
-        if (reserved_lhs.has_value() && not rhs_item_constructed) {
-            rhs_item_constructed = true;
-        } else if (rhs_item_constructed && reserved_lhs.has_value()) {
+        if (constructedLhs.has_value() && not rhsItemConstructed) {
+            rhsItemConstructed = true;
+        } else if (constructedLhs.has_value() && rhsItemConstructed) {
             emplaceItem(constructLogicalUnit());
-            logical_operation = LogicalOperation::NONE;
+            logicalOperation = LogicalOperation::NONE;
         }
     }
 
-    auto Container::RuleParser::constructLogicalUnit() -> BasicItemPtr
+    auto Container::RuleParser::constructLogicalUnit() -> UniquePtr<BasicItem>
     {
         auto rhs = std::move(items.back());
         items.pop_back();
 
-        return std::make_unique<LogicalUnit>(
-            std::move(reserved_lhs.value()), std::move(rhs), logical_operation, special_items,
-            getId());
+        return makeUnique<BasicItem, LogicalUnit>(
+            std::move(constructedLhs.value()), std::move(rhs), logicalOperation, getId());
     }
 
-    auto Container::RuleParser::constructNewSequence() -> BasicItemPtr
+    auto Container::RuleParser::constructNewSequence() -> UniquePtr<BasicItem>
     {
         tryToFinishLogicalOperation();
 
-        return std::make_unique<Sequence>(
-            Sequence::SequenceFlags{}, "\"", rule_iterator, special_items, getId());
+        return makeUnique<BasicItem, Sequence>(
+            Sequence::SequenceFlags{}, "\"", ruleIterator, getId());
     }
 
-    auto Container::RuleParser::constructNewUnion() -> BasicItemPtr
+    auto Container::RuleParser::constructNewUnion() -> UniquePtr<BasicItem>
     {
         tryToFinishLogicalOperation();
 
-        return std::make_unique<Union>(rule_iterator, special_items, getId());
+        return makeUnique<BasicItem, Union>(ruleIterator, getId());
     }
 
     // NOLINTNEXTLINE (recursive function)
-    auto Container::RuleParser::constructNewContainer() -> BasicItemPtr
+    auto Container::RuleParser::constructNewContainer() -> UniquePtr<BasicItem>
     {
         tryToFinishLogicalOperation();
 
-        auto text = rule_iterator.getRemainingWithCurrent();
-        const auto *saved_end = rule_iterator.getEnd();
+        auto text = ruleIterator.getRemainingWithCurrent();
+        const auto *saved_end = ruleIterator.getEnd();
         auto bracket_index = findContainerEnd(text);
 
-        rule_iterator.setEnd(text.begin() + bracket_index);
+        ruleIterator.setEnd(text.begin() + bracket_index);
 
-        auto new_container = std::make_unique<Container>(
-            rule_iterator, special_items, getId(), false, container.isSpecial());
-        rule_iterator.setEnd(saved_end);
+        auto new_container = makeUnique<BasicItem, Container>(
+            ruleIterator, specialItems, getId(), false, container.isSpecial());
+        ruleIterator.setEnd(saved_end);
 
         return new_container;
     }
 
-    auto Container::RuleParser::emplaceItem(BasicItemPtr &&item) -> void
+    auto Container::RuleParser::emplaceItem(UniquePtr<BasicItem> item) -> void
     {
         if (not item->canBeOptimized()) {
-            auto item_recurrence = item->getRecurrence();
+            auto item_repetition = item->getRepetition();
 
-            BasicItem::neverRecognizedSuggestion(
-                rule_iterator, item_recurrence.from == 0 && not isReversed() && not item->empty());
+            neverRecognizedSuggestion(
+                ruleIterator, item_repetition.from == 0 && not isReversed() && not item->empty());
 
-            BasicItem::alwaysRecognizedSuggestion(rule_iterator, not isReversed() && item->empty());
+            alwaysRecognizedSuggestion(ruleIterator, not isReversed() && item->empty());
 
             items.emplace_back(std::move(item));
         }
@@ -175,21 +173,21 @@ namespace ccl::lex::dot_item
         }
     }
 
-    auto Container::RuleParser::addRecurrence(Recurrence new_recurrence) -> void
+    auto Container::RuleParser::addRepetition(Repetition new_repetition) -> void
     {
         if (items.empty()) {
-            throwUnableToApply("no items found to set recurrence");
+            throwUnableToApply("no items found to set repetition");
             return;
         }
 
         auto &last_item = items.back();
 
-        if (last_item->getRecurrence() != Recurrence::basic()) {
-            throwUnableToApply("item already has recurrence");
+        if (last_item->getRepetition() != Repetition::basic()) {
+            throwUnableToApply("item already has repetition");
             return;
         }
 
-        last_item->setRecurrence(new_recurrence);
+        last_item->setRepetition(new_repetition);
     }
 
     auto Container::RuleParser::makeSpecial() -> void
@@ -230,46 +228,43 @@ namespace ccl::lex::dot_item
 
     auto Container::RuleParser::postCreationCheck() -> void
     {
-        auto postfix_elem =
-            std::ranges::find_if(items, [](const auto &elem) { return elem->hasPostfix(); });
+        const auto postfix_elem = std::ranges::find_if(
+            std::as_const(items), [](const auto &elem) { return elem->hasPostfix(); });
 
-        auto are_postfixes_correct = std::all_of(
-            postfix_elem, items.end(), [](const auto &elem) { return elem->hasPostfix(); });
+        const auto are_postfixes_correct = std::all_of(
+            postfix_elem, items.cend(), [](const auto &elem) { return elem->hasPostfix(); });
 
         if (not are_postfixes_correct) {
             throwUnableToApply("item without postfix modifier exists after items with it");
             return;
         }
 
-        if (reserved_lhs.has_value() && not rhs_item_constructed) {
+        if (constructedLhs.has_value() && not rhsItemConstructed) {
             throwUnableToApply("no rhs items to apply operation");
             return;
         }
 
-        if (reserved_lhs.has_value() && rhs_item_constructed) {
+        if (constructedLhs.has_value() && rhsItemConstructed) {
             tryToFinishLogicalOperation();
             return;
         }
 
-        BasicItem::neverRecognizedSuggestion(rule_iterator, items.empty() && not isReversed());
-        BasicItem::alwaysRecognizedSuggestion(rule_iterator, items.empty() && isReversed());
+        BasicItem::neverRecognizedSuggestion(ruleIterator, items.empty() && not isReversed());
+        BasicItem::alwaysRecognizedSuggestion(ruleIterator, items.empty() && isReversed());
     }
 
     auto Container::RuleParser::findContainerEnd(string_view repr) -> size_t
     {
-        auto bracket_index = repr.openCloseFind('(', ')');
-
-        if (not bracket_index.has_value()) {
-            rule_iterator.throwPanicError("unterminated dot item");
+        return *repr.openCloseFind('(', ')').or_else([this]() -> std::optional<size_t> {
+            ruleIterator.throwPanicError(
+                AnalysationStage::LEXICAL_ANALYSIS, "unterminated dot item");
             throw UnrecoverableError{ "unrecoverable error in ContainerType" };
-        }
-
-        return *bracket_index;
+        });
     }
 
     auto Container::RuleParser::checkThereIsLhsItem() -> void
     {
-        if (items.empty()) {
+        if (items.empty()) [[unlikely]] {
             throwUnableToApply("no left hand side items to apply operation");
         }
     }
@@ -303,11 +298,9 @@ namespace ccl::lex::dot_item
     auto Container::RuleParser::throwUnableToApply(string_view reason, string_view suggestion)
         -> void
     {
-        using namespace fmt::literals;
-
         auto message = fmt::format("unable to apply: {}", reason);
 
-        rule_iterator.throwCriticalError(message, suggestion);
+        ruleIterator.throwCriticalError(AnalysationStage::LEXICAL_ANALYSIS, message, suggestion);
         throw UnrecoverableError{ "unrecoverable error in ContainerType" };
     }
 
@@ -318,7 +311,25 @@ namespace ccl::lex::dot_item
             "use `!` to declare special symbol, `\"` for string, `[` for unions, `(` for "
             "containers "_sv;
 
-        rule_iterator.throwPanicError(message, suggestion);
+        ruleIterator.throwPanicError(AnalysationStage::LEXICAL_ANALYSIS, message, suggestion);
         throw UnrecoverableError{ "unrecoverable error in ContainerType" };
+    }
+
+    auto BasicItem::SpecialItems::checkForSpecial(const ForkedGenerator &text_iterator) const
+        -> bool
+    {
+        return std::ranges::any_of(special_items, [&text_iterator](const auto &special_item) {
+            auto scan_result = special_item.scan(text_iterator);
+            return scan_result != 0ZU;
+        });
+    }
+
+    auto BasicItem::SpecialItems::specialScan(TextIterator &text_iterator, Token &token) const
+        -> bool
+    {
+        return std::ranges::any_of(
+            special_items, [&text_iterator, &token](const auto &special_item) {
+                return special_item.beginScan(text_iterator, token, ScanningType::SPECIAL);
+            });
     }
 }// namespace ccl::lex::dot_item

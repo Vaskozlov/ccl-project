@@ -22,7 +22,7 @@ namespace ccl
             return "critical error, no possible recovery";
 
         default:
-            return "unknown";
+            std::unreachable();
         }
     }
 }// namespace ccl

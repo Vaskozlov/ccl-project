@@ -5,11 +5,11 @@ namespace ccl::lex
     using namespace std::string_literals;
 
     LexicalAnalyzer::LexicalAnalyzer(
-        ExceptionHandler &exception_handler_, const std::initializer_list<Rule> &rules_,
-        string_view filename, std::basic_string<size_t> ignored_ids_)
+        ExceptionHandler &exception_handler_, InitializerList<Rule> rules_, string_view filename,
+        std::basic_string<size_t> ignored_ids_)
       : ignored_ids(std::move(ignored_ids_)), exception_handler(exception_handler_)
     {
-        for (const Rule &rule : rules_) {
+        for (const auto &rule : rules_) {
             createContainer(rule.repr, rule.id, filename);
         }
     }
@@ -24,5 +24,16 @@ namespace ccl::lex
         } else if (not container.empty()) {
             items.emplace_back(std::move(container));
         }
+    }
+
+    auto LexicalAnalyzer::getTokenizer(string_view text, string_view filename) -> Tokenizer
+    {
+        return { *this, text, filename };
+    }
+
+    auto LexicalAnalyzer::getTokenizer(
+        string_view text, string_view filename, ExceptionHandler &handler) -> Tokenizer
+    {
+        return { *this, text, filename, handler };
     }
 }// namespace ccl::lex

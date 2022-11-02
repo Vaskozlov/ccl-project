@@ -2,8 +2,15 @@
 
 namespace ccl::text
 {
-    auto TextIterator::nextRawCharWithEscapingSymbols(
-        const TextIterator::extra_symbols_t &extra_symbols) -> Pair<bool, char32_t>
+    TextIterator::TextIterator(
+        const string_view &input,
+        ExceptionHandler &exception_handler_,
+        const string_view &filename)
+      : Base(input), location(filename), line_tracker(input), exception_handler(&exception_handler_)
+    {}
+
+    auto TextIterator::nextRawCharWithEscapingSymbols(const extra_symbols_t &extra_symbols)
+        -> Pair<bool, char32_t>
     {
         auto escaping = false;
         auto chr = next();
@@ -18,8 +25,7 @@ namespace ccl::text
     }
 
     auto TextIterator::doEscapeSymbolizing(
-        TextIterator &text_iterator, TextIterator::extra_symbols_t const &extra_symbols_)
-        -> char32_t
+        TextIterator &text_iterator, const extra_symbols_t &extra_symbols_) -> char32_t
     {
         return EscapingSymbolizer(text_iterator, extra_symbols_).matchNextChar();
     }
@@ -34,11 +40,11 @@ namespace ccl::text
 
     auto TextIterator::throwToHandle(
         const TextIterator &iterator_location, ExceptionCriticality criticality,
-        const string_view &message, const string_view &suggestion) -> void
+        AnalysationStage stage, const string_view &message, const string_view &suggestion) -> void
     {
         auto exception = TextIteratorException(
-            criticality, iterator_location.getLocation(), iterator_location.getWorkingLine(),
-            message, suggestion);
+            criticality, stage, iterator_location.getLocation(), 1,
+            iterator_location.getWorkingLine(), message, suggestion);
 
         if (exception_handler == nullptr) {
             throw std::move(exception);
