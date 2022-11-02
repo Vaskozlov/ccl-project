@@ -12,23 +12,27 @@ include(src/CMakeLists.txt)
 include(catch/CMakeLists.txt)
 include(bench/CMakeLists.txt)
 
+set(tool_dest "bin")
+set(include_dest "include")
+set(main_lib_dest lib)
+
 install(TARGETS ccl
         EXPORT cclTargets
-        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-        INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+        LIBRARY DESTINATION ${main_lib_dest}
+        ARCHIVE DESTINATION ${main_lib_dest}
+        RUNTIME DESTINATION ${tool_dest}
+        INCLUDES DESTINATION ${include_dest}
         )
 
 install(FILES
         ${CCL_HEADERS}
-        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+        DESTINATION ${include_dest}
         )
 
 install(EXPORT cclTargets
         FILE cclTargets.cmake
         NAMESPACE ccl::
-        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake
+        DESTINATION ${main_lib_dest}/cmake
         )
 
 include(CMakePackageConfigHelpers)
@@ -52,13 +56,13 @@ write_basic_package_version_file(
 
 configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/Config.cmake.in
         "${CMAKE_CURRENT_BINARY_DIR}/cclConfig.cmake"
-        INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/ccl
+        INSTALL_DESTINATION ${main_lib_dest}/cmake/ccl
         )
 
 install(FILES
         "${CMAKE_CURRENT_BINARY_DIR}/cclConfig.cmake"
         "${CMAKE_CURRENT_BINARY_DIR}/cclConfigVersion.cmake"
-        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/ccl
+        DESTINATION ${main_lib_dest}/cmake/ccl
         )
 
 # generate the export targets for the build tree
