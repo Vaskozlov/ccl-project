@@ -55,7 +55,7 @@ install(FILES
 )
 
 install(EXPORT ccl
-        FILE ccl.cmake
+        FILE ccl-config.cmake
         NAMESPACE ccl::
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake
 )
