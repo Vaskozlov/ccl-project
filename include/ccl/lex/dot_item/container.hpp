@@ -90,7 +90,7 @@ namespace ccl::lex::dot_item
         TextIterator &ruleIterator;
         storage_t &items{ container.items };
         SpecialItems &specialItems{ container.specialItems };
-        std::optional<UniquePtr<BasicItem>> constructedLhs{ std::nullopt };
+        Optional<UniquePtr<BasicItem>> constructedLhs{ std::nullopt };
         LogicalOperation logicalOperation{};
         bool rhsItemConstructed{ false };
 

@@ -11,9 +11,12 @@ add_executable(
         ${CCL_BENCH_OBJECTS}
 )
 
+add_dependencies(ccl-bench fmt::fmt)
+add_dependencies(ccl-bench benchmark::benchmark)
+
 target_link_libraries(
         ccl-bench
-        fmt::fmt-header-only
+        fmt::fmt
 )
 
 target_link_libraries(

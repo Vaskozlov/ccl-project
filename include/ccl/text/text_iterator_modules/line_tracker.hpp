@@ -27,7 +27,7 @@ namespace ccl::text
         {
             auto new_line_index = text.find('\n');
             line = { text.begin(), *new_line_index.or_else(
-                                       [this]() -> std::optional<size_t> { return text.size(); }) };
+                                       [this]() -> Optional<size_t> { return text.size(); }) };
         }
 
     private:
@@ -37,9 +37,8 @@ namespace ccl::text
             const auto new_line_index = text.find('\n', new_line_begin);
 
             line = { new_line_begin,
-                     text.begin() + *new_line_index.or_else([this]() -> std::optional<size_t> {
-                         return text.size();
-                     }) };
+                     text.begin() + *new_line_index.or_else(
+                                        [this]() -> Optional<size_t> { return text.size(); }) };
         }
 
         string_view text{};

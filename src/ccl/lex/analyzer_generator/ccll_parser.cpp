@@ -117,9 +117,9 @@ namespace ccl::lex::parser
 
         if (directive_value.getId() == GenToken::STRING) {
             auto string_part_of_repr = directive_repr.substr(1, directive_repr.size() - 2);
-            directives[directive.getRepr()] = std::string(string_part_of_repr);
+            directives.emplace(directive.getRepr(), string_part_of_repr);
         } else {
-            directives[directive.getRepr()] = std::string(directive_repr);
+            directives.emplace(directive.getRepr(), directive_repr);
         }
 
         expectRuleEnd();

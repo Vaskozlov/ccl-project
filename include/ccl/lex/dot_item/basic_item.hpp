@@ -18,7 +18,7 @@ namespace ccl::lex::dot_item
     public:
         using TextIterator = text::TextIterator;
         using ForkedGenerator = typename text::TextIterator::ForkedTextIterator;
-        using ScanResult = std::optional<Pair<TextIterator, Token>>;
+        using ScanResult = Optional<Pair<TextIterator, Token>>;
 
         class SpecialItems;
 
@@ -102,7 +102,7 @@ namespace ccl::lex::dot_item
         static auto neverRecognizedSuggestion(TextIterator &text_iterator, bool condition) -> void;
 
         [[nodiscard]] virtual auto empty() const noexcept -> bool = 0;
-        [[nodiscard]] auto scan(ForkedGenerator text_iterator) const -> std::optional<size_t>;
+        [[nodiscard]] auto scan(ForkedGenerator text_iterator) const -> Optional<size_t>;
 
     private:
         [[nodiscard]] virtual auto scanIteration(const ForkedGenerator &text_iterator) const
