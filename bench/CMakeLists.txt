@@ -16,17 +16,17 @@ add_dependencies(ccl-bench benchmark::benchmark)
 
 target_link_libraries(
         ccl-bench
-        fmt::fmt
-)
-
-target_link_libraries(
-        ccl-bench
         benchmark::benchmark
 )
 
 target_link_libraries(
         ccl-bench
         ccl
+)
+
+target_link_libraries(
+        ccl-bench
+        fmt::fmt
 )
 
 if (${PRECOMPILED_HEADER})
