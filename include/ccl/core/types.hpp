@@ -9,8 +9,12 @@
 #include <boost/container/small_vector.hpp>
 #include <ccl/core/pair.hpp>
 #include <cinttypes>
+#include <cmath>
 #include <initializer_list>
+#include <map>
 #include <memory>
+#include <optional>
+#include <set>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
@@ -27,7 +31,13 @@ namespace ccl
     using u32 = std::uint32_t;
     using u64 = std::uint64_t;
 
-    using ssize_t = intmax_t;
+    using ssize_t = std::intmax_t;
+
+    using f32 = std::float_t;
+    using f64 = std::double_t;
+
+    template<typename T>
+    using Optional = std::optional<T>;
 
     template<typename T>
     using Vector = std::vector<T>;

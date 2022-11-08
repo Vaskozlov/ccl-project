@@ -47,7 +47,7 @@ namespace ccl::text
     auto TextIterator::NotationEscapingSymbolizer::isOutOfNotation(char32_t chr) const -> bool
     {
         return not HexadecimalCharsToInt<char32_t>.contains(chr) ||
-               HexadecimalCharsToInt<char32_t>.at(chr) >= (1U << notation_power);
+               HexadecimalCharsToInt<char32_t>.at(chr) >= pow2(notation_power);
     }
 
     auto TextIterator::NotationEscapingSymbolizer::checkAllCharsUsage(u16 chars_count) const -> void

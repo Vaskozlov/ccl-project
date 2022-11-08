@@ -1,4 +1,4 @@
-#include <ccl/core/logical_ops.hpp>
+#include <ccl/core/operations.hpp>
 #include <ccl/debug/debug_file.hpp>
 
 using namespace ccl;

@@ -255,7 +255,7 @@ namespace ccl::lex::dot_item
 
     auto Container::RuleParser::findContainerEnd(string_view repr) -> size_t
     {
-        return *repr.openCloseFind('(', ')').or_else([this]() -> std::optional<size_t> {
+        return *repr.openCloseFind('(', ')').or_else([this]() -> Optional<size_t> {
             ruleIterator.throwPanicError(
                 AnalysationStage::LEXICAL_ANALYSIS, "unterminated dot item");
             throw UnrecoverableError{ "unrecoverable error in ContainerType" };

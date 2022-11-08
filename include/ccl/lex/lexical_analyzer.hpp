@@ -2,7 +2,6 @@
 #define CCL_PROJECT_LEXICAL_ANALYZER_HPP
 
 #include <ccl/lex/dot_item/container.hpp>
-#include <memory_resource>
 
 namespace ccl::lex
 {
@@ -20,10 +19,10 @@ namespace ccl::lex
         };
 
         Vector<Container> items{};
-        SpecialItems special_items{};
-        std::string skipped_characters{};
-        std::basic_string<size_t> ignored_ids{};
-        ExceptionHandler &exception_handler;
+        SpecialItems specialItems{};
+        std::basic_string<size_t> ignoredIds{};
+        std::string skippedCharacters{};
+        ExceptionHandler &exceptionHandler;
 
     public:
         class Tokenizer;
@@ -34,7 +33,7 @@ namespace ccl::lex
 
         [[nodiscard]] auto getIgnoredIds() const -> const std::basic_string<size_t> &
         {
-            return ignored_ids;
+            return ignoredIds;
         }
 
         [[nodiscard]] auto getTokenizer(string_view text, string_view filename = {}) -> Tokenizer;

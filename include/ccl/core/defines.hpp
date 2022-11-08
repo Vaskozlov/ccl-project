@@ -11,16 +11,16 @@
 
 #define CCL_PERFECT_FORWARDING(Repr, Type)                                                         \
     template<typename Repr = Type>                                                                 \
-    requires std::is_convertible_v<Repr, Type>
+        requires std::is_convertible_v<Repr, Type>
 
 #define CCL_PERFECT_FORWARDING_2(Repr1, Type1, Repr2, Type2)                                       \
     template<typename Repr1 = Type1, typename Repr2 = Type2>                                       \
-    requires std::is_convertible_v<Repr1, Type1> && std::is_convertible_v<Repr2, Type2>
+        requires std::is_convertible_v<Repr1, Type1> && std::is_convertible_v<Repr2, Type2>
 
 #define CCL_PERFECT_FORWARDING_3(Repr1, Type1, Repr2, Type2, Repr3, Type3)                         \
     template<typename Repr1 = Type1, typename Repr2 = Type2, typename Repr3 = Type3>               \
-    requires std::is_convertible_v<Repr1, Type1> && std::is_convertible_v<Repr2, Type2> &&         \
-        std::is_convertible_v<Repr3, Type3>
+        requires std::is_convertible_v<Repr1, Type1> && std::is_convertible_v<Repr2, Type2> &&     \
+                 std::is_convertible_v<Repr3, Type3>
 
 // NOLINTEND
 
@@ -31,7 +31,7 @@
 #define CCL_CONCATENATE(x, y) x##y
 
 #define CCL_ASSERT(x) assert(x)
-#define CCL_ASSERT_MSG(x, message) assert(x &&message)
+#define CCL_ASSERT_MSG(x, message) assert((x) && message)
 
 #if INTPTR_MAX == INT32_MAX
 #    define CCL_64BIT false

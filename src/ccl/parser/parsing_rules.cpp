@@ -13,7 +13,7 @@ namespace ccl::parser
         PrecedenceTable precedence_table_, InitializerList<ParsingRule> rules_)
       : precedence_table(std::move(precedence_table_))
     {
-        precedence_table[ParsingRuleType::EOI] = 0;
+        precedence_table.emplace(ParsingRuleType::EOI, 0);
 
         initializeRules(rules_);
         detectTerminals();

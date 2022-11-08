@@ -24,17 +24,12 @@ set_source_files_properties(
 
 target_link_libraries(
         ccl-catch
-        fmt::fmt-header-only
+        fmt::fmt
 )
 
 target_link_libraries(
         ccl-catch
         ccl
-)
-
-target_link_libraries(
-        ccl-catch
-        fsc
 )
 
 if (${PRECOMPILED_HEADER})

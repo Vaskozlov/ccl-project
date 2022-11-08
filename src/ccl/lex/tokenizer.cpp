@@ -8,14 +8,14 @@ namespace ccl::lex
 
     CCL_INLINE auto LexicalAnalyzer::Tokenizer::shouldIgnoreToken(const Token &token) const -> bool
     {
-        const auto &ignoring_list = lexical_analyzer.ignored_ids;
+        const auto &ignoring_list = lexical_analyzer.ignoredIds;
         return ignoring_list.contains(token.getId());
     }
 
     // NOLINTNEXTLINE (recursive function)
     auto LexicalAnalyzer::Tokenizer::nextToken(Token &token) -> void
     {
-        auto &chars_to_skip = lexical_analyzer.skipped_characters;
+        auto &chars_to_skip = lexical_analyzer.skippedCharacters;
         auto scan_container = [this, &token](const auto &container) {
             return container.beginScan(text_iterator, token);
         };
@@ -29,7 +29,7 @@ namespace ccl::lex
             return;
         }
 
-        if (lexical_analyzer.special_items.specialScan(text_iterator, token)) {
+        if (lexical_analyzer.specialItems.specialScan(text_iterator, token)) {
             return returnIfNotInIgnored(token);
         }
 
@@ -63,7 +63,7 @@ namespace ccl::lex
     LexicalAnalyzer::Tokenizer::Tokenizer(
         LexicalAnalyzer &lexical_analyzer_, string_view text, string_view filename_)
       : lexical_analyzer(lexical_analyzer_),
-        text_iterator(text, lexical_analyzer_.exception_handler, filename_)
+        text_iterator(text, lexical_analyzer_.exceptionHandler, filename_)
     {}
 
     LexicalAnalyzer::Tokenizer::Tokenizer(

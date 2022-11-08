@@ -20,7 +20,7 @@ namespace ccl::lex::dot_item
         }
     }
 
-    auto BasicItem::scan(ForkedGenerator text_iterator) const -> std::optional<size_t>
+    auto BasicItem::scan(ForkedGenerator text_iterator) const -> Optional<size_t>
     {
         auto times = 0ZU;
         auto totally_skipped = 0ZU;

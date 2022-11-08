@@ -11,7 +11,7 @@ add_executable(
 
 target_link_libraries(
         fsc_lex_generator
-        fmt::fmt-header-only
+        fmt::fmt
 )
 
 target_link_libraries(

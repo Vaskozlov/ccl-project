@@ -10,12 +10,6 @@ namespace ccl
     template<typename T>
     constexpr auto strlen(T &&str) noexcept -> size_t
     {
-        if constexpr (std::is_pointer_v<T>) {
-            if (str == nullptr) {
-                return 0ZU;
-            }
-        }
-
         return std::basic_string_view{ std::forward<T>(str) }.size();
     }
 
@@ -155,7 +149,7 @@ namespace ccl
         }
 
         CCL_SAFE_VERSION
-        CCL_DECL auto find(CharT chr, size_t offset = 0) const noexcept -> std::optional<size_t>
+        CCL_DECL auto find(CharT chr, size_t offset = 0) const noexcept -> Optional<size_t>
         {
             auto result = find<UNSAFE>(chr, offset);
 
@@ -178,7 +172,7 @@ namespace ccl
         }
 
         CCL_SAFE_VERSION
-        CCL_DECL auto find(CharT chr, iterator from) const noexcept -> std::optional<size_t>
+        CCL_DECL auto find(CharT chr, iterator from) const noexcept -> Optional<size_t>
         {
             auto result = find<UNSAFE>(chr, from);
 
@@ -208,7 +202,7 @@ namespace ccl
         }
 
         CCL_SAFE_VERSION
-        CCL_DECL auto openCloseFind(CharT open, CharT close) const noexcept -> std::optional<size_t>
+        CCL_DECL auto openCloseFind(CharT open, CharT close) const noexcept -> Optional<size_t>
         {
             auto result = openCloseFind<UNSAFE>(open, close);
 
@@ -231,7 +225,7 @@ namespace ccl
         }
 
         CCL_SAFE_VERSION
-        CCL_DECL auto rfind(CharT chr, size_t offset = 0) const noexcept -> std::optional<size_t>
+        CCL_DECL auto rfind(CharT chr, size_t offset = 0) const noexcept -> Optional<size_t>
         {
             auto result = rfind<UNSAFE>(chr, offset);
 

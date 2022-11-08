@@ -21,8 +21,8 @@ namespace ccl::parser
 
         struct CCL_TRIVIAL_ABI MismatchResult
         {
-            std::optional<RuleId> stack_version;
-            std::optional<RuleId> rule_version;
+            Optional<RuleId> stack_version;
+            Optional<RuleId> rule_version;
         };
 
         explicit Parser(const ParsingRules &parsing_rules_, Tokenizer &tokenizer_);

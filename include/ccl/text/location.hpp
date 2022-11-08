@@ -53,8 +53,7 @@ namespace ccl::text
         {
             if (chr == U'\n') {
                 ++line;
-                column = 0;
-                real_column = 0;
+                column = real_column = 0;
             } else if (not isEoF(chr)) {
                 ++column;
             }

@@ -2,6 +2,7 @@
 #define CCL_PROJECT_EXCEPTION_HPP
 
 #include <exception>
+#include <stdexcept>
 #include <string_view>
 
 #define CCL_EXCEPTION(name, base_exception)                                                        \
@@ -14,11 +15,11 @@
 
 #define CCL_SAFE_VERSION                                                                           \
     template<UsageMode Mode = SAFE>                                                                \
-        requires(Mode == SAFE)
+    requires(Mode == SAFE)
 
 #define CCL_UNSAFE_VERSION                                                                         \
     template<UsageMode Mode>                                                                       \
-        requires(Mode == UNSAFE)
+    requires(Mode == UNSAFE)
 
 namespace ccl
 {

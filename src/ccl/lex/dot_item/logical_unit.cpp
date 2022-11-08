@@ -31,7 +31,7 @@ namespace ccl::lex::dot_item
     {
         return *lhs_item->scan(text_iterator)
                     .or_else([this, &text_iterator]() { return rhs_item->scan(text_iterator); })
-                    .or_else([]() { return std::optional(0ZU); });
+                    .or_else([]() -> Optional<size_t> { return 0ZU; });
     }
 
     auto LogicalUnit::andIteration(const ForkedGenerator &text_iterator) const -> size_t

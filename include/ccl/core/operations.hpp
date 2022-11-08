@@ -1,5 +1,5 @@
-#ifndef CCL_PROJECT_LOGICAL_OPS_HPP
-#define CCL_PROJECT_LOGICAL_OPS_HPP
+#ifndef CCL_PROJECT_OPERATIONS_HPP
+#define CCL_PROJECT_OPERATIONS_HPP
 
 #include <ccl/core/concepts.hpp>
 #include <ccl/core/defines.hpp>
@@ -16,6 +16,12 @@ namespace ccl
     {
         return (... || args);
     }
+
+    template<std::integral Int>
+    CCL_DECL CCL_INLINE auto pow2(Int value) -> Int
+    {
+        return static_cast<Int>(static_cast<Int>(1) << value);
+    }
 }// namespace ccl
 
-#endif /* CCL_PROJECT_LOGICAL_OPS_HPP */
+#endif /* CCL_PROJECT_OPERATIONS_HPP */

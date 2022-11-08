@@ -12,7 +12,8 @@
 #include <ccl/core/defines.hpp>
 #include <ccl/core/enum.hpp>
 #include <ccl/core/exception.hpp>
-#include <ccl/core/logical_ops.hpp>
+#include <ccl/core/operations.hpp>
+#include <ccl/core/ranges.hpp>
 #include <ccl/core/types.hpp>
 
 #include <fmt/color.h>
