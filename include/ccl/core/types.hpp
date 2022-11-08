@@ -13,11 +13,11 @@
 #include <initializer_list>
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
-#include <optional>
 
 namespace ccl
 {
