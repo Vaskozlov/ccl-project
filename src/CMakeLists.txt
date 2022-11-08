@@ -20,10 +20,6 @@ target_link_libraries(
         fmt::fmt
 )
 
-target_link_libraries(
-        ccl tbb
-)
-
 if (${PRECOMPILED_HEADERS})
     target_precompile_headers(
             ccl
