@@ -127,7 +127,7 @@ namespace ccl
 
         constexpr StaticFlatmap(InitializerList<value_type> initial_data)
         {
-            for (auto &value : initial_data) {
+            for (const auto &value : initial_data) {
                 insert(value);
             }
         }

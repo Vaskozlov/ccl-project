@@ -11,7 +11,8 @@ namespace ccl::handler
         auto result = std::string{};
         auto replaced_tabs = 0ZU;
 
-        for (auto &&chr : string) {
+        CCL_UNROLL_N(4)
+        for (auto chr : string) {
             if (chr == '\t') {
                 ++replaced_tabs;
                 result.append("    "sv);
