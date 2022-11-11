@@ -29,7 +29,7 @@ namespace ccl::parser
         PrecedenceTable precedence_table{};
         Set<RuleId> terminals{};
         Set<RuleId> non_terminals{};
-        Map<RuleId, SmallVector<ParsingRule, 4>> parsing_rules{};
+        Map<RuleId, SmallVector<ParsingRule>> parsing_rules{};
         bool errors_in_rules{ false };
     };
 }// namespace ccl::parser

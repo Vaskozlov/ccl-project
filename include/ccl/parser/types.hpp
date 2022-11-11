@@ -6,7 +6,7 @@
 namespace ccl::parser
 {
     using RuleId = size_t;
-    using Stack = SmallVector<UniquePtr<Node>, 4>;
+    using Stack = SmallVector<UniquePtr<Node>>;
 
     CCL_ENUM(// NOLINTNEXTLINE
         RuleOnStackResult, size_t, NO_MATCH, FULL_MATCH, PARTIAL_MATCH, PRECEDENCE_FORBIDION);

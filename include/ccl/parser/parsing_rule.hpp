@@ -32,7 +32,7 @@ namespace ccl::parser
 
         static std::atomic<size_t> uuid_counter;// NOLINT
 
-        SmallVector<RuleId, 4> ids_to_construct{};
+        SmallVector<RuleId> ids_to_construct{};
         FlatSet<RuleId> ids_that_forbid_construction{};
         string_view name{ "set name for ccl::parser::ParsingRule" };
         UniquePtr<Node> (*rule_construction_call)(ParsingStack) = nullptr;
@@ -58,7 +58,7 @@ namespace ccl::parser
             return type;
         }
 
-        [[nodiscard]] auto getIdsToConstruct() const noexcept -> const SmallVector<RuleId, 4> &
+        [[nodiscard]] auto getIdsToConstruct() const noexcept -> const SmallVector<RuleId> &
         {
             return ids_to_construct;
         }

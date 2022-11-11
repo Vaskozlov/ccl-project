@@ -14,7 +14,7 @@ namespace ccl::parser
     struct Parser
     {
         using Tokenizer = typename lex::LexicalAnalyzer::Tokenizer;
-        using FollowSet = SmallVector<const ParsingRule *, 4>;
+        using FollowSet = SmallVector<const ParsingRule *>;
 
         CCL_ENUM(// NOLINTNEXTLINE
             TerminalMatchResult, size_t, FALSE, TRUE, CONTINUE);
@@ -73,7 +73,7 @@ namespace ccl::parser
         ExceptionHandler &exception_handler{ tokenizer.getHandler() };
         const Set<RuleId> &terminals{};
         const Set<RuleId> &non_terminals{};
-        const Map<RuleId, SmallVector<ParsingRule, 4>> &parsing_rules;
+        const Map<RuleId, SmallVector<ParsingRule>> &parsing_rules;
     };
 }// namespace ccl::parser
 

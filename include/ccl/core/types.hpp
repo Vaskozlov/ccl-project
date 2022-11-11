@@ -70,7 +70,7 @@ namespace ccl
     template<typename Key, typename Value>
     using Flatmap = boost::container::flat_map<Key, Value>;
 
-    template<typename T, size_t N>
+    template<typename T, size_t N = 4>
     using SmallVector = boost::container::small_vector<T, N>;
 #else
     template<typename T>
@@ -85,7 +85,7 @@ namespace ccl
     template<typename Key, typename Value>
     using Flatmap = std::map<Key, Value>;
 
-    template<typename T, size_t N>
+    template<typename T, size_t N = 4>
     using SmallVector = std::vector<T>;
 #endif
 
