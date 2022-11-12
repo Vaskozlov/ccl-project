@@ -1,7 +1,7 @@
+#include <boost/program_options.hpp>
 #include <ccl/lex/analyzer_generator/analyzer_generator.hpp>
 #include <fstream>
 #include <iostream>
-#include <boost/program_options.hpp>
 
 const char *const ConfigurationFile = "programs/fsc_lex_rule.ccll";
 const char *const TargetHeaderFile = "include/fsc/lex/lexical_analyzer.hpp";
@@ -9,10 +9,8 @@ const char *const TargetSourceFile = "src/fsc/lex/lexical_analyzer.cpp";
 
 namespace po = boost::program_options;
 
-auto main(int argc, char *argv[]) -> int
+auto main(int /*argc*/, char * /*argv*/[]) -> int
 {
-
-    /*
     auto [generated_header, generated_source] =
         ccl::lex::AnalyzerGenerator::generateStaticVersion(ConfigurationFile);
 
@@ -36,7 +34,6 @@ auto main(int argc, char *argv[]) -> int
 
     file_stream << generated_source;
     file_stream.close();
-     */
 
     return 0;
 }
