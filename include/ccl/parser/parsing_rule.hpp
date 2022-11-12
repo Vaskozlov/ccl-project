@@ -85,7 +85,7 @@ struct fmt::formatter<ccl::parser::ParsingRule> : fmt::formatter<std::string_vie
     auto format(const ccl::parser::ParsingRule &rule, format_context &ctx) const
     {
         return formatter<std::string_view>::format(
-            static_cast<std::string_view>(rule.getName()), ctx);
+            as<std::string_view>(rule.getName()), ctx);
     }
 };
 

@@ -168,7 +168,7 @@ namespace ccl::lex::parser
         current_block = block_name.getRepr();
 
         if (not blocks.contains(current_block)) {
-            blocks.insert({ current_block, { static_cast<u16>(last_block_id++), 0 } });
+            blocks.insert({ current_block, { as<u16>(last_block_id++), 0 } });
         }
 
         expectRuleEnd();

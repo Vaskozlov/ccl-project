@@ -27,13 +27,13 @@ BOOST_AUTO_TEST_CASE(LocationTracking)
     BOOST_ASSERT(location.getColumn() == 0U);
     BOOST_ASSERT(location.getRealColumn() == 0U);
 
-    location.intermediateNext(static_cast<char>(0b1100'0010));// NOLINT utf8 2 byte character
+    location.intermediateNext(as<char>(0b1100'0010));// NOLINT utf8 2 byte character
 
     BOOST_ASSERT(location.getLine() == 2U);
     BOOST_ASSERT(location.getColumn() == 0U);
     BOOST_ASSERT(location.getRealColumn() == 1U);
 
-    location.intermediateNext(static_cast<char>(0b1000'0000));// NOLINT utf8 2 byte character end
+    location.intermediateNext(as<char>(0b1000'0000));// NOLINT utf8 2 byte character end
     location.next(U'a');                                      // just some character
 
     BOOST_ASSERT(location.getLine() == 2U);

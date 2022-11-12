@@ -253,7 +253,7 @@ namespace ccl::text
             }
 
             current_char <<= utf8::TrailingSize;
-            current_char |= chr & static_cast<char>(~utf8::ContinuationMask);
+            current_char |= chr & as<char>(~utf8::ContinuationMask);
         }
 
         constexpr auto newCharacterMove(char chr) noexcept(noexcept_carriage_move) -> void
@@ -265,7 +265,7 @@ namespace ccl::text
             }
 
             current_char = std::bit_cast<unsigned>(
-                chr & static_cast<char>(~utf8::getMask(remaining_to_finish_utf)));
+                chr & as<char>(~utf8::getMask(remaining_to_finish_utf)));
         }
 
         iterator carriage{};

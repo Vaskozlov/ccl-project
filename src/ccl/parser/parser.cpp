@@ -68,7 +68,7 @@ namespace ccl::parser
                     continue;
                 }
 
-                return static_cast<bool>(result);
+                return as<bool>(result);
             }
         }
 
@@ -83,7 +83,7 @@ namespace ccl::parser
     {
         if (not mismatch_result.stack_version.has_value()) {
             pushNewToken(stack);
-            return static_cast<size_t>(parse(stack, follow_set));
+            return as<size_t>(parse(stack, follow_set));
         }
 
         const auto &ids_to_construct = rule.ids_to_construct;
@@ -107,7 +107,7 @@ namespace ccl::parser
         };
 
         parseWithNewFollowSet(target_type, stack, 2, pred);
-        return static_cast<size_t>(parse(stack, follow_set));
+        return as<size_t>(parse(stack, follow_set));
     }
 
     // NOLINTNEXTLINE (recursive function)
@@ -252,7 +252,7 @@ namespace ccl::parser
         auto last_elem = std::move(stack.back());
         stack.pop_back();
 
-        auto *as_token_node = dynamic_cast<TokenNode *>(last_elem.get());
+        auto *as_token_node = as<TokenNode *>(last_elem.get());
 
         if (as_token_node == nullptr) {
             throw UnrecoverableError{ "last stack element bust be a token!" };

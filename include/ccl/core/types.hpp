@@ -108,7 +108,7 @@ namespace ccl
         requires std::derived_from<Constructed, Target>
     constexpr auto makeUnique(Ts &&...args) -> UniquePtr<Target>
     {
-        return UniquePtr<Target>{ static_cast<Target *>(
+        return UniquePtr<Target>{ as<Target *>(
             new Constructed(std::forward<Ts>(args)...)) };
     }
 
@@ -122,7 +122,7 @@ namespace ccl
         requires std::derived_from<Constructed, Target>
     constexpr auto makeShared(Ts &&...args) -> SharedPtr<Target>
     {
-        return SharedPtr<Target>{ static_cast<Target *>(
+        return SharedPtr<Target>{ as<Target *>(
             new Constructed(std::forward<Ts>(args)...)) };
     }
 
@@ -130,22 +130,22 @@ namespace ccl
     {
         constexpr auto operator"" _U8(unsigned long long value) -> u8
         {
-            return static_cast<u8>(value);
+            return as<u8>(value);
         }
 
         constexpr auto operator"" _U16(unsigned long long value) -> u16
         {
-            return static_cast<u16>(value);
+            return as<u16>(value);
         }
 
         constexpr auto operator"" _U32(unsigned long long value) -> u32
         {
-            return static_cast<u32>(value);
+            return as<u32>(value);
         }
 
         constexpr auto operator"" _U64(unsigned long long value) -> u64
         {
-            return static_cast<u64>(value);
+            return as<u64>(value);
         }
     }// namespace integral_literals
 }// namespace ccl

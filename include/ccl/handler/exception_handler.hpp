@@ -39,13 +39,13 @@ namespace ccl
         template<std::derived_from<ExceptionT> T>
         auto handle(const T *error)
         {
-            handle(static_cast<const ExceptionT *>(error));
+            handle(as<const ExceptionT *>(error));
         }
 
         template<std::derived_from<ExceptionT> T>
         auto handle(const T &error)
         {
-            handle(static_cast<const ExceptionT *>(&error));
+            handle(as<const ExceptionT *>(&error));
         }
 
     private:

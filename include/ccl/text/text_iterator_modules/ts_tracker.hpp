@@ -28,7 +28,7 @@ namespace ccl::text
             clearIfNeed();
 
             if (isTabOrSpace(chr)) {
-                tabsAnsSpaces.push_back(static_cast<char>(chr));
+                tabsAnsSpaces.push_back(as<char>(chr));
             } else {
                 needToClear = true;
             }

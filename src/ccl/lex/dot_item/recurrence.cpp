@@ -27,7 +27,7 @@ namespace ccl::lex::dot_item
             auto chr = text_iterator.getCurrentChar();
 
             if (isDigit(chr)) {
-                result = result * decimal_base + static_cast<size_t>(chr - '0');
+                result = result * decimal_base + as<size_t>(chr - '0');
                 continue;
             }
 

@@ -220,7 +220,7 @@ namespace ccl
                 return npos;
             }
 
-            auto elem = std::find(rbegin() + static_cast<long>(offset), rend(), chr);
+            auto elem = std::find(rbegin() + as<long>(offset), rend(), chr);
             return elem == rend() ? npos : distance(elem, rend()) - 1;
         }
 
@@ -300,7 +300,7 @@ namespace ccl
         template<typename T>
         CCL_DECL static auto distance(T first, T last) noexcept -> size_t
         {
-            return static_cast<size_t>(std::distance(first, last));
+            return as<size_t>(std::distance(first, last));
         }
     };
 
@@ -348,7 +348,7 @@ struct fmt::formatter<ccl::string_view> : fmt::formatter<std::string_view>
 {
     auto format(const ccl::string_view &str, format_context &ctx)
     {
-        return formatter<std::string_view>::format(static_cast<std::string_view>(str), ctx);
+        return formatter<std::string_view>::format(as<std::string_view>(str), ctx);
     }
 };
 

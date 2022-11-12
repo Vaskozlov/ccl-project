@@ -20,7 +20,7 @@ namespace ccl
     template<std::integral Int>
     CCL_DECL CCL_INLINE auto pow2(Int value) -> Int
     {
-        return static_cast<Int>(static_cast<Int>(1) << value);
+        return as<Int>(as<Int>(1) << value);
     }
 }// namespace ccl
 

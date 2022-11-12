@@ -19,7 +19,7 @@ BOOST_AUTO_TEST_CASE(LineTrackig)
     DEBUG_VAR line_tracker = LineTracker{ Input };
 
     for (auto chr : Input) {
-        line_tracker.next(static_cast<char32_t>(chr));
+        line_tracker.next(as<char32_t>(chr));
 
         if (chr == '\n') {
             BOOST_ASSERT(ExpectedLines.at(current_line) == line_tracker.get());

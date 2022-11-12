@@ -137,7 +137,7 @@ namespace ccl::lex::gen
 
         for (const auto &[block_name, block_info] :
              ccll_parser.getBlocks() | std::views::filter(single_block_definition)) {
-            auto id = (static_cast<size_t>(block_info.block_id) << shift_size);
+            auto id = (as<size_t>(block_info.block_id) << shift_size);
 
             generated_blocks.insert(block_name);
             generated_header.append(fmt::format(",\n{}    {} = {}", extra_spaces, block_name, id));
@@ -151,7 +151,7 @@ namespace ccl::lex::gen
         };
 
         for (auto &&rule : ccll_parser.getRules() | std::views::filter(single_rule_definition)) {
-            auto id = (static_cast<size_t>(rule.block_id) << shift_size) | (rule.id);
+            auto id = (as<size_t>(rule.block_id) << shift_size) | (rule.id);
 
             generated_cases.insert(rule.name);
             generated_header.append(fmt::format(",\n{}    {} = {}", extra_spaces, rule.name, id));

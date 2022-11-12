@@ -13,8 +13,8 @@ namespace ccl::text
                 break;
             }
 
-            result = static_cast<char32_t>(result << notation_power);
-            result += static_cast<char32_t>(HexadecimalCharsToInt<char32_t>.at(chr));
+            result = as<char32_t>(result << notation_power);
+            result += as<char32_t>(HexadecimalCharsToInt<char32_t>.at(chr));
         }
 
         checkAllCharsUsage(chars_count);
@@ -23,7 +23,7 @@ namespace ccl::text
     auto TextIterator::NotationEscapingSymbolizer::createSuggestionNotEnoughChars(
         u16 chars_count) const -> std::string
     {
-        auto suggestion_message = static_cast<std::string>(text_iterator.getWorkingLine());
+        auto suggestion_message = as<std::string>(text_iterator.getWorkingLine());
         insertExtraZerosToNotEnoughMessage(chars_count, suggestion_message);
         return suggestion_message;
     }
@@ -33,7 +33,7 @@ namespace ccl::text
         std::string &message) const -> void
     {
         auto column = text_iterator.getColumn();
-        auto insertion_size = static_cast<size_t>(max_times - chars_count);
+        auto insertion_size = as<size_t>(max_times - chars_count);
         auto insertion_position = column - chars_count;
 
         message.insert(insertion_position, insertion_size, '0');
