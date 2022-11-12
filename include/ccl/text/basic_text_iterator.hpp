@@ -119,8 +119,7 @@ namespace ccl::text
             return getRemainingAsCarriage() == end;
         }
 
-        template<typename T = string_view>
-        CCL_DECL auto getFutureRemaining() const noexcept -> T
+        CCL_DECL auto getFutureRemaining() const noexcept -> string_view
         {
             const auto carriage_move = isInitialized() ? utf8::size(getNextCarriageValue()) : 0;
             return { carriage + carriage_move, end };
