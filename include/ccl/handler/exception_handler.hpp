@@ -2,6 +2,7 @@
 #define CCL_PROJECT_EXCEPTION_HANDLER_HPP
 
 #include <ccl/text/iterator_exception.hpp>
+#include <atomic>
 
 namespace ccl
 {
@@ -13,21 +14,15 @@ namespace ccl
     private:
         static ExceptionHandler defaultExceptionHandler;
 
-        size_t suggestion_count{};
-        size_t warnings_count{};
-        size_t uncritical_errors_count{};
-        size_t critical_errors_count{};
-        size_t panic_error_count{};
+        std::atomic<size_t> suggestionsCounter{};
+        std::atomic<size_t> warningsCounter{};
+        std::atomic<size_t> uncriticalErrorsCounter{};
+        std::atomic<size_t> criticalErrorsCounter{};
+        std::atomic<size_t> panicErrorsCounter{};
 
     public:
         ExceptionHandler() noexcept = default;
-        ExceptionHandler(ExceptionHandler &&) noexcept = default;
-        ExceptionHandler(const ExceptionHandler &) noexcept = default;
-
         virtual ~ExceptionHandler() = default;
-
-        auto operator=(const ExceptionHandler &) -> ExceptionHandler & = default;
-        auto operator=(ExceptionHandler &&) noexcept -> ExceptionHandler & = default;
 
         [[nodiscard]] static auto instance() -> ExceptionHandler &
         {
