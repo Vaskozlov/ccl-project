@@ -253,7 +253,7 @@ namespace ccl::text
             }
 
             current_char <<= utf8::TrailingSize;
-            current_char |= chr & as<char>(~utf8::ContinuationMask);
+            current_char |= as<char32_t>(chr & as<char>(~utf8::ContinuationMask));
         }
 
         constexpr auto newCharacterMove(char chr) noexcept(noexcept_carriage_move) -> void

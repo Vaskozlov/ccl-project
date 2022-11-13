@@ -12,7 +12,7 @@ include(src/CMakeLists.txt)
 include(catch/CMakeLists.txt)
 include(bench/CMakeLists.txt)
 
-install(TARGETS ccl
+install(TARGETS ccl ccll
         EXPORT cclTargets
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}

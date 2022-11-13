@@ -6,14 +6,10 @@ namespace ccl::lex::gen
     auto StaticGenerator::loadDirectives() -> void
     {
         for (const auto &[name, value] : ccll_parser.getDirectives()) {
-            if (name == "FILENAME") {
-                filename = value;
-            } else if (name == "VAR_NAME") {
+           if (name == "VAR_NAME") {
                 variable_name = value;
             } else if (name == "HANDLER") {
                 handler = value;
-            } else if (name == "INCLUDE_DIR_FOR_SRC") {
-                include_dir_for_src = value;
             } else if (name == "NAMESPACE") {
                 name_space = value;
             } else {
@@ -45,10 +41,7 @@ namespace ccl::lex::gen
 
     auto StaticGenerator::generateSource() -> void
     {
-        generated_source = fmt::format(
-            "#include <ccl/handler/cmd_handler.hpp>\n"
-            "#include <{}/{}>\n\n",
-            include_dir_for_src, filename);
+        generated_source = fmt::format("#include <{}/{}>\n\n", include_dir_for_src, filename);
 
         generateNamespaceBegin(generated_source);
         generateLexicalAnalyzer(generated_source);
@@ -61,6 +54,7 @@ namespace ccl::lex::gen
         generated_header =
             "#pragma once\n\n"
             "#include <unordered_map>\n"
+            "#include <ccl/handler/cmd_handler.hpp>\n"
             "#include <ccl/lex/lexical_analyzer.hpp>\n\n";
     }
 
@@ -89,7 +83,7 @@ namespace ccl::lex::gen
         appendToStr(
             string,
             fmt::format(
-                "{}const std::unordered_map<size_t, ccl::string_view> ToString{}Token\n{{\n",
+                "{}const std::unordered_map<size_t, ccl::string_view> ToString{}Token\n    {{\n",
                 addition_flags, variable_name));
 
         std::set<string_view> generated_rules{};
