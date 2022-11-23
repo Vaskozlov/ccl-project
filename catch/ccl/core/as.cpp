@@ -1,4 +1,3 @@
-#include "ccl/core/as.hpp"
 #include <boost/test/unit_test_suite.hpp>
 #include <ccl/core/as.hpp>
 #include <ccl/debug/debug_file.hpp>

@@ -46,9 +46,9 @@
 #endif /* CCL_COMPILE_TIME_BRANCH */
 
 #if __cpp_if_consteval
-#    define CCL_RUNTIME_BRANCH not consteval
+#    define CCL_RUNTIME_BRANCH !consteval
 #else
-#    define CCL_RUNTIME_BRANCH (not std::is_constant_evaluated())
+#    define CCL_RUNTIME_BRANCH (!std::is_constant_evaluated())
 #endif /* CCL_RUNTIME_BRANCH */
 
 #if defined(_MSC_VER)

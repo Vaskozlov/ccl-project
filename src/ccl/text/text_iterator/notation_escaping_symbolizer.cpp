@@ -46,7 +46,7 @@ namespace ccl::text
 
     auto TextIterator::NotationEscapingSymbolizer::isOutOfNotation(char32_t chr) const -> bool
     {
-        return not HexadecimalCharsToInt<char32_t>.contains(chr) ||
+        return !HexadecimalCharsToInt<char32_t>.contains(chr) ||
                HexadecimalCharsToInt<char32_t>.at(chr) >= pow2(notation_power);
     }
 
@@ -74,8 +74,8 @@ namespace ccl::text
         u16 max_times_,
         u16 notation_power_,
         bool need_all_chars_)
-      : text_iterator{ text_iterator_ }, max_times{ max_times_ }, notation_power{ notation_power_ },
-        need_all_chars{ need_all_chars_ }
+      : text_iterator{text_iterator_}, max_times{max_times_}, notation_power{notation_power_},
+        need_all_chars{need_all_chars_}
     {
         checkNotation();
         calculateResult();

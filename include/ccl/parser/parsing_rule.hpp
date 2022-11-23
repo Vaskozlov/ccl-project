@@ -32,38 +32,38 @@ namespace ccl::parser
 
         static std::atomic<size_t> uuid_counter;// NOLINT
 
-        SmallVector<RuleId> ids_to_construct{};
-        FlatSet<RuleId> ids_that_forbid_construction{};
-        string_view name{ "set name for ccl::parser::ParsingRule" };
+        SmallVector<Id> ids_to_construct{};
+        FlatSet<Id> ids_that_forbid_construction{};
+        string_view name{"set name for ccl::parser::ParsingRule"};
         UniquePtr<Node> (*rule_construction_call)(ParsingStack) = nullptr;
-        RuleId type{};
+        Id type{};
         size_t uuid{};
 
     public:
         ParsingRule() = default;
 
         ParsingRule(
-            RuleId type_, std::string_view name_,
+            Id type_, std::string_view name_,
             UniquePtr<Node> (*rule_construction_call_)(ParsingStack),
-            InitializerList<RuleId> ids_to_constructs_,
-            InitializerList<RuleId> ids_that_forbid_construction_ = {});
+            InitializerList<Id> ids_to_constructs_,
+            InitializerList<Id> ids_that_forbid_construction_ = {});
 
         [[nodiscard]] auto getName() const noexcept -> string_view
         {
             return name;
         }
 
-        [[nodiscard]] auto getType() const noexcept -> RuleId
+        [[nodiscard]] auto getType() const noexcept -> Id
         {
             return type;
         }
 
-        [[nodiscard]] auto getIdsToConstruct() const noexcept -> const SmallVector<RuleId> &
+        [[nodiscard]] auto getIdsToConstruct() const noexcept -> const SmallVector<Id> &
         {
             return ids_to_construct;
         }
 
-        [[nodiscard]] auto getIdsThatForbidConstruction() const noexcept -> const FlatSet<RuleId> &
+        [[nodiscard]] auto getIdsThatForbidConstruction() const noexcept -> const FlatSet<Id> &
         {
             return ids_that_forbid_construction;
         }
@@ -71,7 +71,7 @@ namespace ccl::parser
     private:
         auto generateUuid() noexcept -> void;
 
-        [[nodiscard]] auto canNotBeConstructed(RuleId future_id) const noexcept -> bool
+        [[nodiscard]] auto canNotBeConstructed(Id future_id) const noexcept -> bool
         {
             return ids_that_forbid_construction.contains(future_id);
         }
@@ -84,8 +84,7 @@ struct fmt::formatter<ccl::parser::ParsingRule> : fmt::formatter<std::string_vie
 {
     auto format(const ccl::parser::ParsingRule &rule, format_context &ctx) const
     {
-        return formatter<std::string_view>::format(
-            as<std::string_view>(rule.getName()), ctx);
+        return formatter<std::string_view>::format(as<std::string_view>(rule.getName()), ctx);
     }
 };
 

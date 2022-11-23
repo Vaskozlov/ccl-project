@@ -6,7 +6,7 @@
 namespace ccl::lex
 {
     // NOLINTNEXTLINE
-    CCL_ENUM(ReservedTokenType, size_t, EOI, BAD_TOKEN);
+    CCL_ENUM(ReservedTokenType, Id, EOI, BAD_TOKEN);
 
     class TokenAttributes
     {
@@ -18,8 +18,8 @@ namespace ccl::lex
         TokenAttributes() = default;
 
         explicit TokenAttributes(const text::TextIterator &text_iterator_)
-          : tabsAndSpaces(text_iterator_.getTabsAndSpaces()),
-            location(text_iterator_.getLocation()), workingLine(text_iterator_.getWorkingLine())
+          : tabsAndSpaces{text_iterator_.getTabsAndSpaces()},
+            location{text_iterator_.getLocation()}, workingLine{text_iterator_.getWorkingLine()}
         {}
     };
 
@@ -29,24 +29,24 @@ namespace ccl::lex
         Vector<string_view> postfixes{};
         TokenAttributes attributes{};
         string_view repr{};
-        size_t id{};
+        Id id{};
 
     public:
         Token() = default;
 
-        explicit Token(const size_t id_) : id(id_)
+        explicit Token(Id id_) : id{id_}
         {}
 
-        Token(TokenAttributes &&attributes_, const string_view &repr_, size_t id_)
-          : attributes(attributes_), repr(repr_), id(id_)
+        Token(TokenAttributes &&attributes_, const string_view &repr_, Id id_)
+          : attributes{std::move(attributes_)}, repr{repr_}, id{id_}
         {}
 
-        Token(TokenAttributes &&attributes_, typename string_view::iterator begin_, size_t id_)
-          : Token(std::move(attributes_), { begin_, 0ZU }, id_)
+        Token(TokenAttributes &&attributes_, typename string_view::iterator begin_, Id id_)
+          : Token{std::move(attributes_), {begin_, 0ZU}, id_}
         {}
 
-        Token(const text::TextIterator &text_iterator_, size_t id_)
-          : attributes(text_iterator_), repr(text_iterator_.getRemaining()), id(id_)
+        Token(const text::TextIterator &text_iterator_, Id id_)
+          : attributes{text_iterator_}, repr{text_iterator_.getRemaining()}, id{id_}
         {}
 
         [[nodiscard]] auto getId() const noexcept -> size_t
@@ -99,12 +99,12 @@ namespace ccl::lex
             return repr;
         }
 
-        [[nodiscard]] auto getPrefixes() noexcept -> const Vector<string_view> &
+        [[nodiscard]] auto getPrefixes() const noexcept -> const Vector<string_view> &
         {
             return prefixes;
         }
 
-        [[nodiscard]] auto getPostfixes() noexcept -> const Vector<string_view> &
+        [[nodiscard]] auto getPostfixes() const noexcept -> const Vector<string_view> &
         {
             return postfixes;
         }
@@ -121,18 +121,18 @@ namespace ccl::lex
 
         auto setEnd(typename string_view::iterator end_) noexcept -> void
         {
-            repr = { repr.begin(), end_ };
+            repr = {repr.begin(), end_};
         }
 
         auto finishInitialization(const text::TextIterator &text_iterator) -> void
         {
             repr = text_iterator.getRemaining();
-            attributes = TokenAttributes{ text_iterator };
+            attributes = TokenAttributes{text_iterator};
         }
 
         auto setReprLength(size_t length) noexcept -> void
         {
-            repr = { repr.begin(), length };
+            repr.setLength<UNSAFE>(length);
         }
 
         auto addPrefix(string_view prefix) -> void
@@ -145,7 +145,7 @@ namespace ccl::lex
             postfixes.push_back(postfix);
         }
 
-        auto clear(size_t new_id)
+        auto clear(Id new_id) noexcept -> void
         {
             id = new_id;
             prefixes.clear();

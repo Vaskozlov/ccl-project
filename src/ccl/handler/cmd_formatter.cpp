@@ -13,7 +13,7 @@ namespace ccl::handler
 
         CCL_UNROLL_N(4)
         for (auto chr : string) {
-            if (chr == '\t') {
+            if ('\t' == chr) {
                 ++replaced_tabs;
                 result.append("    "sv);
             } else {
@@ -21,7 +21,7 @@ namespace ccl::handler
             }
         }
 
-        return { replaced_tabs, result };
+        return {replaced_tabs, result};
     }
 
     auto Cmd::CmdFormatter::formatFilename() -> void

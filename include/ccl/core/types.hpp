@@ -31,6 +31,7 @@ namespace ccl
     using u32 = std::uint32_t;
     using u64 = std::uint64_t;
 
+    using Id = std::size_t;
     using ssize_t = std::intmax_t;
 
     using f32 = std::float_t;
@@ -108,8 +109,7 @@ namespace ccl
         requires std::derived_from<Constructed, Target>
     constexpr auto makeUnique(Ts &&...args) -> UniquePtr<Target>
     {
-        return UniquePtr<Target>{ as<Target *>(
-            new Constructed(std::forward<Ts>(args)...)) };
+        return UniquePtr<Target>{as<Target *>(new Constructed(std::forward<Ts>(args)...))};
     }
 
     template<typename T, typename... Ts>
@@ -122,8 +122,7 @@ namespace ccl
         requires std::derived_from<Constructed, Target>
     constexpr auto makeShared(Ts &&...args) -> SharedPtr<Target>
     {
-        return SharedPtr<Target>{ as<Target *>(
-            new Constructed(std::forward<Ts>(args)...)) };
+        return SharedPtr<Target>{as<Target *>(new Constructed(std::forward<Ts>(args)...))};
     }
 
     namespace integral_literals
@@ -146,6 +145,16 @@ namespace ccl
         constexpr auto operator"" _U64(unsigned long long value) -> u64
         {
             return as<u64>(value);
+        }
+
+        constexpr auto operator"" _ZU(unsigned long long value) -> size_t
+        {
+            return as<size_t>(value);
+        }
+
+        constexpr auto operator"" _B(unsigned long long value) -> std::byte
+        {
+            return as<std::byte>(value);
         }
     }// namespace integral_literals
 }// namespace ccl

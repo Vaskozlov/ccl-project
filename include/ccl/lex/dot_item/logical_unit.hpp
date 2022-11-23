@@ -14,14 +14,13 @@ namespace ccl::lex::dot_item
 
         UniquePtr<BasicItem> lhs_item{};
         UniquePtr<BasicItem> rhs_item{};
-        LogicalOperation logical_operation{ LogicalOperation::NONE };
+        LogicalOperation logical_operation{LogicalOperation::NONE};
 
     public:
         [[nodiscard]] auto empty() const noexcept -> bool final;
 
         LogicalUnit(
-            UniquePtr<BasicItem> lhs_, UniquePtr<BasicItem> rhs_, LogicalOperation type_,
-            size_t id_);
+            UniquePtr<BasicItem> lhs_, UniquePtr<BasicItem> rhs_, LogicalOperation type_, Id id_);
 
     private:
         [[nodiscard]] auto scanIteration(const ForkedGenerator &text_iterator) const

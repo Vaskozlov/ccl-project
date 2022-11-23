@@ -97,7 +97,7 @@ namespace ccl::text
         auto utfError(char /* unused */) -> void
         {
             throwPanicError(AnalysationStage::LEXICAL_ANALYSIS, "invalid utf symbol");
-            throw UnrecoverableError{ "unable to recover, because of invalid utf symbol" };
+            throw UnrecoverableError{"unable to recover, because of invalid utf symbol"};
         }
 
         auto throwSuggestion(
@@ -201,7 +201,7 @@ namespace ccl::text
         explicit EscapingSymbolizer(
             TextIterator &text_iterator_,
             extra_symbols_t extra_symbols_) noexcept
-          : extra_symbols{ std::move(extra_symbols_) }, text_iterator{ text_iterator_ }
+          : extra_symbols{std::move(extra_symbols_)}, text_iterator{text_iterator_}
         {}
 
         ~EscapingSymbolizer() = default;

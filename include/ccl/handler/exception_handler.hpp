@@ -1,8 +1,8 @@
 #ifndef CCL_PROJECT_EXCEPTION_HANDLER_HPP
 #define CCL_PROJECT_EXCEPTION_HANDLER_HPP
 
-#include <ccl/text/iterator_exception.hpp>
 #include <atomic>
+#include <ccl/text/iterator_exception.hpp>
 
 namespace ccl
 {

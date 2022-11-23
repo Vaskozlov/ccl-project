@@ -7,9 +7,9 @@ namespace ccl
 {
     class UtfSet
     {
-        static constexpr auto small_storage_size = 128ZU;
+        static constexpr auto smallStorageSize = 128ZU;
 
-        SmallBitset<small_storage_size> small_storage{};
+        SmallBitset<smallStorageSize> smallStorage{};
         FlatSet<char32_t> storage{};
 
     public:

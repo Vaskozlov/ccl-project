@@ -13,14 +13,14 @@ namespace ccl::lex::parser
         case GenToken::IDENTIFIER:
             token_stack.push(std::move(token));
 
-            if (not parseDeclaration()) {
+            if (!parseDeclaration()) {
                 recoverFromError();
             }
 
             return parse();
 
         case GenToken::CURLY_OPENING:
-            if (not parseBlockDefinition()) {
+            if (!parseBlockDefinition()) {
                 recoverFromError();
             }
 
@@ -63,7 +63,7 @@ namespace ccl::lex::parser
         auto token = tokenizer.yield();
         auto token_id = token.getId();
 
-        if (token_id == GenToken::RULE_DECLARATION) {
+        if (GenToken::RULE_DECLARATION == token_id) {
             iterator_copy.setEnd(token.getRepr().end());
             checkRule(iterator_copy);
 
@@ -82,7 +82,7 @@ namespace ccl::lex::parser
         auto token = tokenizer.yield();
         auto token_id = token.getId();
 
-        if (token_id == GenToken::IDENTIFIER || token_id == GenToken::STRING) {
+        if (GenToken::IDENTIFIER == token_id || GenToken::STRING == token_id) {
             token_stack.push(std::move(token));
             completeDirectiveDeclaration();
             return true;
@@ -115,7 +115,7 @@ namespace ccl::lex::parser
 
         auto directive_repr = directive_value.getRepr();
 
-        if (directive_value.getId() == GenToken::STRING) {
+        if (GenToken::STRING == directive_value.getId()) {
             auto string_part_of_repr = directive_repr.substr(1, directive_repr.size() - 2);
             directives.emplace(directive.getRepr(), string_part_of_repr);
         } else {
@@ -128,7 +128,7 @@ namespace ccl::lex::parser
     auto CcllParser::checkRule(text::TextIterator &rule) -> void
     {
         try {
-            auto container = dot_item::Container{ std::move(rule), special_items, 2, true };
+            auto container = dot_item::Container{std::move(rule), special_items, 2, true};
         } catch (const UnrecoverableError & /* unused */) {}
     }
 
@@ -137,7 +137,7 @@ namespace ccl::lex::parser
         auto token = tokenizer.yield();
         auto token_id = token.getId();
 
-        if (token_id == GenToken::IDENTIFIER) {
+        if (GenToken::IDENTIFIER == token_id) {
             token_stack.push(std::move(token));
             return parseBlockEnding();
         }
@@ -151,7 +151,7 @@ namespace ccl::lex::parser
         auto token = tokenizer.yield();
         auto token_id = token.getId();
 
-        if (token_id == GenToken::CURLY_CLOSING) {
+        if (GenToken::CURLY_CLOSING == token_id) {
             completeBlock();
             return true;
         }
@@ -167,8 +167,8 @@ namespace ccl::lex::parser
 
         current_block = block_name.getRepr();
 
-        if (not blocks.contains(current_block)) {
-            blocks.insert({ current_block, { as<u16>(last_block_id++), 0 } });
+        if (!blocks.contains(current_block)) {
+            blocks.insert({current_block, {as<u16>(last_block_id++), 0}});
         }
 
         expectRuleEnd();

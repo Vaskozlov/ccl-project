@@ -4,9 +4,6 @@ file(
         "src/ccl/*.cpp"
 )
 
-add_compile_definitions(BOOST_NO_CXX98_FUNCTION_BASE=false)
-
-
 if (CREATE_STATIC_LIBRARY)
     add_library(ccl STATIC ${CCL_OBJECTS})
 else ()

@@ -11,7 +11,7 @@ BOOST_AUTO_TEST_CASE(BasicTextIteratorRawFuture)
     auto expected = U"Hello, \t\nWorld! \u00FF \uFFFF \U000FFFFF"_sv;
 
     DEBUG_VAR index = 1ZU;
-    DEBUG_VAR text_iterator = BasicTextIterator{ input };
+    DEBUG_VAR text_iterator = BasicTextIterator{input};
 
     for (DEBUG_VAR &&chr : expected) {
         BOOST_ASSERT(text_iterator.futureChar(index) == chr);

@@ -52,7 +52,7 @@ namespace ccl::handler
     template<fmt::color Color, typename HandleType>
     auto Cmd::formatAndPrint(const ExceptionT *value, HandleType &&handle_type) -> void
     {
-        auto formatter = CmdFormatter{ value };
+        auto formatter = CmdFormatter{value};
         fmt::print("{}\n", formatter.format<Color>(std::forward<HandleType>(handle_type)));
         std::cout.flush();
     }

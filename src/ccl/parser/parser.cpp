@@ -64,7 +64,7 @@ namespace ccl::parser
             if (isTerminal(mismatch_result)) {
                 auto result = terminalCase(stack, follow_set, mismatch_result, *rule);
 
-                if (result == TerminalMatchResult::CONTINUE) {
+                if (TerminalMatchResult::CONTINUE == result) {
                     continue;
                 }
 
@@ -81,16 +81,17 @@ namespace ccl::parser
         Stack &stack, const FollowSet &follow_set, const MismatchResult &mismatch_result,
         const ParsingRule &rule) -> TerminalMatchResult
     {
-        if (not mismatch_result.stack_version.has_value()) {
+        if (!mismatch_result.stack_version.has_value()) {
             pushNewToken(stack);
-            return as<size_t>(parse(stack, follow_set));
+            return as<Id>(parse(stack, follow_set));
         }
 
         const auto &ids_to_construct = rule.ids_to_construct;
 
-        auto mis = std::ranges::mismatch(
-            stack, ids_to_construct,
-            [](const UniquePtr<Node> &node, RuleId id) { return id == node->getId(); });
+        auto mis =
+            std::ranges::mismatch(stack, ids_to_construct, [](const UniquePtr<Node> &node, Id id) {
+                return id == node->getId();
+            });
 
         auto target_type = 0ZU;
 
@@ -114,7 +115,7 @@ namespace ccl::parser
     auto Parser::nonTerminalCase(
         Stack &stack, const FollowSet &follow_set, const MismatchResult &mismatch_result) -> bool
     {
-        if (not mismatch_result.stack_version.has_value()) {
+        if (!mismatch_result.stack_version.has_value()) {
             pushNewToken(stack);
         }
 
@@ -127,7 +128,7 @@ namespace ccl::parser
     auto Parser::fullMatchCase(Stack &stack, const FollowSet &follow_set, const ParsingRule &rule)
         -> bool
     {
-        const auto &future_token = tokenizer.futureToken();
+        const auto &future_token = tokenizer.yieldFutureToken();
         auto future_token_id = future_token.getId();
 
         if (rule.canNotBeConstructed(future_token_id)) {
@@ -145,7 +146,7 @@ namespace ccl::parser
     }
 
     auto Parser::parseWithNewFollowSet(// NOLINT
-        RuleId expected_type, Stack &stack, size_t passing_elements,
+        Id expected_type, Stack &stack, size_t passing_elements,
         const std::function<bool(const ParsingRule &)> &pred) -> bool
     {
         auto new_stack = Stack{};
@@ -178,12 +179,11 @@ namespace ccl::parser
     }
 
     auto Parser::formFollowSet(
-        RuleId expected_type, const std::function<bool(const ParsingRule &)> &pred) const
-        -> FollowSet
+        Id expected_type, const std::function<bool(const ParsingRule &)> &pred) const -> FollowSet
     {
         auto follow_set = FollowSet{};
 
-        if (not parsing_rules.contains(expected_type)) {
+        if (!parsing_rules.contains(expected_type)) {
             return {};
         }
 
@@ -218,7 +218,7 @@ namespace ccl::parser
     {
         auto mismatch_result = std::ranges::mismatch(
             stack, rule.ids_to_construct,
-            [](const UniquePtr<Node> &node, RuleId id) { return id == node->getId(); });
+            [](const UniquePtr<Node> &node, Id id) { return id == node->getId(); });
 
         auto result = MismatchResult{};
 
@@ -255,7 +255,7 @@ namespace ccl::parser
         auto *as_token_node = as<TokenNode *>(last_elem.get());
 
         if (as_token_node == nullptr) {
-            throw UnrecoverableError{ "last stack element bust be a token!" };
+            throw UnrecoverableError{"last stack element bust be a token!"};
         }
 
         const auto &token = as_token_node->getToken();

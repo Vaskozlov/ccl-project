@@ -15,13 +15,13 @@ namespace ccl::text
         auto escaping = false;
         auto chr = next();
 
-        if (chr == U'\\') {
+        if (U'\\' == chr) {
             escaping = true;
             chr = doEscapeSymbolizing(*this, extra_symbols);
         }
 
         Base::setCurrentChar(chr);
-        return { escaping, chr };
+        return {escaping, chr};
     }
 
     auto TextIterator::doEscapeSymbolizing(
@@ -46,7 +46,7 @@ namespace ccl::text
             criticality, stage, iterator_location.getLocation(), 1,
             iterator_location.getWorkingLine(), message, suggestion);
 
-        if (exception_handler == nullptr) {
+        if (nullptr == exception_handler) {
             throw std::move(exception);
         }
 

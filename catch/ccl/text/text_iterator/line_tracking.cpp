@@ -7,7 +7,7 @@ using namespace string_view_literals;
 
 BOOST_AUTO_TEST_CASE(TextIteratorLineTracking)
 {
-    auto text_iterator = TextIterator{ "Hi\nWorld!"_sv };
+    auto text_iterator = TextIterator{"Hi\nWorld!"_sv};
 
     for (auto i = 0ZU; i != 3; ++i) {
         text_iterator.next();

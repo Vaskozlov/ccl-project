@@ -47,7 +47,7 @@ namespace ccl::text
 
         CCL_DECL static auto isTabOrSpace(char32_t chr) noexcept -> bool
         {
-            return lor(chr == '\t', chr == ' ');
+            return lor('\t' == chr, ' ' == chr);
         }
 
         std::string tabsAnsSpaces{};

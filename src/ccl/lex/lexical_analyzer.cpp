@@ -14,26 +14,26 @@ namespace ccl::lex
         }
     }
 
-    auto LexicalAnalyzer::createContainer(string_view rule, size_t id, string_view filename) -> void
+    auto LexicalAnalyzer::createContainer(string_view rule, Id id, string_view filename) -> void
     {
         auto container =
-            Container(TextIterator{ rule, exceptionHandler, filename }, specialItems, id, true);
+            Container(TextIterator{rule, exceptionHandler, filename}, specialItems, id, true);
 
         if (container.isSpecial()) {
             specialItems.special_items.emplace_back(std::move(container));
-        } else if (not container.empty()) {
+        } else if (!container.empty()) {
             items.emplace_back(std::move(container));
         }
     }
 
     auto LexicalAnalyzer::getTokenizer(string_view text, string_view filename) -> Tokenizer
     {
-        return { *this, text, filename };
+        return {*this, text, filename};
     }
 
     auto LexicalAnalyzer::getTokenizer(
         string_view text, string_view filename, ExceptionHandler &handler) -> Tokenizer
     {
-        return { *this, text, filename, handler };
+        return {*this, text, filename, handler};
     }
 }// namespace ccl::lex

@@ -9,13 +9,11 @@
 
 namespace ccl::lex::dot_item
 {
-    CCL_ENUM(ScanningType, u16, MAIN_SCAN, BASIC, SPECIAL, CHECK);// NOLINT
+    CCL_ENUM(ScanningType, Id, MAIN_SCAN, BASIC, SPECIAL, CHECK);// NOLINT
 
     class Container final : public BasicItem
     {
         using BasicItem::canBeOptimized;
-        using BasicItem::repetition;
-
         using typename BasicItem::TextIterator;
 
         using ForkedGen = typename TextIterator::ForkedTextIterator;
@@ -25,8 +23,8 @@ namespace ccl::lex::dot_item
 
         struct ContainerFlags
         {
-            bool is_main : 1 = false;
-            bool is_special : 1 = false;
+            bool isMain = false;
+            bool isSpecial = false;
         };
 
         storage_t items{};
@@ -35,15 +33,11 @@ namespace ccl::lex::dot_item
 
     public:
         Container(
-            TextIterator &rule_iterator_, SpecialItems &special_items_, size_t id_,
+            TextIterator &rule_iterator_, SpecialItems &special_items_, Id id_,
             bool main_item_ = false, bool is_special_ = false);
 
         Container(
-            TextIterator &&rule_iterator_, SpecialItems &special_items_, size_t id_,
-            bool main_item_ = false, bool is_special_ = false);
-
-        Container(
-            const TextIterator &rule_iterator_, SpecialItems &special_items_, size_t id_,
+            const TextIterator &rule_iterator_, SpecialItems &special_items_, Id id_,
             bool main_item_ = false, bool is_special_ = false);
 
         auto beginScan(
@@ -53,7 +47,7 @@ namespace ccl::lex::dot_item
         [[nodiscard]] auto scanIteration(const ForkedGenerator &text_iterator) const
             -> size_t final;
 
-        [[nodiscard]] auto operator==(const Container &other) const noexcept
+        [[nodiscard]] auto operator==(const Container &other) const noexcept -> bool
         {
             return id == other.id;
         }
@@ -70,7 +64,7 @@ namespace ccl::lex::dot_item
 
         [[nodiscard]] auto isSpecial() const noexcept -> bool
         {
-            return flags.is_special;
+            return flags.isSpecial;
         }
 
         [[nodiscard]] auto getItems() const noexcept -> const storage_t &
@@ -88,17 +82,17 @@ namespace ccl::lex::dot_item
     {
         Container &container;
         TextIterator &ruleIterator;
-        storage_t &items{ container.items };
-        SpecialItems &specialItems{ container.specialItems };
-        Optional<UniquePtr<BasicItem>> constructedLhs{ std::nullopt };
+        storage_t &items{container.items};
+        SpecialItems &specialItems{container.specialItems};
+        Optional<UniquePtr<BasicItem>> constructedLhs{std::nullopt};
         LogicalOperation logicalOperation{};
-        bool rhsItemConstructed{ false };
+        bool rhsItemConstructed{false};
 
     public:
         RuleParser(Container &container_, TextIterator &rule_iterator_);
 
     private:
-        [[nodiscard]] auto getId() const noexcept -> size_t
+        [[nodiscard]] auto getId() const noexcept -> Id
         {
             return container.id;
         }
@@ -112,7 +106,7 @@ namespace ccl::lex::dot_item
 
         auto recognizeAction() -> void;
 
-        auto startLogicalOperationConstruction(LogicalOperation type) -> void;
+        auto startLogicalOperator(LogicalOperation type) -> void;
 
         auto tryToFinishLogicalOperation() -> void;
 

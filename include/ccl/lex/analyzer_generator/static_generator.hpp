@@ -18,9 +18,9 @@ namespace ccl::lex::gen
         Tokenizer &tokenizer;
         parser::CcllParser ccll_parser;
         std::string include_dir_for_src{};
-        std::string handler{ "ccl::handler::Cmd::instance()" };
-        std::string variable_name{ "set_me" };
-        std::string filename{ "set_me" };
+        std::string handler{"ccl::handler::Cmd::instance()"};
+        std::string variable_name{"set_me"};
+        std::string filename{"set_me"};
         std::string name_space{};
         std::string enum_name{};
         std::string generated_header{};
@@ -36,7 +36,7 @@ namespace ccl::lex::gen
 
         [[nodiscard]] auto get() const noexcept -> Pair<std::string, std::string>
         {
-            return { generated_header, generated_source };
+            return {generated_header, generated_source};
         }
 
     private:

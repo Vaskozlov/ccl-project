@@ -10,7 +10,7 @@ namespace ccl::parser
         friend Parser;
 
     public:
-        using PrecedenceTable = UnorderedMap<RuleId, size_t>;
+        using PrecedenceTable = UnorderedMap<Id, size_t>;
 
         ParsingRules(PrecedenceTable precedence_table_, InitializerList<ParsingRule> rules_);
 
@@ -21,16 +21,16 @@ namespace ccl::parser
         auto fixConflicts() -> void;
         auto fixConflict(ParsingRule &rule, const ParsingRule &other_rule) -> void;
 
-        auto fixUsingPrecedence(
-            ParsingRule &rule, RuleId first_mismatch, RuleId second_mismatch) const -> void;
+        auto fixUsingPrecedence(ParsingRule &rule, Id first_mismatch, Id second_mismatch) const
+            -> void;
 
         auto checkThereAreNoCloseNonTerminals(const ParsingRule &rule) -> void;
 
         PrecedenceTable precedence_table{};
-        Set<RuleId> terminals{};
-        Set<RuleId> non_terminals{};
-        Map<RuleId, SmallVector<ParsingRule>> parsing_rules{};
-        bool errors_in_rules{ false };
+        Set<Id> terminals{};
+        Set<Id> non_terminals{};
+        Map<Id, SmallVector<ParsingRule>> parsing_rules{};
+        bool errors_in_rules{false};
     };
 }// namespace ccl::parser
 

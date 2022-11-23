@@ -34,7 +34,7 @@ namespace ccl::parser
     auto ParsingRules::detectTerminals() -> void
     {
         auto inserter = std::inserter(terminals, terminals.begin());
-        auto insert_condition = [this](RuleId id) { return not non_terminals.contains(id); };
+        auto insert_condition = [this](Id id) { return !non_terminals.contains(id); };
 
         for (const auto &[keys, rules] : parsing_rules) {
             for (const auto &rule : rules) {
@@ -113,7 +113,7 @@ namespace ccl::parser
     }
 
     auto ParsingRules::fixUsingPrecedence(
-        ParsingRule &rule, RuleId first_mismatch, RuleId second_mismatch) const -> void
+        ParsingRule &rule, Id first_mismatch, Id second_mismatch) const -> void
     {
         auto first_precedence = precedence_table.at(first_mismatch);
         auto second_precedence = precedence_table.at(second_mismatch);

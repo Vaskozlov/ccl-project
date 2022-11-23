@@ -38,12 +38,12 @@ namespace ccl
 
         CCL_DECL auto rbegin() const noexcept -> const_reverse_iterator
         {
-            return const_reverse_iterator{ end() };
+            return const_reverse_iterator{end()};
         }
 
         CCL_DECL auto rend() const noexcept -> const_reverse_iterator
         {
-            return const_reverse_iterator{ begin() };
+            return const_reverse_iterator{begin()};
         }
 
         CCL_DECL auto crbegin() const noexcept -> const_reverse_iterator
@@ -68,7 +68,7 @@ namespace ccl
 
         CCL_DECL operator string_view() const noexcept// NOLINT implicit conversion
         {
-            return { string.data(), size() };
+            return {string.data(), size()};
         }
 
         CCL_DECL auto at(size_t index) const -> char
@@ -85,11 +85,11 @@ namespace ccl
             -> std::weak_ordering = default;
 
         // NOLINTNEXTLINE
-        consteval ConstString(const value_type (&str)[N]) : string{ std::to_array(str) }
+        consteval ConstString(const value_type (&str)[N]) : string{std::to_array(str)}
         {}
 
         // NOLINTNEXTLINE
-        consteval ConstString(const std::array<value_type, N> &str) : string{ str }
+        consteval ConstString(const std::array<value_type, N> &str) : string{str}
         {}
     };
 }// namespace ccl

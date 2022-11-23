@@ -9,7 +9,7 @@ BOOST_AUTO_TEST_CASE(LexicalAnalyzerUnion, *utf::depends_on("ContainerUnion"))
 {
     auto analyzer = LexicalAnalyzer{
         ExceptionHandler::instance(),
-        { { 2, R"([a-z]p+[0-9]+)" }, { 3, R"([0-9]+[a-z]p*)" } },
+        {{2, R"([a-z]p+[0-9]+)"}, {3, R"([0-9]+[a-z]p*)"}},
     };
 
     auto tokenizer = analyzer.getTokenizer(R"(20 abz10 10abz)");

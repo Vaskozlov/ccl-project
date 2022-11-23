@@ -7,7 +7,7 @@
 #include <functional>
 
 #define CCL_PARSING_RULE(Type, RuleConstructor, ...)                                               \
-    ccl::parser::ParsingRule(Type, CCL_STR(Type), RuleConstructor, { __VA_ARGS__ })
+    ccl::parser::ParsingRule(Type, CCL_STR(Type), RuleConstructor, {__VA_ARGS__})
 
 namespace ccl::parser
 {
@@ -21,8 +21,8 @@ namespace ccl::parser
 
         struct CCL_TRIVIAL_ABI MismatchResult
         {
-            Optional<RuleId> stack_version;
-            Optional<RuleId> rule_version;
+            Optional<Id> stack_version;
+            Optional<Id> rule_version;
         };
 
         explicit Parser(const ParsingRules &parsing_rules_, Tokenizer &tokenizer_);
@@ -44,14 +44,14 @@ namespace ccl::parser
             const ParsingRule &rule) -> TerminalMatchResult;
 
         auto parseWithNewFollowSet(
-            RuleId expected_type, Stack &stack,
+            Id expected_type, Stack &stack,
             size_t passing_elements = std::numeric_limits<size_t>::max(),
             const std::function<bool(const ParsingRule &)> &pred = [](const ParsingRule &) {
                 return true;
             }) -> bool;
 
         [[nodiscard]] auto formFollowSet(
-            RuleId expected_type, const std::function<bool(const ParsingRule &)> &pred) const
+            Id expected_type, const std::function<bool(const ParsingRule &)> &pred) const
             -> FollowSet;
 
         [[nodiscard]] static auto mismatch(const Stack &stack, const ParsingRule &rule)
@@ -70,10 +70,10 @@ namespace ccl::parser
         auto throwError(Stack &stack, const FollowSet &follow_set) -> void;
 
         Tokenizer &tokenizer;
-        ExceptionHandler &exception_handler{ tokenizer.getHandler() };
-        const Set<RuleId> &terminals{};
-        const Set<RuleId> &non_terminals{};
-        const Map<RuleId, SmallVector<ParsingRule>> &parsing_rules;
+        ExceptionHandler &exception_handler{tokenizer.getHandler()};
+        const Set<Id> &terminals{};
+        const Set<Id> &non_terminals{};
+        const Map<Id, SmallVector<ParsingRule>> &parsing_rules;
     };
 }// namespace ccl::parser
 

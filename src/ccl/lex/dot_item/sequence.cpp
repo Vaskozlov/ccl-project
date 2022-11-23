@@ -6,8 +6,8 @@ namespace ccl::lex::dot_item
 
     Sequence::Sequence(
         SequenceFlags flags_, const string_view &str_begin_, const string_view &str_end_,
-        TextIterator &rule_iterator_, size_t id_)
-      : BasicItem(id_), str_begin(str_begin_), str_end(str_end_)
+        TextIterator &rule_iterator_, Id id_)
+      : BasicItem{id_}, str_begin{str_begin_}, str_end{str_end_}
     {
         flags.sequenceIsMultiline = flags_.multiline;
         flags.sequenceNoEscapingSymbols = flags_.noEscapingSymbols;
@@ -25,8 +25,8 @@ namespace ccl::lex::dot_item
             if (flags.sequenceNoEscapingSymbols) {
                 chr = rule_iterator.next();
             } else {
-                auto [escaping, character] = rule_iterator.nextRawCharWithEscapingSymbols(
-                    { { U'[', U'[' }, { U']', U']' } });
+                auto [escaping, character] =
+                    rule_iterator.nextRawCharWithEscapingSymbols({{U'[', U'['}, {U']', U']'}});
                 is_escaping = escaping;
                 chr = character;
             }
@@ -75,7 +75,7 @@ namespace ccl::lex::dot_item
             throwUnterminatedString(rule_iterator, "unterminated sequence");
         }
 
-        if (land(chr == '\n', not flags.sequenceIsMultiline)) [[unlikely]] {
+        if (land('\n' == chr, !flags.sequenceIsMultiline)) [[unlikely]] {
             auto message = "new line is reached, but sequence has not been terminated"_sv;
             auto suggestion = fmt::format("use multiline sequence or close it with `{}`", str_end);
 
@@ -100,7 +100,7 @@ namespace ccl::lex::dot_item
             throwEmptyStringEnd(rule_iterator);
         }
 
-        if (not text.startsWith(str_begin)) [[unlikely]] {
+        if (!text.startsWith(str_begin)) [[unlikely]] {
             throwStringBeginException(rule_iterator);
         }
     }
@@ -109,14 +109,14 @@ namespace ccl::lex::dot_item
     {
         rule_iterator.throwPanicError(
             AnalysationStage::LEXICAL_ANALYSIS, "sequence item begin cannot be empty"_sv);
-        throw UnrecoverableError{ "unrecoverable error in SequenceType" };
+        throw UnrecoverableError{"unrecoverable error in SequenceType"};
     }
 
     auto Sequence::throwEmptyStringEnd(TextIterator &rule_iterator) -> void
     {
         rule_iterator.throwPanicError(
             AnalysationStage::LEXICAL_ANALYSIS, "sequence item end cannot be empty"_sv);
-        throw UnrecoverableError{ "unrecoverable error in SequenceType" };
+        throw UnrecoverableError{"unrecoverable error in SequenceType"};
     }
 
     auto Sequence::throwUnterminatedString(
@@ -125,7 +125,7 @@ namespace ccl::lex::dot_item
         const string_view &suggestion) -> void
     {
         rule_iterator.throwPanicError(AnalysationStage::LEXICAL_ANALYSIS, message, suggestion);
-        throw UnrecoverableError{ "unrecoverable error in SequenceType" };
+        throw UnrecoverableError{"unrecoverable error in SequenceType"};
     }
 
     auto Sequence::throwStringBeginException(TextIterator &rule_iterator) const -> void
@@ -133,6 +133,6 @@ namespace ccl::lex::dot_item
         auto message = fmt::format("string literal must begin with {}", str_begin);
 
         rule_iterator.throwPanicError(AnalysationStage::LEXICAL_ANALYSIS, message);
-        throw UnrecoverableError{ "unrecoverable error in SequenceType" };
+        throw UnrecoverableError{"unrecoverable error in SequenceType"};
     }
 }// namespace ccl::lex::dot_item

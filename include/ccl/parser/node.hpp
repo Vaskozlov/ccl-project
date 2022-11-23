@@ -28,7 +28,7 @@ namespace ccl::parser
 {
     struct Node
     {
-        CCL_INLINE explicit Node(size_t id_) : id(id_)
+        CCL_INLINE explicit Node(Id id_) : id{id_}
         {}
 
         Node(const Node &) = default;
@@ -38,7 +38,7 @@ namespace ccl::parser
         auto operator=(const Node &) -> Node & = default;
         auto operator=(Node &&) noexcept -> Node & = default;
 
-        [[nodiscard]] auto getId() const noexcept -> size_t
+        [[nodiscard]] auto getId() const noexcept -> Id
         {
             return id;
         }
@@ -52,7 +52,7 @@ namespace ccl::parser
                 -> std::string;
 
     private:
-        size_t id{};
+        Id id{};
     };
 }// namespace ccl::parser
 

@@ -14,13 +14,13 @@ CCL_ENUM(// NOLINTNEXTLINE
 lex::LexicalAnalyzer LexicalAnalyzer(
     handler::Cmd::instance(),
     {
-        { TestToken::ID, "[a-zA-Z_][a-zA-Z0-9_]*" },
-        { TestToken::NUM, "[0-9]+" },
-        { TestToken::MUL, "! [*]" },
-        { TestToken::ADD, "! [+]" },
-        { TestToken::NOT, "! [!]" },
-        { TestToken::ANGLE_CLOSING, R"(! "]" )" },
-        { TestToken::ANGLE_OPENING, R"(! "[" )" },
+        {TestToken::ID, "[a-zA-Z_][a-zA-Z0-9_]*"},
+        {TestToken::NUM, "[0-9]+"},
+        {TestToken::MUL, "! [*]"},
+        {TestToken::ADD, "! [+]"},
+        {TestToken::NOT, "! [!]"},
+        {TestToken::ANGLE_CLOSING, R"(! "]" )"},
+        {TestToken::ANGLE_OPENING, R"(! "[" )"},
     });
 
 struct FactorWithValue : parser::Factor
@@ -84,8 +84,8 @@ auto constructIndexOperator(parser::ParsingStack stack) -> UniquePtr<parser::Nod
 }
 
 // NOLINTBEGIN
-const ccl::UnorderedMap<ccl::parser::RuleId, size_t> PrecedenceTable(//
-    { { TestToken::MUL, 30 }, { TestToken::ADD, 10 } });
+const ccl::UnorderedMap<ccl::Id, size_t> PrecedenceTable(//
+    {{TestToken::MUL, 30}, {TestToken::ADD, 10}});
 // NOLINTEND
 
 BOOST_AUTO_TEST_CASE(CclParser)
@@ -102,21 +102,21 @@ BOOST_AUTO_TEST_CASE(CclParser)
 
     auto rules = parser::ParsingRules(
         PrecedenceTable,
-        { CCL_PARSING_RULE(TestToken::FACTOR, constructFactorFromID, TestToken::NUM),
-          CCL_PARSING_RULE(TestToken::FACTOR, constructFactorFromID, TestToken::ID),
-          CCL_PARSING_RULE(
-              TestToken::FACTOR, constructIndexOperator, TestToken::FACTOR,
-              TestToken::ANGLE_OPENING, TestToken::EXPR, TestToken::ANGLE_CLOSING),
-          CCL_PARSING_RULE(TestToken::EXPR, constructExpressionFromFactor, TestToken::FACTOR),
-          CCL_PARSING_RULE(
-              TestToken::EXPR, constructBinaryExpression, TestToken::EXPR, TestToken::ADD,
-              TestToken::EXPR),
-          CCL_PARSING_RULE(
-              TestToken::EXPR, constructBinaryExpression, TestToken::EXPR, TestToken::MUL,
-              TestToken::EXPR),
-          CCL_PARSING_RULE(
-              TestToken::EXPR, constructUnaryExpression, TestToken::NOT, TestToken::EXPR),
-          CCL_PARSING_RULE(TestToken::ROOT, constructRoot, TestToken::EXPR, TestToken::EOI) });
+        {CCL_PARSING_RULE(TestToken::FACTOR, constructFactorFromID, TestToken::NUM),
+         CCL_PARSING_RULE(TestToken::FACTOR, constructFactorFromID, TestToken::ID),
+         CCL_PARSING_RULE(
+             TestToken::FACTOR, constructIndexOperator, TestToken::FACTOR, TestToken::ANGLE_OPENING,
+             TestToken::EXPR, TestToken::ANGLE_CLOSING),
+         CCL_PARSING_RULE(TestToken::EXPR, constructExpressionFromFactor, TestToken::FACTOR),
+         CCL_PARSING_RULE(
+             TestToken::EXPR, constructBinaryExpression, TestToken::EXPR, TestToken::ADD,
+             TestToken::EXPR),
+         CCL_PARSING_RULE(
+             TestToken::EXPR, constructBinaryExpression, TestToken::EXPR, TestToken::MUL,
+             TestToken::EXPR),
+         CCL_PARSING_RULE(
+             TestToken::EXPR, constructUnaryExpression, TestToken::NOT, TestToken::EXPR),
+         CCL_PARSING_RULE(TestToken::ROOT, constructRoot, TestToken::EXPR, TestToken::EOI)});
 
 
     auto tokenizer = LexicalAnalyzer.getTokenizer("!10");

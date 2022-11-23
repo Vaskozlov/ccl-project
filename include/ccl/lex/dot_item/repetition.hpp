@@ -18,22 +18,22 @@ namespace ccl::lex::dot_item
 
         [[nodiscard]] consteval static auto basic() noexcept -> Repetition
         {
-            return { 1, 1 };
+            return {1, 1};
         }
 
         [[nodiscard]] consteval static auto question() noexcept -> Repetition
         {
-            return { 0, 1 };
+            return {0, 1};
         }
 
         [[nodiscard]] consteval static auto star() noexcept -> Repetition
         {
-            return { 0, max() };
+            return {0, max()};
         }
 
         [[nodiscard]] consteval static auto plus() noexcept -> Repetition
         {
-            return { 1, max() };
+            return {1, max()};
         }
 
         [[nodiscard]] consteval static auto max() noexcept -> size_t

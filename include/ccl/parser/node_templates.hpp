@@ -44,7 +44,7 @@ namespace ccl::parser
 
     struct Factor : Node
     {
-        explicit Factor(size_t id_, UniquePtr<Node> value_);
+        explicit Factor(Id id_, UniquePtr<Node> value_);
 
         auto print(const std::string &prefix, bool is_left) const -> void override;
 
@@ -53,7 +53,7 @@ namespace ccl::parser
 
     struct ValueExpression : Node
     {
-        explicit ValueExpression(size_t id_, UniquePtr<Node> value_);
+        explicit ValueExpression(Id id_, UniquePtr<Node> value_);
 
         auto print(const std::string &prefix, bool is_left) const -> void override;
 
@@ -62,7 +62,7 @@ namespace ccl::parser
 
     struct UnaryExpression : Node
     {
-        explicit UnaryExpression(size_t id_, UniquePtr<Node> operation_, UniquePtr<Node> value_);
+        explicit UnaryExpression(Id id_, UniquePtr<Node> operation_, UniquePtr<Node> value_);
 
         auto print(const std::string &prefix, bool is_left) const -> void override;
 
@@ -73,7 +73,7 @@ namespace ccl::parser
     struct BinaryExpression : Node
     {
         explicit BinaryExpression(
-            size_t id_, UniquePtr<Node> lhs_, UniquePtr<Node> operation_, UniquePtr<Node> rhs_);
+            Id id_, UniquePtr<Node> lhs_, UniquePtr<Node> operation_, UniquePtr<Node> rhs_);
 
         auto print(const std::string &prefix, bool is_left) const -> void override;
 

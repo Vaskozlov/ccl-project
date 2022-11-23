@@ -6,7 +6,7 @@ using namespace text;
 
 BOOST_AUTO_TEST_CASE(LocationTracking)
 {
-    auto location = Location{ "none" };
+    auto location = Location{"none"};
 
     BOOST_ASSERT(location.getLine() == 1U);
     BOOST_ASSERT(location.getColumn() == 0U);
@@ -34,7 +34,7 @@ BOOST_AUTO_TEST_CASE(LocationTracking)
     BOOST_ASSERT(location.getRealColumn() == 1U);
 
     location.intermediateNext(as<char>(0b1000'0000));// NOLINT utf8 2 byte character end
-    location.next(U'a');                                      // just some character
+    location.next(U'a');                             // just some character
 
     BOOST_ASSERT(location.getLine() == 2U);
     BOOST_ASSERT(location.getColumn() == 1U);

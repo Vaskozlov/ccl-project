@@ -5,14 +5,13 @@
 
 namespace ccl::parser
 {
-    using RuleId = size_t;
     using Stack = SmallVector<UniquePtr<Node>>;
 
     CCL_ENUM(// NOLINTNEXTLINE
-        RuleOnStackResult, size_t, NO_MATCH, FULL_MATCH, PARTIAL_MATCH, PRECEDENCE_FORBIDION);
+        RuleOnStackResult, Id, NO_MATCH, FULL_MATCH, PARTIAL_MATCH, PRECEDENCE_FORBIDION);
 
     CCL_ENUM(// NOLINTNEXTLINE
-        ParsingRuleType, RuleId, EOI, BAD_TOKEN, ROOT);
+        ParsingRuleType, Id, EOI, BAD_TOKEN, ROOT);
 }// namespace ccl::parser
 
 #endif /* CCL_PROJECT_PARSER_TYPES_HPP */

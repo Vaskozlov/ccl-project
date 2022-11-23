@@ -8,40 +8,40 @@ namespace ccl::lex
 
     CCL_INLINE auto LexicalAnalyzer::Tokenizer::shouldIgnoreToken(const Token &token) const -> bool
     {
-        const auto &ignoring_list = lexical_analyzer.ignoredIds;
+        const auto &ignoring_list = lexicalAnalyzer.ignoredIds;
         return ignoring_list.contains(token.getId());
     }
 
     // NOLINTNEXTLINE (recursive function)
     auto LexicalAnalyzer::Tokenizer::nextToken(Token &token) -> void
     {
-        auto &chars_to_skip = lexical_analyzer.skippedCharacters;
+        auto &chars_to_skip = lexicalAnalyzer.skippedCharacters;
         auto scan_container = [this, &token](const auto &container) {
-            return container.beginScan(text_iterator, token);
+            return container.beginScan(textIterator, token);
         };
 
-        while (chars_to_skip.contains(text_iterator.getNextCarriageValue())) {
-            text_iterator.skip(1);
+        while (chars_to_skip.contains(textIterator.getNextCarriageValue())) {
+            textIterator.skip(1);
         }
 
-        if (text_iterator.isEOI()) [[unlikely]] {
+        if (textIterator.isEOI()) [[unlikely]] {
             constructEOIToken(token);
             return;
         }
 
-        if (lexical_analyzer.specialItems.specialScan(text_iterator, token)) {
+        if (lexicalAnalyzer.specialItems.specialScan(textIterator, token)) {
             return returnIfNotInIgnored(token);
         }
 
-        if (std::ranges::any_of(lexical_analyzer.items, scan_container)) {
+        if (std::ranges::any_of(lexicalAnalyzer.items, scan_container)) {
             return returnIfNotInIgnored(token);
         }
 
-        auto next_carriage_value = text_iterator.getNextCarriageValue();
+        auto next_carriage_value = textIterator.getNextCarriageValue();
 
         if (isLayout(next_carriage_value)) {
             chars_to_skip.push_back(next_carriage_value);
-            text_iterator.skip(1);
+            textIterator.skip(1);
             return nextToken(token);
         }
 
@@ -62,58 +62,58 @@ namespace ccl::lex
 
     LexicalAnalyzer::Tokenizer::Tokenizer(
         LexicalAnalyzer &lexical_analyzer_, string_view text, string_view filename_)
-      : lexical_analyzer(lexical_analyzer_),
-        text_iterator(text, lexical_analyzer_.exceptionHandler, filename_)
+      : lexicalAnalyzer(lexical_analyzer_),
+        textIterator(text, lexical_analyzer_.exceptionHandler, filename_)
     {}
 
     LexicalAnalyzer::Tokenizer::Tokenizer(
         LexicalAnalyzer &lexical_analyzer_, string_view text, string_view filename_,
         ExceptionHandler &exception_handler_)
-      : lexical_analyzer(lexical_analyzer_), text_iterator(text, exception_handler_, filename_)
+      : lexicalAnalyzer(lexical_analyzer_), textIterator(text, exception_handler_, filename_)
     {}
 
     auto LexicalAnalyzer::Tokenizer::throwException(
         ExceptionCriticality criticality, string_view message, string_view suggestion) -> void
     {
-        text_iterator.throwToHandle(
-            text_iterator, criticality, AnalysationStage::LEXICAL_ANALYSIS, message, suggestion);
+        textIterator.throwToHandle(
+            textIterator, criticality, AnalysationStage::LEXICAL_ANALYSIS, message, suggestion);
     }
 
     auto LexicalAnalyzer::Tokenizer::yield() -> Token &
     {
-        if (has_future_token) {
-            has_future_token = false;
-            current_token = std::move(future_token);
+        if (hasFutureToken) {
+            hasFutureToken = false;
+            currentToken = std::move(futureToken);
         } else {
-            nextToken(current_token);
+            nextToken(currentToken);
         }
 
-        return current_token;
+        return currentToken;
     }
 
-    auto LexicalAnalyzer::Tokenizer::futureToken() -> Token &
+    auto LexicalAnalyzer::Tokenizer::yieldFutureToken() -> Token &
     {
-        if (not has_future_token) {
-            nextToken(future_token);
-            has_future_token = true;
+        if (!hasFutureToken) {
+            nextToken(futureToken);
+            hasFutureToken = true;
         }
 
-        return future_token;
+        return futureToken;
     }
 
     CCL_INLINE auto LexicalAnalyzer::Tokenizer::constructEOIToken(Token &token) -> void
     {
-        token = { text_iterator, ReservedTokenType::EOI };
+        token = {textIterator, ReservedTokenType::EOI};
     }
 
     CCL_INLINE auto LexicalAnalyzer::Tokenizer::constructBadToken(Token &token) -> void
     {
-        token = Token{ text_iterator, ReservedTokenType::BAD_TOKEN };
+        token = Token{textIterator, ReservedTokenType::BAD_TOKEN};
 
-        while (not isLayoutOrEoF(text_iterator.getNextCarriageValue())) {
-            text_iterator.next();
+        while (!isLayoutOrEoF(textIterator.getNextCarriageValue())) {
+            textIterator.next();
         }
 
-        token.setEnd(text_iterator.getRemainingAsCarriage());
+        token.setEnd(textIterator.getRemainingAsCarriage());
     }
 }// namespace ccl::lex

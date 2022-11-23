@@ -9,20 +9,20 @@ BOOST_AUTO_TEST_SUITE(ContainerRepetition)
 
 BOOST_AUTO_TEST_CASE(RepetitionBasicCase)
 {
-    auto text_iterator = TextIterator{ "{10, 20}" };
+    auto text_iterator = TextIterator{"{10, 20}"};
     text_iterator.next();
 
-    DEBUG_VAR repetition = Repetition{ text_iterator };
+    DEBUG_VAR repetition = Repetition{text_iterator};
     BOOST_ASSERT(repetition.from == 10);
     BOOST_ASSERT(repetition.to == 20);
 }
 
 BOOST_AUTO_TEST_CASE(RepetitionEmptyFirstArgument)
 {
-    auto text_iterator = TextIterator{ "{, 1}" };
+    auto text_iterator = TextIterator{"{, 1}"};
     text_iterator.next();
 
-    DEBUG_VAR repetition = Repetition{ text_iterator };
+    DEBUG_VAR repetition = Repetition{text_iterator};
 
     BOOST_ASSERT(repetition.from == 0);
     BOOST_ASSERT(repetition.to == 1);
@@ -30,11 +30,11 @@ BOOST_AUTO_TEST_CASE(RepetitionEmptyFirstArgument)
 
 BOOST_AUTO_TEST_CASE(RepetitionFirstArgumentGreaterThanSecond)
 {
-    auto text_iterator = TextIterator{ "{2, 1}" };
+    auto text_iterator = TextIterator{"{2, 1}"};
     text_iterator.next();
 
     BOOST_CHECK_EXCEPTION(
-        Repetition{ text_iterator },
+        Repetition{text_iterator},
         text::TextIteratorException,
         []([[maybe_unused]] const text::TextIteratorException &exception) {
             BOOST_ASSERT(exception.getColumn() == 1);

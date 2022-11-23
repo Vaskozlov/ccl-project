@@ -41,11 +41,11 @@ namespace ccl::lex::parser
         Vector<Rule> rules{};
         std::stack<Token> token_stack{};
         Map<string_view, std::string> directives{};
-        Map<string_view, BlockInfo> blocks{ { "NONE", { 0, 2 } } };
+        Map<string_view, BlockInfo> blocks{{"NONE", {0, 2}}};
         SpecialItems special_items{};
         string_view current_block = "NONE";
         Tokenizer &tokenizer;
-        size_t last_block_id{ 1 };
+        size_t last_block_id{1};
 
     public:
         explicit CcllParser(Tokenizer &tokenizer_) : tokenizer(tokenizer_)

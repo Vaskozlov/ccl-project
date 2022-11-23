@@ -24,12 +24,12 @@ namespace ccl::lex::dot_item
     public:
         Sequence(
             SequenceFlags flags_, const string_view &str_begin_, const string_view &str_end,
-            TextIterator &rule_iterator_, size_t id_ = 0);
+            TextIterator &rule_iterator_, Id id_ = 0);
 
         Sequence(
             SequenceFlags flags_, const string_view &str_begin_, TextIterator &rule_iterator_,
-            size_t id_ = 0)
-          : Sequence(flags_, str_begin_, str_begin_, rule_iterator_, id_)
+            Id id_ = 0)
+          : Sequence{flags_, str_begin_, str_begin_, rule_iterator_, id_}
         {}
 
         [[nodiscard]] auto getValue() noexcept -> std::string &

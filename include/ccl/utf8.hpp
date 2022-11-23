@@ -1,10 +1,16 @@
 #ifndef CCL_PROJECT_UTF8_HPP
 #define CCL_PROJECT_UTF8_HPP
 
+#include <bit>
 #include <ccl/ccl.hpp>
+#include <cstddef>
+#include <iterator>
 
 namespace ccl::utf8
 {
+    using integral_literals::operator""_B;
+    using integral_literals::operator""_U8;
+
     template<typename T>
     concept ValueTypeUtf8 = std::is_same_v<char, typename T::value_type> ||
                             std::is_same_v<char8_t, typename T::value_type>;
@@ -14,46 +20,46 @@ namespace ccl::utf8
     constexpr u32 TreeBytesMax = 65535;
     constexpr u32 FourBytesMax = 1114111;
 
-    constexpr u8 OneByteMask = 0b1000'0000;
-    constexpr u8 TwoBytesMask = 0b1110'0000;
-    constexpr u8 TwoBytesSignature = 0b1100'0000;
-    constexpr u8 TreeBytesMask = 0b1111'0000;
-    constexpr u8 TreeBytesSignature = 0b1110'0000;
-    constexpr u8 FourBytesMask = 0b1111'1000;
-    constexpr u8 FourBytesSignature = 0b1111'0000;
-    constexpr u8 ContinuationMask = 0b1100'0000;
-    constexpr u8 ContinuationSignature = 0b1000'0000;
+    constexpr auto OneByteMask = 0b1000'0000_B;
+    constexpr auto TwoBytesMask = 0b1110'0000_B;
+    constexpr auto TwoBytesSignature = 0b1100'0000_B;
+    constexpr auto TreeBytesMask = 0b1111'0000_B;
+    constexpr auto TreeBytesSignature = 0b1110'0000_B;
+    constexpr auto FourBytesMask = 0b1111'1000_B;
+    constexpr auto FourBytesSignature = 0b1111'0000_B;
+    constexpr auto ContinuationMask = 0b1100'0000_B;
+    constexpr auto ContinuationSignature = 0b1000'0000_B;
     constexpr u8 TrailingSize = 6;
 
-    constexpr std::array<u8, 5> UtfMasks{ 0, OneByteMask, TwoBytesMask, TreeBytesMask,
-                                          FourBytesMask };
+    constexpr std::array<std::byte, 5> UtfMasks{
+        0_B, OneByteMask, TwoBytesMask, TreeBytesMask, FourBytesMask};
 
     CCL_DECL CCL_INLINE auto isTrailingCharacter(char chr) noexcept -> bool
     {
-        return (chr & ContinuationMask) == ContinuationSignature;
+        return (as<std::byte>(chr) & ContinuationMask) == ContinuationSignature;
     }
 
     CCL_DECL CCL_INLINE auto isOneByteSize(char chr) noexcept -> bool
     {
-        return (chr & OneByteMask) == 0;
+        return (as<std::byte>(chr) & OneByteMask) == as<std::byte>(0);
     }
 
     CCL_DECL CCL_INLINE auto isTwoBytesSize(char chr) noexcept -> bool
     {
-        return (chr & TwoBytesMask) == TwoBytesSignature;
+        return (as<std::byte>(chr) & TwoBytesMask) == TwoBytesSignature;
     }
 
     CCL_DECL CCL_INLINE auto isThreeBytesSize(char chr) noexcept -> bool
     {
-        return (chr & TreeBytesMask) == TreeBytesSignature;
+        return (as<std::byte>(chr) & TreeBytesMask) == TreeBytesSignature;
     }
 
     CCL_DECL CCL_INLINE auto isFourBytesSize(char chr) noexcept -> bool
     {
-        return (chr & FourBytesMask) == FourBytesSignature;
+        return (as<std::byte>(chr) & FourBytesMask) == FourBytesSignature;
     }
 
-    CCL_DECL auto getMask(u16 size) -> u8
+    CCL_DECL auto getMask(u16 size) -> std::byte
     {
         return UtfMasks.at(size);
     }
@@ -61,22 +67,22 @@ namespace ccl::utf8
     CCL_DECL auto size(char chr) noexcept -> u16
     {
         if (isOneByteSize(chr)) [[likely]] {
-            return 1U;
+            return 1;
         }
 
         if (isTwoBytesSize(chr)) [[unlikely]] {
-            return 2U;
+            return 2;
         }
 
         if (isThreeBytesSize(chr)) [[unlikely]] {
-            return 3U;
+            return 3;
         }
 
         if (isFourBytesSize(chr)) [[unlikely]] {
-            return 4U;
+            return 4;
         }
 
-        return 0U;
+        return 0;
     }
 
     template<ValueTypeUtf8 T>
@@ -84,26 +90,32 @@ namespace ccl::utf8
     {
         using namespace std::string_view_literals;
 
-        static constexpr auto non_continuation_mask = as<char>(~ContinuationMask);
+        static constexpr auto non_continuation_mask = ~ContinuationMask;
 
         // NOLINTBEGIN
 
         if (chr <= OneByteMax) [[likely]] {
             string.push_back(as<char>(chr));
         } else if (chr <= TwoBytesMax) {
-            string.push_back(as<char>(TwoBytesSignature | (chr >> 6)));
-            string.push_back(as<char>(ContinuationSignature | (chr & non_continuation_mask)));
+            string.push_back(as<char>(TwoBytesSignature | as<std::byte>(chr >> 6)));
+            string.push_back(
+                as<char>(ContinuationSignature | (as<std::byte>(chr) & non_continuation_mask)));
         } else if (chr <= TreeBytesMax) {
-            string.push_back(as<char>(TreeBytesSignature | (chr >> 12)));
-            string.push_back(as<char>(ContinuationSignature | ((chr >> 6) & non_continuation_mask)));
-            string.push_back(as<char>(ContinuationSignature | (chr & non_continuation_mask)));
+            string.push_back(as<char>(TreeBytesSignature | as<std::byte>(chr >> 12)));
+            string.push_back(as<char>(
+                ContinuationSignature | (as<std::byte>(chr >> 6) & non_continuation_mask)));
+            string.push_back(
+                as<char>(ContinuationSignature | (as<std::byte>(chr) & non_continuation_mask)));
         } else if (chr <= FourBytesMax) {
-            string.push_back(as<char>(FourBytesSignature | (chr >> 18)));
-            string.push_back(as<char>(ContinuationSignature | ((chr >> 12) & non_continuation_mask)));
-            string.push_back(as<char>(ContinuationSignature | ((chr >> 6) & non_continuation_mask)));
-            string.push_back(as<char>(ContinuationSignature | (chr & non_continuation_mask)));
-        } else [[unlikely]] {
-            throw std::invalid_argument{ "unable to convert symbol to utf8" };
+            string.push_back(as<char>(FourBytesSignature | as<std::byte>(chr >> 18)));
+            string.push_back(as<char>(
+                ContinuationSignature | (as<std::byte>(chr >> 12) & non_continuation_mask)));
+            string.push_back(as<char>(
+                ContinuationSignature | (as<std::byte>(chr >> 6) & non_continuation_mask)));
+            string.push_back(
+                as<char>(ContinuationSignature | (as<std::byte>(chr) & non_continuation_mask)));
+        } else if (chr > FourBytesMax) [[unlikely]] {
+            throw std::invalid_argument{"unable to convert symbol to utf8"};
         }
 
         // NOLINTEND

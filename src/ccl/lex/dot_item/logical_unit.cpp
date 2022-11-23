@@ -3,9 +3,9 @@
 namespace ccl::lex::dot_item
 {
     LogicalUnit::LogicalUnit(
-        UniquePtr<BasicItem> lhs_, UniquePtr<BasicItem> rhs_, LogicalOperation type_, size_t id_)
-      : BasicItem(id_), lhs_item(std::move(lhs_)), rhs_item(std::move(rhs_)),
-        logical_operation(type_)
+        UniquePtr<BasicItem> lhs_, UniquePtr<BasicItem> rhs_, LogicalOperation type_, Id id_)
+      : BasicItem{id_}, lhs_item{std::move(lhs_)}, rhs_item{std::move(rhs_)}, logical_operation{
+                                                                                  type_}
     {}
 
     auto LogicalUnit::empty() const noexcept -> bool
@@ -38,7 +38,7 @@ namespace ccl::lex::dot_item
     {
         const auto lhs = lhs_item->scan(text_iterator);
 
-        if (not lhs.has_value()) {
+        if (!lhs.has_value()) {
             return 0;
         }
 

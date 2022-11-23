@@ -24,20 +24,22 @@ namespace ccl::lex::dot_item
 
         struct CCL_TRIVIAL_ABI Flags
         {
-            bool reversed : 1 = false;
-            bool isPrefix : 1 = false;
-            bool isPostfix : 1 = false;
-            bool sequenceIsMultiline : 1 = false;
-            bool sequenceNoEscapingSymbols : 1 = false;
+            bool reversed = false;
+            bool isPrefix = false;
+            bool isPostfix = false;
+            bool sequenceIsMultiline = false;
+            bool sequenceNoEscapingSymbols = false;
         };
 
+    private:
+        Repetition repetition{Repetition::basic()};
+
     protected:
-        Repetition repetition{ Repetition::basic() };
-        size_t id{};
+        Id id{};
         Flags flags;
 
     public:
-        explicit BasicItem(const size_t id_) : id(id_)
+        explicit BasicItem(Id id_) : id{id_}
         {}
 
         BasicItem(const BasicItem &) = default;
@@ -90,10 +92,10 @@ namespace ccl::lex::dot_item
 
         [[nodiscard]] auto canBeOptimized() const noexcept -> bool
         {
-            return !isReversed() && repetition.from == 0 && empty();
+            return !isReversed() && (0 == repetition.from) && empty();
         }
 
-        [[nodiscard]] auto getId() const noexcept -> size_t
+        [[nodiscard]] auto getId() const noexcept -> Id
         {
             return id;
         }

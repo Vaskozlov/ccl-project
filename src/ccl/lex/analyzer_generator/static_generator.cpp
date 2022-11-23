@@ -6,11 +6,11 @@ namespace ccl::lex::gen
     auto StaticGenerator::loadDirectives() -> void
     {
         for (const auto &[name, value] : ccll_parser.getDirectives()) {
-           if (name == "VAR_NAME") {
+            if ("VAR_NAME" == name) {
                 variable_name = value;
-            } else if (name == "HANDLER") {
+            } else if ("HANDLER" == name) {
                 handler = value;
-            } else if (name == "NAMESPACE") {
+            } else if ("NAMESPACE" == name) {
                 name_space = value;
             } else {
                 fmt::print("unrecognizable directive: {}\n", name);
@@ -60,7 +60,7 @@ namespace ccl::lex::gen
 
     auto StaticGenerator::generateNamespaceBegin(std::string &string) -> void
     {
-        if (not name_space.empty()) {
+        if (!name_space.empty()) {
             extra_spaces = "    ";
             string.append(fmt::format("namespace {}\n{{\n", name_space));
         }
@@ -68,7 +68,7 @@ namespace ccl::lex::gen
 
     auto StaticGenerator::generateNamespaceEnd(std::string &string) -> void
     {
-        if (not name_space.empty()) {
+        if (!name_space.empty()) {
             extra_spaces.clear();
             string.append(fmt::format("}}// namespace {}\n", name_space));
         }
@@ -76,14 +76,14 @@ namespace ccl::lex::gen
 
     auto StaticGenerator::generateRuleNames(std::string &string, std::string addition_flags) -> void
     {
-        if (not addition_flags.empty() && addition_flags.back() != ' ') {
+        if (!addition_flags.empty() && ' ' != addition_flags.back()) {
             addition_flags.push_back(' ');
         }
 
         appendToStr(
             string,
             fmt::format(
-                "{}const std::unordered_map<size_t, ccl::string_view> ToString{}Token\n    {{\n",
+                "{}const std::unordered_map<ccl::Id, ccl::string_view> ToString{}Token\n    {{\n",
                 addition_flags, variable_name));
 
         std::set<string_view> generated_rules{};
@@ -92,7 +92,7 @@ namespace ccl::lex::gen
         appendToStr(string, fmt::format("    {{ {0}::{1}, \"{1}\" }},\n", enum_name, "BAD_TOKEN"));
 
         auto repeat_filter = [&generated_rules](const parser::CcllParser::Rule &rule) {
-            return not generated_rules.contains(rule.name);
+            return !generated_rules.contains(rule.name);
         };
 
         for (auto &&rule : ccll_parser.getRules() | std::views::filter(repeat_filter)) {
@@ -121,17 +121,17 @@ namespace ccl::lex::gen
     {
         constexpr auto shift_size = 16ZU;
 
-        std::set<string_view> generated_cases{};
-        std::set<string_view> generated_blocks{};
+        Set<string_view> generated_cases{};
+        Set<string_view> generated_blocks{};
 
         auto single_block_definition = [&generated_blocks](const auto &block) {
             const auto &block_name = block.first;
-            return not generated_blocks.contains(block_name);
+            return !generated_blocks.contains(block_name);
         };
 
         for (const auto &[block_name, block_info] :
              ccll_parser.getBlocks() | std::views::filter(single_block_definition)) {
-            auto id = (as<size_t>(block_info.block_id) << shift_size);
+            auto id = (as<Id>(block_info.block_id) << shift_size);
 
             generated_blocks.insert(block_name);
             generated_header.append(fmt::format(",\n{}    {} = {}", extra_spaces, block_name, id));
@@ -141,11 +141,11 @@ namespace ccl::lex::gen
         generated_header.append(fmt::format(",\n{}    {} = {}", extra_spaces, "BAD_TOKEN", 1));
 
         auto single_rule_definition = [&generated_cases](const auto &rule) {
-            return not generated_cases.contains(rule.name);
+            return !generated_cases.contains(rule.name);
         };
 
         for (auto &&rule : ccll_parser.getRules() | std::views::filter(single_rule_definition)) {
-            auto id = (as<size_t>(rule.block_id) << shift_size) | (rule.id);
+            auto id = (as<Id>(rule.block_id) << shift_size) | (rule.id);
 
             generated_cases.insert(rule.name);
             generated_header.append(fmt::format(",\n{}    {} = {}", extra_spaces, rule.name, id));
@@ -173,7 +173,7 @@ namespace ccl::lex::gen
     auto StaticGenerator::generateLexicalAnalyzer(std::string &string, std::string addition_flags)
         -> void
     {
-        if (not addition_flags.empty() && addition_flags.back() != ' ') {
+        if (!addition_flags.empty() && ' ' != addition_flags.back()) {
             addition_flags.push_back(' ');
         }
 
@@ -199,7 +199,7 @@ namespace ccl::lex::gen
 
     auto StaticGenerator::appendToStr(std::string &dest, const std::string &string) const -> void
     {
-        if (not extra_spaces.empty()) {
+        if (!extra_spaces.empty()) {
             dest.append(extra_spaces);
         }
 

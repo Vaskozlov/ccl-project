@@ -14,13 +14,13 @@ namespace ccl::lex
 
         struct CCL_TRIVIAL_ABI Rule
         {
-            size_t id{};
+            Id id{};
             string_view repr{};
         };
 
         Vector<Container> items{};
         SpecialItems specialItems{};
-        std::basic_string<size_t> ignoredIds{};
+        std::basic_string<Id> ignoredIds{};
         std::string skippedCharacters{};
         ExceptionHandler &exceptionHandler;
 
@@ -29,9 +29,9 @@ namespace ccl::lex
 
         LexicalAnalyzer(
             ExceptionHandler &exception_handler_, InitializerList<Rule> rules_,
-            string_view filename = {}, std::basic_string<size_t> ignored_ids_ = {});
+            string_view filename = {}, std::basic_string<Id> ignored_ids_ = {});
 
-        [[nodiscard]] auto getIgnoredIds() const -> const std::basic_string<size_t> &
+        [[nodiscard]] auto getIgnoredIds() const -> const std::basic_string<Id> &
         {
             return ignoredIds;
         }
@@ -43,16 +43,16 @@ namespace ccl::lex
                 -> Tokenizer;
 
     private:
-        auto createContainer(string_view rule, size_t id, string_view filename) -> void;
+        auto createContainer(string_view rule, Id id, string_view filename) -> void;
     };
 
     class LexicalAnalyzer::Tokenizer
     {
-        Token current_token{};
-        Token future_token{};
-        LexicalAnalyzer &lexical_analyzer;
-        TextIterator text_iterator;
-        bool has_future_token{ false };
+        Token currentToken{};
+        Token futureToken{};
+        LexicalAnalyzer &lexicalAnalyzer;
+        TextIterator textIterator;
+        bool hasFutureToken{false};
 
     public:
         Tokenizer(LexicalAnalyzer &lexical_analyzer_, string_view text, string_view filename_ = {});
@@ -63,17 +63,17 @@ namespace ccl::lex
 
         [[nodiscard]] auto getIterator() const -> const TextIterator &
         {
-            return text_iterator;
+            return textIterator;
         }
 
         [[nodiscard]] auto getHandler() -> ExceptionHandler &
         {
-            return text_iterator.getHandler();
+            return textIterator.getHandler();
         }
 
         [[nodiscard]] auto getCurrentToken() -> Token &
         {
-            return current_token;
+            return currentToken;
         }
 
         auto throwException(
@@ -81,7 +81,7 @@ namespace ccl::lex
             -> void;
 
         auto yield() -> Token &;
-        auto futureToken() -> Token &;
+        auto yieldFutureToken() -> Token &;
 
     private:
         auto nextToken(Token &token) -> void;

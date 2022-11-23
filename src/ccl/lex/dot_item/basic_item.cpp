@@ -32,7 +32,7 @@ namespace ccl::lex::dot_item
 
             auto scan_result = scanIteration(text_iterator);
 
-            if (scan_result == 0) {
+            if (0 == scan_result) {
                 break;
             }
 

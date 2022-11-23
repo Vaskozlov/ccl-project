@@ -69,7 +69,7 @@ namespace ccl::lex::dot_item
         auto message = fmt::format("expected a number, but found `{}`", buffer);
 
         text_iterator.throwPanicError(AnalysationStage::LEXICAL_ANALYSIS, message);
-        throw UnrecoverableError{ "unrecoverable error in Repetition" };
+        throw UnrecoverableError{"unrecoverable error in Repetition"};
     }
 
     auto Repetition::throwRangeBeginException(TextIterator &text_iterator) -> void
@@ -77,6 +77,6 @@ namespace ccl::lex::dot_item
         text_iterator.throwPanicError(
             AnalysationStage::LEXICAL_ANALYSIS,
             "expected '{' at the beginning of repetition range"_sv);
-        throw UnrecoverableError{ "unrecoverable error in Repetition" };
+        throw UnrecoverableError{"unrecoverable error in Repetition"};
     }
 }// namespace ccl::lex::dot_item

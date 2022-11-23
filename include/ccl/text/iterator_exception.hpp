@@ -79,7 +79,7 @@ namespace ccl::text
 
         [[nodiscard]] auto hasSuggestion() const noexcept -> bool
         {
-            return not suggestion.empty();
+            return !suggestion.empty();
         }
 
         [[nodiscard]] auto what() const noexcept -> const char * override;
@@ -113,7 +113,7 @@ namespace ccl::text
         std::string message{};
         std::string suggestion{};
         string_view working_line{};
-        size_t length{ 1 };
+        size_t length{1};
         ExceptionCriticality criticality{};
         AnalysationStage stage{};
     };
