@@ -7,7 +7,8 @@ namespace ccl::lex
     LexicalAnalyzer::LexicalAnalyzer(
         ExceptionHandler &exception_handler_, InitializerList<Rule> rules_, string_view filename,
         std::basic_string<size_t> ignored_ids_)
-      : ignoredIds(std::move(ignored_ids_)), exceptionHandler(exception_handler_)
+      : ignoredIds{std::move(ignored_ids_)}
+      , exceptionHandler{exception_handler_}
     {
         for (const auto &rule : rules_) {
             createContainer(rule.repr, rule.id, filename);

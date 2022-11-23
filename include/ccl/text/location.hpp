@@ -20,7 +20,10 @@ namespace ccl::text
         constexpr explicit Location(
             string_view filename_, size_t line_ = 1, size_t column_ = 0,
             size_t real_column_ = 0) noexcept
-          : filename(filename_), line(line_), column(column_), real_column(real_column_)
+          : filename{filename_}
+          , line{line_}
+          , column{column_}
+          , real_column{real_column_}
         {}
 
         CCL_DECL auto getLine() const noexcept -> size_t

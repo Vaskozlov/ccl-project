@@ -2,20 +2,28 @@
 
 namespace ccl::parser
 {
-    Factor::Factor(Id id_, UniquePtr<Node> value_) : Node{id_}, value{std::move(value_)}
+    Factor::Factor(Id id_, UniquePtr<Node> value_)
+      : Node{id_}
+      , value{std::move(value_)}
     {}
 
     ValueExpression::ValueExpression(Id id_, UniquePtr<Node> value_)
-      : Node{id_}, value{std::move(value_)}
+      : Node{id_}
+      , value{std::move(value_)}
     {}
 
     UnaryExpression::UnaryExpression(Id id_, UniquePtr<Node> operation_, UniquePtr<Node> value_)
-      : Node{id_}, operation{std::move(operation_)}, value{std::move(value_)}
+      : Node{id_}
+      , operation{std::move(operation_)}
+      , value{std::move(value_)}
     {}
 
     BinaryExpression::BinaryExpression(
         Id id_, UniquePtr<Node> lhs_, UniquePtr<Node> operation_, UniquePtr<Node> rhs_)
-      : Node{id_}, operation{std::move(operation_)}, lhs{std::move(lhs_)}, rhs{std::move(rhs_)}
+      : Node{id_}
+      , operation{std::move(operation_)}
+      , lhs{std::move(lhs_)}
+      , rhs{std::move(rhs_)}
     {}
 
     auto TokenNode::print(const std::string &prefix, bool is_left) const -> void

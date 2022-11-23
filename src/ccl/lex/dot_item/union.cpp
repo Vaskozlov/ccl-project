@@ -4,7 +4,8 @@ namespace ccl::lex::dot_item
 {
     using namespace ccl::string_view_literals;
 
-    Union::Union(TextIterator &rule_iterator_, Id id_) : BasicItem{id_}
+    Union::Union(TextIterator &rule_iterator_, Id id_)
+      : BasicItem{id_}
     {
         auto is_range = false;
         auto previous_chr = U'\0';

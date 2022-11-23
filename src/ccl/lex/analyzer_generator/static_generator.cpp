@@ -5,7 +5,7 @@ namespace ccl::lex::gen
 {
     auto StaticGenerator::loadDirectives() -> void
     {
-        for (const auto &[name, value] : ccll_parser.getDirectives()) {
+        for (const auto &[name, value] : ccllParser.getDirectives()) {
             if ("VAR_NAME" == name) {
                 variable_name = value;
             } else if ("HANDLER" == name) {
@@ -24,7 +24,7 @@ namespace ccl::lex::gen
 
     auto StaticGenerator::generate() -> void
     {
-        ccll_parser.parse();
+        ccllParser.parse();
 
         loadDirectives();
 
@@ -95,7 +95,7 @@ namespace ccl::lex::gen
             return !generated_rules.contains(rule.name);
         };
 
-        for (auto &&rule : ccll_parser.getRules() | std::views::filter(repeat_filter)) {
+        for (auto &&rule : ccllParser.getRules() | std::views::filter(repeat_filter)) {
             generated_rules.insert(rule.name);
             appendToStr(
                 string, fmt::format("    {{ {0}::{1}, \"{1}\" }},\n", enum_name, rule.name));
@@ -130,7 +130,7 @@ namespace ccl::lex::gen
         };
 
         for (const auto &[block_name, block_info] :
-             ccll_parser.getBlocks() | std::views::filter(single_block_definition)) {
+             ccllParser.getBlocks() | std::views::filter(single_block_definition)) {
             auto id = (as<Id>(block_info.block_id) << shift_size);
 
             generated_blocks.insert(block_name);
@@ -144,7 +144,7 @@ namespace ccl::lex::gen
             return !generated_cases.contains(rule.name);
         };
 
-        for (auto &&rule : ccll_parser.getRules() | std::views::filter(single_rule_definition)) {
+        for (auto &&rule : ccllParser.getRules() | std::views::filter(single_rule_definition)) {
             auto id = (as<Id>(rule.block_id) << shift_size) | (rule.id);
 
             generated_cases.insert(rule.name);
@@ -189,7 +189,7 @@ namespace ccl::lex::gen
 
     auto StaticGenerator::generateRules(std::string &string) -> void
     {
-        for (auto &&rule : ccll_parser.getRules()) {
+        for (auto &&rule : ccllParser.getRules()) {
             auto rule_name = fmt::format("{}::{}", enum_name, rule.name);
             appendToStr(
                 string,

@@ -16,7 +16,7 @@ namespace ccl::lex::gen
 
     private:
         Tokenizer &tokenizer;
-        parser::CcllParser ccll_parser;
+        parser::CcllParser ccllParser;
         std::string include_dir_for_src{};
         std::string handler{"ccl::handler::Cmd::instance()"};
         std::string variable_name{"set_me"};
@@ -29,7 +29,8 @@ namespace ccl::lex::gen
 
     public:
         explicit StaticGenerator(Tokenizer &tokenizer_)
-          : tokenizer(tokenizer_), ccll_parser(tokenizer)
+          : tokenizer{tokenizer_}
+          , ccllParser{tokenizer}
         {
             generate();
         }

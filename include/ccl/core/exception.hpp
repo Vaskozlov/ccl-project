@@ -9,7 +9,8 @@
     struct name : base_exception                                                                   \
     {                                                                                              \
         template<typename... Ts>                                                                   \
-        explicit name(Ts &&...args) : base_exception(std::forward<Ts>(args)...)                    \
+        explicit name(Ts &&...args)                                                                \
+          : base_exception{std::forward<Ts>(args)...}                                              \
         {}                                                                                         \
     }
 

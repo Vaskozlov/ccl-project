@@ -12,9 +12,9 @@ namespace ccl::lex::dot_item
     {
         using typename BasicItem::TextIterator;
 
-        UniquePtr<BasicItem> lhs_item{};
-        UniquePtr<BasicItem> rhs_item{};
-        LogicalOperation logical_operation{LogicalOperation::NONE};
+        UniquePtr<BasicItem> rhsItem{};
+        UniquePtr<BasicItem> lhsItem{};
+        LogicalOperation logicalOperation{LogicalOperation::NONE};
 
     public:
         [[nodiscard]] auto empty() const noexcept -> bool final;

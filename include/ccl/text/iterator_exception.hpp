@@ -49,7 +49,7 @@ namespace ccl::text
 
         [[nodiscard]] auto getWorkingLine() const noexcept -> const string_view &
         {
-            return working_line;
+            return workingLine;
         }
 
         [[nodiscard]] auto getMessage() const noexcept -> string_view
@@ -90,17 +90,26 @@ namespace ccl::text
             ExceptionCriticality criticality_, AnalysationStage stage_, const Location &location_,
             size_t length_, const string_view &working_line_, const string_view &message_,
             const string_view &suggestion_ = {})
-          : location(location_), message(message_), suggestion(suggestion_),
-            working_line(working_line_), length(length_), criticality(criticality_), stage(stage_)
+          : location{location_}
+          , message{message_}
+          , suggestion{suggestion_}
+          , workingLine{working_line_}
+          , length{length_}
+          , criticality{criticality_}
+          , stage{stage_}
         {}
 
         CCL_PERFECT_FORWARDING_2(T1, std::string, T2, std::string)
         TextIteratorException(
             ExceptionCriticality criticality_, AnalysationStage stage_, const Location &location_,
             size_t length_, const string_view &working_line_, T1 &&message_, T2 &&suggestion_ = {})
-          : location(location_), message(std::forward<T1>(message_)),
-            suggestion(std::forward<T2>(suggestion_)), working_line(working_line_), length(length_),
-            criticality(criticality_), stage(stage_)
+          : location{location_}
+          , message{std::forward<T1>(message_)}
+          , suggestion{std::forward<T2>(suggestion_)}
+          , workingLine{working_line_}
+          , length{length_}
+          , criticality{criticality_}
+          , stage{stage_}
         {}
 
         [[nodiscard]] auto createFullMessage() const -> std::string;
@@ -112,7 +121,7 @@ namespace ccl::text
         Location location{};
         std::string message{};
         std::string suggestion{};
-        string_view working_line{};
+        string_view workingLine{};
         size_t length{1};
         ExceptionCriticality criticality{};
         AnalysationStage stage{};

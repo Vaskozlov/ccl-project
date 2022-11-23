@@ -18,12 +18,12 @@ namespace ccl::lex::dot_item
         using typename BasicItem::TextIterator;
 
         std::string sequence_value{};
-        string_view str_begin{};
-        string_view str_end{};
+        string_view sequenceBegin{};
+        string_view sequenceEnd{};
 
     public:
         Sequence(
-            SequenceFlags flags_, const string_view &str_begin_, const string_view &str_end,
+            SequenceFlags flags_, const string_view &sequence_begin_, const string_view &sequence_end_,
             TextIterator &rule_iterator_, Id id_ = 0);
 
         Sequence(

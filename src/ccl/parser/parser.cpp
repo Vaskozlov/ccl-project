@@ -27,8 +27,10 @@ namespace ccl::parser
     }
 
     Parser::Parser(const ParsingRules &parsing_rules_, Tokenizer &tokenizer_)
-      : tokenizer(tokenizer_), terminals(parsing_rules_.terminals),
-        non_terminals(parsing_rules_.non_terminals), parsing_rules(parsing_rules_.parsing_rules)
+      : tokenizer{tokenizer_}
+      , terminals{parsing_rules_.terminals}
+      , nonTerminals{parsing_rules_.non_terminals}
+      , parsingRules{parsing_rules_.parsing_rules}
     {}
 
     auto Parser::parse() -> void
@@ -36,7 +38,7 @@ namespace ccl::parser
         auto stack = Stack{};
         auto follow_set = FollowSet{};
 
-        for (const auto &rule : parsing_rules.at(ParsingRuleType::ROOT)) {
+        for (const auto &rule : parsingRules.at(ParsingRuleType::ROOT)) {
             follow_set.push_back(&rule);
         }
 
@@ -86,7 +88,7 @@ namespace ccl::parser
             return as<Id>(parse(stack, follow_set));
         }
 
-        const auto &ids_to_construct = rule.ids_to_construct;
+        const auto &ids_to_construct = rule.idsToConstruct;
 
         auto mis =
             std::ranges::mismatch(stack, ids_to_construct, [](const UniquePtr<Node> &node, Id id) {
@@ -104,7 +106,7 @@ namespace ccl::parser
         }
 
         auto pred = [target_type](const ParsingRule &future_rule) {
-            return future_rule.ids_to_construct.front() == target_type;
+            return future_rule.idsToConstruct.front() == target_type;
         };
 
         parseWithNewFollowSet(target_type, stack, 2, pred);
@@ -132,9 +134,9 @@ namespace ccl::parser
         auto future_token_id = future_token.getId();
 
         if (rule.canNotBeConstructed(future_token_id)) {
-            const auto &ids_to_construct = rule.ids_to_construct;
+            const auto &ids_to_construct = rule.idsToConstruct;
             auto pred = [&ids_to_construct](const ParsingRule &future_rule) {
-                return future_rule.ids_to_construct.front() == ids_to_construct.back();
+                return future_rule.idsToConstruct.front() == ids_to_construct.back();
             };
 
             parseWithNewFollowSet(ids_to_construct.back(), stack, 1, pred);
@@ -183,11 +185,11 @@ namespace ccl::parser
     {
         auto follow_set = FollowSet{};
 
-        if (!parsing_rules.contains(expected_type)) {
+        if (!parsingRules.contains(expected_type)) {
             return {};
         }
 
-        for (auto &&rule : parsing_rules.at(expected_type) | std::views::filter(pred)) {
+        for (auto &&rule : parsingRules.at(expected_type) | std::views::filter(pred)) {
             follow_set.push_back(&rule);
         }
 
@@ -209,7 +211,7 @@ namespace ccl::parser
     CCL_INLINE auto Parser::isNonTerminal(const MismatchResult &mismatch_result) const -> bool
     {
         return mismatch_result.rule_version.has_value() &&
-               non_terminals.contains(*mismatch_result.rule_version) &&
+               nonTerminals.contains(*mismatch_result.rule_version) &&
                not(mismatch_result.stack_version.has_value() &&
                    terminals.contains(*mismatch_result.stack_version));
     }
@@ -217,7 +219,7 @@ namespace ccl::parser
     CCL_INLINE auto Parser::mismatch(const Stack &stack, const ParsingRule &rule) -> MismatchResult
     {
         auto mismatch_result = std::ranges::mismatch(
-            stack, rule.ids_to_construct,
+            stack, rule.idsToConstruct,
             [](const UniquePtr<Node> &node, Id id) { return id == node->getId(); });
 
         auto result = MismatchResult{};
@@ -226,7 +228,7 @@ namespace ccl::parser
             result.stack_version = (*mismatch_result.in1)->getId();
         }
 
-        if (mismatch_result.in2 != rule.ids_to_construct.end()) {
+        if (mismatch_result.in2 != rule.idsToConstruct.end()) {
             result.rule_version = *mismatch_result.in2;
         }
 
@@ -235,7 +237,7 @@ namespace ccl::parser
 
     CCL_INLINE auto Parser::reduce(Stack &stack, const ParsingRule &rule) -> void
     {
-        stack.push_back(rule.rule_construction_call(ParsingStack(stack)));
+        stack.push_back(rule.constructor(ParsingStack(stack)));
     }
 
     CCL_INLINE auto Parser::pushNewToken(Stack &stack) -> void

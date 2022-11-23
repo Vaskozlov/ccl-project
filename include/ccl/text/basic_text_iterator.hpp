@@ -55,7 +55,8 @@ namespace ccl::text
         CrtpBasicTextIterator() noexcept = default;
 
         CCL_INLINE constexpr explicit CrtpBasicTextIterator(string_view text_) noexcept
-          : carriage{text_.begin()}, end{text_.end()}
+          : carriage{text_.begin()}
+          , end{text_.end()}
         {}
 
         template<typename T>

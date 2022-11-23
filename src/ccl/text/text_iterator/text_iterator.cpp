@@ -6,7 +6,10 @@ namespace ccl::text
         const string_view &input,
         ExceptionHandler &exception_handler_,
         const string_view &filename)
-      : Base(input), location(filename), line_tracker(input), exception_handler(&exception_handler_)
+      : Base{input}
+      , location{filename}
+      , line_tracker{input}
+      , exception_handler{&exception_handler_}
     {}
 
     auto TextIterator::nextRawCharWithEscapingSymbols(const extra_symbols_t &extra_symbols)

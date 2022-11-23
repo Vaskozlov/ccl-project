@@ -5,30 +5,32 @@
 #include <iostream>
 
 #define FactorConstructor(Name, Id)                                                                \
-    explicit Name(ccl::UniquePtr<Node> value_) : ccl::parser::Factor(Id, std::move(value_))        \
+    explicit Name(ccl::UniquePtr<Node> value_)                                                     \
+      : ccl::parser::Factor{Id, std::move(value_)}                                                 \
     {}
 
 #define ValueExpressionConstructor(Name, Id)                                                       \
     explicit Name(ccl::UniquePtr<Node> value_)                                                     \
-      : ccl::parser::ValueExpression(Id, std::move(value_))                                        \
+      : ccl::parser::ValueExpression{Id, std::move(value_)}                                        \
     {}
 
 #define UnaryExpressionConstructor(Name, Id)                                                       \
     Name(ccl::UniquePtr<Node> value_, ccl::UniquePtr<Node> operation_)                             \
-      : ccl::parser::UnaryExpression(Id, std::move(value_), std::move(operation_))                 \
+      : ccl::parser::UnaryExpression{Id, std::move(value_), std::move(operation_)}                 \
     {}
 
 #define BinaryExpressionConstructor(Name, Id)                                                      \
     Name(ccl::UniquePtr<Node> right_, ccl::UniquePtr<Node> operation_, ccl::UniquePtr<Node> left_) \
-      : ccl::parser::BinaryExpression(                                                             \
-            Id, std::move(left_), std::move(operation_), std::move(right_))                        \
+      : ccl::parser::BinaryExpression{                                                             \
+            Id, std::move(left_), std::move(operation_), std::move(right_)}                        \
     {}
 
 namespace ccl::parser
 {
     struct Node
     {
-        CCL_INLINE explicit Node(Id id_) : id{id_}
+        CCL_INLINE explicit Node(Id id_)
+          : id{id_}
         {}
 
         Node(const Node &) = default;

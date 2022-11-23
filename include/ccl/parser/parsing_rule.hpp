@@ -11,7 +11,8 @@ namespace ccl::parser
 
     struct ParsingStack
     {
-        explicit ParsingStack(Stack &stack_) : stack(stack_)
+        explicit ParsingStack(Stack &stack_)
+          : stack{stack_}
         {}
 
         auto pop() -> UniquePtr<Node>
@@ -32,10 +33,10 @@ namespace ccl::parser
 
         static std::atomic<size_t> uuid_counter;// NOLINT
 
-        SmallVector<Id> ids_to_construct{};
-        FlatSet<Id> ids_that_forbid_construction{};
+        SmallVector<Id> idsToConstruct{};
+        FlatSet<Id> idsThatForbidConstruction{};
         string_view name{"set name for ccl::parser::ParsingRule"};
-        UniquePtr<Node> (*rule_construction_call)(ParsingStack) = nullptr;
+        UniquePtr<Node> (*constructor)(ParsingStack) = nullptr;
         Id type{};
         size_t uuid{};
 
@@ -43,8 +44,7 @@ namespace ccl::parser
         ParsingRule() = default;
 
         ParsingRule(
-            Id type_, std::string_view name_,
-            UniquePtr<Node> (*rule_construction_call_)(ParsingStack),
+            Id type_, std::string_view name_, UniquePtr<Node> (*constructor_)(ParsingStack),
             InitializerList<Id> ids_to_constructs_,
             InitializerList<Id> ids_that_forbid_construction_ = {});
 
@@ -60,12 +60,12 @@ namespace ccl::parser
 
         [[nodiscard]] auto getIdsToConstruct() const noexcept -> const SmallVector<Id> &
         {
-            return ids_to_construct;
+            return idsToConstruct;
         }
 
         [[nodiscard]] auto getIdsThatForbidConstruction() const noexcept -> const FlatSet<Id> &
         {
-            return ids_that_forbid_construction;
+            return idsThatForbidConstruction;
         }
 
     private:
@@ -73,7 +73,7 @@ namespace ccl::parser
 
         [[nodiscard]] auto canNotBeConstructed(Id future_id) const noexcept -> bool
         {
-            return ids_that_forbid_construction.contains(future_id);
+            return idsThatForbidConstruction.contains(future_id);
         }
     };
 

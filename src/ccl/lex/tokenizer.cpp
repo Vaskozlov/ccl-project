@@ -62,14 +62,15 @@ namespace ccl::lex
 
     LexicalAnalyzer::Tokenizer::Tokenizer(
         LexicalAnalyzer &lexical_analyzer_, string_view text, string_view filename_)
-      : lexicalAnalyzer(lexical_analyzer_),
-        textIterator(text, lexical_analyzer_.exceptionHandler, filename_)
+      : lexicalAnalyzer{lexical_analyzer_}
+      , textIterator{text, lexical_analyzer_.exceptionHandler, filename_}
     {}
 
     LexicalAnalyzer::Tokenizer::Tokenizer(
         LexicalAnalyzer &lexical_analyzer_, string_view text, string_view filename_,
         ExceptionHandler &exception_handler_)
-      : lexicalAnalyzer(lexical_analyzer_), textIterator(text, exception_handler_, filename_)
+      : lexicalAnalyzer{lexical_analyzer_}
+      , textIterator{text, exception_handler_, filename_}
     {}
 
     auto LexicalAnalyzer::Tokenizer::throwException(

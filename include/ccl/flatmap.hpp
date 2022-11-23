@@ -141,7 +141,7 @@ namespace ccl
         }
 
         template<typename Self>
-        CCL_DECL static auto &staticAt(Self &self, const Key &key)
+        CCL_DECL static auto &staticAt(Self &self, const Key &key)// NOLINT trailing return type
         {
             auto elem = self.find(key);
 

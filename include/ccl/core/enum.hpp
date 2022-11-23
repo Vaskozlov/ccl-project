@@ -49,7 +49,8 @@ case name:                                                                      
                                                                                                    \
         Name() = default;                                                                          \
                                                                                                    \
-        constexpr Name(const Type &value_) : value(value_)                                         \
+        constexpr Name(const Type &value_)                                                         \
+          : value{value_}                                                                          \
         {}                                                                                         \
                                                                                                    \
         constexpr Name(Type &&value_) noexcept(std::is_nothrow_move_constructible_v<Type>)         \
@@ -140,7 +141,8 @@ case name:                                                                      
                                                                                                    \
         Name() = default;                                                                          \
                                                                                                    \
-        constexpr Name(const Type &value_) : value(value_)                                         \
+        constexpr Name(const Type &value_)                                                         \
+          : value(value_)                                                                          \
         {}                                                                                         \
                                                                                                    \
         constexpr Name(Type &&value_) noexcept(std::is_nothrow_move_constructible_v<Type>)         \

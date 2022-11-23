@@ -25,8 +25,6 @@ if (${PRECOMPILED_HEADERS})
     )
 endif ()
 
-include(programs/CMakeLists.txt)
-
 target_include_directories(ccl
         PUBLIC
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"

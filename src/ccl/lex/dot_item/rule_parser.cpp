@@ -7,7 +7,8 @@ namespace ccl::lex::dot_item
     using namespace ccl::string_view_literals;
 
     Container::RuleParser::RuleParser(Container &container_, TextIterator &rule_iterator_)
-      : container(container_), ruleIterator(rule_iterator_)
+      : container{container_}
+      , ruleIterator{rule_iterator_}
     {
         checkId();
 

@@ -32,8 +32,11 @@ namespace ccl::lex::parser
             Rule(
                 string_view block_name_, BlockInfo &block_info_, string_view rule_name_,
                 string_view definition_)
-              : block_name(block_name_), name(rule_name_), definition(definition_),
-                block_id(block_info_.block_id), id(block_info_.last_id++)
+              : block_name{block_name_}
+              , name{rule_name_}
+              , definition{definition_}
+              , block_id{block_info_.block_id}
+              , id{block_info_.last_id++}
             {}
         };
 
@@ -48,7 +51,8 @@ namespace ccl::lex::parser
         size_t last_block_id{1};
 
     public:
-        explicit CcllParser(Tokenizer &tokenizer_) : tokenizer(tokenizer_)
+        explicit CcllParser(Tokenizer &tokenizer_)
+          : tokenizer{tokenizer_}
         {}
 
         [[nodiscard]] auto getRules() const -> const Vector<Rule> &

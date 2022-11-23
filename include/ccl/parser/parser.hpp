@@ -72,8 +72,8 @@ namespace ccl::parser
         Tokenizer &tokenizer;
         ExceptionHandler &exception_handler{tokenizer.getHandler()};
         const Set<Id> &terminals{};
-        const Set<Id> &non_terminals{};
-        const Map<Id, SmallVector<ParsingRule>> &parsing_rules;
+        const Set<Id> &nonTerminals{};
+        const Map<Id, SmallVector<ParsingRule>> &parsingRules;
     };
 }// namespace ccl::parser
 

@@ -5,9 +5,13 @@ namespace ccl::handler
     Cmd Cmd::defaultCmdHandler;
 
     Cmd::CmdFormatter::CmdFormatter(const ExceptionT *exception) noexcept
-      : working_line(exception->getWorkingLine()), filename(exception->getFilename()),
-        message(exception->getMessage()), suggestion(exception->getSuggestion()),
-        length(exception->getLength()), line(exception->getLine()), column(exception->getColumn())
+      : working_line{exception->getWorkingLine()}
+      , filename{exception->getFilename()}
+      , message{exception->getMessage()}
+      , suggestion{exception->getSuggestion()}
+      , length{exception->getLength()}
+      , line{exception->getLine()}
+      , column{exception->getColumn()}
     {}
 
     template<fmt::color Color, typename HandleType>

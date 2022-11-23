@@ -7,21 +7,29 @@ file(
 find_package(Boost COMPONENTS program_options REQUIRED)
 
 add_executable(
-        ccll
+        ccl-lexer
         ${FSC_LEX_GENERATOR_OBJECTS}
 )
 
 target_link_libraries(
-        ccll
+        ccl-lexer
         Boost::program_options
 )
 
 target_link_libraries(
-        ccll
+        ccl-lexer
         fmt::fmt
 )
 
 target_link_libraries(
-        ccll
+        ccl-lexer
         ccl
 )
+
+if (${PRECOMPILED_HEADER})
+    target_precompile_headers(
+            ccl-lexer
+            REUSE_FROM
+            ccl-catch
+    )
+endif ()

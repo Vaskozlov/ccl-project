@@ -11,7 +11,9 @@ namespace ccl::lex::dot_item
         size_t from{};
         size_t to{};
 
-        constexpr Repetition(const size_t from_, const size_t to_) noexcept : from(from_), to(to_)
+        constexpr Repetition(size_t from_, size_t to_) noexcept
+          : from{from_}
+          , to{to_}
         {}
 
         explicit Repetition(text::TextIterator &text_iterator);

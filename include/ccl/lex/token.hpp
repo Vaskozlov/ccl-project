@@ -18,8 +18,9 @@ namespace ccl::lex
         TokenAttributes() = default;
 
         explicit TokenAttributes(const text::TextIterator &text_iterator_)
-          : tabsAndSpaces{text_iterator_.getTabsAndSpaces()},
-            location{text_iterator_.getLocation()}, workingLine{text_iterator_.getWorkingLine()}
+          : tabsAndSpaces{text_iterator_.getTabsAndSpaces()}
+          , location{text_iterator_.getLocation()}
+          , workingLine{text_iterator_.getWorkingLine()}
         {}
     };
 
@@ -34,11 +35,14 @@ namespace ccl::lex
     public:
         Token() = default;
 
-        explicit Token(Id id_) : id{id_}
+        explicit Token(Id id_)
+          : id{id_}
         {}
 
         Token(TokenAttributes &&attributes_, const string_view &repr_, Id id_)
-          : attributes{std::move(attributes_)}, repr{repr_}, id{id_}
+          : attributes{std::move(attributes_)}
+          , repr{repr_}
+          , id{id_}
         {}
 
         Token(TokenAttributes &&attributes_, typename string_view::iterator begin_, Id id_)
@@ -46,7 +50,9 @@ namespace ccl::lex
         {}
 
         Token(const text::TextIterator &text_iterator_, Id id_)
-          : attributes{text_iterator_}, repr{text_iterator_.getRemaining()}, id{id_}
+          : attributes{text_iterator_}
+          , repr{text_iterator_.getRemaining()}
+          , id{id_}
         {}
 
         [[nodiscard]] auto getId() const noexcept -> size_t

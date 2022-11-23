@@ -48,25 +48,30 @@ namespace ccl
 
         template<size_t N>
         constexpr explicit BasicStringView(const std::array<CharT, N> &array_) noexcept
-          : string{array_.data()}, length{array_.size()}
+          : string{array_.data()}
+          , length{array_.size()}
         {}
 
         constexpr BasicStringView(pointer string_, size_t length_) noexcept
-          : string{string_}, length{length_}
+          : string{string_}
+          , length{length_}
         {}
 
         constexpr BasicStringView(iterator first, iterator last) noexcept
-          : string{first}, length{distance(first, last)}
+          : string{first}
+          , length{distance(first, last)}
         {}
 
         // NOLINTNEXTLINE
         constexpr BasicStringView(const CharacterArray auto &str) noexcept
-          : string{str}, length{strlen(str)}
+          : string{str}
+          , length{strlen(str)}
         {}
 
         // NOLINTNEXTLINE
         constexpr BasicStringView(const StringLike<CharT> auto &str) noexcept
-          : string{std::data(str)}, length{std::size(str)}
+          : string{std::data(str)}
+          , length{std::size(str)}
         {}
 
         CCL_DECL auto size() const noexcept -> size_t

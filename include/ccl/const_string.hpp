@@ -85,11 +85,13 @@ namespace ccl
             -> std::weak_ordering = default;
 
         // NOLINTNEXTLINE
-        consteval ConstString(const value_type (&str)[N]) : string{std::to_array(str)}
+        consteval ConstString(const value_type (&str)[N])
+          : string{std::to_array(str)}
         {}
 
         // NOLINTNEXTLINE
-        consteval ConstString(const std::array<value_type, N> &str) : string{str}
+        consteval ConstString(const std::array<value_type, N> &str)
+          : string{str}
         {}
     };
 }// namespace ccl

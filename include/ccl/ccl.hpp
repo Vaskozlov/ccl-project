@@ -2,7 +2,7 @@
 #define CCL_PROJECT_CCL_HPP
 
 #if !defined(__cplusplus) || !(__cplusplus > 202002L)
-#    error CCL requires at least C++2b
+#    error CCL requires C++23
 #endif /* minimum requirements */
 
 #include <algorithm>

@@ -39,7 +39,8 @@ namespace ccl::lex::dot_item
         Flags flags;
 
     public:
-        explicit BasicItem(Id id_) : id{id_}
+        explicit BasicItem(Id id_)
+          : id{id_}
         {}
 
         BasicItem(const BasicItem &) = default;

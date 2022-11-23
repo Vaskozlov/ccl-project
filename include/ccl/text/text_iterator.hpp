@@ -201,7 +201,8 @@ namespace ccl::text
         explicit EscapingSymbolizer(
             TextIterator &text_iterator_,
             extra_symbols_t extra_symbols_) noexcept
-          : extra_symbols{std::move(extra_symbols_)}, text_iterator{text_iterator_}
+          : extra_symbols{std::move(extra_symbols_)}
+          , text_iterator{text_iterator_}
         {}
 
         ~EscapingSymbolizer() = default;
@@ -231,7 +232,7 @@ namespace ccl::text
 
         NotationEscapingSymbolizer(
             TextIterator &text_iterator_, u16 max_times_, u16 notation_power_,
-            bool need_all_chars_);
+            bool are_all_chars_required_);
 
         ~NotationEscapingSymbolizer() = default;
 
@@ -241,20 +242,20 @@ namespace ccl::text
         [[nodiscard]] auto isOutOfNotation(char32_t chr) const -> bool;
 
         auto checkNotation() const -> void;
-        auto checkAllCharsUsage(u16 chars_count) const -> void;
+        auto checkAllCharsUsage(size_t chars_count) const -> void;
 
-        auto throwNotEnoughCharsException(u16 chars_count) const -> void;
+        auto throwNotEnoughCharsException(size_t chars_count) const -> void;
 
-        [[nodiscard]] auto createSuggestionNotEnoughChars(u16 chars_count) const -> std::string;
+        [[nodiscard]] auto createSuggestionNotEnoughChars(size_t chars_count) const -> std::string;
 
-        auto insertExtraZerosToNotEnoughMessage(u16 chars_count, std::string &message) const
+        auto insertExtraZerosToNotEnoughMessage(size_t chars_count, std::string &message) const
             -> void;
 
-        TextIterator &text_iterator;
+        TextIterator &textIterator;
         char32_t result{};
-        u16 max_times;
-        u16 notation_power;
-        bool need_all_chars;
+        u16 maximumSymbols;
+        u16 notationPower;
+        bool areAllCharsRequired;
     };
 }// namespace ccl::text
 
