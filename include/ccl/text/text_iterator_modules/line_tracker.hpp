@@ -23,11 +23,11 @@ namespace ccl::text
             newLinePassed = '\n' == chr;
         }
 
-        constexpr explicit LineTracker(const string_view &text_) noexcept
-          : text{text_}
+        constexpr explicit LineTracker(const string_view &text_to_track) noexcept
+          : text{text_to_track}
         {
             const auto new_line_index = text.find('\n');
-            line = {text.begin(), *new_line_index.or_else([this]() -> Optional<size_t> {
+            line = {text.begin(), *new_line_index.or_else([this] -> Optional<size_t> {
                         return text.size();
                     })};
         }
@@ -41,7 +41,7 @@ namespace ccl::text
             line = {
                 new_line_begin,
                 text.begin() +
-                    *new_line_index.or_else([this]() -> Optional<size_t> { return text.size(); })};
+                    *new_line_index.or_else([this] -> Optional<size_t> { return text.size(); })};
         }
 
         string_view text{};

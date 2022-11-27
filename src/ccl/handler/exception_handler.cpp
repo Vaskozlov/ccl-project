@@ -6,6 +6,7 @@ namespace ccl
 {
     ExceptionHandler ExceptionHandler::defaultExceptionHandler;// NOLINT
 
+    // NOLINTNEXTLINE
     auto ExceptionHandler::handle(const ExceptionT *const error) -> void
     {
         switch (error->getCriticality()) {
