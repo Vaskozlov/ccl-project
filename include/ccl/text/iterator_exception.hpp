@@ -7,13 +7,24 @@ namespace ccl
 {
     CCL_EXCEPTION(BasicTextIteratorException, std::exception);
 
-    CCL_ENUM(// NOLINTNEXTLINE
-        ExceptionCriticality, u32, NONE, SUGGESTION, WARNING, UNCRITICAL, CRITICAL, PANIC);
+    enum struct ExceptionCriticality : u32
+    {
+        NONE,
+        SUGGESTION,
+        WARNING,
+        UNCRITICAL,
+        CRITICAL,
+        PANIC
+    };
 
-    // NOLINTNEXTLINE
-    CCL_ENUM(AnalysationStage, u32, NONE, LEXICAL_ANALYSIS, PARSING);
+    enum struct AnalysisStage : u32
+    {
+        NONE,
+        LEXICAL_ANALYSIS,
+        PARSING
+    };
 
-    auto ExceptionCriticalityDescription(ExceptionCriticality criticality) noexcept
+    auto exceptionCriticalityDescription(ExceptionCriticality criticality) noexcept
         -> std::string_view;
 }// namespace ccl
 
@@ -69,10 +80,10 @@ namespace ccl::text
 
         [[nodiscard]] auto getCriticalityDescription() const noexcept -> string_view
         {
-            return ExceptionCriticalityDescription(criticality);
+            return exceptionCriticalityDescription(criticality);
         }
 
-        [[nodiscard]] auto getStage() const noexcept -> AnalysationStage
+        [[nodiscard]] auto getStage() const noexcept -> AnalysisStage
         {
             return stage;
         }
@@ -87,29 +98,31 @@ namespace ccl::text
         TextIteratorException() = default;
 
         TextIteratorException(
-            ExceptionCriticality criticality_, AnalysationStage stage_, const Location &location_,
-            size_t length_, const string_view &working_line_, const string_view &message_,
-            const string_view &suggestion_ = {})
-          : location{location_}
-          , message{message_}
-          , suggestion{suggestion_}
-          , workingLine{working_line_}
-          , length{length_}
-          , criticality{criticality_}
-          , stage{stage_}
+            ExceptionCriticality exception_criticality, AnalysisStage analysis_stage,
+            const Location &exception_location, size_t exception_length,
+            const string_view &working_line, const string_view &exception_message,
+            const string_view &exception_suggestion = {})
+          : location{exception_location}
+          , message{exception_message}
+          , suggestion{exception_suggestion}
+          , workingLine{working_line}
+          , length{exception_length}
+          , criticality{exception_criticality}
+          , stage{analysis_stage}
         {}
 
         CCL_PERFECT_FORWARDING_2(T1, std::string, T2, std::string)
         TextIteratorException(
-            ExceptionCriticality criticality_, AnalysationStage stage_, const Location &location_,
-            size_t length_, const string_view &working_line_, T1 &&message_, T2 &&suggestion_ = {})
-          : location{location_}
-          , message{std::forward<T1>(message_)}
-          , suggestion{std::forward<T2>(suggestion_)}
-          , workingLine{working_line_}
-          , length{length_}
-          , criticality{criticality_}
-          , stage{stage_}
+            ExceptionCriticality exception_criticality, AnalysisStage analysis_stage,
+            const Location &exception_location, size_t exception_length,
+            const string_view &working_line, T1 &&exception_message, T2 &&exception_suggestion = {})
+          : location{exception_location}
+          , message{std::forward<T1>(exception_message)}
+          , suggestion{std::forward<T2>(exception_suggestion)}
+          , workingLine{working_line}
+          , length{exception_length}
+          , criticality{exception_criticality}
+          , stage{analysis_stage}
         {}
 
         [[nodiscard]] auto createFullMessage() const -> std::string;
@@ -124,7 +137,7 @@ namespace ccl::text
         string_view workingLine{};
         size_t length{1};
         ExceptionCriticality criticality{};
-        AnalysationStage stage{};
+        AnalysisStage stage{};
     };
 }// namespace ccl::text
 

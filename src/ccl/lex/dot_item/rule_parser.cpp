@@ -1,3 +1,5 @@
+#include "ccl/lex/analyzer_generator/analyzer_generator.hpp"
+#include "ccl/lex/token.hpp"
 #include <ccl/lex/dot_item/container.hpp>
 #include <ccl/lex/dot_item/sequence.hpp>
 #include <ccl/lex/dot_item/union.hpp>
@@ -203,7 +205,8 @@ namespace ccl::lex::dot_item
 
     auto Container::RuleParser::checkId() const -> void
     {
-        if (ReservedTokenType::contains(getId())) {
+        if (getId() == std::to_underlying(ReservedTokenType::BAD_TOKEN) ||
+            getId() == std::to_underlying(ReservedTokenType::EOI)) {
             throw UnrecoverableError{
                 "reserved token type (0 and 1 are reserved for EOI and BAD TOKEN)"};
         }
@@ -255,9 +258,8 @@ namespace ccl::lex::dot_item
 
     auto Container::RuleParser::findContainerEnd(string_view repr) -> size_t
     {
-        return *repr.openCloseFind('(', ')').or_else([this] -> Optional<size_t> {
-            ruleIterator.throwPanicError(
-                AnalysationStage::LEXICAL_ANALYSIS, "unterminated dot item");
+        return *repr.openCloseFind('(', ')').or_else([this]() -> Optional<size_t> {
+            ruleIterator.throwPanicError(AnalysisStage::LEXICAL_ANALYSIS, "unterminated dot item");
             throw UnrecoverableError{"unrecoverable error in ContainerType"};
         });
     }
@@ -300,7 +302,7 @@ namespace ccl::lex::dot_item
     {
         auto message = fmt::format("unable to apply: {}", reason);
 
-        ruleIterator.throwCriticalError(AnalysationStage::LEXICAL_ANALYSIS, message, suggestion);
+        ruleIterator.throwCriticalError(AnalysisStage::LEXICAL_ANALYSIS, message, suggestion);
         throw UnrecoverableError{"unrecoverable error in ContainerType"};
     }
 
@@ -311,7 +313,7 @@ namespace ccl::lex::dot_item
             "use `!` to declare special symbol, `\"` for string, `[` for unions, `(` for "
             "containers "_sv;
 
-        ruleIterator.throwPanicError(AnalysationStage::LEXICAL_ANALYSIS, message, suggestion);
+        ruleIterator.throwPanicError(AnalysisStage::LEXICAL_ANALYSIS, message, suggestion);
         throw UnrecoverableError{"unrecoverable error in ContainerType"};
     }
 
@@ -320,7 +322,7 @@ namespace ccl::lex::dot_item
     {
         return std::ranges::any_of(special_items, [&text_iterator](const auto &special_item) {
             auto scan_result = special_item.scan(text_iterator);
-            return scan_result != 0ZU;
+            return scan_result != 0;
         });
     }
 

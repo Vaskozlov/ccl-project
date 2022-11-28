@@ -16,30 +16,30 @@ namespace ccl::lex::dot_item
     }
 
     Container::Container(
-        TextIterator &rule_iterator_, SpecialItems &special_items_, Id id_, bool main_item_,
-        bool is_special_)
-      : BasicItem{id_}
-      , specialItems{special_items_}
-      , flags{.isMain = main_item_, .isSpecial = is_special_}
+        TextIterator &rule_iterator, SpecialItems &special_items, Id item_id, bool main_item,
+        bool is_special)
+      : BasicItem{item_id}
+      , specialItems{special_items}
+      , flags{.isMain = main_item, .isSpecial = is_special}
     {
-        parseRule(rule_iterator_);
+        parseRule(rule_iterator);
     }
 
     Container::Container(
-        const TextIterator &rule_iterator_, SpecialItems &special_items_, Id id_, bool main_item_,
-        bool is_special_)
-      : BasicItem{id_}
-      , specialItems{special_items_}
-      , flags{.isMain = main_item_, .isSpecial = is_special_}
+        const TextIterator &rule_iterator, SpecialItems &special_items, Id item_id, bool main_item,
+        bool is_special)
+      : BasicItem{item_id}
+      , specialItems{special_items}
+      , flags{.isMain = main_item, .isSpecial = is_special}
     {
-        auto text_iterator_copy = rule_iterator_;
+        auto text_iterator_copy = rule_iterator;
         parseRule(text_iterator_copy);
     }
 
     auto Container::beginScan(
         TextIterator &text_iterator, Token &token, ScanningType special_scan) const -> bool
     {
-        auto totally_skipped = 0ZU;
+        auto totally_skipped = as<size_t>(0);
         auto local_iterator = text_iterator.fork();
 
         token.clear(getId());
@@ -86,7 +86,7 @@ namespace ccl::lex::dot_item
 
     auto Container::scanIteration(const ForkedGenerator &text_iterator) const -> size_t
     {
-        auto totally_skipped = 0ZU;
+        auto totally_skipped = as<size_t>(0);
         auto local_iterator = text_iterator;
 
         for (auto &&item : items) {

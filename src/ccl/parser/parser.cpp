@@ -2,6 +2,7 @@
 #include <fmt/ranges.h>
 #include <fmt/std.h>
 #include <ranges>
+#include <utility>
 
 namespace ccl::parser
 {
@@ -26,11 +27,11 @@ namespace ccl::parser
         fmt::print("]\n");
     }
 
-    Parser::Parser(const ParsingRules &parsing_rules_, Tokenizer &tokenizer_)
-      : tokenizer{tokenizer_}
-      , terminals{parsing_rules_.terminals}
-      , nonTerminals{parsing_rules_.non_terminals}
-      , parsingRules{parsing_rules_.parsing_rules}
+    Parser::Parser(const ParsingRules &parsing_rules, Tokenizer &input_tokenizer)
+      : tokenizer{input_tokenizer}
+      , terminals{parsing_rules.terminals}
+      , nonTerminals{parsing_rules.non_terminals}
+      , parsingRules{parsing_rules.parsing_rules}
     {}
 
     auto Parser::parse() -> void
@@ -38,7 +39,7 @@ namespace ccl::parser
         auto stack = Stack{};
         auto follow_set = FollowSet{};
 
-        for (const auto &rule : parsingRules.at(ParsingRuleType::ROOT)) {
+        for (const auto &rule : parsingRules.at(std::to_underlying(ParsingRuleType::ROOT))) {
             follow_set.push_back(&rule);
         }
 
@@ -83,9 +84,9 @@ namespace ccl::parser
         Stack &stack, const FollowSet &follow_set, const MismatchResult &mismatch_result,
         const ParsingRule &rule) -> TerminalMatchResult
     {
-        if (!mismatch_result.stack_version.has_value()) {
+        if (!mismatch_result.stackVersion.has_value()) {
             pushNewToken(stack);
-            return as<Id>(parse(stack, follow_set));
+            return as<TerminalMatchResult>(parse(stack, follow_set));
         }
 
         const auto &ids_to_construct = rule.idsToConstruct;
@@ -95,7 +96,7 @@ namespace ccl::parser
                 return id == node->getId();
             });
 
-        auto target_type = 0ZU;
+        auto target_type = as<size_t>(0);
 
         if (mis.in2 != ids_to_construct.end()) {
             target_type = *(mis.in2 - 1);
@@ -110,19 +111,19 @@ namespace ccl::parser
         };
 
         parseWithNewFollowSet(target_type, stack, 2, pred);
-        return as<size_t>(parse(stack, follow_set));
+        return as<TerminalMatchResult>(parse(stack, follow_set));
     }
 
     // NOLINTNEXTLINE (recursive function)
     auto Parser::nonTerminalCase(
         Stack &stack, const FollowSet &follow_set, const MismatchResult &mismatch_result) -> bool
     {
-        if (!mismatch_result.stack_version.has_value()) {
+        if (!mismatch_result.stackVersion.has_value()) {
             pushNewToken(stack);
         }
 
         // NOLINTNEXTLINE access is checked by calle function
-        parseWithNewFollowSet(*mismatch_result.rule_version, stack, 1);
+        parseWithNewFollowSet(*mismatch_result.ruleVersion, stack, 1);
         return parse(stack, follow_set);
     }
 
@@ -162,7 +163,7 @@ namespace ccl::parser
             return parse(stack, follow_set);
         }
 
-        for (auto i = 0ZU; i != passing_elements; ++i) {
+        for (auto i = as<size_t>(0); i != passing_elements; ++i) {
             new_stack.insert(new_stack.begin(), std::move(stack.back()));
             stack.pop_back();
         }
@@ -199,21 +200,21 @@ namespace ccl::parser
     auto Parser::fullyMatched(const MismatchResult &mismatch_result) -> bool
     {
         return not(
-            mismatch_result.rule_version.has_value() || mismatch_result.stack_version.has_value());
+            mismatch_result.ruleVersion.has_value() || mismatch_result.stackVersion.has_value());
     }
 
     auto Parser::isTerminal(const MismatchResult &mismatch_result) -> bool
     {
-        auto rule_version = mismatch_result.rule_version;
+        auto rule_version = mismatch_result.ruleVersion;
         return rule_version.has_value() && terminals.contains(*rule_version);
     }
 
     CCL_INLINE auto Parser::isNonTerminal(const MismatchResult &mismatch_result) const -> bool
     {
-        return mismatch_result.rule_version.has_value() &&
-               nonTerminals.contains(*mismatch_result.rule_version) &&
-               not(mismatch_result.stack_version.has_value() &&
-                   terminals.contains(*mismatch_result.stack_version));
+        return mismatch_result.ruleVersion.has_value() &&
+               nonTerminals.contains(*mismatch_result.ruleVersion) &&
+               not(mismatch_result.stackVersion.has_value() &&
+                   terminals.contains(*mismatch_result.stackVersion));
     }
 
     CCL_INLINE auto Parser::mismatch(const Stack &stack, const ParsingRule &rule) -> MismatchResult
@@ -225,11 +226,11 @@ namespace ccl::parser
         auto result = MismatchResult{};
 
         if (mismatch_result.in1 != stack.end()) {
-            result.stack_version = (*mismatch_result.in1)->getId();
+            result.stackVersion = (*mismatch_result.in1)->getId();
         }
 
         if (mismatch_result.in2 != rule.idsToConstruct.end()) {
-            result.rule_version = *mismatch_result.in2;
+            result.ruleVersion = *mismatch_result.in2;
         }
 
         return result;
@@ -272,9 +273,9 @@ namespace ccl::parser
             fmt::join(expected_types, ", "), token.getRepr());
 
         auto exception = text::TextIteratorException(
-            ExceptionCriticality::CRITICAL, AnalysationStage::PARSING, token.getLocation(),
+            ExceptionCriticality::CRITICAL, AnalysisStage::PARSING, token.getLocation(),
             token.getReprSize(), token.getWorkingLine(), message);
 
-        exception_handler.handle(exception);
+        exceptionHandler.handle(exception);
     }
 }// namespace ccl::parser

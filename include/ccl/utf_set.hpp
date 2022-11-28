@@ -7,7 +7,7 @@ namespace ccl
 {
     class UtfSet
     {
-        static constexpr auto smallStorageSize = 128ZU;
+        static constexpr auto smallStorageSize = as<size_t>(128);
 
         SmallBitset<smallStorageSize> smallStorage{};
         FlatSet<char32_t> storage{};

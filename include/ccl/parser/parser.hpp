@@ -14,18 +14,22 @@ namespace ccl::parser
     struct Parser
     {
         using Tokenizer = typename lex::LexicalAnalyzer::Tokenizer;
-        using FollowSet = SmallVector<const ParsingRule *>;
+        using FollowSet = Vector<const ParsingRule *>;
 
-        CCL_ENUM(// NOLINTNEXTLINE
-            TerminalMatchResult, size_t, FALSE, TRUE, CONTINUE);
+        enum struct TerminalMatchResult : size_t
+        {
+            FALSE,
+            TRUE,
+            CONTINUE
+        };
 
         struct CCL_TRIVIAL_ABI MismatchResult
         {
-            Optional<Id> stack_version;
-            Optional<Id> rule_version;
+            Optional<Id> stackVersion;
+            Optional<Id> ruleVersion;
         };
 
-        explicit Parser(const ParsingRules &parsing_rules_, Tokenizer &tokenizer_);
+        explicit Parser(const ParsingRules &parsing_rules, Tokenizer &input_tokenizer);
 
         auto parse() -> void;
 
@@ -70,7 +74,7 @@ namespace ccl::parser
         auto throwError(Stack &stack, const FollowSet &follow_set) -> void;
 
         Tokenizer &tokenizer;
-        ExceptionHandler &exception_handler{tokenizer.getHandler()};
+        ExceptionHandler &exceptionHandler{tokenizer.getHandler()};
         const Set<Id> &terminals{};
         const Set<Id> &nonTerminals{};
         const Map<Id, SmallVector<ParsingRule>> &parsingRules;

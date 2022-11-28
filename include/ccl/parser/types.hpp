@@ -7,11 +7,20 @@ namespace ccl::parser
 {
     using Stack = SmallVector<UniquePtr<Node>>;
 
-    CCL_ENUM(// NOLINTNEXTLINE
-        RuleOnStackResult, Id, NO_MATCH, FULL_MATCH, PARTIAL_MATCH, PRECEDENCE_FORBIDION);
+    enum struct RuleOnStackResult : Id
+    {
+        NO_MATCH,
+        FULL_MATCH,
+        PARTIAL_MATCH,
+        PRECEDENCE_FORBIDDEN
+    };
 
-    CCL_ENUM(// NOLINTNEXTLINE
-        ParsingRuleType, Id, EOI, BAD_TOKEN, ROOT);
+    enum struct ParsingRuleType : Id
+    {
+        EOI = 0,
+        BAD_TOKEN = 1,
+        ROOT = 2
+    };
 }// namespace ccl::parser
 
 #endif /* CCL_PROJECT_PARSER_TYPES_HPP */

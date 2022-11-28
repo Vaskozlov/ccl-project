@@ -192,7 +192,7 @@ namespace ccl
         CCL_UNSAFE_VERSION
         CCL_DECL auto openCloseFind(CharT open, CharT close) const noexcept -> size_t
         {
-            auto passed_pairs = 0ZU;
+            auto passed_pairs = as<size_t>(0);
 
             auto elem = std::ranges::find_if(*this, [&passed_pairs, open, close](CharT chr) {
                 passed_pairs += (chr == open);
@@ -309,7 +309,7 @@ namespace ccl
         {
             auto min_size = std::min(size(), std::size(other));
 
-            for (auto i = 0ZU; i != min_size; ++i) {
+            for (auto i = as<size_t>(0); i != min_size; ++i) {
                 if (this->operator[](i) != other[i]) {
                     return this->operator[](i) <=> other[i];
                 }

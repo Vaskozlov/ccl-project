@@ -96,12 +96,12 @@ namespace ccl::text
 
         auto utfError(char /* unused */) -> void
         {
-            throwPanicError(AnalysationStage::LEXICAL_ANALYSIS, "invalid utf symbol");
+            throwPanicError(AnalysisStage::LEXICAL_ANALYSIS, "invalid utf symbol");
             throw UnrecoverableError{"unable to recover, because of invalid utf symbol"};
         }
 
         auto throwSuggestion(
-            AnalysationStage stage, const TextIterator &iterator_location,
+            AnalysisStage stage, const TextIterator &iterator_location,
             const string_view &message, const string_view &suggestion = {}) -> void
         {
             throwToHandle(
@@ -109,7 +109,7 @@ namespace ccl::text
         }
 
         auto throwWarning(
-            AnalysationStage stage, const TextIterator &iterator_location,
+            AnalysisStage stage, const TextIterator &iterator_location,
             const string_view &message, const string_view &suggestion = {}) -> void
         {
             throwToHandle(
@@ -117,7 +117,7 @@ namespace ccl::text
         }
 
         auto throwUncriticalError(
-            AnalysationStage stage, const TextIterator &iterator_location,
+            AnalysisStage stage, const TextIterator &iterator_location,
             const string_view &message, const string_view &suggestion = {}) -> void
         {
             throwToHandle(
@@ -125,7 +125,7 @@ namespace ccl::text
         }
 
         auto throwCriticalError(
-            AnalysationStage stage, const TextIterator &iterator_location,
+            AnalysisStage stage, const TextIterator &iterator_location,
             const string_view &message, const string_view &suggestion = {}) -> void
         {
             throwToHandle(
@@ -133,7 +133,7 @@ namespace ccl::text
         }
 
         auto throwPanicError(
-            AnalysationStage stage, const TextIterator &iterator_location,
+            AnalysisStage stage, const TextIterator &iterator_location,
             const string_view &message, const string_view &suggestion = {}) -> void
         {
             throwToHandle(
@@ -141,35 +141,35 @@ namespace ccl::text
         }
 
         auto throwSuggestion(
-            AnalysationStage stage, const string_view &message, const string_view &suggestion = {})
+            AnalysisStage stage, const string_view &message, const string_view &suggestion = {})
             -> void
         {
             throwToHandle(*this, ExceptionCriticality::SUGGESTION, stage, message, suggestion);
         }
 
         auto throwWarning(
-            AnalysationStage stage, const string_view &message, const string_view &suggestion = {})
+            AnalysisStage stage, const string_view &message, const string_view &suggestion = {})
             -> void
         {
             throwToHandle(*this, ExceptionCriticality::WARNING, stage, message, suggestion);
         }
 
         auto throwUncriticalError(
-            AnalysationStage stage, const string_view &message, const string_view &suggestion = {})
+            AnalysisStage stage, const string_view &message, const string_view &suggestion = {})
             -> void
         {
             throwToHandle(*this, ExceptionCriticality::SUGGESTION, stage, message, suggestion);
         }
 
         auto throwCriticalError(
-            AnalysationStage stage, const string_view &message, const string_view &suggestion = {})
+            AnalysisStage stage, const string_view &message, const string_view &suggestion = {})
             -> void
         {
             throwToHandle(*this, ExceptionCriticality::CRITICAL, stage, message, suggestion);
         }
 
         auto throwPanicError(
-            AnalysationStage stage, const string_view &message, const string_view &suggestion = {})
+            AnalysisStage stage, const string_view &message, const string_view &suggestion = {})
             -> void
         {
             throwToHandle(*this, ExceptionCriticality::PANIC, stage, message, suggestion);
@@ -177,7 +177,7 @@ namespace ccl::text
 
         auto throwToHandle(
             const TextIterator &iterator_location, ExceptionCriticality criticality,
-            AnalysationStage stage, const string_view &message, const string_view &suggestion = {})
+            AnalysisStage stage, const string_view &message, const string_view &suggestion = {})
             -> void;
     };
 

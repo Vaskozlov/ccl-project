@@ -28,8 +28,8 @@ namespace ccl::lex
         class Tokenizer;
 
         LexicalAnalyzer(
-            ExceptionHandler &exception_handler_, InitializerList<Rule> rules_,
-            string_view filename = {}, std::basic_string<Id> ignored_ids_ = {});
+            ExceptionHandler &exception_handler, InitializerList<Rule> rules,
+            string_view filename = {}, std::basic_string<Id> ignored_ids = {});
 
         [[nodiscard]] auto getIgnoredIds() const -> const std::basic_string<Id> &
         {
@@ -55,11 +55,11 @@ namespace ccl::lex
         bool hasFutureToken{false};
 
     public:
-        Tokenizer(LexicalAnalyzer &lexical_analyzer_, string_view text, string_view filename_ = {});
+        Tokenizer(LexicalAnalyzer &lexical_analyzer, string_view text, string_view filename = {});
 
         Tokenizer(
-            LexicalAnalyzer &lexical_analyzer_, string_view text, string_view filename_,
-            ExceptionHandler &exception_handler_);
+            LexicalAnalyzer &lexical_analyzer, string_view text, string_view filename,
+            ExceptionHandler &exception_handler);
 
         [[nodiscard]] auto getIterator() const -> const TextIterator &
         {
@@ -90,7 +90,7 @@ namespace ccl::lex
         [[nodiscard]] auto shouldIgnoreToken(const Token &token) const -> bool;
 
         auto constructBadToken(Token &token) -> void;
-        auto constructEOIToken(Token &token) -> void;
+        auto constructEoiToken(Token &token) -> void;
     };
 }// namespace ccl::lex
 

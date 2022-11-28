@@ -15,5 +15,5 @@ BOOST_AUTO_TEST_CASE(ContainerPrefixAndPostfix)
     BOOST_ASSERT(items.at(0)->hasPrefix());
     BOOST_ASSERT(!items.at(1)->hasPrefix());
     BOOST_ASSERT(!items.at(1)->hasPostfix());
-    BOOST_ASSERT(items.at(1)->hasPostfix());
+    BOOST_ASSERT(items.at(2)->hasPostfix());
 }

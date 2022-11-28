@@ -43,7 +43,7 @@ namespace ccl::text
 
     auto TextIterator::throwToHandle(
         const TextIterator &iterator_location, ExceptionCriticality criticality,
-        AnalysationStage stage, const string_view &message, const string_view &suggestion) -> void
+        AnalysisStage stage, const string_view &message, const string_view &suggestion) -> void
     {
         auto exception = TextIteratorException(
             criticality, stage, iterator_location.getLocation(), 1,

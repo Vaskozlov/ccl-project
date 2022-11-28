@@ -26,9 +26,6 @@
 
 #define CCL_STRX(x) #x
 #define CCL_STR(x) CCL_STRX(x)
-#define CCL_JOIN_STR(x, y) CCL_STR(x##y)
-#define CCL_FORCE_EXPAND(x, y) CCL_CONCATENATE(x, y)
-#define CCL_CONCATENATE(x, y) x##y
 
 #define CCL_ASSERT(x) assert(x)
 #define CCL_ASSERT_MSG(x, message) assert((x) && message)

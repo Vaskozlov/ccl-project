@@ -6,7 +6,11 @@
 namespace ccl::lex
 {
     // NOLINTNEXTLINE
-    CCL_ENUM(ReservedTokenType, Id, EOI, BAD_TOKEN);
+    enum struct ReservedTokenType : Id
+    {
+        EOI = 0,
+        BAD_TOKEN = 1
+    };
 
     class TokenAttributes
     {
@@ -17,10 +21,10 @@ namespace ccl::lex
 
         TokenAttributes() = default;
 
-        explicit TokenAttributes(const text::TextIterator &text_iterator_)
-          : tabsAndSpaces{text_iterator_.getTabsAndSpaces()}
-          , location{text_iterator_.getLocation()}
-          , workingLine{text_iterator_.getWorkingLine()}
+        explicit TokenAttributes(const text::TextIterator &text_iterator)
+          : tabsAndSpaces{text_iterator.getTabsAndSpaces()}
+          , location{text_iterator.getLocation()}
+          , workingLine{text_iterator.getWorkingLine()}
         {}
     };
 
@@ -39,20 +43,22 @@ namespace ccl::lex
           : id{id_}
         {}
 
-        Token(TokenAttributes &&attributes_, const string_view &repr_, Id id_)
-          : attributes{std::move(attributes_)}
-          , repr{repr_}
-          , id{id_}
+        Token(TokenAttributes &&token_attributes, const string_view &token_repr, Id token_id)
+          : attributes{std::move(token_attributes)}
+          , repr{token_repr}
+          , id{token_id}
         {}
 
-        Token(TokenAttributes &&attributes_, typename string_view::iterator begin_, Id id_)
-          : Token{std::move(attributes_), {begin_, 0ZU}, id_}
+        Token(
+            TokenAttributes &&token_attributes, typename string_view::iterator text_begin,
+            Id token_id)
+          : Token{std::move(token_attributes), {text_begin, as<size_t>(0)}, token_id}
         {}
 
-        Token(const text::TextIterator &text_iterator_, Id id_)
-          : attributes{text_iterator_}
-          , repr{text_iterator_.getRemaining()}
-          , id{id_}
+        Token(const text::TextIterator &text_iterator, Id token_id)
+          : attributes{text_iterator}
+          , repr{text_iterator.getRemaining()}
+          , id{token_id}
         {}
 
         [[nodiscard]] auto getId() const noexcept -> size_t

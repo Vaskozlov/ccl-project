@@ -3,22 +3,22 @@
 
 #include <ccl/parser/node.hpp>
 
-#define FactorConstructor(Name, Id)                                                                \
+#define FACTOR_CONSTRUCTOR(Name, Id)                                                                \
     explicit Name(ccl::UniquePtr<Node> value_)                                                     \
       : ccl::parser::Factor{Id, std::move(value_)}                                                 \
     {}
 
-#define ValueExpressionConstructor(Name, Id)                                                       \
+#define VALUE_EXPRESSION_CONSTRUCTOR(Name, Id)                                                       \
     explicit Name(ccl::UniquePtr<Node> value_)                                                     \
       : ccl::parser::ValueExpression{Id, std::move(value_)}                                        \
     {}
 
-#define UnaryExpressionConstructor(Name, Id)                                                       \
+#define UNARY_EXPRESSION_CONSTRUCTOR(Name, Id)                                                       \
     Name(ccl::UniquePtr<Node> value_, ccl::UniquePtr<Node> operation_)                             \
       : ccl::parser::UnaryExpression{Id, std::move(value_), std::move(operation_)}                 \
     {}
 
-#define BinaryExpressionConstructor(Name, Id)                                                      \
+#define BINARY_EXPRESSION_CONSTRUCTOR(Name, Id)                                                      \
     Name(ccl::UniquePtr<Node> right_, ccl::UniquePtr<Node> operation_, ccl::UniquePtr<Node> left_) \
       : ccl::parser::BinaryExpression{                                                             \
             Id, std::move(left_), std::move(operation_), std::move(right_)}                        \
@@ -29,9 +29,9 @@ namespace ccl::parser
     struct TokenNode : Node
     {
         CCL_PERFECT_FORWARDING(T, lex::Token)// NOLINTNEXTLINE
-        explicit TokenNode(T &&token_)
-          : Node{token_.getId()}
-          , token{std::forward<T>(token_)}
+        explicit TokenNode(T &&input_token)
+          : Node{input_token.getId()}
+          , token{std::forward<T>(input_token)}
         {}
 
         [[nodiscard]] auto getToken() const noexcept -> const lex::Token &

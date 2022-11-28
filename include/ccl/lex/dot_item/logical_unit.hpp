@@ -5,8 +5,13 @@
 
 namespace ccl::lex::dot_item
 {
-    // NOLINTNEXTLINE
-    CCL_ENUM(LogicalOperation, u16, NONE, AND, OR);
+
+    enum struct LogicalOperation : u16
+    {
+        NONE,
+        AND,
+        OR
+    };
 
     class LogicalUnit final : public BasicItem
     {

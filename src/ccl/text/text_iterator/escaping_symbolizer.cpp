@@ -72,6 +72,6 @@ namespace ccl::text
     auto TextIterator::EscapingSymbolizer::throwMatchException() -> void
     {
         text_iterator.throwUncriticalError(
-            AnalysationStage::LEXICAL_ANALYSIS, "unable to matchNextChar any escaping symbol");
+            AnalysisStage::LEXICAL_ANALYSIS, "unable to matchNextChar any escaping symbol");
     }
 }// namespace ccl::text

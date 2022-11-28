@@ -12,7 +12,7 @@ namespace ccl
              "critical error, but continuation of scanning stage is possible"},
             {ExceptionCriticality::PANIC, "critical error, no possible recovery"}};
 
-    auto ExceptionCriticalityDescription(ExceptionCriticality criticality) noexcept
+    auto exceptionCriticalityDescription(ExceptionCriticality criticality) noexcept
         -> std::string_view
     {
         return ExceptionDescription.at(criticality);

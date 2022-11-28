@@ -68,7 +68,7 @@ namespace ccl::text
         auto suggestion_message = createSuggestionNotEnoughChars(chars_count);
 
         textIterator.throwUncriticalError(
-            AnalysationStage::LEXICAL_ANALYSIS, exception_message, suggestion_message);
+            AnalysisStage::LEXICAL_ANALYSIS, exception_message, suggestion_message);
     }
 
     TextIterator::NotationEscapingSymbolizer::NotationEscapingSymbolizer(

@@ -9,7 +9,13 @@
 
 namespace ccl::lex::dot_item
 {
-    CCL_ENUM(ScanningType, Id, MAIN_SCAN, BASIC, SPECIAL, CHECK);// NOLINT
+    enum struct ScanningType : Id
+    {
+        MAIN_SCAN,
+        BASIC,
+        SPECIAL,
+        CHECK
+    };
 
     class Container final : public BasicItem
     {
@@ -33,12 +39,12 @@ namespace ccl::lex::dot_item
 
     public:
         Container(
-            TextIterator &rule_iterator_, SpecialItems &special_items_, Id id_,
-            bool main_item_ = false, bool is_special_ = false);
+            TextIterator &rule_iterator, SpecialItems &special_items, Id item_id,
+            bool main_item = false, bool is_special = false);
 
         Container(
-            const TextIterator &rule_iterator_, SpecialItems &special_items_, Id id_,
-            bool main_item_ = false, bool is_special_ = false);
+            const TextIterator &rule_iterator, SpecialItems &special_items, Id item_id,
+            bool main_item = false, bool is_special = false);
 
         auto beginScan(
             TextIterator &text_iterator, Token &token,

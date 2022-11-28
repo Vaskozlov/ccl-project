@@ -5,16 +5,15 @@ namespace ccl::lex::dot_item
     using namespace ccl::string_view_literals;
 
     Sequence::Sequence(
-        SequenceFlags flags_, const string_view &sequence_begin_, const string_view &sequence_end_,
-        TextIterator &rule_iterator_, Id id_)
-      : BasicItem{id_}
-      , sequenceBegin{sequence_begin_}
-      , sequenceEnd{sequence_end_}
+        SequenceFlags sequence_flags, const string_view &sequence_begin, const string_view &sequence_end,
+        TextIterator &rule_iterator, Id item_id)
+      : BasicItem{item_id}
+      , sequenceBegin{sequence_begin}
+      , sequenceEnd{sequence_end}
     {
-        flags.sequenceIsMultiline = flags_.multiline;
-        flags.sequenceNoEscapingSymbols = flags_.noEscapingSymbols;
+        flags.sequenceIsMultiline = sequence_flags.multiline;
+        flags.sequenceNoEscapingSymbols = sequence_flags.noEscapingSymbols;
 
-        auto &rule_iterator = rule_iterator_;
         auto begin_iterator_state = rule_iterator;
 
         checkSequenceArguments(rule_iterator);
@@ -40,7 +39,7 @@ namespace ccl::lex::dot_item
                 break;
             }
 
-            utf8::appendUtf32ToUtf8Container(sequence_value, chr);
+            utf8::appendUtf32ToUtf8Container(sequenceValue, chr);
         }
     }
 
@@ -48,8 +47,8 @@ namespace ccl::lex::dot_item
     {
         auto future_text = text_iterator.getFutureRemaining();
 
-        if (future_text.startsWith(sequence_value) ^ isReversed()) {
-            return isReversed() ? utf8::size(future_text[0]) : sequence_value.size();
+        if (future_text.startsWith(sequenceValue) ^ isReversed()) {
+            return isReversed() ? utf8::size(future_text[0]) : sequenceValue.size();
         }
 
         return {};
@@ -111,14 +110,14 @@ namespace ccl::lex::dot_item
     auto Sequence::throwEmptyStringBegin(TextIterator &rule_iterator) -> void
     {
         rule_iterator.throwPanicError(
-            AnalysationStage::LEXICAL_ANALYSIS, "sequence item begin cannot be empty"_sv);
+            AnalysisStage::LEXICAL_ANALYSIS, "sequence item begin cannot be empty"_sv);
         throw UnrecoverableError{"unrecoverable error in SequenceType"};
     }
 
     auto Sequence::throwEmptyStringEnd(TextIterator &rule_iterator) -> void
     {
         rule_iterator.throwPanicError(
-            AnalysationStage::LEXICAL_ANALYSIS, "sequence item end cannot be empty"_sv);
+            AnalysisStage::LEXICAL_ANALYSIS, "sequence item end cannot be empty"_sv);
         throw UnrecoverableError{"unrecoverable error in SequenceType"};
     }
 
@@ -127,7 +126,7 @@ namespace ccl::lex::dot_item
         const string_view &message,
         const string_view &suggestion) -> void
     {
-        rule_iterator.throwPanicError(AnalysationStage::LEXICAL_ANALYSIS, message, suggestion);
+        rule_iterator.throwPanicError(AnalysisStage::LEXICAL_ANALYSIS, message, suggestion);
         throw UnrecoverableError{"unrecoverable error in SequenceType"};
     }
 
@@ -135,7 +134,7 @@ namespace ccl::lex::dot_item
     {
         auto message = fmt::format("string literal must begin with {}", sequenceBegin);
 
-        rule_iterator.throwPanicError(AnalysationStage::LEXICAL_ANALYSIS, message);
+        rule_iterator.throwPanicError(AnalysisStage::LEXICAL_ANALYSIS, message);
         throw UnrecoverableError{"unrecoverable error in SequenceType"};
     }
 }// namespace ccl::lex::dot_item

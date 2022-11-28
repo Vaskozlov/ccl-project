@@ -128,7 +128,7 @@ namespace ccl::lex::parser
     auto CcllParser::checkRule(text::TextIterator &rule) -> void
     {
         try {
-            auto container = dot_item::Container{std::move(rule), special_items, 2, true};
+            auto container = dot_item::Container{rule, special_items, 2, true};
         } catch (const UnrecoverableError & /* unused */) {}
     }
 
@@ -206,11 +206,9 @@ namespace ccl::lex::parser
     }
 
     auto CcllParser::parsingError(
-        string_view expected_types, GenToken given_token, string_view suggestion) -> void
+        string_view expected_types, size_t given_token, string_view suggestion) -> void
     {
-        auto error_message =
-            fmt::format("expected {}, got {}", expected_types, GenToken::toString(given_token));
-
+        auto error_message = fmt::format("expected {}, got {}", expected_types, given_token);
         tokenizer.throwException(ExceptionCriticality::PANIC, error_message, suggestion);
     }
 }// namespace ccl::lex::parser

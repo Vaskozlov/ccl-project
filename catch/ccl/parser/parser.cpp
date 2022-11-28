@@ -6,9 +6,22 @@
 using namespace ccl;
 
 // NOLINTNEXTLINE
-CCL_ENUM(// NOLINTNEXTLINE
-    TestToken, size_t, EOI, BAD_TOKEN, ROOT, FUNC, ID, NUM, MUL, ADD, NOT, ANGLE_OPENING,
-    ANGLE_CLOSING, FACTOR, EXPR);
+enum TestToken : Id
+{
+    EOI,
+    BAD_TOKEN,
+    ROOT,
+    FUNC,
+    ID,
+    NUM,
+    MUL,
+    ADD,
+    NOT,
+    ANGLE_OPENING,
+    ANGLE_CLOSING,
+    FACTOR,
+    EXPR
+};
 
 // NOLINTNEXTLINE
 lex::LexicalAnalyzer LexicalAnalyzer(
@@ -25,27 +38,27 @@ lex::LexicalAnalyzer LexicalAnalyzer(
 
 struct FactorWithValue : parser::Factor
 {
-    FactorConstructor(FactorWithValue, TestToken::FACTOR);
+    FACTOR_CONSTRUCTOR(FactorWithValue, TestToken::FACTOR);
 };
 
 struct ExpressionWithValue : parser::ValueExpression
 {
-    ValueExpressionConstructor(ExpressionWithValue, TestToken::EXPR);
+    VALUE_EXPRESSION_CONSTRUCTOR(ExpressionWithValue, TestToken::EXPR);
 };
 
 struct UnaryExpression : parser::UnaryExpression
 {
-    UnaryExpressionConstructor(UnaryExpression, TestToken::FACTOR);
+    UNARY_EXPRESSION_CONSTRUCTOR(UnaryExpression, TestToken::FACTOR);
 };
 
 struct BinaryExpression : parser::BinaryExpression
 {
-    BinaryExpressionConstructor(BinaryExpression, TestToken::EXPR);
+    BINARY_EXPRESSION_CONSTRUCTOR(BinaryExpression, TestToken::EXPR);
 };
 
 struct Root : parser::ValueExpression
 {
-    ValueExpressionConstructor(Root, TestToken::ROOT);
+    VALUE_EXPRESSION_CONSTRUCTOR(Root, TestToken::ROOT);
 };
 
 auto constructFactorFromID(parser::ParsingStack stack) -> UniquePtr<parser::Node>
@@ -90,16 +103,6 @@ const ccl::UnorderedMap<ccl::Id, size_t> PrecedenceTable(//
 
 BOOST_AUTO_TEST_CASE(CclParser)
 {
-    fmt::print("{:<8}{}\n", TestToken::toString(TestToken::EOI), TestToken::EOI);
-    fmt::print("{:<8}{}\n", TestToken::toString(TestToken::BAD_TOKEN), TestToken::BAD_TOKEN);
-    fmt::print("{:<8}{}\n", TestToken::toString(TestToken::ROOT), TestToken::ROOT);
-    fmt::print("{:<8}{}\n", TestToken::toString(TestToken::ID), TestToken::ID);
-    fmt::print("{:<8}{}\n", TestToken::toString(TestToken::NUM), TestToken::NUM);
-    fmt::print("{:<8}{}\n", TestToken::toString(TestToken::MUL), TestToken::MUL);
-    fmt::print("{:<8}{}\n", TestToken::toString(TestToken::ADD), TestToken::ADD);
-    fmt::print("{:<8}{}\n", TestToken::toString(TestToken::NOT), TestToken::NOT);
-    fmt::print("{:<8}{}\n", TestToken::toString(TestToken::EXPR), TestToken::EXPR);
-
     auto rules = parser::ParsingRules(
         PrecedenceTable,
         {CCL_PARSING_RULE(TestToken::FACTOR, constructFactorFromID, TestToken::NUM),

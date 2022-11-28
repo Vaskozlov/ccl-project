@@ -13,7 +13,7 @@ namespace ccl::parser
         PrecedenceTable precedence_table_, InitializerList<ParsingRule> rules_)
       : precedence_table(std::move(precedence_table_))
     {
-        precedence_table.emplace(ParsingRuleType::EOI, 0);
+        precedence_table.emplace(std::to_underlying(ParsingRuleType::EOI), 0);
 
         initializeRules(rules_);
         detectTerminals();
@@ -71,7 +71,7 @@ namespace ccl::parser
     {
         const auto &ids_to_construct = rule.idsToConstruct;
 
-        for (auto i = 1ZU; i != ids_to_construct.size(); ++i) {
+        for (auto i = as<size_t>(1); i != ids_to_construct.size(); ++i) {
             if (non_terminals.contains(ids_to_construct[i - 1]) &&
                 non_terminals.contains(ids_to_construct[i])) {
                 throw std::logic_error(fmt::format(

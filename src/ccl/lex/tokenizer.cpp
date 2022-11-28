@@ -25,7 +25,7 @@ namespace ccl::lex
         }
 
         if (textIterator.isEOI()) [[unlikely]] {
-            constructEOIToken(token);
+            constructEoiToken(token);
             return;
         }
 
@@ -61,23 +61,23 @@ namespace ccl::lex
     }
 
     LexicalAnalyzer::Tokenizer::Tokenizer(
-        LexicalAnalyzer &lexical_analyzer_, string_view text, string_view filename_)
-      : lexicalAnalyzer{lexical_analyzer_}
-      , textIterator{text, lexical_analyzer_.exceptionHandler, filename_}
+        LexicalAnalyzer &lexical_analyzer, string_view text, string_view filename)
+      : lexicalAnalyzer{lexical_analyzer}
+      , textIterator{text, lexical_analyzer.exceptionHandler, filename}
     {}
 
     LexicalAnalyzer::Tokenizer::Tokenizer(
-        LexicalAnalyzer &lexical_analyzer_, string_view text, string_view filename_,
-        ExceptionHandler &exception_handler_)
-      : lexicalAnalyzer{lexical_analyzer_}
-      , textIterator{text, exception_handler_, filename_}
+        LexicalAnalyzer &lexical_analyzer, string_view text, string_view filename,
+        ExceptionHandler &exception_handler)
+      : lexicalAnalyzer{lexical_analyzer}
+      , textIterator{text, exception_handler, filename}
     {}
 
     auto LexicalAnalyzer::Tokenizer::throwException(
         ExceptionCriticality criticality, string_view message, string_view suggestion) -> void
     {
         textIterator.throwToHandle(
-            textIterator, criticality, AnalysationStage::LEXICAL_ANALYSIS, message, suggestion);
+            textIterator, criticality, AnalysisStage::LEXICAL_ANALYSIS, message, suggestion);
     }
 
     auto LexicalAnalyzer::Tokenizer::yield() -> Token &
@@ -102,14 +102,14 @@ namespace ccl::lex
         return futureToken;
     }
 
-    CCL_INLINE auto LexicalAnalyzer::Tokenizer::constructEOIToken(Token &token) -> void
+    CCL_INLINE auto LexicalAnalyzer::Tokenizer::constructEoiToken(Token &token) -> void
     {
-        token = {textIterator, ReservedTokenType::EOI};
+        token = {textIterator, std::to_underlying(ReservedTokenType::EOI)};
     }
 
     CCL_INLINE auto LexicalAnalyzer::Tokenizer::constructBadToken(Token &token) -> void
     {
-        token = Token{textIterator, ReservedTokenType::BAD_TOKEN};
+        token = {textIterator, std::to_underlying(ReservedTokenType::BAD_TOKEN)};
 
         while (!isLayoutOrEoF(textIterator.getNextCarriageValue())) {
             textIterator.next();

@@ -12,7 +12,7 @@ namespace ccl
         using ExceptionT = text::TextIteratorException;
 
     private:
-        static ExceptionHandler defaultExceptionHandler;
+        static ExceptionHandler defaultExceptionHandler; // NOLINT
 
         std::atomic<size_t> suggestionsCounter{};
         std::atomic<size_t> warningsCounter{};
@@ -22,7 +22,14 @@ namespace ccl
 
     public:
         ExceptionHandler() noexcept = default;
+
+        ExceptionHandler(ExceptionHandler &&) = delete;
+        ExceptionHandler(const ExceptionHandler &) = delete;
+
         virtual ~ExceptionHandler() = default;
+
+        auto operator=(ExceptionHandler &&) -> void = delete;
+        auto operator=(const ExceptionHandler &) -> void = delete;
 
         [[nodiscard]] static auto instance() -> ExceptionHandler &
         {

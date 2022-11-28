@@ -8,7 +8,7 @@
 namespace ccl::lex
 {
     // NOLINTNEXTLINE global variable
-    LexicalAnalyzer AnalyzerGenerator::LexForGenerator{
+    LexicalAnalyzer AnalyzerGenerator::lexForGenerator{
         handler::Cmd::instance(),
         {{GenToken::IDENTIFIER, "[a-zA-Z_]+[a-zA-Z0-9_]*"},
          {GenToken::INTEGER, "[0-9]+"},
@@ -48,7 +48,7 @@ namespace ccl::lex
     auto AnalyzerGenerator::generateStaticVersion(string_view filename, string_view text)
         -> Pair<std::string, std::string>
     {
-        auto tokenizer = LexForGenerator.getTokenizer(text, filename);
+        auto tokenizer = lexForGenerator.getTokenizer(text, filename);
         auto static_generator = gen::StaticGenerator{tokenizer};
         return static_generator.get();
     }

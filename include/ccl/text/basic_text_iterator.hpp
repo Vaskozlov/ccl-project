@@ -156,14 +156,14 @@ namespace ccl::text
         constexpr auto skip(size_t n) noexcept(noexcept_carriage_move) -> void
         {
             CCL_UNROLL_N(4)
-            for (auto i = 0ZU; i != n; ++i) {
+            for (auto i = as<size_t>(0); i != n; ++i) {
                 moveCarriage();
             }
         }
 
         constexpr auto skipCharacters(size_t n) noexcept(noexcept_carriage_move) -> void
         {
-            for (auto i = 0ZU; i != n; ++i) {
+            for (auto i = as<size_t>(0); i != n; ++i) {
                 next();
             }
         }
@@ -269,7 +269,7 @@ namespace ccl::text
         {
             remainingToFinishUtf = utf8::size(chr);
 
-            if (0ZU == remainingToFinishUtf) {
+            if (0 == remainingToFinishUtf) {
                 onUtfError(chr);
             }
 

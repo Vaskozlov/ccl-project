@@ -8,7 +8,7 @@ namespace ccl::lex::dot_item
     {
         if (condition) [[unlikely]] {
             text_iterator.throwSuggestion(
-                AnalysationStage::LEXICAL_ANALYSIS, "item will be always recognized", "delete it");
+                AnalysisStage::LEXICAL_ANALYSIS, "item will be always recognized", "delete it");
         }
     }
 
@@ -16,14 +16,14 @@ namespace ccl::lex::dot_item
     {
         if (condition) [[unlikely]] {
             text_iterator.throwSuggestion(
-                AnalysationStage::LEXICAL_ANALYSIS, "item will never be recognized");
+                AnalysisStage::LEXICAL_ANALYSIS, "item will never be recognized");
         }
     }
 
     auto BasicItem::scan(ForkedGenerator text_iterator) const -> Optional<size_t>
     {
-        auto times = 0ZU;
-        auto totally_skipped = 0ZU;
+        auto times = as<size_t>(0);
+        auto totally_skipped = as<size_t>(0);
 
         while (times < repetition.to) {
             if (text_iterator.isEOI()) {

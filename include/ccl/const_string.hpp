@@ -5,12 +5,12 @@
 
 namespace ccl
 {
-    template<size_t N>
+    template<size_t Size>
     struct ConstString
     {
     public:
         using value_type = char;
-        using storage_t = std::array<char, N>;
+        using storage_t = std::array<char, Size>;
         using const_iterator = typename storage_t::const_iterator;
         using const_reverse_iterator = typename storage_t::const_reverse_iterator;
 
@@ -85,12 +85,12 @@ namespace ccl
             -> std::weak_ordering = default;
 
         // NOLINTNEXTLINE
-        consteval ConstString(const value_type (&str)[N])
+        consteval ConstString(const value_type (&str)[Size])
           : string{std::to_array(str)}
         {}
 
         // NOLINTNEXTLINE
-        consteval ConstString(const std::array<value_type, N> &str)
+        consteval ConstString(const std::array<value_type, Size> &str)
           : string{str}
         {}
     };

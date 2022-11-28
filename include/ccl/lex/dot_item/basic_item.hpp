@@ -8,8 +8,12 @@
 
 namespace ccl::lex::dot_item
 {
-    // NOLINTNEXTLINE
-    CCL_ENUM(ScanType, u16, MAIN, FORKED, SPECIAL);
+    enum struct ScanType : u16
+    {
+        MAIN,
+        FORKED,
+        SPECIAL
+    };
 
     class Container;
 
@@ -39,8 +43,8 @@ namespace ccl::lex::dot_item
         Flags flags;
 
     public:
-        explicit BasicItem(Id id_)
-          : id{id_}
+        explicit BasicItem(Id item_id)
+          : id{item_id}
         {}
 
         BasicItem(const BasicItem &) = default;
