@@ -4,8 +4,6 @@ file(
         "programs/*.cpp"
 )
 
-find_package(Boost COMPONENTS program_options REQUIRED)
-
 add_executable(
         ccl-lexer
         ${FSC_LEX_GENERATOR_OBJECTS}

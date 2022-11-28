@@ -22,13 +22,14 @@ auto main(int argc, char *argv[]) -> int
     po::store(po::parse_command_line(argc, argv, desc), vm);
     po::notify(vm);
 
-    if (vm.contains("help")) {
+    if (vm.count("help") == 1) {
         std::cout << desc << "\n";
         return 1;
     }
 
-    if (!vm.contains("header-file")) {
+    if (vm.count("header-file") == 0) {
         std::cout << "File with rules for lexical analyzer was not specified." << std::endl;
+        std::cout << "Type --help to see how to use ccll" << std::endl;
         return 1;
     }
 

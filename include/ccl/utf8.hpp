@@ -114,10 +114,9 @@ namespace ccl::utf8
                 ContinuationSignature | (as<std::byte>(chr >> 6) & non_continuation_mask)));
             string.push_back(
                 as<char>(ContinuationSignature | (as<std::byte>(chr) & non_continuation_mask)));
+        } else {
+            throw std::invalid_argument{"unable to convert symbol to utf8"};
         }
-
-        throw std::invalid_argument{"unable to convert symbol to utf8"};
-
         // NOLINTEND
     }
 }// namespace ccl::utf8
