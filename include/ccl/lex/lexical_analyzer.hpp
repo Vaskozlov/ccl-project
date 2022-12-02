@@ -80,8 +80,8 @@ namespace ccl::lex
             ExceptionCriticality criticality, string_view message, string_view suggestion = {})
             -> void;
 
-        auto yield() -> Token &;
-        auto yieldFutureToken() -> Token &;
+        auto yield() -> const Token &;
+        auto yieldFutureToken() -> const Token &;
 
     private:
         auto nextToken(Token &token) -> void;

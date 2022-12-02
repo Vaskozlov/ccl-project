@@ -80,7 +80,7 @@ namespace ccl::lex
             textIterator, criticality, AnalysisStage::LEXICAL_ANALYSIS, message, suggestion);
     }
 
-    auto LexicalAnalyzer::Tokenizer::yield() -> Token &
+    auto LexicalAnalyzer::Tokenizer::yield() -> const Token &
     {
         if (hasFutureToken) {
             hasFutureToken = false;
@@ -92,7 +92,7 @@ namespace ccl::lex
         return currentToken;
     }
 
-    auto LexicalAnalyzer::Tokenizer::yieldFutureToken() -> Token &
+    auto LexicalAnalyzer::Tokenizer::yieldFutureToken() -> const Token &
     {
         if (!hasFutureToken) {
             nextToken(futureToken);

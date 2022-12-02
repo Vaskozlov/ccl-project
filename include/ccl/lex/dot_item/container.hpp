@@ -82,6 +82,9 @@ namespace ccl::lex::dot_item
         auto parseRule(TextIterator &rule_iterator) -> void;
 
         [[nodiscard]] auto failedToEndItem(const ForkedGenerator &text_iterator) const -> bool;
+
+        static auto addPrefixOrPostfix(const BasicItem &item, Token &token, const string_view &repr)
+            -> void;
     };
 
     class Container::RuleParser

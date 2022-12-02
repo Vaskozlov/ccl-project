@@ -23,7 +23,7 @@ namespace ccl::lex::dot_item
                 break;
             }
 
-            if (isRange(is_range, chr)) {
+            if (isRange(is_escaping, chr)) {
                 is_range = true;
                 continue;
             }

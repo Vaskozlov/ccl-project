@@ -274,7 +274,7 @@ namespace ccl::parser
 
         auto exception = text::TextIteratorException(
             ExceptionCriticality::CRITICAL, AnalysisStage::PARSING, token.getLocation(),
-            token.getReprSize(), token.getWorkingLine(), message);
+            token.getReprSize(), token.getInlineRepr(), message);
 
         exceptionHandler.handle(exception);
     }

@@ -12,6 +12,11 @@ namespace ccl::lex
         BAD_TOKEN = 1
     };
 
+    namespace dot_item
+    {
+        class Container;
+    }
+
     class TokenAttributes
     {
     public:
@@ -30,6 +35,10 @@ namespace ccl::lex
 
     class Token
     {
+    private:
+        friend class LexicalAnalyzer;
+        friend class dot_item::Container;
+
         Vector<string_view> prefixes{};
         Vector<string_view> postfixes{};
         TokenAttributes attributes{};
@@ -39,8 +48,8 @@ namespace ccl::lex
     public:
         Token() = default;
 
-        explicit Token(Id id_)
-          : id{id_}
+        explicit Token(Id token_id)
+          : id{token_id}
         {}
 
         Token(TokenAttributes &&token_attributes, const string_view &token_repr, Id token_id)
@@ -121,7 +130,7 @@ namespace ccl::lex
             return postfixes;
         }
 
-        [[nodiscard]] auto getWorkingLine() const noexcept -> const string_view &
+        [[nodiscard]] auto getInlineRepr() const noexcept -> const string_view &
         {
             return attributes.workingLine;
         }
@@ -131,15 +140,12 @@ namespace ccl::lex
             return attributes.tabsAndSpaces;
         }
 
-        auto setEnd(typename string_view::iterator end_) noexcept -> void
+    private:
+        auto clear(Id new_id) noexcept -> void
         {
-            repr = {repr.begin(), end_};
-        }
-
-        auto finishInitialization(const text::TextIterator &text_iterator) -> void
-        {
-            repr = text_iterator.getRemaining();
-            attributes = TokenAttributes{text_iterator};
+            id = new_id;
+            prefixes.clear();
+            postfixes.clear();
         }
 
         auto setReprLength(size_t length) noexcept -> void
@@ -157,11 +163,15 @@ namespace ccl::lex
             postfixes.push_back(postfix);
         }
 
-        auto clear(Id new_id) noexcept -> void
+        auto setEnd(typename string_view::iterator end_of_repr) noexcept -> void
         {
-            id = new_id;
-            prefixes.clear();
-            postfixes.clear();
+            repr = {repr.begin(), end_of_repr};
+        }
+
+        auto finishInitialization(const text::TextIterator &text_iterator) -> void
+        {
+            repr = text_iterator.getRemaining();
+            attributes = TokenAttributes{text_iterator};
         }
     };
 }// namespace ccl::lex

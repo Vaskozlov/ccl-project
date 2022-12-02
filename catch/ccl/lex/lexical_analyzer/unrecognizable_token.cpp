@@ -10,5 +10,4 @@ BOOST_AUTO_TEST_CASE(LexicalAnalyzerUnrecognizableTokenError)
     auto analyzer = LexicalAnalyzer{ExceptionHandler::instance(), {{2, "[a-z]+"}}};
     auto tokenizer = analyzer.getTokenizer(R"(20)");
     auto token = tokenizer.yield();
-    ;
 }

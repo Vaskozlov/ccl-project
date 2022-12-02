@@ -4,7 +4,7 @@ namespace ccl::lex::dot_item
 {
     using namespace ccl::string_view_literals;
 
-    CCL_INLINE auto addPrefixOrPostfix(const BasicItem &item, Token &token, const string_view &repr)
+    CCL_INLINE auto Container::addPrefixOrPostfix(const BasicItem &item, Token &token, const string_view &repr)
         -> void
     {
         if (repr.empty()) {

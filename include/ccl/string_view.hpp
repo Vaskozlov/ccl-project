@@ -368,7 +368,7 @@ namespace ccl
 template<>
 struct fmt::formatter<ccl::string_view> : fmt::formatter<std::string_view>
 {
-    auto format(const ccl::string_view &str, format_context &ctx)
+    auto format(const ccl::string_view &str, format_context &ctx) const
     {
         return formatter<std::string_view>::format(as<std::string_view>(str), ctx);
     }
