@@ -158,7 +158,7 @@ namespace ccl::text
             AnalysisStage stage, const string_view &message, const string_view &suggestion = {})
             -> void
         {
-            throwToHandle(*this, ExceptionCriticality::SUGGESTION, stage, message, suggestion);
+            throwToHandle(*this, ExceptionCriticality::UNCRITICAL, stage, message, suggestion);
         }
 
         auto throwCriticalError(

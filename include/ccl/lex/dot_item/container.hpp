@@ -23,7 +23,7 @@ namespace ccl::lex::dot_item
         using typename BasicItem::TextIterator;
 
         using ForkedGen = typename TextIterator::ForkedTextIterator;
-        using storage_t = boost::container::small_vector<UniquePtr<BasicItem>, 4>;
+        using storage_t = SmallVector<UniquePtr<BasicItem>>;
 
         class RuleParser;
 

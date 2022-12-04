@@ -5,8 +5,8 @@ namespace ccl::lex::dot_item
     using namespace ccl::string_view_literals;
 
     Sequence::Sequence(
-        SequenceFlags sequence_flags, const string_view &sequence_begin, const string_view &sequence_end,
-        TextIterator &rule_iterator, Id item_id)
+        SequenceFlags sequence_flags, const string_view &sequence_begin,
+        const string_view &sequence_end, TextIterator &rule_iterator, Id item_id)
       : BasicItem{item_id}
       , sequenceBegin{sequence_begin}
       , sequenceEnd{sequence_end}
@@ -77,7 +77,7 @@ namespace ccl::lex::dot_item
         }
 
         if (land('\n' == chr, !flags.sequenceIsMultiline)) [[unlikely]] {
-            auto message = "new line is reached, but sequence has not been terminated"_sv;
+            constexpr auto message = "new line is reached, but sequence has not been terminated"_sv;
             auto suggestion =
                 fmt::format("use multiline sequence or close it with `{}`", sequenceEnd);
 

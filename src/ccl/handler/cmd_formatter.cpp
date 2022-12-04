@@ -71,7 +71,7 @@ namespace ccl::handler
             format_to(std::back_inserter(formattingBuffer), "{:>6}", '|');
             format_to(
                 std::back_inserter(formattingBuffer), "{1:>{0}} {2}\n",
-                std::max<size_t>(1, arrow_position), "Suggest to", suggestion);
+                std::max<size_t>(1, arrow_position), "Suggestion: ", suggestion);
         }
     }
 }// namespace ccl::handler

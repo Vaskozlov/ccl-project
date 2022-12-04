@@ -91,8 +91,7 @@ namespace ccl::lex::parser
 
         auto recoverFromError() -> void;
 
-        auto parsingError(
-            string_view expected_types, size_t given_token, string_view suggestion = {}) -> void;
+        auto parsingError(string_view message, string_view suggestion = {}) -> void;
     };
 }// namespace ccl::lex::parser
 

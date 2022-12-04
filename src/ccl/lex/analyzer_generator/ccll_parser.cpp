@@ -33,7 +33,10 @@ namespace ccl::lex::parser
             return true;
 
         default:
-            parsingError("identifier or block definition (`{`)", token_id);
+            parsingError(
+                "unrecognizable action",
+                "use { `identifier` } to declare group of items or `identifier` = identifier | "
+                "'$STRING' to declare variable");
             recoverFromError();
             return parse();
         }
@@ -52,7 +55,9 @@ namespace ccl::lex::parser
             return parseDirectiveDeclaration();
 
         default:
-            parsingError("column (`:`) or assign (`=`)", token_id);
+            parsingError(
+                "bad rule or variable declaration declaration",
+                "use `:` to declare rule or `=` to declare variable");
             return false;
         }
     }
@@ -73,7 +78,7 @@ namespace ccl::lex::parser
             return true;
         }
 
-        parsingError("regular expression", token_id);
+        parsingError("expected rule declaration");
         return false;
     }
 
@@ -88,7 +93,7 @@ namespace ccl::lex::parser
             return true;
         }
 
-        parsingError("identifier", token_id);
+        parsingError("expected identifier or string ( '$CHARACTERS' )");
         return false;
     }
 
@@ -142,7 +147,7 @@ namespace ccl::lex::parser
             return parseBlockEnding();
         }
 
-        parsingError("identifier", token_id);
+        parsingError("expected identifier after `{`", "add identifier");
         return false;
     }
 
@@ -156,7 +161,7 @@ namespace ccl::lex::parser
             return true;
         }
 
-        parsingError("expected block end (`}`)", token_id);
+        parsingError("expected `}` after identifier", "add `}`");
         return false;
     }
 
@@ -184,7 +189,7 @@ namespace ccl::lex::parser
         case GenToken::NEW_LINE:
             break;
         default:
-            parsingError("new line or end of input", token_id);
+            parsingError("expected new line of end of input");
         }
     }
 
@@ -205,10 +210,8 @@ namespace ccl::lex::parser
         }
     }
 
-    auto CcllParser::parsingError(
-        string_view expected_types, size_t given_token, string_view suggestion) -> void
+    auto CcllParser::parsingError(string_view message, string_view suggestion) -> void
     {
-        auto error_message = fmt::format("expected {}, got {}", expected_types, given_token);
-        tokenizer.throwException(ExceptionCriticality::PANIC, error_message, suggestion);
+        tokenizer.throwException(ExceptionCriticality::PANIC, message, suggestion);
     }
 }// namespace ccl::lex::parser

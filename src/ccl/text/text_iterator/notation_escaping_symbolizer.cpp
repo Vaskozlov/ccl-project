@@ -7,7 +7,7 @@ namespace ccl::text
         size_t chars_count = 0;
 
         for (; chars_count != maximumSymbols; ++chars_count) {
-            auto chr = textIterator.next();
+            auto chr = textIterator.futureChar(1);
 
             if (lor(isEoF(chr), isOutOfNotation(chr))) {
                 break;
@@ -15,6 +15,8 @@ namespace ccl::text
 
             result = as<char32_t>(result << notationPower);
             result += as<char32_t>(HexadecimalCharsToInt<char32_t>.at(chr));
+
+            textIterator.next();
         }
 
         checkAllCharsUsage(chars_count);
@@ -62,8 +64,8 @@ namespace ccl::text
         size_t chars_count) const -> void
     {
         auto exception_message = fmt::format(
-            "expected {} characters, but only {} of them were provided",
-            maximumSymbols, chars_count);
+            "expected {} characters, but only {} of them were provided", maximumSymbols,
+            chars_count);
 
         auto suggestion_message = createSuggestionNotEnoughChars(chars_count);
 
