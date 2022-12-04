@@ -96,8 +96,7 @@ namespace ccl::lex::gen
 
         for (auto &&rule : ccllParser.getRules() | std::views::filter(repeat_filter)) {
             generated_rules.insert(rule.name);
-            appendToStr(
-                string, fmt::format("    {{ {0}::{1}, \"{1}\" }},\n", enumName, rule.name));
+            appendToStr(string, fmt::format("    {{ {0}::{1}, \"{1}\" }},\n", enumName, rule.name));
         }
 
         appendToStr(string, "};\n");

@@ -12,7 +12,7 @@ namespace ccl
         using ExceptionT = text::TextIteratorException;
 
     private:
-        static ExceptionHandler defaultExceptionHandler; // NOLINT
+        static ExceptionHandler defaultExceptionHandler;// NOLINT
 
         std::atomic<size_t> suggestionsCounter{};
         std::atomic<size_t> warningsCounter{};

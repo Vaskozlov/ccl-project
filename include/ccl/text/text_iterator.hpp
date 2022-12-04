@@ -101,40 +101,40 @@ namespace ccl::text
         }
 
         auto throwSuggestion(
-            AnalysisStage stage, const TextIterator &iterator_location,
-            const string_view &message, const string_view &suggestion = {}) -> void
+            AnalysisStage stage, const TextIterator &iterator_location, const string_view &message,
+            const string_view &suggestion = {}) -> void
         {
             throwToHandle(
                 iterator_location, ExceptionCriticality::SUGGESTION, stage, message, suggestion);
         }
 
         auto throwWarning(
-            AnalysisStage stage, const TextIterator &iterator_location,
-            const string_view &message, const string_view &suggestion = {}) -> void
+            AnalysisStage stage, const TextIterator &iterator_location, const string_view &message,
+            const string_view &suggestion = {}) -> void
         {
             throwToHandle(
                 iterator_location, ExceptionCriticality::WARNING, stage, message, suggestion);
         }
 
         auto throwUncriticalError(
-            AnalysisStage stage, const TextIterator &iterator_location,
-            const string_view &message, const string_view &suggestion = {}) -> void
+            AnalysisStage stage, const TextIterator &iterator_location, const string_view &message,
+            const string_view &suggestion = {}) -> void
         {
             throwToHandle(
                 iterator_location, ExceptionCriticality::SUGGESTION, stage, message, suggestion);
         }
 
         auto throwCriticalError(
-            AnalysisStage stage, const TextIterator &iterator_location,
-            const string_view &message, const string_view &suggestion = {}) -> void
+            AnalysisStage stage, const TextIterator &iterator_location, const string_view &message,
+            const string_view &suggestion = {}) -> void
         {
             throwToHandle(
                 iterator_location, ExceptionCriticality::CRITICAL, stage, message, suggestion);
         }
 
         auto throwPanicError(
-            AnalysisStage stage, const TextIterator &iterator_location,
-            const string_view &message, const string_view &suggestion = {}) -> void
+            AnalysisStage stage, const TextIterator &iterator_location, const string_view &message,
+            const string_view &suggestion = {}) -> void
         {
             throwToHandle(
                 iterator_location, ExceptionCriticality::PANIC, stage, message, suggestion);

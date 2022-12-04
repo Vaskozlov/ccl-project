@@ -30,8 +30,8 @@ namespace ccl::text
 
     auto TextIteratorException::createFullMessage() const -> std::string
     {
-        auto full_message = fmt::format(
-            "Error occurred at: {}, message: {}\n{}\n", location, message, workingLine);
+        auto full_message =
+            fmt::format("Error occurred at: {}, message: {}\n{}\n", location, message, workingLine);
 
         addArrowToError(full_message);
         addSuggestion(full_message);

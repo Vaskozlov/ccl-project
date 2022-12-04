@@ -33,8 +33,8 @@ target_link_libraries(
 )
 
 target_link_libraries(
-    ccl-catch
-    ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
+        ccl-catch
+        ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
 )
 
 if (${PRECOMPILED_HEADER})
