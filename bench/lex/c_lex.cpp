@@ -10,71 +10,71 @@ using namespace std::string_view_literals;
 
 const auto CProgram = R"(
 int main(int argc, char **argv) {
-int a = 10;
-int b = 20;
-char *c = "Hello, World!\xff";
-char d = 't';
+    int a = 10;
+    int b = 20;
+    char *c = "Hello, World!\xff";
+    char d = 't';
 
-  /*
-This is a comment!*/
+      /*
+    This is a comment!*/
 
-float a2 = 20.0f;
+    float a2 = 20.0f;
 
-a += b;
-b *= a;
+    a += b;
+    b *= a;
 
-return a + b;
+    return a + b;
 }
 
 int main(int argc, char **argv) {
-int a = 10;
-int b = 20;
-char *c = "Hello, World!\xff";
-char d = 't';
+    int a = 10;
+    int b = 20;
+    char *c = "Hello, World!\xff";
+    char d = 't';
 
-  /*
-This is a comment!*/
+      /*
+    This is a comment!*/
 
-float a2 = 20.0f;
+    float a2 = 20.0f;
 
-a += b;
-b *= a;
+    a += b;
+    b *= a;
 
-return a + b;
+    return a + b;
 }
 
 int main(int argc, char **argv) {
-int a = 10;
-int b = 20;
-char *c = "Hello, World!\xff";
-char d = 't';
+    int a = 10;
+    int b = 20;
+    char *c = "Hello, World!\xff";
+    char d = 't';
 
-  /*
-This is a comment!*/
+      /*
+    This is a comment!*/
 
-float a2 = 20.0f;
+    float a2 = 20.0f;
 
-a += b;
-b *= a;
+    a += b;
+    b *= a;
 
-return a + b;
+    return a + b;
 }
 
 int main(int argc, char **argv) {
-int a = 10;
-int b = 20;
-char *c = "Hello, World!\xff";
-char d = 't';
+    int a = 10;
+    int b = 20;
+    char *c = "Hello, World!\xff";
+    char d = 't';
 
-  /*
-This is a comment!*/
+      /*
+    This is a comment!*/
 
-float a2 = 20.0f;
+    float a2 = 20.0f;
 
-a += b;
-b *= a;
+    a += b;
+    b *= a;
 
-return a + b;
+    return a + b;
 }
 )"sv;
 
