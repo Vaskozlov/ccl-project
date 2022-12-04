@@ -131,6 +131,8 @@ namespace ccl::lex::dot_item
 
         auto emplaceItem(UniquePtr<BasicItem> item) -> void;
 
+        auto finishPreviousItemInitialization() -> void;
+
         auto addPrefixPostfix() -> void;
 
         auto addRepetition(Repetition new_repetition) -> void;

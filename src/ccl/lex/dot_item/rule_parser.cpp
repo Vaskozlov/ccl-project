@@ -151,16 +151,24 @@ namespace ccl::lex::dot_item
     auto Container::RuleParser::emplaceItem(UniquePtr<BasicItem> item) -> void
     {
         if (!item->canBeOptimized()) {
-            auto item_repetition = item->getRepetition();
-
-            neverRecognizedSuggestion(
-                ruleIterator, item_repetition.from == 0 && !isReversed() && !item->empty());
-
-            alwaysRecognizedSuggestion(ruleIterator, !isReversed() && item->empty());
-
+            finishPreviousItemInitialization();
             items.emplace_back(std::move(item));
         }
     }
+
+    auto Container::RuleParser::finishPreviousItemInitialization() -> void
+    {
+        if (items.empty()) {
+            return;
+        }
+
+        const auto *item = items.back().get();
+        auto item_repetition = item->getRepetition();
+
+        neverRecognizedSuggestion(ruleIterator, item_repetition.to == 0);
+        alwaysRecognizedSuggestion(ruleIterator, item_repetition.to != 0 && item->empty());
+    }
+
 
     auto Container::RuleParser::addPrefixPostfix() -> void
     {
@@ -252,6 +260,7 @@ namespace ccl::lex::dot_item
             return;
         }
 
+        finishPreviousItemInitialization();
         BasicItem::neverRecognizedSuggestion(ruleIterator, items.empty() && !isReversed());
         BasicItem::alwaysRecognizedSuggestion(ruleIterator, items.empty() && isReversed());
     }
