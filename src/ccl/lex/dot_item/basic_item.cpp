@@ -7,23 +7,23 @@ namespace ccl::lex::dot_item
     auto BasicItem::alwaysRecognizedSuggestion(TextIterator &text_iterator, bool condition) -> void
     {
         if (condition) [[unlikely]] {
-            text_iterator.throwSuggestion(
-                AnalysationStage::LEXICAL_ANALYSIS, "item will be always recognized", "delete it");
+            text_iterator.throwWarning(
+                AnalysisStage::LEXICAL_ANALYSIS, "item will be always recognized");
         }
     }
 
     auto BasicItem::neverRecognizedSuggestion(TextIterator &text_iterator, bool condition) -> void
     {
         if (condition) [[unlikely]] {
-            text_iterator.throwSuggestion(
-                AnalysationStage::LEXICAL_ANALYSIS, "item will never be recognized");
+            text_iterator.throwWarning(
+                AnalysisStage::LEXICAL_ANALYSIS, "item will never be recognized");
         }
     }
 
     auto BasicItem::scan(ForkedGenerator text_iterator) const -> Optional<size_t>
     {
-        auto times = 0ZU;
-        auto totally_skipped = 0ZU;
+        auto times = as<size_t>(0);
+        auto totally_skipped = as<size_t>(0);
 
         while (times < repetition.to) {
             if (text_iterator.isEOI()) {
@@ -32,7 +32,7 @@ namespace ccl::lex::dot_item
 
             auto scan_result = scanIteration(text_iterator);
 
-            if (scan_result == 0) {
+            if (0 == scan_result) {
                 break;
             }
 

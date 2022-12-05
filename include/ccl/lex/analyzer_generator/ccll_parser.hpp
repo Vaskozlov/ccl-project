@@ -32,8 +32,11 @@ namespace ccl::lex::parser
             Rule(
                 string_view block_name_, BlockInfo &block_info_, string_view rule_name_,
                 string_view definition_)
-              : block_name(block_name_), name(rule_name_), definition(definition_),
-                block_id(block_info_.block_id), id(block_info_.last_id++)
+              : block_name{block_name_}
+              , name{rule_name_}
+              , definition{definition_}
+              , block_id{block_info_.block_id}
+              , id{block_info_.last_id++}
             {}
         };
 
@@ -41,14 +44,15 @@ namespace ccl::lex::parser
         Vector<Rule> rules{};
         std::stack<Token> token_stack{};
         Map<string_view, std::string> directives{};
-        Map<string_view, BlockInfo> blocks{ { "NONE", { 0, 2 } } };
+        Map<string_view, BlockInfo> blocks{{"NONE", {0, 2}}};
         SpecialItems special_items{};
         string_view current_block = "NONE";
         Tokenizer &tokenizer;
-        size_t last_block_id{ 1 };
+        size_t last_block_id{1};
 
     public:
-        explicit CcllParser(Tokenizer &tokenizer_) : tokenizer(tokenizer_)
+        explicit CcllParser(Tokenizer &tokenizer_)
+          : tokenizer{tokenizer_}
         {}
 
         [[nodiscard]] auto getRules() const -> const Vector<Rule> &
@@ -87,8 +91,7 @@ namespace ccl::lex::parser
 
         auto recoverFromError() -> void;
 
-        auto parsingError(
-            string_view expected_types, GenToken given_token, string_view suggestion = {}) -> void;
+        auto parsingError(string_view message, string_view suggestion = {}) -> void;
     };
 }// namespace ccl::lex::parser
 

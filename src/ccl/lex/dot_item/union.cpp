@@ -4,18 +4,18 @@ namespace ccl::lex::dot_item
 {
     using namespace ccl::string_view_literals;
 
-    Union::Union(TextIterator &rule_iterator_, size_t id_) : BasicItem(id_)
+    Union::Union(TextIterator &rule_iterator, Id rule_id)
+      : BasicItem{rule_id}
     {
         auto is_range = false;
         auto previous_chr = U'\0';
-        auto &rule_iterator = rule_iterator_;
         auto begin_iterator_state = rule_iterator;
 
         checkUnionBegin(rule_iterator);
 
         while (true) {
             auto [is_escaping, chr] = rule_iterator.nextRawCharWithEscapingSymbols(
-                { { U'[', U'[' }, { U']', U']' }, { U'-', U'-' } });
+                {{U'[', U'['}, {U']', U']'}, {U'-', U'-'}});
 
             checkForUnexpectedEnd(begin_iterator_state, is_escaping, chr);
 
@@ -23,7 +23,7 @@ namespace ccl::lex::dot_item
                 break;
             }
 
-            if (isRange(is_range, chr)) {
+            if (isRange(is_escaping, chr)) {
                 is_range = true;
                 continue;
             }
@@ -55,7 +55,7 @@ namespace ccl::lex::dot_item
 
     CCL_INLINE auto Union::isUnionEnd(bool is_escaping, char32_t chr) noexcept -> bool
     {
-        return land(not is_escaping, chr == U']');
+        return land(!is_escaping, chr == U']');
     }
 
     CCL_INLINE auto
@@ -73,14 +73,14 @@ namespace ccl::lex::dot_item
         Union::checkForUnexpectedEnd(TextIterator &rule_iterator, bool is_escaping, char32_t chr)
             -> void
     {
-        if (land(not is_escaping, isEoF(chr))) {
+        if (land(!is_escaping, isEoF(chr))) {
             throwUnterminatedUnion(rule_iterator);
         }
     }
 
     CCL_INLINE auto Union::checkUnionBegin(TextIterator &rule_iterator) -> void
     {
-        if (rule_iterator.getCurrentChar() != U'[') {
+        if (U'[' != rule_iterator.getCurrentChar()) {
             throwUnionBeginException(rule_iterator);
         }
     }
@@ -96,14 +96,14 @@ namespace ccl::lex::dot_item
     CCL_INLINE auto Union::throwUnterminatedUnion(TextIterator &rule_iterator) -> void
     {
         rule_iterator.throwPanicError(
-            AnalysationStage::LEXICAL_ANALYSIS, "unterminated union item"_sv);
-        throw UnrecoverableError{ "unrecoverable error in Union" };
+            AnalysisStage::LEXICAL_ANALYSIS, "unterminated union item"_sv);
+        throw UnrecoverableError{"unrecoverable error in Union"};
     }
 
     CCL_INLINE auto Union::throwUnterminatedRangeException(TextIterator &rule_iterator) -> void
     {
-        rule_iterator.throwPanicError(AnalysationStage::LEXICAL_ANALYSIS, "unterminated range"_sv);
-        throw UnrecoverableError{ "unrecoverable error in Union" };
+        rule_iterator.throwPanicError(AnalysisStage::LEXICAL_ANALYSIS, "unterminated range"_sv);
+        throw UnrecoverableError{"unrecoverable error in Union"};
     }
 
     CCL_INLINE auto Union::throwUnionBeginException(TextIterator &rule_iterator) -> void
@@ -114,7 +114,7 @@ namespace ccl::lex::dot_item
         auto message =
             fmt::format("expected `[` at the beginning of union item declaration, got {}", buffer);
 
-        rule_iterator.throwPanicError(AnalysationStage::LEXICAL_ANALYSIS, message);
-        throw UnrecoverableError{ "unrecoverable error in Union" };
+        rule_iterator.throwPanicError(AnalysisStage::LEXICAL_ANALYSIS, message);
+        throw UnrecoverableError{"unrecoverable error in Union"};
     }
 }// namespace ccl::lex::dot_item

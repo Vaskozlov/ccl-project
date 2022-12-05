@@ -11,29 +11,31 @@ namespace ccl::lex::dot_item
         size_t from{};
         size_t to{};
 
-        constexpr Repetition(const size_t from_, const size_t to_) noexcept : from(from_), to(to_)
+        constexpr Repetition(size_t repetition_begin, size_t repetition_end) noexcept
+          : from{repetition_begin}
+          , to{repetition_end}
         {}
 
         explicit Repetition(text::TextIterator &text_iterator);
 
         [[nodiscard]] consteval static auto basic() noexcept -> Repetition
         {
-            return { 1, 1 };
+            return {1, 1};
         }
 
         [[nodiscard]] consteval static auto question() noexcept -> Repetition
         {
-            return { 0, 1 };
+            return {0, 1};
         }
 
         [[nodiscard]] consteval static auto star() noexcept -> Repetition
         {
-            return { 0, max() };
+            return {0, max()};
         }
 
         [[nodiscard]] consteval static auto plus() noexcept -> Repetition
         {
-            return { 1, max() };
+            return {1, max()};
         }
 
         [[nodiscard]] consteval static auto max() noexcept -> size_t

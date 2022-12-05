@@ -4,10 +4,7 @@
 using namespace ccl::string_view_literals;
 
 constexpr auto C_RULE = R"(
-
-FILENAME = c_lexer
-VAR_NAME = C_Lexer
-
+VAR_NAME = CLexer
 COMMENT: ! "//"[\n]*^
 COMMENT: ! "/*" "*/"^* "*/"
 
@@ -19,7 +16,7 @@ RIGHT_PARENTHESIS:  ! [)]
 ANGLE_OPENING:      ! "["
 ANGLE_CLOSING:      ! "]"
 COMMA:              ! ","
-SEPARATOR:          ! ";"
+COLUMN:             ! ";"
 PREPROCESSOR:       ! "#"
 QUESTION_MARK:      ! "?"
 
@@ -82,7 +79,6 @@ FLOAT:              [0-9]+"."[0-9]* ( [a-zA-Z_]+ [a-zA-Z0-9_]* )?p
 IDENTIFIER:         [a-zA-Z_]+[a-zA-Z0-9_]*
 CHAR:               ! "\'" ([']^ | "\\\'" ) "\'"
 STRING:             ! "\"" (["]^ | "\\\"")* "\""
-
 )"_sv;
 
 BOOST_AUTO_TEST_CASE(StaticGeneration)

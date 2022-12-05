@@ -13,14 +13,14 @@ namespace ccl::lex::parser
         case GenToken::IDENTIFIER:
             token_stack.push(std::move(token));
 
-            if (not parseDeclaration()) {
+            if (!parseDeclaration()) {
                 recoverFromError();
             }
 
             return parse();
 
         case GenToken::CURLY_OPENING:
-            if (not parseBlockDefinition()) {
+            if (!parseBlockDefinition()) {
                 recoverFromError();
             }
 
@@ -33,7 +33,10 @@ namespace ccl::lex::parser
             return true;
 
         default:
-            parsingError("identifier or block definition (`{`)", token_id);
+            parsingError(
+                "unrecognizable action",
+                "use { `identifier` } to declare group of items or `identifier` = identifier | "
+                "'$STRING' to declare variable");
             recoverFromError();
             return parse();
         }
@@ -52,7 +55,9 @@ namespace ccl::lex::parser
             return parseDirectiveDeclaration();
 
         default:
-            parsingError("column (`:`) or assign (`=`)", token_id);
+            parsingError(
+                "bad rule or variable declaration declaration",
+                "use `:` to declare rule or `=` to declare variable");
             return false;
         }
     }
@@ -63,7 +68,7 @@ namespace ccl::lex::parser
         auto token = tokenizer.yield();
         auto token_id = token.getId();
 
-        if (token_id == GenToken::RULE_DECLARATION) {
+        if (GenToken::RULE_DECLARATION == token_id) {
             iterator_copy.setEnd(token.getRepr().end());
             checkRule(iterator_copy);
 
@@ -73,7 +78,7 @@ namespace ccl::lex::parser
             return true;
         }
 
-        parsingError("regular expression", token_id);
+        parsingError("expected rule declaration");
         return false;
     }
 
@@ -82,13 +87,13 @@ namespace ccl::lex::parser
         auto token = tokenizer.yield();
         auto token_id = token.getId();
 
-        if (token_id == GenToken::IDENTIFIER || token_id == GenToken::STRING) {
+        if (GenToken::IDENTIFIER == token_id || GenToken::STRING == token_id) {
             token_stack.push(std::move(token));
             completeDirectiveDeclaration();
             return true;
         }
 
-        parsingError("identifier", token_id);
+        parsingError("expected identifier or string ( '$CHARACTERS' )");
         return false;
     }
 
@@ -115,7 +120,7 @@ namespace ccl::lex::parser
 
         auto directive_repr = directive_value.getRepr();
 
-        if (directive_value.getId() == GenToken::STRING) {
+        if (GenToken::STRING == directive_value.getId()) {
             auto string_part_of_repr = directive_repr.substr(1, directive_repr.size() - 2);
             directives.emplace(directive.getRepr(), string_part_of_repr);
         } else {
@@ -128,7 +133,7 @@ namespace ccl::lex::parser
     auto CcllParser::checkRule(text::TextIterator &rule) -> void
     {
         try {
-            auto container = dot_item::Container{ std::move(rule), special_items, 2, true };
+            auto container = dot_item::Container{rule, special_items, 2, true};
         } catch (const UnrecoverableError & /* unused */) {}
     }
 
@@ -137,12 +142,12 @@ namespace ccl::lex::parser
         auto token = tokenizer.yield();
         auto token_id = token.getId();
 
-        if (token_id == GenToken::IDENTIFIER) {
+        if (GenToken::IDENTIFIER == token_id) {
             token_stack.push(std::move(token));
             return parseBlockEnding();
         }
 
-        parsingError("identifier", token_id);
+        parsingError("expected identifier after `{`", "add identifier");
         return false;
     }
 
@@ -151,12 +156,12 @@ namespace ccl::lex::parser
         auto token = tokenizer.yield();
         auto token_id = token.getId();
 
-        if (token_id == GenToken::CURLY_CLOSING) {
+        if (GenToken::CURLY_CLOSING == token_id) {
             completeBlock();
             return true;
         }
 
-        parsingError("expected block end (`}`)", token_id);
+        parsingError("expected `}` after identifier", "add `}`");
         return false;
     }
 
@@ -167,8 +172,8 @@ namespace ccl::lex::parser
 
         current_block = block_name.getRepr();
 
-        if (not blocks.contains(current_block)) {
-            blocks.insert({ current_block, { static_cast<u16>(last_block_id++), 0 } });
+        if (!blocks.contains(current_block)) {
+            blocks.insert({current_block, {as<u16>(last_block_id++), 0}});
         }
 
         expectRuleEnd();
@@ -184,7 +189,7 @@ namespace ccl::lex::parser
         case GenToken::NEW_LINE:
             break;
         default:
-            parsingError("new line or end of input", token_id);
+            parsingError("expected new line of end of input");
         }
     }
 
@@ -205,12 +210,8 @@ namespace ccl::lex::parser
         }
     }
 
-    auto CcllParser::parsingError(
-        string_view expected_types, GenToken given_token, string_view suggestion) -> void
+    auto CcllParser::parsingError(string_view message, string_view suggestion) -> void
     {
-        auto error_message =
-            fmt::format("expected {}, got {}", expected_types, GenToken::toString(given_token));
-
-        tokenizer.throwException(ExceptionCriticality::PANIC, error_message, suggestion);
+        tokenizer.throwException(ExceptionCriticality::PANIC, message, suggestion);
     }
 }// namespace ccl::lex::parser

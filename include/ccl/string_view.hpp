@@ -4,13 +4,14 @@
 #include <ccl/ccl.hpp>
 #include <numeric>
 #include <optional>
+#include <stdexcept>
 
 namespace ccl
 {
     template<typename T>
     constexpr auto strlen(T &&str) noexcept -> size_t
     {
-        return std::basic_string_view{ std::forward<T>(str) }.size();
+        return std::basic_string_view{std::forward<T>(str)}.size();
     }
 
     template<CharacterLiteral CharT>
@@ -39,33 +40,38 @@ namespace ccl
         static constexpr auto npos = std::string_view::npos;
 
     private:
-        pointer string{ nullptr };
-        size_t length{ 0 };
+        pointer string{nullptr};
+        size_t length{0};
 
     public:
         BasicStringView() noexcept = default;
 
         template<size_t N>
         constexpr explicit BasicStringView(const std::array<CharT, N> &array_) noexcept
-          : string{ array_.data() }, length{ array_.size() }
+          : string{array_.data()}
+          , length{array_.size()}
         {}
 
         constexpr BasicStringView(pointer string_, size_t length_) noexcept
-          : string{ string_ }, length{ length_ }
+          : string{string_}
+          , length{length_}
         {}
 
         constexpr BasicStringView(iterator first, iterator last) noexcept
-          : string{ first }, length{ distance(first, last) }
+          : string{first}
+          , length{distance(first, last)}
         {}
 
         // NOLINTNEXTLINE
         constexpr BasicStringView(const CharacterArray auto &str) noexcept
-          : string{ str }, length{ strlen(str) }
+          : string{str}
+          , length{strlen(str)}
         {}
 
         // NOLINTNEXTLINE
         constexpr BasicStringView(const StringLike<CharT> auto &str) noexcept
-          : string{ std::data(str) }, length{ std::size(str) }
+          : string{std::data(str)}
+          , length{std::size(str)}
         {}
 
         CCL_DECL auto size() const noexcept -> size_t
@@ -105,28 +111,28 @@ namespace ccl
 
         CCL_DECL auto rbegin() const noexcept -> reverse_iterator
         {
-            return reverse_iterator{ end() };
+            return reverse_iterator{end()};
         }
 
         CCL_DECL auto rend() const noexcept -> reverse_iterator
         {
-            return reverse_iterator{ begin() };
+            return reverse_iterator{begin()};
         }
 
         CCL_DECL auto crbegin() const noexcept -> reverse_iterator
         {
-            return reverse_iterator{ end() };
+            return reverse_iterator{end()};
         }
 
         CCL_DECL auto crend() const noexcept -> reverse_iterator
         {
-            return reverse_iterator{ begin() };
+            return reverse_iterator{begin()};
         }
 
         CCL_DECL auto substr(size_t first) const noexcept -> BasicStringView
         {
             first = first > size() ? size() : first;
-            return { begin() + first, begin() + size() };
+            return {begin() + first, begin() + size()};
         }
 
         CCL_DECL auto substr(size_t first, size_t len) const noexcept -> BasicStringView
@@ -134,7 +140,7 @@ namespace ccl
             auto last = first + len;
             first = first > size() ? size() : first;
             last = last > size() ? size() : last;
-            return { begin() + first, begin() + last };
+            return {begin() + first, begin() + last};
         }
 
         CCL_UNSAFE_VERSION
@@ -186,7 +192,7 @@ namespace ccl
         CCL_UNSAFE_VERSION
         CCL_DECL auto openCloseFind(CharT open, CharT close) const noexcept -> size_t
         {
-            auto passed_pairs = 0ZU;
+            auto passed_pairs = as<size_t>(0);
 
             auto elem = std::ranges::find_if(*this, [&passed_pairs, open, close](CharT chr) {
                 passed_pairs += (chr == open);
@@ -220,7 +226,7 @@ namespace ccl
                 return npos;
             }
 
-            auto elem = std::find(rbegin() + static_cast<long>(offset), rend(), chr);
+            auto elem = std::find(rbegin() + as<long>(offset), rend(), chr);
             return elem == rend() ? npos : distance(elem, rend()) - 1;
         }
 
@@ -234,6 +240,22 @@ namespace ccl
             }
 
             return result;
+        }
+
+        CCL_UNSAFE_VERSION
+        constexpr auto setLength(size_t new_length) -> void
+        {
+            length = new_length;
+        }
+
+        CCL_SAFE_VERSION
+        constexpr auto setLength(size_t new_length) -> void
+        {
+            if (new_length > length) {
+                throw std::invalid_argument{"New length is greater than the old one"};
+            }
+
+            setLength<UNSAFE>(new_length);
         }
 
         CCL_DECL auto startsWith(const StringLike<CharT> auto &str) const noexcept -> bool
@@ -257,17 +279,17 @@ namespace ccl
 
         CCL_DECL explicit operator std::basic_string<CharT>() const
         {
-            return { string, length };
+            return {string, length};
         }
 
         CCL_DECL explicit operator std::basic_string_view<CharT>() const noexcept
         {
-            return { string, length };
+            return {string, length};
         }
 
         CCL_DECL CCL_INLINE auto operator==(const CharT *other) const noexcept -> bool
         {
-            return this->operator==(BasicStringView{ other });
+            return this->operator==(BasicStringView{other});
         }
 
         CCL_DECL CCL_INLINE auto operator==(const StringLike<CharT> auto &other) const noexcept
@@ -279,7 +301,7 @@ namespace ccl
         CCL_DECL CCL_INLINE auto operator<=>(const CharT *other) const noexcept
             -> std::weak_ordering
         {
-            return this->operator<=>(BasicStringView{ other });
+            return this->operator<=>(BasicStringView{other});
         }
 
         CCL_DECL auto operator<=>(const StringLike<CharT> auto &other) const noexcept
@@ -287,7 +309,7 @@ namespace ccl
         {
             auto min_size = std::min(size(), std::size(other));
 
-            for (auto i = 0ZU; i != min_size; ++i) {
+            for (auto i = as<size_t>(0); i != min_size; ++i) {
                 if (this->operator[](i) != other[i]) {
                     return this->operator[](i) <=> other[i];
                 }
@@ -300,7 +322,7 @@ namespace ccl
         template<typename T>
         CCL_DECL static auto distance(T first, T last) noexcept -> size_t
         {
-            return static_cast<size_t>(std::distance(first, last));
+            return as<size_t>(std::distance(first, last));
         }
     };
 
@@ -314,31 +336,31 @@ namespace ccl
     {
         consteval auto operator""_sv(const char *string, size_t length) -> BasicStringView<char>
         {
-            return { string, length };
+            return {string, length};
         }
 
         consteval auto operator""_sv(const char8_t *string, size_t length)
             -> BasicStringView<char8_t>
         {
-            return { string, length };
+            return {string, length};
         }
 
         consteval auto operator""_sv(const char16_t *string, size_t length)
             -> BasicStringView<char16_t>
         {
-            return { string, length };
+            return {string, length};
         }
 
         consteval auto operator""_sv(const char32_t *string, size_t length)
             -> BasicStringView<char32_t>
         {
-            return { string, length };
+            return {string, length};
         }
 
         consteval auto operator""_sv(const wchar_t *string, size_t length)
             -> BasicStringView<wchar_t>
         {
-            return { string, length };
+            return {string, length};
         }
     }// namespace string_view_literals
 }// namespace ccl
@@ -346,9 +368,9 @@ namespace ccl
 template<>
 struct fmt::formatter<ccl::string_view> : fmt::formatter<std::string_view>
 {
-    auto format(const ccl::string_view &str, format_context &ctx)
+    auto format(const ccl::string_view &str, format_context &ctx) const
     {
-        return formatter<std::string_view>::format(static_cast<std::string_view>(str), ctx);
+        return formatter<std::string_view>::format(as<std::string_view>(str), ctx);
     }
 };
 

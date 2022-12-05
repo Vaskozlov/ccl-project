@@ -1,29 +1,21 @@
+#include <ccl/flatmap.hpp>
 #include <ccl/text/iterator_exception.hpp>
 
 namespace ccl
 {
-    auto ExceptionCriticalityDescription(ExceptionCriticality criticality) noexcept
+    constexpr static auto ExceptionDescription =
+        StaticFlatmap<ExceptionCriticality, std::string_view, 5>{
+            {ExceptionCriticality::SUGGESTION, "just a suggestion"},
+            {ExceptionCriticality::WARNING, "something, that should be fixed"},
+            {ExceptionCriticality::UNCRITICAL, "recoverable error"},
+            {ExceptionCriticality::CRITICAL,
+             "critical error, but continuation of scanning stage is possible"},
+            {ExceptionCriticality::PANIC, "critical error, no possible recovery"}};
+
+    auto exceptionCriticalityDescription(ExceptionCriticality criticality) noexcept
         -> std::string_view
     {
-        switch (criticality) {
-        case ExceptionCriticality::SUGGESTION:
-            return "just a suggestion";
-
-        case ExceptionCriticality::WARNING:
-            return "something, which should be fixed";
-
-        case ExceptionCriticality::UNCRITICAL:
-            return "recoverable error";
-
-        case ExceptionCriticality::CRITICAL:
-            return "critical error, but continuation of scanning stage is possible";
-
-        case ExceptionCriticality::PANIC:
-            return "critical error, no possible recovery";
-
-        default:
-            std::unreachable();
-        }
+        return ExceptionDescription.at(criticality);
     }
 }// namespace ccl
 
@@ -38,8 +30,8 @@ namespace ccl::text
 
     auto TextIteratorException::createFullMessage() const -> std::string
     {
-        auto full_message = fmt::format(
-            "Error occurred at: {}, message: {}\n{}\n", location, message, working_line);
+        auto full_message =
+            fmt::format("Error occurred at: {}, message: {}\n{}\n", location, message, workingLine);
 
         addArrowToError(full_message);
         addSuggestion(full_message);
@@ -57,7 +49,7 @@ namespace ccl::text
 
     auto TextIteratorException::addSuggestion(std::string &full_message) const -> void
     {
-        if (not suggestion.empty()) {
+        if (!suggestion.empty()) {
             full_message.append(fmt::format("\nSuggestion: {}", suggestion));
         }
     }

@@ -3,19 +3,21 @@
 namespace ccl::lex::dot_item
 {
     LogicalUnit::LogicalUnit(
-        UniquePtr<BasicItem> lhs_, UniquePtr<BasicItem> rhs_, LogicalOperation type_, size_t id_)
-      : BasicItem(id_), lhs_item(std::move(lhs_)), rhs_item(std::move(rhs_)),
-        logical_operation(type_)
+        UniquePtr<BasicItem> lhs_, UniquePtr<BasicItem> rhs_, LogicalOperation type_, Id id_)
+      : BasicItem{id_}
+      , rhsItem{std::move(lhs_)}
+      , lhsItem{std::move(rhs_)}
+      , logicalOperation{type_}
     {}
 
     auto LogicalUnit::empty() const noexcept -> bool
     {
-        return lhs_item->empty() && rhs_item->empty();
+        return rhsItem->empty() && lhsItem->empty();
     }
 
     auto LogicalUnit::scanIteration(const ForkedGenerator &text_iterator) const -> size_t
     {
-        switch (logical_operation) {
+        switch (logicalOperation) {
         case LogicalOperation::OR:
             return orIteration(text_iterator);
 
@@ -29,20 +31,22 @@ namespace ccl::lex::dot_item
 
     auto LogicalUnit::orIteration(const ForkedGenerator &text_iterator) const -> size_t
     {
-        return *lhs_item->scan(text_iterator)
-                    .or_else([this, &text_iterator]() { return rhs_item->scan(text_iterator); })
-                    .or_else([]() -> Optional<size_t> { return 0ZU; });
+        return *rhsItem->scan(text_iterator)
+                    .or_else([this, &text_iterator]() -> Optional<size_t> {
+                        return lhsItem->scan(text_iterator);
+                    })
+                    .or_else([]() -> Optional<size_t> { return 0; });
     }
 
     auto LogicalUnit::andIteration(const ForkedGenerator &text_iterator) const -> size_t
     {
-        const auto lhs = lhs_item->scan(text_iterator);
+        const auto lhs = rhsItem->scan(text_iterator);
 
-        if (not lhs.has_value()) {
+        if (!lhs.has_value()) {
             return 0;
         }
 
-        const auto rhs = rhs_item->scan(text_iterator);
+        const auto rhs = lhsItem->scan(text_iterator);
 
         if (rhs.has_value() && (lhs == rhs)) {
             return *rhs;

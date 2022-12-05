@@ -18,16 +18,16 @@ namespace ccl::lex::dot_item
 
     auto Repetition::parseNumber(TextIterator &text_iterator, char32_t terminator) -> size_t
     {
-        constexpr auto decimal_base = 10ZU;
+        constexpr auto decimal_base = as<size_t>(10);
 
-        auto result = 0ZU;
+        auto result = as<size_t>(0);
         text_iterator.moveToCleanChar();
 
         while (text_iterator.next() != terminator) {
             auto chr = text_iterator.getCurrentChar();
 
             if (isDigit(chr)) {
-                result = result * decimal_base + static_cast<size_t>(chr - '0');
+                result = result * decimal_base + as<size_t>(chr - '0');
                 continue;
             }
 
@@ -58,7 +58,7 @@ namespace ccl::lex::dot_item
             "({})",
             from, to);
 
-        text_iterator.throwCriticalError(AnalysationStage::LEXICAL_ANALYSIS, message);
+        text_iterator.throwCriticalError(AnalysisStage::LEXICAL_ANALYSIS, message);
     }
 
     auto Repetition::throwUnexpectedCharacter(TextIterator &text_iterator, char32_t chr) -> void
@@ -68,15 +68,15 @@ namespace ccl::lex::dot_item
 
         auto message = fmt::format("expected a number, but found `{}`", buffer);
 
-        text_iterator.throwPanicError(AnalysationStage::LEXICAL_ANALYSIS, message);
-        throw UnrecoverableError{ "unrecoverable error in Repetition" };
+        text_iterator.throwPanicError(AnalysisStage::LEXICAL_ANALYSIS, message);
+        throw UnrecoverableError{"unrecoverable error in Repetition"};
     }
 
     auto Repetition::throwRangeBeginException(TextIterator &text_iterator) -> void
     {
         text_iterator.throwPanicError(
-            AnalysationStage::LEXICAL_ANALYSIS,
+            AnalysisStage::LEXICAL_ANALYSIS,
             "expected '{' at the beginning of repetition range"_sv);
-        throw UnrecoverableError{ "unrecoverable error in Repetition" };
+        throw UnrecoverableError{"unrecoverable error in Repetition"};
     }
 }// namespace ccl::lex::dot_item

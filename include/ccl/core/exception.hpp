@@ -9,17 +9,19 @@
     struct name : base_exception                                                                   \
     {                                                                                              \
         template<typename... Ts>                                                                   \
-        explicit name(Ts &&...args) : base_exception(std::forward<Ts>(args)...)                    \
-        {}                                                                                         \
+        explicit name(Ts &&...args)                                                                \
+          : base_exception{std::forward<Ts>(args)...}                                              \
+        {                                                                                          \
+        }                                                                                          \
     }
 
 #define CCL_SAFE_VERSION                                                                           \
     template<UsageMode Mode = SAFE>                                                                \
-    requires(Mode == SAFE)
+        requires(Mode == SAFE)
 
 #define CCL_UNSAFE_VERSION                                                                         \
     template<UsageMode Mode>                                                                       \
-    requires(Mode == UNSAFE)
+        requires(Mode == UNSAFE)
 
 namespace ccl
 {

@@ -10,9 +10,9 @@ namespace ccl::text
     class Location
     {
         string_view filename{};
-        size_t line{ 1 };
-        size_t column{ 0 };
-        size_t real_column{ 0 };
+        size_t line{1};
+        size_t column{0};
+        size_t real_column{0};
 
     public:
         Location() noexcept = default;
@@ -20,7 +20,10 @@ namespace ccl::text
         constexpr explicit Location(
             string_view filename_, size_t line_ = 1, size_t column_ = 0,
             size_t real_column_ = 0) noexcept
-          : filename(filename_), line(line_), column(column_), real_column(real_column_)
+          : filename{filename_}
+          , line{line_}
+          , column{column_}
+          , real_column{real_column_}
         {}
 
         CCL_DECL auto getLine() const noexcept -> size_t
@@ -45,7 +48,7 @@ namespace ccl::text
 
         constexpr auto intermediateNext(char chr) noexcept -> void
         {
-            if (land(not isEoF(chr), chr != '\n')) {
+            if (land(!isEoF(chr), '\n' != chr)) {
                 ++real_column;
             }
         }
@@ -54,7 +57,7 @@ namespace ccl::text
             if (chr == U'\n') {
                 ++line;
                 column = real_column = 0;
-            } else if (not isEoF(chr)) {
+            } else if (!isEoF(chr)) {
                 ++column;
             }
         }

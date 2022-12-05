@@ -1,3 +1,5 @@
+#include "ccl/lex/analyzer_generator/analyzer_generator.hpp"
+#include "ccl/lex/token.hpp"
 #include <ccl/lex/dot_item/container.hpp>
 #include <ccl/lex/dot_item/sequence.hpp>
 #include <ccl/lex/dot_item/union.hpp>
@@ -7,7 +9,8 @@ namespace ccl::lex::dot_item
     using namespace ccl::string_view_literals;
 
     Container::RuleParser::RuleParser(Container &container_, TextIterator &rule_iterator_)
-      : container(container_), ruleIterator(rule_iterator_)
+      : container{container_}
+      , ruleIterator{rule_iterator_}
     {
         checkId();
 
@@ -23,7 +26,7 @@ namespace ccl::lex::dot_item
 
     auto Container::RuleParser::hasMovedToTheNextChar() -> bool
     {
-        return not isEoF(ruleIterator.next());
+        return !isEoF(ruleIterator.next());
     }
 
     // NOLINTNEXTLINE recursive function
@@ -59,7 +62,7 @@ namespace ccl::lex::dot_item
             break;
 
         case U'{':
-            addRepetition(Repetition{ ruleIterator });
+            addRepetition(Repetition{ruleIterator});
             break;
 
         case U'^':
@@ -71,11 +74,11 @@ namespace ccl::lex::dot_item
             break;
 
         case U'&':
-            startLogicalOperationConstruction(LogicalOperation::AND);
+            startLogicalOperator(LogicalOperation::AND);
             break;
 
         case U'|':
-            startLogicalOperationConstruction(LogicalOperation::OR);
+            startLogicalOperator(LogicalOperation::OR);
             break;
 
         default:
@@ -84,7 +87,7 @@ namespace ccl::lex::dot_item
         }
     }
 
-    auto Container::RuleParser::startLogicalOperationConstruction(LogicalOperation type) -> void
+    auto Container::RuleParser::startLogicalOperator(LogicalOperation type) -> void
     {
         checkThereIsLhsItem();
         logicalOperation = type;
@@ -95,7 +98,7 @@ namespace ccl::lex::dot_item
 
     auto Container::RuleParser::tryToFinishLogicalOperation() -> void
     {
-        if (constructedLhs.has_value() && not rhsItemConstructed) {
+        if (constructedLhs.has_value() && !rhsItemConstructed) {
             rhsItemConstructed = true;
         } else if (constructedLhs.has_value() && rhsItemConstructed) {
             emplaceItem(constructLogicalUnit());
@@ -147,17 +150,25 @@ namespace ccl::lex::dot_item
 
     auto Container::RuleParser::emplaceItem(UniquePtr<BasicItem> item) -> void
     {
-        if (not item->canBeOptimized()) {
-            auto item_repetition = item->getRepetition();
-
-            neverRecognizedSuggestion(
-                ruleIterator, item_repetition.from == 0 && not isReversed() && not item->empty());
-
-            alwaysRecognizedSuggestion(ruleIterator, not isReversed() && item->empty());
-
+        if (!item->canBeOptimized()) {
+            finishPreviousItemInitialization();
             items.emplace_back(std::move(item));
         }
     }
+
+    auto Container::RuleParser::finishPreviousItemInitialization() -> void
+    {
+        if (items.empty()) {
+            return;
+        }
+
+        const auto *item = items.back().get();
+        auto item_repetition = item->getRepetition();
+
+        neverRecognizedSuggestion(ruleIterator, item_repetition.to == 0);
+        alwaysRecognizedSuggestion(ruleIterator, item_repetition.to != 0 && item->empty());
+    }
+
 
     auto Container::RuleParser::addPrefixPostfix() -> void
     {
@@ -192,20 +203,20 @@ namespace ccl::lex::dot_item
 
     auto Container::RuleParser::makeSpecial() -> void
     {
-        if (not items.empty()) {
+        if (!items.empty()) {
             throwUnableToApply("special must be applied before anything else");
             return;
         }
 
-        container.flags.is_special = true;
+        container.flags.isSpecial = true;
     }
 
     auto Container::RuleParser::checkId() const -> void
     {
-        if (ReservedTokenType::contains(getId())) {
+        if (getId() == std::to_underlying(ReservedTokenType::BAD_TOKEN) ||
+            getId() == std::to_underlying(ReservedTokenType::EOI)) {
             throw UnrecoverableError{
-                "reserved token type (0 and 1 are reserved for EOI and BAD TOKEN)"
-            };
+                "reserved token type (0 and 1 are reserved for EOI and BAD TOKEN)"};
         }
     }
 
@@ -234,12 +245,12 @@ namespace ccl::lex::dot_item
         const auto are_postfixes_correct = std::all_of(
             postfix_elem, items.cend(), [](const auto &elem) { return elem->hasPostfix(); });
 
-        if (not are_postfixes_correct) {
+        if (!are_postfixes_correct) {
             throwUnableToApply("item without postfix modifier exists after items with it");
             return;
         }
 
-        if (constructedLhs.has_value() && not rhsItemConstructed) {
+        if (constructedLhs.has_value() && !rhsItemConstructed) {
             throwUnableToApply("no rhs items to apply operation");
             return;
         }
@@ -249,16 +260,16 @@ namespace ccl::lex::dot_item
             return;
         }
 
-        BasicItem::neverRecognizedSuggestion(ruleIterator, items.empty() && not isReversed());
+        finishPreviousItemInitialization();
+        BasicItem::neverRecognizedSuggestion(ruleIterator, items.empty() && !isReversed());
         BasicItem::alwaysRecognizedSuggestion(ruleIterator, items.empty() && isReversed());
     }
 
     auto Container::RuleParser::findContainerEnd(string_view repr) -> size_t
     {
         return *repr.openCloseFind('(', ')').or_else([this]() -> Optional<size_t> {
-            ruleIterator.throwPanicError(
-                AnalysationStage::LEXICAL_ANALYSIS, "unterminated dot item");
-            throw UnrecoverableError{ "unrecoverable error in ContainerType" };
+            ruleIterator.throwPanicError(AnalysisStage::LEXICAL_ANALYSIS, "unterminated dot item");
+            throw UnrecoverableError{"unrecoverable error in ContainerType"};
         });
     }
 
@@ -271,7 +282,7 @@ namespace ccl::lex::dot_item
 
     auto Container::RuleParser::checkAbilityToCreatePrefixPostfix() -> void
     {
-        if (not container.flags.is_main) {
+        if (!container.flags.isMain) {
             throwUnableToApply(
                 "you are not allowed to create prefixes or postfixes inside other containers");
             return;
@@ -300,8 +311,8 @@ namespace ccl::lex::dot_item
     {
         auto message = fmt::format("unable to apply: {}", reason);
 
-        ruleIterator.throwCriticalError(AnalysationStage::LEXICAL_ANALYSIS, message, suggestion);
-        throw UnrecoverableError{ "unrecoverable error in ContainerType" };
+        ruleIterator.throwCriticalError(AnalysisStage::LEXICAL_ANALYSIS, message, suggestion);
+        throw UnrecoverableError{"unrecoverable error in ContainerType"};
     }
 
     auto Container::RuleParser::throwUndefinedAction() -> void
@@ -311,8 +322,8 @@ namespace ccl::lex::dot_item
             "use `!` to declare special symbol, `\"` for string, `[` for unions, `(` for "
             "containers "_sv;
 
-        ruleIterator.throwPanicError(AnalysationStage::LEXICAL_ANALYSIS, message, suggestion);
-        throw UnrecoverableError{ "unrecoverable error in ContainerType" };
+        ruleIterator.throwPanicError(AnalysisStage::LEXICAL_ANALYSIS, message, suggestion);
+        throw UnrecoverableError{"unrecoverable error in ContainerType"};
     }
 
     auto BasicItem::SpecialItems::checkForSpecial(const ForkedGenerator &text_iterator) const
@@ -320,7 +331,7 @@ namespace ccl::lex::dot_item
     {
         return std::ranges::any_of(special_items, [&text_iterator](const auto &special_item) {
             auto scan_result = special_item.scan(text_iterator);
-            return scan_result != 0ZU;
+            return scan_result != 0;
         });
     }
 

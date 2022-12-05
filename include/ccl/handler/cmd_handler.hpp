@@ -33,8 +33,8 @@ namespace ccl::handler
 
     class Cmd::CmdFormatter
     {
-        std::string formatting_buffer{};
-        string_view working_line{};
+        std::string formattingBuffer{};
+        string_view workingLine{};
         string_view filename{};
         string_view message{};
         string_view suggestion{};

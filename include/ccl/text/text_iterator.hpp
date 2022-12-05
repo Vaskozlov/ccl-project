@@ -96,80 +96,80 @@ namespace ccl::text
 
         auto utfError(char /* unused */) -> void
         {
-            throwPanicError(AnalysationStage::LEXICAL_ANALYSIS, "invalid utf symbol");
-            throw UnrecoverableError{ "unable to recover, because of invalid utf symbol" };
+            throwPanicError(AnalysisStage::LEXICAL_ANALYSIS, "invalid utf symbol");
+            throw UnrecoverableError{"unable to recover, because of invalid utf symbol"};
         }
 
         auto throwSuggestion(
-            AnalysationStage stage, const TextIterator &iterator_location,
-            const string_view &message, const string_view &suggestion = {}) -> void
+            AnalysisStage stage, const TextIterator &iterator_location, const string_view &message,
+            const string_view &suggestion = {}) -> void
         {
             throwToHandle(
                 iterator_location, ExceptionCriticality::SUGGESTION, stage, message, suggestion);
         }
 
         auto throwWarning(
-            AnalysationStage stage, const TextIterator &iterator_location,
-            const string_view &message, const string_view &suggestion = {}) -> void
+            AnalysisStage stage, const TextIterator &iterator_location, const string_view &message,
+            const string_view &suggestion = {}) -> void
         {
             throwToHandle(
                 iterator_location, ExceptionCriticality::WARNING, stage, message, suggestion);
         }
 
         auto throwUncriticalError(
-            AnalysationStage stage, const TextIterator &iterator_location,
-            const string_view &message, const string_view &suggestion = {}) -> void
+            AnalysisStage stage, const TextIterator &iterator_location, const string_view &message,
+            const string_view &suggestion = {}) -> void
         {
             throwToHandle(
                 iterator_location, ExceptionCriticality::SUGGESTION, stage, message, suggestion);
         }
 
         auto throwCriticalError(
-            AnalysationStage stage, const TextIterator &iterator_location,
-            const string_view &message, const string_view &suggestion = {}) -> void
+            AnalysisStage stage, const TextIterator &iterator_location, const string_view &message,
+            const string_view &suggestion = {}) -> void
         {
             throwToHandle(
                 iterator_location, ExceptionCriticality::CRITICAL, stage, message, suggestion);
         }
 
         auto throwPanicError(
-            AnalysationStage stage, const TextIterator &iterator_location,
-            const string_view &message, const string_view &suggestion = {}) -> void
+            AnalysisStage stage, const TextIterator &iterator_location, const string_view &message,
+            const string_view &suggestion = {}) -> void
         {
             throwToHandle(
                 iterator_location, ExceptionCriticality::PANIC, stage, message, suggestion);
         }
 
         auto throwSuggestion(
-            AnalysationStage stage, const string_view &message, const string_view &suggestion = {})
+            AnalysisStage stage, const string_view &message, const string_view &suggestion = {})
             -> void
         {
             throwToHandle(*this, ExceptionCriticality::SUGGESTION, stage, message, suggestion);
         }
 
         auto throwWarning(
-            AnalysationStage stage, const string_view &message, const string_view &suggestion = {})
+            AnalysisStage stage, const string_view &message, const string_view &suggestion = {})
             -> void
         {
             throwToHandle(*this, ExceptionCriticality::WARNING, stage, message, suggestion);
         }
 
         auto throwUncriticalError(
-            AnalysationStage stage, const string_view &message, const string_view &suggestion = {})
+            AnalysisStage stage, const string_view &message, const string_view &suggestion = {})
             -> void
         {
-            throwToHandle(*this, ExceptionCriticality::SUGGESTION, stage, message, suggestion);
+            throwToHandle(*this, ExceptionCriticality::UNCRITICAL, stage, message, suggestion);
         }
 
         auto throwCriticalError(
-            AnalysationStage stage, const string_view &message, const string_view &suggestion = {})
+            AnalysisStage stage, const string_view &message, const string_view &suggestion = {})
             -> void
         {
             throwToHandle(*this, ExceptionCriticality::CRITICAL, stage, message, suggestion);
         }
 
         auto throwPanicError(
-            AnalysationStage stage, const string_view &message, const string_view &suggestion = {})
+            AnalysisStage stage, const string_view &message, const string_view &suggestion = {})
             -> void
         {
             throwToHandle(*this, ExceptionCriticality::PANIC, stage, message, suggestion);
@@ -177,7 +177,7 @@ namespace ccl::text
 
         auto throwToHandle(
             const TextIterator &iterator_location, ExceptionCriticality criticality,
-            AnalysationStage stage, const string_view &message, const string_view &suggestion = {})
+            AnalysisStage stage, const string_view &message, const string_view &suggestion = {})
             -> void;
     };
 
@@ -201,7 +201,8 @@ namespace ccl::text
         explicit EscapingSymbolizer(
             TextIterator &text_iterator_,
             extra_symbols_t extra_symbols_) noexcept
-          : extra_symbols{ std::move(extra_symbols_) }, text_iterator{ text_iterator_ }
+          : extra_symbols{std::move(extra_symbols_)}
+          , text_iterator{text_iterator_}
         {}
 
         ~EscapingSymbolizer() = default;
@@ -231,7 +232,7 @@ namespace ccl::text
 
         NotationEscapingSymbolizer(
             TextIterator &text_iterator_, u16 max_times_, u16 notation_power_,
-            bool need_all_chars_);
+            bool are_all_chars_required_);
 
         ~NotationEscapingSymbolizer() = default;
 
@@ -241,20 +242,20 @@ namespace ccl::text
         [[nodiscard]] auto isOutOfNotation(char32_t chr) const -> bool;
 
         auto checkNotation() const -> void;
-        auto checkAllCharsUsage(u16 chars_count) const -> void;
+        auto checkAllCharsUsage(size_t chars_count) const -> void;
 
-        auto throwNotEnoughCharsException(u16 chars_count) const -> void;
+        auto throwNotEnoughCharsException(size_t chars_count) const -> void;
 
-        [[nodiscard]] auto createSuggestionNotEnoughChars(u16 chars_count) const -> std::string;
+        [[nodiscard]] auto createSuggestionNotEnoughChars(size_t chars_count) const -> std::string;
 
-        auto insertExtraZerosToNotEnoughMessage(u16 chars_count, std::string &message) const
+        auto insertExtraZerosToNotEnoughMessage(size_t chars_count, std::string &message) const
             -> void;
 
-        TextIterator &text_iterator;
+        TextIterator &textIterator;
         char32_t result{};
-        u16 max_times;
-        u16 notation_power;
-        bool need_all_chars;
+        u16 maximumSymbols;
+        u16 notationPower;
+        bool areAllCharsRequired;
     };
 }// namespace ccl::text
 

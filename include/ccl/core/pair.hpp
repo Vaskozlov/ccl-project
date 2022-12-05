@@ -16,7 +16,9 @@ namespace ccl
 
         TrivialPair() = default;
 
-        constexpr TrivialPair(T1 first_, T2 second_) noexcept : first(first_), second(second_)
+        constexpr TrivialPair(T1 first_elem, T2 second_elem) noexcept
+          : first{first_elem}
+          , second{second_elem}
         {}
 
         constexpr auto operator<=>(const TrivialPair &other) const noexcept

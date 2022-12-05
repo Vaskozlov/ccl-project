@@ -12,5 +12,5 @@ BOOST_AUTO_TEST_CASE(StringViewRfind)
     BOOST_ASSERT(cerb_string.rfind('H').value() == std_string.rfind('H'));
     BOOST_ASSERT(cerb_string.rfind(',').value() == std_string.rfind(','));
     BOOST_ASSERT(cerb_string.rfind('!').value() == std_string.rfind('!'));
-    BOOST_ASSERT(not cerb_string.rfind('A').has_value());
+    BOOST_ASSERT(!cerb_string.rfind('A').has_value());
 }

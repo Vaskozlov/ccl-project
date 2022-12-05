@@ -6,8 +6,7 @@ using namespace std::string_view_literals;
 
 BOOST_AUTO_TEST_CASE(FlatmapIndexing)
 {
-    static constexpr auto flatmap =
-        StaticFlatmap<int, int, 10>{ { 10, 20 }, { 20, 30 }, { 30, 40 } };
+    static constexpr auto flatmap = StaticFlatmap<int, int, 10>{{10, 20}, {20, 30}, {30, 40}};
 
     BOOST_CHECK_EQUAL(flatmap[10], 20);
     BOOST_CHECK_EQUAL(flatmap[20], 30);

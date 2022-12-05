@@ -2,15 +2,15 @@
 #define CCL_PROJECT_CCL_HPP
 
 #if !defined(__cplusplus) || !(__cplusplus > 202002L)
-#    error CCL requires at least C++2b
+#    error CCL requires C++23
 #endif /* minimum requirements */
 
 #include <algorithm>
 #include <array>
 
+#include <ccl/core/as.hpp>
 #include <ccl/core/concepts.hpp>
 #include <ccl/core/defines.hpp>
-#include <ccl/core/enum.hpp>
 #include <ccl/core/exception.hpp>
 #include <ccl/core/operations.hpp>
 #include <ccl/core/ranges.hpp>

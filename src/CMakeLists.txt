@@ -4,9 +4,6 @@ file(
         "src/ccl/*.cpp"
 )
 
-add_compile_definitions(BOOST_NO_CXX98_FUNCTION_BASE=false)
-
-
 if (CREATE_STATIC_LIBRARY)
     add_library(ccl STATIC ${CCL_OBJECTS})
 else ()
@@ -17,7 +14,7 @@ add_dependencies(ccl fmt::fmt)
 
 target_link_libraries(
         ccl
-        fmt::fmt
+        fmt::fmt-header-only
 )
 
 if (${PRECOMPILED_HEADERS})
@@ -27,8 +24,6 @@ if (${PRECOMPILED_HEADERS})
             "pch.hpp"
     )
 endif ()
-
-include(programs/CMakeLists.txt)
 
 target_include_directories(ccl
         PUBLIC

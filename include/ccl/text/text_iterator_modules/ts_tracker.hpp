@@ -28,7 +28,7 @@ namespace ccl::text
             clearIfNeed();
 
             if (isTabOrSpace(chr)) {
-                tabsAnsSpaces.push_back(static_cast<char>(chr));
+                tabsAnsSpaces.push_back(as<char>(chr));
             } else {
                 needToClear = true;
             }
@@ -47,7 +47,7 @@ namespace ccl::text
 
         CCL_DECL static auto isTabOrSpace(char32_t chr) noexcept -> bool
         {
-            return lor(chr == '\t', chr == ' ');
+            return lor('\t' == chr, ' ' == chr);
         }
 
         std::string tabsAnsSpaces{};

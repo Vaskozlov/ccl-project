@@ -17,34 +17,36 @@ namespace ccl::lex::dot_item
     private:
         using typename BasicItem::TextIterator;
 
-        std::string sequence_value{};
-        string_view str_begin{};
-        string_view str_end{};
+        std::string sequenceValue{};
+        string_view sequenceBegin{};
+        string_view sequenceEnd{};
 
     public:
         Sequence(
-            SequenceFlags flags_, const string_view &str_begin_, const string_view &str_end,
-            TextIterator &rule_iterator_, size_t id_ = 0);
+            SequenceFlags sequence_flags, const string_view &sequence_begin,
+            const string_view &sequence_end, TextIterator &rule_iterator, Id item_id = 0);
 
         Sequence(
-            SequenceFlags flags_, const string_view &str_begin_, TextIterator &rule_iterator_,
-            size_t id_ = 0)
-          : Sequence(flags_, str_begin_, str_begin_, rule_iterator_, id_)
+            SequenceFlags sequence_flags, const string_view &sequence_begin_and_end,
+            TextIterator &rule_iterator, Id item_id = 0)
+          : Sequence{
+                sequence_flags, sequence_begin_and_end, sequence_begin_and_end, rule_iterator,
+                item_id}
         {}
 
         [[nodiscard]] auto getValue() noexcept -> std::string &
         {
-            return sequence_value;
+            return sequenceValue;
         }
 
         [[nodiscard]] auto getValue() const noexcept -> const std::string &
         {
-            return sequence_value;
+            return sequenceValue;
         }
 
         [[nodiscard]] auto empty() const noexcept -> bool final
         {
-            return sequence_value.empty();
+            return sequenceValue.empty();
         }
 
     private:

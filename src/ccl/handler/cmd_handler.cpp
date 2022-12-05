@@ -5,15 +5,19 @@ namespace ccl::handler
     Cmd Cmd::defaultCmdHandler;
 
     Cmd::CmdFormatter::CmdFormatter(const ExceptionT *exception) noexcept
-      : working_line(exception->getWorkingLine()), filename(exception->getFilename()),
-        message(exception->getMessage()), suggestion(exception->getSuggestion()),
-        length(exception->getLength()), line(exception->getLine()), column(exception->getColumn())
+      : workingLine{exception->getWorkingLine()}
+      , filename{exception->getFilename()}
+      , message{exception->getMessage()}
+      , suggestion{exception->getSuggestion()}
+      , length{exception->getLength()}
+      , line{exception->getLine()}
+      , column{exception->getColumn()}
     {}
 
     template<fmt::color Color, typename HandleType>
     auto Cmd::CmdFormatter::formatErrorCategory(HandleType &&handle_type) -> void
     {
-        format_to(std::back_inserter(formatting_buffer), fg(Color), handle_type);
+        format_to(std::back_inserter(formattingBuffer), fg(Color), handle_type);
     }
 
     template<fmt::color Color, typename HandleType>
@@ -29,7 +33,7 @@ namespace ccl::handler
 
         formatSuggestion(arrow_position);
 
-        return formatting_buffer;
+        return formattingBuffer;
     }
 
     auto Cmd::onHandle(const ExceptionT *instance) -> void
@@ -52,7 +56,7 @@ namespace ccl::handler
     template<fmt::color Color, typename HandleType>
     auto Cmd::formatAndPrint(const ExceptionT *value, HandleType &&handle_type) -> void
     {
-        auto formatter = CmdFormatter{ value };
+        auto formatter = CmdFormatter{value};
         fmt::print("{}\n", formatter.format<Color>(std::forward<HandleType>(handle_type)));
         std::cout.flush();
     }

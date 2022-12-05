@@ -13,7 +13,7 @@ BOOST_AUTO_TEST_SUITE(ContainerSequence)
 
 BOOST_AUTO_TEST_CASE(SequenceWithOneCharBegin)
 {
-    auto text_iterator = TextIterator{ R"("Hello, \"World\"!")" };
+    auto text_iterator = TextIterator{R"("Hello, \"World\"!")"};
     text_iterator.next();
 
     auto string_item = Sequence({}, "\"", text_iterator);
@@ -25,10 +25,10 @@ BOOST_AUTO_TEST_CASE(SequenceWithOneCharBegin)
 
 BOOST_AUTO_TEST_CASE(SequenceWithTreeCharBegin)
 {
-    auto text_iterator = TextIterator{ "\"\"\"Hello,\n    \"World\"!\"\"\"" };
+    auto text_iterator = TextIterator{"\"\"\"Hello,\n    \"World\"!\"\"\""};
     text_iterator.next();
 
-    auto string_item = Sequence({ .multiline = true }, R"(""")", text_iterator);
+    auto string_item = Sequence({.multiline = true}, R"(""")", text_iterator);
     DEBUG_VAR &&string = string_item.getValue();
 
     BOOST_ASSERT(string == "Hello,\n    \"World\"!");
@@ -37,7 +37,7 @@ BOOST_AUTO_TEST_CASE(SequenceWithTreeCharBegin)
 
 BOOST_AUTO_TEST_CASE(UnterminatedSequence)
 {
-    auto text_iterator = TextIterator{ R"("Hello, World!)" };
+    auto text_iterator = TextIterator{R"("Hello, World!)"};
     text_iterator.next();
 
     BOOST_CHECK_EXCEPTION(
@@ -54,7 +54,7 @@ BOOST_AUTO_TEST_CASE(UnterminatedSequence)
 
 BOOST_AUTO_TEST_CASE(SequenceReachedNewLine)
 {
-    auto text_iterator = TextIterator{ "\"Hello, World!\n\"" };
+    auto text_iterator = TextIterator{"\"Hello, World!\n\""};
     text_iterator.next();
 
     BOOST_CHECK_EXCEPTION(

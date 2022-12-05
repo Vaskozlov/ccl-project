@@ -32,7 +32,7 @@ target_link_libraries(
 if (${PRECOMPILED_HEADER})
     target_precompile_headers(
             ccl-bench
-            PUBLIC
-            "pch.hpp"
+            REUSE_FROM
+            ccl-catch
     )
 endif ()

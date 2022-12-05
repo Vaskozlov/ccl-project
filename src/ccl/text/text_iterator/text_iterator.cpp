@@ -6,7 +6,10 @@ namespace ccl::text
         const string_view &input,
         ExceptionHandler &exception_handler_,
         const string_view &filename)
-      : Base(input), location(filename), line_tracker(input), exception_handler(&exception_handler_)
+      : Base{input}
+      , location{filename}
+      , line_tracker{input}
+      , exception_handler{&exception_handler_}
     {}
 
     auto TextIterator::nextRawCharWithEscapingSymbols(const extra_symbols_t &extra_symbols)
@@ -15,13 +18,13 @@ namespace ccl::text
         auto escaping = false;
         auto chr = next();
 
-        if (chr == U'\\') {
+        if (U'\\' == chr) {
             escaping = true;
             chr = doEscapeSymbolizing(*this, extra_symbols);
         }
 
         Base::setCurrentChar(chr);
-        return { escaping, chr };
+        return {escaping, chr};
     }
 
     auto TextIterator::doEscapeSymbolizing(
@@ -40,13 +43,13 @@ namespace ccl::text
 
     auto TextIterator::throwToHandle(
         const TextIterator &iterator_location, ExceptionCriticality criticality,
-        AnalysationStage stage, const string_view &message, const string_view &suggestion) -> void
+        AnalysisStage stage, const string_view &message, const string_view &suggestion) -> void
     {
         auto exception = TextIteratorException(
             criticality, stage, iterator_location.getLocation(), 1,
             iterator_location.getWorkingLine(), message, suggestion);
 
-        if (exception_handler == nullptr) {
+        if (nullptr == exception_handler) {
             throw std::move(exception);
         }
 

@@ -9,7 +9,7 @@ BOOST_AUTO_TEST_CASE(BasicTextIteratorRawIteration)
 {
     auto input = "Hello, \t\nWorld! \u00FF \uFFFF \U000FFFFF"_sv;
     auto expected = U"Hello, \t\nWorld! \u00FF \uFFFF \U000FFFFF"_sv;
-    auto text_iterator = BasicTextIterator{ input };
+    auto text_iterator = BasicTextIterator{input};
 
     for (DEBUG_VAR &&chr : expected) {
         DEBUG_VAR sym = text_iterator.next();

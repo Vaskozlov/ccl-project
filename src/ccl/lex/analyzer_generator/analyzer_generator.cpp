@@ -8,18 +8,17 @@
 namespace ccl::lex
 {
     // NOLINTNEXTLINE global variable
-    LexicalAnalyzer AnalyzerGenerator::LexForGenerator{
+    LexicalAnalyzer AnalyzerGenerator::lexForGenerator{
         handler::Cmd::instance(),
-        { { GenToken::IDENTIFIER, "[a-zA-Z_]+[a-zA-Z0-9_]*" },
-          { GenToken::INTEGER, "[0-9]+" },
-          { GenToken::RULE_DECLARATION, R"(["!'([]+[\n]*^)" },
-          { GenToken::STRING, R"( ! "\'" ([']^ | "\\\'" )* "\'" )" },
-          { GenToken::NEW_LINE, R"(! "\n")" },
-          { GenToken::COLUMN, R"(! ":")" },
-          { GenToken::ASSIGN, R"(! "=")" },
-          { GenToken::CURLY_OPENING, R"(! "{")" },
-          { GenToken::CURLY_CLOSING, R"(! "}")" } }
-    };
+        {{GenToken::IDENTIFIER, "[a-zA-Z_]+[a-zA-Z0-9_]*"},
+         {GenToken::INTEGER, "[0-9]+"},
+         {GenToken::RULE_DECLARATION, R"(["!'([]+[\n]*^)"},
+         {GenToken::STRING, R"( ! "\'" ([']^ | "\\\'" )* "\'" )"},
+         {GenToken::NEW_LINE, R"(! "\n")"},
+         {GenToken::COLUMN, R"(! ":")"},
+         {GenToken::ASSIGN, R"(! "=")"},
+         {GenToken::CURLY_OPENING, R"(! "{")"},
+         {GenToken::CURLY_CLOSING, R"(! "}")"}}};
 
     static auto readFile(const std::filesystem::path &path) -> std::string
     {
@@ -49,8 +48,8 @@ namespace ccl::lex
     auto AnalyzerGenerator::generateStaticVersion(string_view filename, string_view text)
         -> Pair<std::string, std::string>
     {
-        auto tokenizer = LexForGenerator.getTokenizer(text, filename);
-        auto static_generator = gen::StaticGenerator{ tokenizer };
+        auto tokenizer = lexForGenerator.getTokenizer(text, filename);
+        auto static_generator = gen::StaticGenerator{tokenizer};
         return static_generator.get();
     }
 }// namespace ccl::lex

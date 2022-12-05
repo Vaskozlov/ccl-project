@@ -31,6 +31,7 @@ namespace ccl
     using u32 = std::uint32_t;
     using u64 = std::uint64_t;
 
+    using Id = std::size_t;
     using ssize_t = std::intmax_t;
 
     using f32 = std::float_t;
@@ -70,7 +71,7 @@ namespace ccl
     template<typename Key, typename Value>
     using Flatmap = boost::container::flat_map<Key, Value>;
 
-    template<typename T, size_t N>
+    template<typename T, size_t N = 4>
     using SmallVector = boost::container::small_vector<T, N>;
 #else
     template<typename T>
@@ -85,7 +86,7 @@ namespace ccl
     template<typename Key, typename Value>
     using Flatmap = std::map<Key, Value>;
 
-    template<typename T, size_t N>
+    template<typename T, size_t N = 4>
     using SmallVector = std::vector<T>;
 #endif
 
@@ -108,8 +109,7 @@ namespace ccl
         requires std::derived_from<Constructed, Target>
     constexpr auto makeUnique(Ts &&...args) -> UniquePtr<Target>
     {
-        return UniquePtr<Target>{ static_cast<Target *>(
-            new Constructed(std::forward<Ts>(args)...)) };
+        return UniquePtr<Target>{as<Target *>(new Constructed(std::forward<Ts>(args)...))};
     }
 
     template<typename T, typename... Ts>
@@ -122,30 +122,39 @@ namespace ccl
         requires std::derived_from<Constructed, Target>
     constexpr auto makeShared(Ts &&...args) -> SharedPtr<Target>
     {
-        return SharedPtr<Target>{ static_cast<Target *>(
-            new Constructed(std::forward<Ts>(args)...)) };
+        return SharedPtr<Target>{as<Target *>(new Constructed(std::forward<Ts>(args)...))};
     }
 
     namespace integral_literals
     {
         constexpr auto operator"" _U8(unsigned long long value) -> u8
         {
-            return static_cast<u8>(value);
+            return as<u8>(value);
         }
 
         constexpr auto operator"" _U16(unsigned long long value) -> u16
         {
-            return static_cast<u16>(value);
+            return as<u16>(value);
         }
 
         constexpr auto operator"" _U32(unsigned long long value) -> u32
         {
-            return static_cast<u32>(value);
+            return as<u32>(value);
         }
 
         constexpr auto operator"" _U64(unsigned long long value) -> u64
         {
-            return static_cast<u64>(value);
+            return as<u64>(value);
+        }
+
+        constexpr auto operator"" _ZU(unsigned long long value) -> size_t
+        {
+            return as<size_t>(value);
+        }
+
+        constexpr auto operator"" _B(unsigned long long value) -> std::byte
+        {
+            return as<std::byte>(value);
         }
     }// namespace integral_literals
 }// namespace ccl

@@ -6,7 +6,7 @@
 
 namespace ccl::views
 {
-    CCL_DECL auto dropBack(auto &&container, size_t elements_to_drop = 1)
+    CCL_DECL auto dropBack(const auto &container, size_t elements_to_drop = 1)
     {
         elements_to_drop = std::min(elements_to_drop, std::size(container));
         return std::views::take(container.size() - elements_to_drop);
