@@ -1,5 +1,5 @@
-#ifndef CCL_PROJECT_TIM_EXCEPTION_HPP
-#define CCL_PROJECT_TIM_EXCEPTION_HPP
+#ifndef CCL_PROJECT_ITERATOR_EXCEPTION_HPP
+#define CCL_PROJECT_ITERATOR_EXCEPTION_HPP
 
 #include <ccl/text/location.hpp>
 
@@ -141,4 +141,4 @@ namespace ccl::text
     };
 }// namespace ccl::text
 
-#endif /* CCL_PROJECT_TIM_EXCEPTION_HPP */
+#endif /* CCL_PROJECT_ITERATOR_EXCEPTION_HPP */
