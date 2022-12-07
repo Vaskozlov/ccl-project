@@ -165,8 +165,11 @@ namespace ccl::lex::dot_item
         const auto *item = items.back().get();
         auto item_repetition = item->getRepetition();
 
-        neverRecognizedSuggestion(ruleIterator, item_repetition.to == 0);
-        alwaysRecognizedSuggestion(ruleIterator, item_repetition.to != 0 && item->empty());
+        neverRecognizedSuggestion(
+            ruleIterator, item_repetition.to == 0 || (item->empty() && !item->isReversed()));
+
+        alwaysRecognizedSuggestion(
+            ruleIterator, item_repetition.to != 0 && item->empty() && item->isReversed());
     }
 
 
@@ -317,8 +320,8 @@ namespace ccl::lex::dot_item
 
     auto Container::RuleParser::throwUndefinedAction() -> void
     {
-        auto message = "undefined action"_sv;
-        auto suggestion =
+        constexpr static auto message = "undefined action"_sv;
+        constexpr static auto suggestion =
             "use `!` to declare special symbol, `\"` for string, `[` for unions, `(` for "
             "containers "_sv;
 

@@ -1,3 +1,4 @@
+#include "ccl/lex/analyzer_generator/analyzer_generator.hpp"
 #include <ccl/debug/debug_file.hpp>
 #include <ccl/handler/cmd_handler.hpp>
 #include <ccl/lex/lexical_analyzer.hpp>
@@ -36,10 +37,7 @@ BOOST_AUTO_TEST_CASE(LexTest)
     auto tokenizer = analyzer.getTokenizer(text);
     // NOLINTEND
 
-    auto token = tokenizer.yield();
-
-    while (token) {
-        fmt::print("{}: {}\n", rule_names.at(token.getId()), token.getRepr());
-        token = tokenizer.yield();
+    while (const auto &token = tokenizer.yield()) {
+        BOOST_ASSERT(token.getId() != BAD_TOKEN);
     }
 }
