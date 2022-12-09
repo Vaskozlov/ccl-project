@@ -4,16 +4,20 @@ namespace ccl::lex::dot_item
 {
     using namespace ccl::string_view_literals;
 
-    Sequence::Sequence(
-        SequenceFlags sequence_flags, const string_view &sequence_begin,
-        const string_view &sequence_end, TextIterator &rule_iterator, Id item_id)
-      : BasicItem{item_id}
-      , sequenceBegin{sequence_begin}
-      , sequenceEnd{sequence_end}
-    {
-        flags.sequenceIsMultiline = sequence_flags.multiline;
-        flags.sequenceNoEscapingSymbols = sequence_flags.noEscapingSymbols;
+    static const std::basic_string<Pair<char32_t, char32_t>> SpecialSymbolsForSequence{
+        {U'[', U'['},
+        {U']', U']'}};
 
+    Sequence::Sequence(
+        SequenceFlags sequence_flags, const string_view &sequence_starter,
+        const string_view &sequence_ender, TextIterator &rule_iterator, Id item_id)
+      : BasicItem{item_id, Flags{
+                               .sequenceIsMultiline=sequence_flags.multiline,
+                               .sequenceNoEscapingSymbols=sequence_flags.noEscaping
+                           }}
+      , starter{sequence_starter}
+      , ender{sequence_ender}
+    {
         auto begin_iterator_state = rule_iterator;
 
         checkSequenceArguments(rule_iterator);
@@ -23,11 +27,11 @@ namespace ccl::lex::dot_item
             auto chr = U'\0';
             auto is_escaping = false;
 
-            if (flags.sequenceNoEscapingSymbols) {
+            if (getFlags().sequenceNoEscapingSymbols) {
                 chr = rule_iterator.next();
             } else {
                 auto [escaping, character] =
-                    rule_iterator.nextRawCharWithEscapingSymbols({{U'[', U'['}, {U']', U']'}});
+                    rule_iterator.nextRawCharWithEscapingSymbols(SpecialSymbolsForSequence);
                 is_escaping = escaping;
                 chr = character;
             }
@@ -35,7 +39,7 @@ namespace ccl::lex::dot_item
             checkForUnexpectedEnd(begin_iterator_state, is_escaping, chr);
 
             if (isStringEnd(rule_iterator, is_escaping)) {
-                rule_iterator.skip(sequenceEnd.size() - 1);
+                rule_iterator.skip(ender.size() - 1);
                 break;
             }
 
@@ -62,11 +66,13 @@ namespace ccl::lex::dot_item
         }
 
         auto text = rule_iterator.getRemainingWithCurrent();
-        return text.startsWith(sequenceEnd);
+        return text.startsWith(as<string_view>(ender));
     }
 
     CCL_INLINE auto Sequence::checkForUnexpectedEnd(
-        TextIterator &rule_iterator, bool is_escaping, char32_t chr) const -> void
+        TextIterator &rule_iterator,
+        bool is_escaping,
+        char32_t chr) const -> void
     {
         if (is_escaping) {
             return;
@@ -76,10 +82,9 @@ namespace ccl::lex::dot_item
             throwUnterminatedString(rule_iterator, "unterminated sequence");
         }
 
-        if (land('\n' == chr, !flags.sequenceIsMultiline)) [[unlikely]] {
+        if (land('\n' == chr, !getFlags().sequenceIsMultiline)) [[unlikely]] {
             constexpr auto message = "new line is reached, but sequence has not been terminated"_sv;
-            auto suggestion =
-                fmt::format("use multiline sequence or close it with `{}`", sequenceEnd);
+            auto suggestion = fmt::format("use multiline sequence or close it with `{}`", ender);
 
             throwUnterminatedString(rule_iterator, message, suggestion);
         }
@@ -87,22 +92,22 @@ namespace ccl::lex::dot_item
 
     CCL_INLINE auto Sequence::skipStringDefinition(TextIterator &rule_iterator) const -> void
     {
-        rule_iterator.skip(sequenceBegin.size() - 1);
+        rule_iterator.skip(starter.size() - 1);
     }
 
     CCL_INLINE auto Sequence::checkSequenceArguments(TextIterator &rule_iterator) const -> void
     {
         auto text = rule_iterator.getRemainingWithCurrent();
 
-        if (sequenceBegin.empty()) [[unlikely]] {
+        if (starter.empty()) [[unlikely]] {
             throwEmptyStringBegin(rule_iterator);
         }
 
-        if (sequenceEnd.empty()) [[unlikely]] {
+        if (ender.empty()) [[unlikely]] {
             throwEmptyStringEnd(rule_iterator);
         }
 
-        if (!text.startsWith(sequenceBegin)) [[unlikely]] {
+        if (!text.startsWith(starter)) [[unlikely]] {
             throwStringBeginException(rule_iterator);
         }
     }
@@ -132,7 +137,7 @@ namespace ccl::lex::dot_item
 
     auto Sequence::throwStringBeginException(TextIterator &rule_iterator) const -> void
     {
-        auto message = fmt::format("string literal must begin with {}", sequenceBegin);
+        auto message = fmt::format("string literal must begin with {}", starter);
 
         rule_iterator.throwPanicError(AnalysisStage::LEXICAL_ANALYSIS, message);
         throw UnrecoverableError{"unrecoverable error in SequenceType"};

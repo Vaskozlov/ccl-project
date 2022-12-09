@@ -30,3 +30,4 @@
 #include <sstream>
 
 #include <ccl/ccl.hpp>
+#include <ccl/text/basic_text_iterator.hpp>

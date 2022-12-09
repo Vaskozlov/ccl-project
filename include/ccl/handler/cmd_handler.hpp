@@ -7,7 +7,7 @@
 
 namespace ccl::handler
 {
-    struct Cmd final : ExceptionHandler
+    class Cmd final : public ExceptionHandler
     {
     private:
         static Cmd defaultCmdHandler;
@@ -25,7 +25,7 @@ namespace ccl::handler
         }
 
     private:
-        auto onHandle(const ExceptionT *instance) -> void final;
+        auto onHandle(const ExceptionT *error) -> void final;
 
         template<fmt::color Color, typename HandleType>
         auto formatAndPrint(const ExceptionT *value, HandleType &&handle_type) -> void;

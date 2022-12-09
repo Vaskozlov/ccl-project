@@ -4,6 +4,7 @@
 #include <cassert>
 #include <cstddef>
 #include <version>
+#include <cinttypes>
 
 #define CCL_DECL [[nodiscard]] constexpr
 

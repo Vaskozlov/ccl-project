@@ -11,20 +11,20 @@ namespace ccl::lex::dot_item
         struct CCL_TRIVIAL_ABI SequenceFlags
         {
             bool multiline : 1 = false;
-            bool noEscapingSymbols : 1 = false;
+            bool noEscaping : 1 = false;
         };
 
     private:
         using typename BasicItem::TextIterator;
 
         std::string sequenceValue{};
-        string_view sequenceBegin{};
-        string_view sequenceEnd{};
+        string_view starter{};
+        string_view ender{};
 
     public:
         Sequence(
-            SequenceFlags sequence_flags, const string_view &sequence_begin,
-            const string_view &sequence_end, TextIterator &rule_iterator, Id item_id = 0);
+            SequenceFlags sequence_flags, const string_view &sequence_starter,
+            const string_view &sequence_ender, TextIterator &rule_iterator, Id item_id = 0);
 
         Sequence(
             SequenceFlags sequence_flags, const string_view &sequence_begin_and_end,
@@ -63,13 +63,15 @@ namespace ccl::lex::dot_item
 
         auto checkSequenceArguments(TextIterator &rule_iterator) const -> void;
 
-        auto throwStringBeginException(TextIterator &rule_iterator) const -> void;
+        [[noreturn]] auto throwStringBeginException(TextIterator &rule_iterator) const -> void;
 
-        CCL_INLINE static auto throwEmptyStringEnd(TextIterator &rule_iterator) -> void;
+        [[noreturn]] CCL_INLINE static auto throwEmptyStringEnd(TextIterator &rule_iterator)
+            -> void;
 
-        CCL_INLINE static auto throwEmptyStringBegin(TextIterator &rule_iterator) -> void;
+        [[noreturn]] CCL_INLINE static auto throwEmptyStringBegin(TextIterator &rule_iterator)
+            -> void;
 
-        CCL_INLINE static auto throwUnterminatedString(
+        [[noreturn]] CCL_INLINE static auto throwUnterminatedString(
             TextIterator &rule_iterator,
             const string_view &message,
             const string_view &suggestion = {}) -> void;

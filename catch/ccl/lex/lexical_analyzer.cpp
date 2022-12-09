@@ -8,10 +8,6 @@ using namespace lex;
 using namespace text;
 using namespace string_view_literals;
 
-constexpr std::array<string_view, 11> rule_names(
-    {"EOI", "BAD TOKEN", "float", "identifier", "number", "addition", "column", "assignment",
-     "string", "new line", "comment"});
-
 BOOST_AUTO_TEST_CASE(LexTest)
 {
     auto text =

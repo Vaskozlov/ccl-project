@@ -4,8 +4,6 @@ using namespace std::string_literals;
 
 namespace ccl::lex
 {
-    using ScanType = dot_item::ScanType;
-
     CCL_INLINE auto LexicalAnalyzer::Tokenizer::shouldIgnoreToken(const Token &token) const -> bool
     {
         const auto &ignoring_list = lexicalAnalyzer.ignoredIds;

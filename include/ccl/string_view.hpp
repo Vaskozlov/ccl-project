@@ -129,15 +129,18 @@ namespace ccl
 
         CCL_DECL auto substr(size_t first) const noexcept -> BasicStringView
         {
-            first = first > size() ? size() : first;
+            first = std::min(size(), first);
+
             return {begin() + first, begin() + size()};
         }
 
         CCL_DECL auto substr(size_t first, size_t len) const noexcept -> BasicStringView
         {
             auto last = first + len;
-            first = first > size() ? size() : first;
-            last = last > size() ? size() : last;
+
+            last = std::min(size(), last);
+            first = std::min(size(), first);
+
             return {begin() + first, begin() + last};
         }
 
@@ -195,7 +198,7 @@ namespace ccl
             auto elem = std::ranges::find_if(*this, [&passed_pairs, open, close](CharT chr) {
                 passed_pairs += (chr == open);
                 passed_pairs -= (chr == close);
-                return passed_pairs == 0;
+                return 0 == passed_pairs;
             });
 
             if (elem == end()) {

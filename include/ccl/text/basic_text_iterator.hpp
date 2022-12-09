@@ -7,7 +7,7 @@
 
 namespace ccl::text
 {
-    struct CCL_TRIVIAL_ABI CrtpForkType : std::true_type
+    struct CCL_TRIVIAL_ABI CrtpForkType : public std::true_type
     {
     };
 
@@ -23,8 +23,8 @@ namespace ccl::text
           : public CrtpBasicTextIterator<ForkedTextIterator>
         {
         public:
-            constexpr explicit ForkedTextIterator(string_view text_) noexcept
-              : CrtpBasicTextIterator<ForkedTextIterator>(text_)
+            constexpr explicit ForkedTextIterator(string_view input) noexcept
+              : CrtpBasicTextIterator<ForkedTextIterator>(input)
             {}
 
             template<typename T>
@@ -44,19 +44,19 @@ namespace ccl::text
 
             auto utfError(char /* chr */) noexcept -> void
             {
-                error_detected = true;
+                errorDetected = true;
             }
 
-            bool error_detected{false};
+            bool errorDetected{false};
         };
 
-        static constexpr auto noexcept_carriage_move = std::is_same_v<CRTP, ForkedTextIterator>;
+        static constexpr auto noexceptCarriageMove = std::is_same_v<CRTP, ForkedTextIterator>;
 
         CrtpBasicTextIterator() noexcept = default;
 
-        CCL_INLINE constexpr explicit CrtpBasicTextIterator(string_view text_) noexcept
-          : carriage{text_.begin()}
-          , end{text_.end()}
+        CCL_INLINE constexpr explicit CrtpBasicTextIterator(string_view input) noexcept
+          : carriage{input.begin()}
+          , end{input.end()}
         {}
 
         template<typename T>
@@ -153,7 +153,7 @@ namespace ccl::text
             end = new_end;
         }
 
-        constexpr auto skip(size_t n) noexcept(noexcept_carriage_move) -> void
+        constexpr auto skip(size_t n) noexcept(noexceptCarriageMove) -> void
         {
             CCL_UNROLL_N(4)
             for (auto i = as<size_t>(0); i != n; ++i) {
@@ -161,21 +161,21 @@ namespace ccl::text
             }
         }
 
-        constexpr auto skipCharacters(size_t n) noexcept(noexcept_carriage_move) -> void
+        constexpr auto skipCharacters(size_t n) noexcept(noexceptCarriageMove) -> void
         {
             for (auto i = as<size_t>(0); i != n; ++i) {
                 next();
             }
         }
 
-        constexpr auto moveToCleanChar() noexcept(noexcept_carriage_move) -> void
+        constexpr auto moveToCleanChar() noexcept(noexceptCarriageMove) -> void
         {
             while (isLayout(futureChar(1))) {
                 next();
             }
         }
 
-        constexpr auto next() noexcept(noexcept_carriage_move) -> char32_t
+        constexpr auto next() noexcept(noexceptCarriageMove) -> char32_t
         {
             do {
                 moveCarriage();
@@ -189,7 +189,7 @@ namespace ccl::text
             auto fork = ForkedTextIterator{CrtpFork, *this};
             fork.skipCharacters(times);
 
-            if (fork.error_detected) {
+            if (fork.errorDetected) {
                 return {};
             }
 
@@ -207,12 +207,12 @@ namespace ccl::text
             static_cast<CRTP &>(*this).onCharacter(chr);
         }
 
-        auto onUtfError(char chr) noexcept(noexcept_carriage_move) -> void
+        auto onUtfError(char chr) noexcept(noexceptCarriageMove) -> void
         {
             static_cast<CRTP &>(*this).utfError(chr);
         }
 
-        constexpr auto moveCarriage() noexcept(noexcept_carriage_move) -> char
+        constexpr auto moveCarriage() noexcept(noexceptCarriageMove) -> char
         {
             if (!isInitialized()) {
                 if (carriage == end) {
@@ -235,7 +235,7 @@ namespace ccl::text
             return *carriage;
         }
 
-        constexpr auto modifyCurrentChar() noexcept(noexcept_carriage_move) -> void
+        constexpr auto modifyCurrentChar() noexcept(noexceptCarriageMove) -> void
         {
             using namespace std::string_view_literals;
 
@@ -255,7 +255,7 @@ namespace ccl::text
             }
         }
 
-        constexpr auto trailingCharacterMove(char chr) noexcept(noexcept_carriage_move) -> void
+        constexpr auto trailingCharacterMove(char chr) noexcept(noexceptCarriageMove) -> void
         {
             if (!utf8::isTrailingCharacter(chr)) {
                 onUtfError(chr);
@@ -265,7 +265,7 @@ namespace ccl::text
             currentChar |= as<char32_t>(as<std::byte>(chr) & ~utf8::ContinuationMask);
         }
 
-        constexpr auto newCharacterMove(char chr) noexcept(noexcept_carriage_move) -> void
+        constexpr auto newCharacterMove(char chr) noexcept(noexceptCarriageMove) -> void
         {
             remainingToFinishUtf = utf8::size(chr);
 
@@ -290,8 +290,8 @@ namespace ccl::text
 
         BasicTextIterator() noexcept = default;
 
-        constexpr explicit BasicTextIterator(string_view text_) noexcept
-          : CrtpBasicTextIterator<BasicTextIterator>(text_)
+        constexpr explicit BasicTextIterator(string_view input) noexcept
+          : CrtpBasicTextIterator<BasicTextIterator>(input)
         {}
 
         constexpr static auto onMove(char /* chr */) noexcept -> void
@@ -304,7 +304,7 @@ namespace ccl::text
             // no action by the default
         }
 
-        static auto utfError(char /* chr */) -> void
+        [[noreturn]] static auto utfError(char /* chr */) -> void
         {
             throw std::logic_error{"unable to convert character to utf8"};// Noncompliant
         }

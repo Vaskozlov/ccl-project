@@ -10,8 +10,8 @@ namespace ccl::lex
     // NOLINTNEXTLINE
     enum GenToken : Id
     {
-        EOI = 0,
-        BAD_TOKEN = 1,
+        EOI,
+        BAD_TOKEN,
         IDENTIFIER,
         INTEGER,
         NEW_LINE,

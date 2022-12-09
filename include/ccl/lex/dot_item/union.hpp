@@ -42,9 +42,10 @@ namespace ccl::lex::dot_item
         static auto checkUnionBegin(TextIterator &rule_iterator) -> void;
         static auto checkForClosedRange(TextIterator &rule_iterator, bool is_ranged_opened) -> void;
 
-        static auto throwUnterminatedUnion(TextIterator &rule_iterator) -> void;
-        static auto throwUnterminatedRangeException(TextIterator &rule_iterator) -> void;
-        static auto throwUnionBeginException(TextIterator &rule_iterator) -> void;
+        [[noreturn]] static auto throwUnterminatedUnion(TextIterator &rule_iterator) -> void;
+        [[noreturn]] static auto throwUnionBeginException(TextIterator &rule_iterator) -> void;
+        [[noreturn]] static auto throwUnterminatedRangeException(TextIterator &rule_iterator)
+            -> void;
     };
 }// namespace ccl::lex::dot_item
 
