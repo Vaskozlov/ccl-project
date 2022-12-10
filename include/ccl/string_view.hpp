@@ -2,6 +2,7 @@
 #define CCL_PROJECT_STRING_VIEW_HPP
 
 #include <ccl/ccl.hpp>
+#include <concepts>
 #include <numeric>
 
 namespace ccl
@@ -131,7 +132,7 @@ namespace ccl
         {
             first = std::min(size(), first);
 
-            return {begin() + first, begin() + size()};
+            return {begin() + first, end()};
         }
 
         CCL_DECL auto substr(size_t first, size_t len) const noexcept -> BasicStringView
@@ -190,14 +191,20 @@ namespace ccl
             return result;
         }
 
+        /**
+         * @brief returns index of the element, which closes range opened with starter
+         * @param starter character, that starts range
+         * @param ender character, that ends range
+         * @return index on success or npos on failure
+         */
         CCL_UNSAFE_VERSION
-        CCL_DECL auto openCloseFind(CharT open, CharT close) const noexcept -> size_t
+        CCL_DECL auto openCloseFind(CharT starter, CharT ender) const noexcept -> size_t
         {
             auto passed_pairs = as<size_t>(0);
 
-            auto elem = std::ranges::find_if(*this, [&passed_pairs, open, close](CharT chr) {
-                passed_pairs += (chr == open);
-                passed_pairs -= (chr == close);
+            auto elem = std::ranges::find_if(*this, [&passed_pairs, starter, ender](CharT chr) {
+                passed_pairs += (chr == starter);
+                passed_pairs -= (chr == ender);
                 return 0 == passed_pairs;
             });
 
@@ -208,6 +215,12 @@ namespace ccl
             return distance(begin(), elem);
         }
 
+        /**
+         * @brief returns index of the element, which closes range opened with starter
+         * @param starter character, that starts range
+         * @param ender character, that ends range
+         * @return index on success or std::nullopt failure
+         */
         CCL_SAFE_VERSION
         CCL_DECL auto openCloseFind(CharT open, CharT close) const noexcept -> Optional<size_t>
         {
@@ -278,12 +291,8 @@ namespace ccl
             return string[index];
         }
 
-        CCL_DECL explicit operator std::basic_string<CharT>() const
-        {
-            return {string, length};
-        }
-
-        CCL_DECL explicit operator std::basic_string_view<CharT>() const noexcept
+        template<std::constructible_from<const CharT *, size_t> T>
+        CCL_DECL explicit operator T() const
         {
             return {string, length};
         }

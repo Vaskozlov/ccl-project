@@ -1,5 +1,5 @@
 #include <ccl/lex/analyzer_generator/ccll_parser.hpp>
-#include <ccl/lex/dot_item/sequence.hpp>
+#include <ccl/lex/tokenizer.hpp>
 #include <iostream>
 
 namespace ccl::lex::parser

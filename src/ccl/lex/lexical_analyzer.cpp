@@ -1,4 +1,5 @@
 #include <ccl/lex/lexical_analyzer.hpp>
+#include <ccl/lex/tokenizer.hpp>
 
 namespace ccl::lex
 {

@@ -7,6 +7,11 @@ namespace ccl::text
 {
     class LineTracker
     {
+    private:
+        string_view text{};
+        string_view line{};
+        bool newLinePassed{false};
+
     public:
         CCL_DECL auto get() const noexcept -> const string_view &
         {
@@ -27,9 +32,10 @@ namespace ccl::text
           : text{text_to_track}
         {
             const auto new_line_index = text.find('\n');
-            line = {text.begin(), *new_line_index.or_else([this]() -> Optional<size_t> {
-                        return text.size();
-                    })};
+            const auto line_end =
+                *new_line_index.or_else([this]() -> Optional<size_t> { return text.size(); });
+
+            line = {text.begin(), line_end};
         }
 
     private:
@@ -37,16 +43,12 @@ namespace ccl::text
         {
             const auto *new_line_begin = std::min(text.end(), line.end() + 1);
             const auto new_line_index = text.find('\n', new_line_begin);
-
-            line = {
-                new_line_begin,
+            const auto *line_end =
                 text.begin() +
-                    *new_line_index.or_else([this]() -> Optional<size_t> { return text.size(); })};
-        }
+                *new_line_index.or_else([this]() -> Optional<size_t> { return text.size(); });
 
-        string_view text{};
-        string_view line{};
-        bool newLinePassed{false};
+            line = {new_line_begin, std::min(text.end(), line_end)};
+        }
     };
 }// namespace ccl::text
 

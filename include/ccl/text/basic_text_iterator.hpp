@@ -77,7 +77,7 @@ namespace ccl::text
 
         CCL_DECL CCL_INLINE auto getRemainingToFinishUtf() const noexcept -> u16
         {
-            return remainingToFinishUtf;
+            return remainingBytesToFinishSymbol;
         }
 
         CCL_DECL CCL_INLINE auto getCarriage() const noexcept -> iterator
@@ -157,7 +157,7 @@ namespace ccl::text
         {
             CCL_UNROLL_N(4)
             for (auto i = as<size_t>(0); i != n; ++i) {
-                moveCarriage();
+                moveCarriageToTheNextByte();
             }
         }
 
@@ -178,8 +178,8 @@ namespace ccl::text
         constexpr auto next() noexcept(noexceptCarriageMove) -> char32_t
         {
             do {
-                moveCarriage();
-            } while (remainingToFinishUtf != 0);
+                moveCarriageToTheNextByte();
+            } while (remainingBytesToFinishSymbol != 0);
 
             return currentChar;
         }
@@ -212,7 +212,7 @@ namespace ccl::text
             static_cast<CRTP &>(*this).utfError(chr);
         }
 
-        constexpr auto moveCarriage() noexcept(noexceptCarriageMove) -> char
+        constexpr auto moveCarriageToTheNextByte() noexcept(noexceptCarriageMove) -> char
         {
             if (!isInitialized()) {
                 if (carriage == end) {
@@ -242,15 +242,15 @@ namespace ccl::text
             auto chr = *carriage;
             onCarriageMove(chr);
 
-            if (remainingToFinishUtf != 0) {
+            if (remainingBytesToFinishSymbol != 0) {
                 trailingCharacterMove(chr);
             } else {
                 newCharacterMove(chr);
             }
 
-            --remainingToFinishUtf;
+            --remainingBytesToFinishSymbol;
 
-            if (0 == remainingToFinishUtf) {
+            if (0 == remainingBytesToFinishSymbol) {
                 onNextCharacter(currentChar);
             }
         }
@@ -267,19 +267,19 @@ namespace ccl::text
 
         constexpr auto newCharacterMove(char chr) noexcept(noexceptCarriageMove) -> void
         {
-            remainingToFinishUtf = utf8::size(chr);
+            remainingBytesToFinishSymbol = utf8::size(chr);
 
-            if (0 == remainingToFinishUtf) {
+            if (0 == remainingBytesToFinishSymbol) {
                 onUtfError(chr);
             }
 
-            currentChar = as<char32_t>(as<std::byte>(chr) & ~utf8::getMask(remainingToFinishUtf));
+            currentChar = as<char32_t>(as<std::byte>(chr) & ~utf8::getMask(remainingBytesToFinishSymbol));
         }
 
         iterator carriage{};
         iterator end{};
         char32_t currentChar{};
-        u16 remainingToFinishUtf{};
+        u16 remainingBytesToFinishSymbol{};
         bool initialized{};
     };
 

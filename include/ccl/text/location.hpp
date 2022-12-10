@@ -12,18 +12,18 @@ namespace ccl::text
         string_view filename{};
         size_t line{1};
         size_t column{0};
-        size_t real_column{0};
+        size_t realColumn{0};
 
     public:
         Location() noexcept = default;
 
         constexpr explicit Location(
-            string_view filename_, size_t line_ = 1, size_t column_ = 0,
-            size_t real_column_ = 0) noexcept
-          : filename{filename_}
-          , line{line_}
-          , column{column_}
-          , real_column{real_column_}
+            string_view name_of_file, size_t line_in_file = 1, size_t column_in_file = 0,
+            size_t real_column = 0) noexcept
+          : filename{name_of_file}
+          , line{line_in_file}
+          , column{column_in_file}
+          , realColumn{real_column}
         {}
 
         CCL_DECL auto getLine() const noexcept -> size_t
@@ -38,7 +38,7 @@ namespace ccl::text
 
         CCL_DECL auto getRealColumn() const noexcept -> size_t
         {
-            return real_column;
+            return realColumn;
         }
 
         CCL_DECL auto getFilename() const noexcept -> const string_view &
@@ -49,14 +49,14 @@ namespace ccl::text
         constexpr auto intermediateNext(char chr) noexcept -> void
         {
             if (land(!isEoF(chr), '\n' != chr)) {
-                ++real_column;
+                ++realColumn;
             }
         }
         constexpr auto next(char32_t chr) noexcept -> void
         {
             if (chr == U'\n') {
                 ++line;
-                column = real_column = 0;
+                column = realColumn = 0;
             } else if (!isEoF(chr)) {
                 ++column;
             }

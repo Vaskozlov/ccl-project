@@ -4,12 +4,12 @@ namespace ccl::text
 {
     TextIterator::TextIterator(
         const string_view &input,
-        ExceptionHandler &exception_handler_,
+        ExceptionHandler &exception_handler,
         const string_view &filename)
       : Base{input}
       , location{filename}
-      , line_tracker{input}
-      , exception_handler{&exception_handler_}
+      , lineTracker{input}
+      , exceptionHandler{&exception_handler}
     {}
 
     auto TextIterator::nextRawCharWithEscapingSymbols(const extra_symbols_t &extra_symbols)
@@ -49,10 +49,10 @@ namespace ccl::text
             criticality, stage, iterator_location.getLocation(), 1,
             iterator_location.getWorkingLine(), message, suggestion);
 
-        if (nullptr == exception_handler) {
+        if (nullptr == exceptionHandler) {
             throw std::move(exception);
         }
 
-        exception_handler->handle(exception);
+        exceptionHandler->handle(exception);
     }
 }// namespace ccl::text

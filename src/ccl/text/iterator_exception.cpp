@@ -23,6 +23,20 @@ namespace ccl::text
 {
     using namespace ccl::string_view_literals;
 
+    TextIteratorException::TextIteratorException(
+        ExceptionCriticality exception_criticality, AnalysisStage analysis_stage,
+        const Location &exception_location, size_t exception_length,
+        const string_view &working_line, const string_view &exception_message,
+        const string_view &exception_suggestion)
+      : location{exception_location}
+      , message{exception_message}
+      , suggestion{exception_suggestion}
+      , workingLine{working_line}
+      , length{exception_length}
+      , criticality{exception_criticality}
+      , stage{analysis_stage}
+    {}
+
     auto TextIteratorException::what() const noexcept -> const char *
     {
         return message.c_str();

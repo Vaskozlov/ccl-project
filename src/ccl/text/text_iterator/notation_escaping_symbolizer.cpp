@@ -74,14 +74,14 @@ namespace ccl::text
     }
 
     TextIterator::NotationEscapingSymbolizer::NotationEscapingSymbolizer(
-        TextIterator &text_iterator_,
-        u16 max_times_,
-        u16 notation_power_,
-        bool are_all_chars_required_)
-      : textIterator{text_iterator_}
-      , maximumSymbols{max_times_}
-      , notationPower{notation_power_}
-      , areAllCharsRequired{are_all_chars_required_}
+        TextIterator &text_iterator,
+        u16 u_16,
+        u16 notation_power,
+        bool are_all_chars_required)
+      : textIterator{text_iterator}
+      , maximumSymbols{u_16}
+      , notationPower{notation_power}
+      , areAllCharsRequired{are_all_chars_required}
     {
         checkNotation();
         calculateResult();

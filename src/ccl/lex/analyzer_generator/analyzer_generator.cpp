@@ -1,7 +1,7 @@
 #include <ccl/handler/cmd_handler.hpp>
 #include <ccl/lex/analyzer_generator/analyzer_generator.hpp>
 #include <ccl/lex/analyzer_generator/static_generator.hpp>
-#include <ccl/lex/lexical_analyzer.hpp>
+#include <ccl/lex/tokenizer.hpp>
 #include <fstream>
 #include <sstream>
 

@@ -1,7 +1,7 @@
-#include "ccl/lex/analyzer_generator/analyzer_generator.hpp"
 #include <ccl/debug/debug_file.hpp>
 #include <ccl/handler/cmd_handler.hpp>
-#include <ccl/lex/lexical_analyzer.hpp>
+#include <ccl/lex/analyzer_generator/analyzer_generator.hpp>
+#include <ccl/lex/tokenizer.hpp>
 
 using namespace ccl;
 using namespace lex;

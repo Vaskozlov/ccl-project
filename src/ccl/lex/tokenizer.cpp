@@ -1,4 +1,4 @@
-#include <ccl/lex/lexical_analyzer.hpp>
+#include <ccl/lex/tokenizer.hpp>
 
 using namespace std::string_literals;
 
@@ -82,22 +82,22 @@ namespace ccl::lex
     {
         if (hasFutureToken) {
             hasFutureToken = false;
-            currentToken = std::move(futureToken);
+            tokenIndex = !tokenIndex;
         } else {
-            nextToken(currentToken);
+            nextToken(tokens[tokenIndex]);
         }
 
-        return currentToken;
+        return tokens[tokenIndex];
     }
 
     auto LexicalAnalyzer::Tokenizer::yieldFutureToken() -> const Token &
     {
         if (!hasFutureToken) {
-            nextToken(futureToken);
+            nextToken(tokens[!tokenIndex]);
             hasFutureToken = true;
         }
 
-        return futureToken;
+        return tokens[!tokenIndex];
     }
 
     CCL_INLINE auto LexicalAnalyzer::Tokenizer::constructEoiToken(Token &token) -> void
