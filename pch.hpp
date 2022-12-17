@@ -1,33 +1,51 @@
-#pragma once
-
-#include <array>
-#include <bitset>
 #include <cinttypes>
-#include <cmath>
-#include <deque>
-#include <initializer_list>
-#include <map>
-#include <optional>
-#include <set>
-#include <string>
-#include <string_view>
-#include <unordered_set>
-#include <variant>
-#include <vector>
-
-#include <algorithm>
 #include <concepts>
 #include <cstddef>
 #include <exception>
-#include <functional>
-#include <iterator>
-#include <memory>
-#include <numeric>
-#include <utility>
 #include <version>
 
+#include <algorithm>
+#include <cmath>
+#include <functional>
+#include <numeric>
+
+#include <memory>
+
+#include <ranges>
+#include <utility>
+
+#include <string>
+#include <string_view>
+
+#include <optional>
+#include <variant>
+
+#include <atomic>
+#include <thread>
+
+#include <array>
+#include <bitset>
+#include <deque>
+#include <initializer_list>
+#include <vector>
+
+#include <map>
+#include <set>
+
+#include <unordered_map>
+#include <unordered_set>
+
+#include <iterator>
 #include <ostream>
 #include <sstream>
 
-#include <ccl/ccl.hpp>
-#include <ccl/text/text_iterator.hpp>
+#include <fmt/color.h>
+#include <fmt/compile.h>
+#include <fmt/format.h>
+#include <fmt/std.h>
+
+#include <boost/container/flat_map.hpp>
+#include <boost/container/flat_set.hpp>
+#include <boost/container/map.hpp>
+#include <boost/container/set.hpp>
+#include <boost/container/small_vector.hpp>
