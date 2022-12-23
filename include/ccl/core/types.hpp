@@ -49,6 +49,11 @@ namespace ccl
         class AccessWrapper : public T
         {
         public:
+            template<typename... Ts>
+            explicit AccessWrapper(Ts &&...args)
+              : T{std::forward<Ts>(args)...}
+            {}
+
             CCL_DECL auto operator[](size_t index) -> decltype(auto)
             {
                 if constexpr (HasNonConstantAt<T>) {
