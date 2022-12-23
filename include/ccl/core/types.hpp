@@ -92,7 +92,7 @@ namespace ccl
     using Vector = access::AccessWrapper<std::vector<T>>;
 
     template<typename T, size_t Size>
-    using Array = access::AccessWrapper<std::array<T>>;
+    using Array = access::AccessWrapper<std::array<T, Size>>;
 
     template<size_t N>
     using SmallBitset = std::bitset<N>;
