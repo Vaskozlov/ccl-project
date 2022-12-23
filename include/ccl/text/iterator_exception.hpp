@@ -116,7 +116,8 @@ namespace ccl::text
         TextIteratorException(
             ExceptionCriticality exception_criticality, AnalysisStage analysis_stage,
             const Location &exception_location, size_t exception_length,
-            const string_view &working_line, T1 &&exception_message, T2 &&exception_suggestion = {})
+            const string_view &working_line, T1 &&exception_message,
+            T2 &&exception_suggestion = std::string{})
           : location{exception_location}
           , message{std::forward<T1>(exception_message)}
           , suggestion{std::forward<T2>(exception_suggestion)}
