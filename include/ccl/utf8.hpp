@@ -31,7 +31,7 @@ namespace ccl::utf8
     constexpr auto ContinuationSignature = 0b1000'0000_B;
     constexpr u8 TrailingSize = 6;
 
-    constexpr Array<std::byte, 5> UtfMasks{
+    constexpr std::array<std::byte, 5> UtfMasks{
         0_B, OneByteMask, TwoBytesMask, TreeBytesMask, FourBytesMask};
 
     CCL_DECL CCL_INLINE auto isTrailingCharacter(char chr) noexcept -> bool
@@ -61,7 +61,7 @@ namespace ccl::utf8
 
     CCL_DECL auto getMask(u16 size) -> std::byte
     {
-        return UtfMasks[size];
+        return UtfMasks.at(size);
     }
 
     CCL_DECL auto size(char chr) noexcept -> u16

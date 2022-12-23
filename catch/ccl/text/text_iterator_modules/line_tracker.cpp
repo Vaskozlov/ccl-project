@@ -7,7 +7,7 @@ using namespace string_view_literals;
 
 constexpr static auto Input = "Hello, World!\nIt's a \nTest!\nOf line tracker\n "_sv;
 
-[[maybe_unused]] constexpr static auto ExpectedLines = Array<std::string_view, 5>{
+[[maybe_unused]] constexpr static auto ExpectedLines = std::array{
     "Hello, World!", "It's a ", "Test!",
     "Of line "
     "tracker",
@@ -22,10 +22,10 @@ BOOST_AUTO_TEST_CASE(LineTrackig)
         line_tracker.next(as<char32_t>(chr));
 
         if ('\n' == chr) {
-            BOOST_ASSERT(ExpectedLines[current_line] == line_tracker.get());
+            BOOST_ASSERT(ExpectedLines.at(current_line) == line_tracker.get());
             ++current_line;
         }
     }
 
-    BOOST_ASSERT(ExpectedLines[current_line] == line_tracker.get());
+    BOOST_ASSERT(ExpectedLines.at(current_line) == line_tracker.get());
 }

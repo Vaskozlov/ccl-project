@@ -20,7 +20,7 @@ BOOST_AUTO_TEST_CASE(UnionWithOneElem)
     DEBUG_VAR &&bitset = union_item.getBitset();
 
     for (char32_t i = 0; i < 127; ++i) {// NOLINT
-        BOOST_ASSERT(bitset[i] == (i == 'a'));
+        BOOST_ASSERT(bitset.at(i) == (i == 'a'));
     }
 }
 
@@ -33,21 +33,21 @@ BOOST_AUTO_TEST_CASE(UnionWithMultipleElems)
     DEBUG_VAR &&bitset = union_item.getBitset();
 
     for (char32_t i = '\0'; i != '_'; ++i) {
-        BOOST_ASSERT(!bitset[i]);
+        BOOST_ASSERT(!bitset.at(i));
     }
 
-    BOOST_ASSERT(bitset['_']);
+    BOOST_ASSERT(bitset.at('_'));
 
     for (char32_t i = '_' + 1; i != 'a'; ++i) {
-        BOOST_ASSERT(!bitset[i]);
+        BOOST_ASSERT(!bitset.at(i));
     }
 
     for (char32_t i = 'a'; i <= 'z'; ++i) {
-        BOOST_ASSERT(bitset[i]);
+        BOOST_ASSERT(bitset.at(i));
     }
 
     for (char32_t i = 'z' + 1; i != '\x7F'; ++i) {
-        BOOST_ASSERT(!bitset[i]);
+        BOOST_ASSERT(!bitset.at(i));
     }
 }
 

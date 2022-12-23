@@ -18,11 +18,6 @@ namespace ccl
         [[nodiscard]] auto empty() const noexcept -> bool;
         [[nodiscard]] auto at(char32_t chr) const noexcept -> bool;
 
-        [[nodiscard]] auto operator[](char32_t chr) const noexcept -> bool
-        {
-            return at(chr);
-        }
-
         auto set(char32_t chr, bool value = true) -> void;
         auto set(char32_t from, char32_t to, bool value = true) -> void;
     };

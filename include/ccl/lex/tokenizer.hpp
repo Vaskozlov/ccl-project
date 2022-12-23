@@ -7,9 +7,7 @@ namespace ccl::lex
 {
     class LexicalAnalyzer::Tokenizer
     {
-        Executor<Tokenizer> threadPool{this};
-        std::mutex yieldMutex{};
-        Array<Token, 2> tokens;
+        std::array<Token, 2> tokens;
         LexicalAnalyzer &lexicalAnalyzer;
         TextIterator textIterator;
         bool hasFutureToken{false};

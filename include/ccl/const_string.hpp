@@ -10,7 +10,7 @@ namespace ccl
     {
     public:
         using value_type = char;
-        using storage_t = Array<char, Size>;
+        using storage_t = std::array<char, Size>;
         using const_iterator = typename storage_t::const_iterator;
         using const_reverse_iterator = typename storage_t::const_reverse_iterator;
 
