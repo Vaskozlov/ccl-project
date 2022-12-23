@@ -14,7 +14,7 @@ namespace ccl::text
             }
 
             result = as<char32_t>(result << notationPower);
-            result += as<char32_t>(HexadecimalCharsToInt<char32_t>.at(chr));
+            result += as<char32_t>(HexadecimalCharsToInt<char32_t>[chr]);
 
             textIterator.next();
         }
@@ -49,7 +49,7 @@ namespace ccl::text
     auto TextIterator::NotationEscapingSymbolizer::isOutOfNotation(char32_t chr) const -> bool
     {
         return !HexadecimalCharsToInt<char32_t>.contains(chr) ||
-               HexadecimalCharsToInt<char32_t>.at(chr) >= pow2(notationPower);
+               HexadecimalCharsToInt<char32_t>[chr] >= pow2(notationPower);
     }
 
     auto TextIterator::NotationEscapingSymbolizer::checkAllCharsUsage(size_t chars_count) const

@@ -15,7 +15,7 @@ namespace ccl
     auto exceptionCriticalityDescription(ExceptionCriticality criticality) noexcept
         -> std::string_view
     {
-        return ExceptionDescription.at(criticality);
+        return ExceptionDescription[criticality];
     }
 }// namespace ccl
 

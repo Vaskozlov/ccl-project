@@ -21,6 +21,54 @@
 
 namespace ccl
 {
+    namespace access
+    {
+        template<typename T>
+        concept HasIndexOperator = requires(T value, size_t index) { value[index]; };
+
+        template<typename T>
+        concept HasNonConstantIndexOperator =
+            HasIndexOperator<T> && !std::is_const_v<decltype(std::declval<T &>()[0])>;
+
+        template<typename T>
+        concept HasConstantIndexOperator =
+            HasIndexOperator<T> && std::is_const_v<decltype(std::declval<const T &>()[0])>;
+
+        template<typename T>
+        concept HasAt = requires(T value, size_t index) { value.at(index); };
+
+        template<typename T>
+        concept HasNonConstantAt =
+            HasAt<T> && !std::is_const_v<decltype(std::declval<T &>().at(0))>;
+
+        template<typename T>
+        concept HasConstantAt =
+            HasAt<T> && std::is_const_v<decltype(std::declval<const T &>().at(0))>;
+
+        template<typename T>
+        class AccessWrapper : public T
+        {
+        public:
+            CCL_DECL auto operator[](size_t index) -> decltype(auto)
+            {
+                if constexpr (HasNonConstantAt<T>) {
+                    return this->at(index);
+                } else {
+                    return T::operator[](index);
+                }
+            }
+
+            CCL_DECL auto operator[](size_t index) const -> decltype(auto)
+            {
+                if constexpr (HasConstantAt<T>) {
+                    return this->at(index);
+                } else {
+                    return T::operator[](index);
+                }
+            }
+        };
+    }// namespace access
+
     using i8 = std::int8_t;
     using i16 = std::int16_t;
     using i32 = std::int32_t;
@@ -41,7 +89,10 @@ namespace ccl
     using Optional = std::optional<T>;
 
     template<typename T>
-    using Vector = std::vector<T>;
+    using Vector = access::AccessWrapper<std::vector<T>>;
+
+    template<typename T, size_t Size>
+    using Array = access::AccessWrapper<std::array<T>>;
 
     template<size_t N>
     using SmallBitset = std::bitset<N>;
@@ -72,7 +123,7 @@ namespace ccl
     using Flatmap = boost::container::flat_map<Key, Value>;
 
     template<typename T, size_t N = 4>
-    using SmallVector = boost::container::small_vector<T, N>;
+    using SmallVector = access::AccessWrapper<boost::container::small_vector<T, N>>;
 #else
     template<typename T>
     using Set = std::set<T>;
@@ -87,7 +138,7 @@ namespace ccl
     using Flatmap = std::map<Key, Value>;
 
     template<typename T, size_t N = 4>
-    using SmallVector = std::vector<T>;
+    using SmallVector = access::AccessWrapper<std::vector<T>>;
 #endif
 
     template<typename T>

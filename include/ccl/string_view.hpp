@@ -39,21 +39,27 @@ namespace ccl
         static constexpr auto npos = std::string_view::npos;
 
     private:
-        pointer string{nullptr};
+        pointer string{std::basic_string_view<CharT>{}.data()};
         size_t length{0};
 
     public:
         BasicStringView() noexcept = default;
 
         template<size_t N>
-        constexpr explicit BasicStringView(const std::array<CharT, N> &array_) noexcept
-          : string{array_.data()}
-          , length{array_.size()}
+        constexpr explicit BasicStringView(const std::array<CharT, N> &array_of_char) noexcept
+          : string{array_of_char.data()}
+          , length{array_of_char.size()}
         {}
 
-        constexpr BasicStringView(pointer string_, size_t length_) noexcept
-          : string{string_}
-          , length{length_}
+        template<size_t N>
+        constexpr explicit BasicStringView(const Array<CharT, N> &array_of_char) noexcept
+          : string{array_of_char.data()}
+          , length{array_of_char.size()}
+        {}
+
+        constexpr BasicStringView(pointer char_pointer, size_t string_length) noexcept
+          : string{char_pointer}
+          , length{string_length}
         {}
 
         constexpr BasicStringView(iterator first, iterator last) noexcept
