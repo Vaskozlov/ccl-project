@@ -273,7 +273,8 @@ namespace ccl::text
                 onUtfError(chr);
             }
 
-            currentChar = as<char32_t>(as<std::byte>(chr) & ~utf8::getMask(remainingBytesToFinishSymbol));
+            currentChar =
+                as<char32_t>(as<std::byte>(chr) & ~utf8::getMask(remainingBytesToFinishSymbol));
         }
 
         iterator carriage{};

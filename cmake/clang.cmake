@@ -1,5 +1,3 @@
-add_compile_options(-Wfloat-equal -Wmove -Wthread-safety)
-
 add_compile_definitions(BOOST_NO_CXX98_FUNCTION_BASE=false)
 
 if (USE_LIBCPP)

@@ -16,7 +16,7 @@ namespace ccl
         using storage_t = std::array<value_type, Size>;
         using iterator = typename storage_t::iterator;
         using const_iterator = typename storage_t::const_iterator;
-        
+
         CCL_DECL auto size() const noexcept -> size_t
         {
             return occupied;
