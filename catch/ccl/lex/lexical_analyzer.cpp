@@ -33,7 +33,7 @@ BOOST_AUTO_TEST_CASE(LexTest)
     auto tokenizer = analyzer.getTokenizer(text);
     // NOLINTEND
 
-    while (const auto &token = tokenizer.yield()) {
+    while (DEBUG_VAR &&token = tokenizer.yield()) {
         BOOST_ASSERT(token.getId() != BAD_TOKEN);
     }
 }
