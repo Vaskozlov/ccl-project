@@ -22,10 +22,16 @@ namespace ccl
             constructor();
         }
 
+        Raii(const Raii &) = delete;
+        Raii(Raii &&) noexcept = default;
+
         ~Raii()
         {
             deleter();
         }
+
+        auto operator=(const Raii &) = delete;
+        auto operator=(Raii &&) noexcept = default;
     };
 }// namespace ccl
 
