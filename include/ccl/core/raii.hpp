@@ -30,8 +30,8 @@ namespace ccl
             deleter();
         }
 
-        auto operator=(const Raii &) = delete;
-        auto operator=(Raii &&) noexcept = default;
+        auto operator=(const Raii &) -> Raii & = delete;
+        auto operator=(Raii &&) noexcept -> Raii & = default;
     };
 }// namespace ccl
 
