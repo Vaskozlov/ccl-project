@@ -1,5 +1,5 @@
-#include <ccl/core/raii.hpp>
 #include <ccl/debug/debug_file.hpp>
+#include <ccl/raii.hpp>
 
 using namespace ccl;
 
