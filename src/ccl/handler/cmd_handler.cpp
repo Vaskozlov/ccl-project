@@ -36,19 +36,19 @@ namespace ccl::handler
         return formattingBuffer;
     }
 
-    auto Cmd::onHandle(const ExceptionT *instance) -> void
+    auto Cmd::onHandle(const ExceptionT *error) -> void
     {
-        switch (instance->getCriticality()) {
+        switch (error->getCriticality()) {
         case ExceptionCriticality::SUGGESTION:
-            formatAndPrint<fmt::color::white>(instance, " suggestion: ");
+            formatAndPrint<fmt::color::white>(error, " suggestion: ");
             break;
 
         case ExceptionCriticality::WARNING:
-            formatAndPrint<fmt::color::medium_violet_red>(instance, " warning: ");
+            formatAndPrint<fmt::color::medium_violet_red>(error, " warning: ");
             break;
 
         default:
-            formatAndPrint<fmt::color::red>(instance, " error: ");
+            formatAndPrint<fmt::color::red>(error, " error: ");
             break;
         }
     }

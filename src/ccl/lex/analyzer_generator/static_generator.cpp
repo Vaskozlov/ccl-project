@@ -54,7 +54,7 @@ namespace ccl::lex::gen
         generatedHeader =
             "#pragma once\n\n"
             "#include <ccl/handler/cmd_handler.hpp>\n"
-            "#include <ccl/lex/lexical_analyzer.hpp>\n\n";
+            "#include <ccl/lex/tokenizer.hpp>\n\n";
     }
 
     auto StaticGenerator::generateNamespaceBegin(std::string &string) -> void

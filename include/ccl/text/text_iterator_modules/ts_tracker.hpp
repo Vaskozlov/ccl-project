@@ -7,6 +7,10 @@ namespace ccl::text
 {
     class TsTracker
     {
+    private:
+        std::string tabsAnsSpaces{};
+        bool needToClear{};
+
     public:
         CCL_DECL auto size() const noexcept -> size_t
         {
@@ -49,9 +53,6 @@ namespace ccl::text
         {
             return lor('\t' == chr, ' ' == chr);
         }
-
-        std::string tabsAnsSpaces{};
-        bool needToClear{};
     };
 }// namespace ccl::text
 

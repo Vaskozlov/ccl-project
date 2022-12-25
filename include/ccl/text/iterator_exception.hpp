@@ -32,6 +32,15 @@ namespace ccl::text
 {
     class TextIteratorException : public BasicTextIteratorException
     {
+    private:
+        Location location{};
+        std::string message{};
+        std::string suggestion{};
+        string_view workingLine{};
+        size_t length{1};
+        ExceptionCriticality criticality{};
+        AnalysisStage stage{};
+
     public:
         [[nodiscard]] auto getLine() const noexcept -> size_t
         {
@@ -101,21 +110,14 @@ namespace ccl::text
             ExceptionCriticality exception_criticality, AnalysisStage analysis_stage,
             const Location &exception_location, size_t exception_length,
             const string_view &working_line, const string_view &exception_message,
-            const string_view &exception_suggestion = {})
-          : location{exception_location}
-          , message{exception_message}
-          , suggestion{exception_suggestion}
-          , workingLine{working_line}
-          , length{exception_length}
-          , criticality{exception_criticality}
-          , stage{analysis_stage}
-        {}
+            const string_view &exception_suggestion = {});
 
         CCL_PERFECT_FORWARDING_2(T1, std::string, T2, std::string)
         TextIteratorException(
             ExceptionCriticality exception_criticality, AnalysisStage analysis_stage,
             const Location &exception_location, size_t exception_length,
-            const string_view &working_line, T1 &&exception_message, T2 &&exception_suggestion = {})
+            const string_view &working_line, T1 &&exception_message,
+            T2 &&exception_suggestion = std::string{})
           : location{exception_location}
           , message{std::forward<T1>(exception_message)}
           , suggestion{std::forward<T2>(exception_suggestion)}
@@ -130,14 +132,6 @@ namespace ccl::text
     private:
         auto addSuggestion(std::string &full_message) const -> void;
         auto addArrowToError(std::string &full_message) const -> void;
-
-        Location location{};
-        std::string message{};
-        std::string suggestion{};
-        string_view workingLine{};
-        size_t length{1};
-        ExceptionCriticality criticality{};
-        AnalysisStage stage{};
     };
 }// namespace ccl::text
 

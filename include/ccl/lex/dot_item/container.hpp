@@ -55,12 +55,12 @@ namespace ccl::lex::dot_item
 
         [[nodiscard]] auto operator==(const Container &other) const noexcept -> bool
         {
-            return id == other.id;
+            return getId() == other.getId();
         }
 
         [[nodiscard]] auto operator<=>(const Container &other) const noexcept -> std::weak_ordering
         {
-            return id <=> other.id;
+            return getId() <=> other.getId();
         }
 
         [[nodiscard]] auto empty() const noexcept -> bool final
@@ -98,12 +98,12 @@ namespace ccl::lex::dot_item
         bool rhsItemConstructed{false};
 
     public:
-        RuleParser(Container &container_, TextIterator &rule_iterator_);
+        RuleParser(Container &target_container, TextIterator &text_iterator);
 
     private:
         [[nodiscard]] auto getId() const noexcept -> Id
         {
-            return container.id;
+            return container.getId();
         }
 
         [[nodiscard]] auto isReversed() const noexcept -> bool

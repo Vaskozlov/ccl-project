@@ -18,9 +18,9 @@ namespace ccl::text
         using extra_symbols_t = std::basic_string<Pair<char32_t, char32_t>>;
 
         Location location{};
-        TsTracker ts_tracker{};
-        LineTracker line_tracker;
-        ExceptionHandler *exception_handler{};
+        TsTracker tsTracker{};
+        LineTracker lineTracker;
+        ExceptionHandler *exceptionHandler{};
 
     public:
         class EscapingSymbolizer;
@@ -36,7 +36,7 @@ namespace ccl::text
 
         explicit TextIterator(
             const string_view &input,
-            ExceptionHandler &exception_handler_ = ExceptionHandler::instance(),
+            ExceptionHandler &exception_handler = ExceptionHandler::instance(),
             const string_view &filename = {});
 
         [[nodiscard]] auto getLocation() const noexcept -> const Location &
@@ -66,17 +66,17 @@ namespace ccl::text
 
         [[nodiscard]] auto getWorkingLine() const noexcept -> const string_view &
         {
-            return line_tracker.get();
+            return lineTracker.get();
         }
 
         [[nodiscard]] auto getTabsAndSpaces() const noexcept -> const std::string &
         {
-            return ts_tracker.get();
+            return tsTracker.get();
         }
 
         [[nodiscard]] auto getHandler() noexcept -> ExceptionHandler &
         {
-            return *exception_handler;
+            return *exceptionHandler;
         }
 
         auto nextRawCharWithEscapingSymbols(const extra_symbols_t &extra_symbols = {})
@@ -90,8 +90,8 @@ namespace ccl::text
         CCL_INLINE auto onCharacter(char32_t chr) -> void
         {
             location.next(chr);
-            ts_tracker.next(chr);
-            line_tracker.next(chr);
+            tsTracker.next(chr);
+            lineTracker.next(chr);
         }
 
         auto utfError(char /* unused */) -> void
@@ -186,7 +186,7 @@ namespace ccl::text
     public:
         [[nodiscard]] auto getExtraSymbols() const noexcept -> const extra_symbols_t &
         {
-            return extra_symbols;
+            return extraSymbols;
         }
 
         [[nodiscard]] auto matchNextChar() -> char32_t;
@@ -199,10 +199,10 @@ namespace ccl::text
         EscapingSymbolizer(const EscapingSymbolizer &) = delete;
 
         explicit EscapingSymbolizer(
-            TextIterator &text_iterator_,
-            extra_symbols_t extra_symbols_) noexcept
-          : extra_symbols{std::move(extra_symbols_)}
-          , text_iterator{text_iterator_}
+            TextIterator &text_iterator,
+            extra_symbols_t extra_symbols) noexcept
+          : extraSymbols{std::move(extra_symbols)}
+          , textIterator{text_iterator}
         {}
 
         ~EscapingSymbolizer() = default;
@@ -211,8 +211,8 @@ namespace ccl::text
         auto searchInExtraSymbols(char32_t chr) -> char32_t;
         auto throwMatchException() -> void;
 
-        extra_symbols_t extra_symbols;
-        TextIterator &text_iterator;
+        extra_symbols_t extraSymbols;
+        TextIterator &textIterator;
     };
 
     class TextIterator::NotationEscapingSymbolizer
@@ -231,8 +231,7 @@ namespace ccl::text
         NotationEscapingSymbolizer(const NotationEscapingSymbolizer &) = delete;
 
         NotationEscapingSymbolizer(
-            TextIterator &text_iterator_, u16 max_times_, u16 notation_power_,
-            bool are_all_chars_required_);
+            TextIterator &text_iterator, u16 u_16, u16 notation_power, bool are_all_chars_required);
 
         ~NotationEscapingSymbolizer() = default;
 

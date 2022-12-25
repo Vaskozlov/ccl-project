@@ -22,7 +22,6 @@ namespace ccl::lex::dot_item
     public:
         using TextIterator = text::TextIterator;
         using ForkedGenerator = typename text::TextIterator::ForkedTextIterator;
-        using ScanResult = Optional<Pair<TextIterator, Token>>;
 
         class SpecialItems;
 
@@ -37,14 +36,17 @@ namespace ccl::lex::dot_item
 
     private:
         Repetition repetition{Repetition::basic()};
-
-    protected:
         Id id{};
         Flags flags;
 
     public:
         explicit BasicItem(Id item_id)
           : id{item_id}
+        {}
+
+        BasicItem(Id item_id, Flags item_flags)
+          : id{item_id}
+          , flags{item_flags}
         {}
 
         BasicItem(const BasicItem &) = default;
@@ -58,6 +60,11 @@ namespace ccl::lex::dot_item
         [[nodiscard]] auto getRepetition() const noexcept -> Repetition
         {
             return repetition;
+        }
+
+        [[nodiscard]] auto getFlags() const noexcept -> Flags
+        {
+            return flags;
         }
 
         [[nodiscard]] auto isReversed() const noexcept -> bool
@@ -97,7 +104,7 @@ namespace ccl::lex::dot_item
 
         [[nodiscard]] auto canBeOptimized() const noexcept -> bool
         {
-            return !isReversed() && (0 == repetition.from) && empty();
+            return (!isReversed() && (0 == repetition.from)) && empty();
         }
 
         [[nodiscard]] auto getId() const noexcept -> Id

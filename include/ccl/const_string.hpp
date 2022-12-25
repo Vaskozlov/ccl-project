@@ -6,7 +6,7 @@
 namespace ccl
 {
     template<size_t Size>
-    struct ConstString
+    class ConstString
     {
     public:
         using value_type = char;
@@ -63,7 +63,7 @@ namespace ccl
 
         CCL_DECL auto empty() const noexcept -> bool
         {
-            return size() == 0;
+            return 0 == size();
         }
 
         CCL_DECL operator string_view() const noexcept// NOLINT implicit conversion

@@ -1,5 +1,4 @@
-#include "ccl/lex/analyzer_generator/analyzer_generator.hpp"
-#include "ccl/lex/token.hpp"
+#include <ccl/lex/analyzer_generator/analyzer_generator.hpp>
 #include <ccl/lex/dot_item/container.hpp>
 #include <ccl/lex/dot_item/sequence.hpp>
 #include <ccl/lex/dot_item/union.hpp>
@@ -8,9 +7,9 @@ namespace ccl::lex::dot_item
 {
     using namespace ccl::string_view_literals;
 
-    Container::RuleParser::RuleParser(Container &container_, TextIterator &rule_iterator_)
-      : container{container_}
-      , ruleIterator{rule_iterator_}
+    Container::RuleParser::RuleParser(Container &target_container, TextIterator &text_iterator)
+      : container{target_container}
+      , ruleIterator{text_iterator}
     {
         checkId();
 
@@ -165,8 +164,11 @@ namespace ccl::lex::dot_item
         const auto *item = items.back().get();
         auto item_repetition = item->getRepetition();
 
-        neverRecognizedSuggestion(ruleIterator, item_repetition.to == 0);
-        alwaysRecognizedSuggestion(ruleIterator, item_repetition.to != 0 && item->empty());
+        neverRecognizedSuggestion(
+            ruleIterator, item_repetition.to == 0 || (item->empty() && !item->isReversed()));
+
+        alwaysRecognizedSuggestion(
+            ruleIterator, item_repetition.to != 0 && item->empty() && item->isReversed());
     }
 
 
@@ -317,8 +319,8 @@ namespace ccl::lex::dot_item
 
     auto Container::RuleParser::throwUndefinedAction() -> void
     {
-        auto message = "undefined action"_sv;
-        auto suggestion =
+        constexpr static auto message = "undefined action"_sv;
+        constexpr static auto suggestion =
             "use `!` to declare special symbol, `\"` for string, `[` for unions, `(` for "
             "containers "_sv;
 

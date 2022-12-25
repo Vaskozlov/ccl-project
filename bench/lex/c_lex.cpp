@@ -4,7 +4,7 @@
 #include "c_lexer.hpp"
 
 #include <ccl/handler/cmd_handler.hpp>
-#include <ccl/lex/lexical_analyzer.hpp>
+#include <ccl/lex/tokenizer.hpp>
 
 using namespace std::string_view_literals;
 

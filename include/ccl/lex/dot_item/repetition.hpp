@@ -60,9 +60,11 @@ namespace ccl::lex::dot_item
 
         auto throwBadValues(text::TextIterator &text_iterator) const -> void;
 
-        static auto throwRangeBeginException(text::TextIterator &text_iterator) -> void;
-        static auto throwUnexpectedCharacter(text::TextIterator &text_iterator, char32_t chr)
+        [[noreturn]] static auto throwRangeBeginException(text::TextIterator &text_iterator)
             -> void;
+
+        [[noreturn]] static auto
+            throwUnexpectedCharacter(text::TextIterator &text_iterator, char32_t chr) -> void;
     };
 }// namespace ccl::lex::dot_item
 
