@@ -23,9 +23,8 @@ namespace ccl
     using wstring_view = BasicStringView<wchar_t>;
 
     template<typename T, typename CharT>
-    concept StringLike = std::is_same_v<T, BasicStringView<CharT>> ||
-                         std::is_same_v<T, std::basic_string_view<CharT>> ||
-                         std::is_same_v<T, std::basic_string<CharT>>;
+    concept StringLike = IsSameToAny<
+        T, BasicStringView<CharT>, std::basic_string_view<CharT>, std::basic_string<CharT>>;
 
     template<CharacterLiteral CharT>
     class BasicStringView

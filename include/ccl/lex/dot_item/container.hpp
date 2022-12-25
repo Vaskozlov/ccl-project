@@ -98,7 +98,7 @@ namespace ccl::lex::dot_item
         bool rhsItemConstructed{false};
 
     public:
-        RuleParser(Container &container_, TextIterator &rule_iterator_);
+        RuleParser(Container &target_container, TextIterator &text_iterator);
 
     private:
         [[nodiscard]] auto getId() const noexcept -> Id

@@ -15,10 +15,11 @@ namespace ccl
     template<typename T>
     concept Exception = std::is_base_of_v<std::exception, T>;
 
+    template<typename T, typename... Ts>
+    concept IsSameToAny = (... || std::is_same_v<T, Ts>);
+
     template<typename T>
-    concept CharacterLiteral =
-        std::is_same_v<T, char> || std::is_same_v<T, unsigned char> || std::is_same_v<T, char8_t> ||
-        std::is_same_v<T, char16_t> || std::is_same_v<T, char32_t> || std::is_same_v<T, wchar_t>;
+    concept CharacterLiteral = IsSameToAny<T, char, char8_t, char16_t, char32_t, wchar_t>;
 
     template<typename T>
     concept CharacterArray = std::is_pointer_v<T> || std::is_array_v<T>;

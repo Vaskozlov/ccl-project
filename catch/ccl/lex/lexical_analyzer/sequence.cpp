@@ -11,8 +11,8 @@ BOOST_AUTO_TEST_CASE(LexicalAnalyzerSequence, *utf::depends_on("ContainerSequenc
         LexicalAnalyzer(ExceptionHandler::instance(), {{2, R"("abz"p"10")"}, {3, R"("10""abz"p)"}});
 
     auto tokenizer = analyzer.getTokenizer(R"(abz10 10abz)");
-    const auto &future_token = tokenizer.yieldFutureToken();
-    const auto &token = tokenizer.yield();
+    DEBUG_VAR &&future_token = tokenizer.yieldFutureToken();
+    DEBUG_VAR &&token = tokenizer.yield();
 
     BOOST_ASSERT(token.getId() == future_token.getId());
 
@@ -21,7 +21,7 @@ BOOST_AUTO_TEST_CASE(LexicalAnalyzerSequence, *utf::depends_on("ContainerSequenc
     BOOST_ASSERT(token.getPrefixes().size() == 1);
     BOOST_ASSERT(token.getPrefixes()[0] == "abz");
 
-    const auto &token_2 = tokenizer.yield();
+    DEBUG_VAR &&token_2 = tokenizer.yield();
 
     BOOST_ASSERT(token_2.getId() == 3);
     BOOST_ASSERT(token_2.getRepr() == R"(10abz)");

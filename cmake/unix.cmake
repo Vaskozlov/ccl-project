@@ -34,6 +34,9 @@ ccl_check_cxx_flag_support(Wthread-safety TRUE)
 ccl_check_cxx_flag_support(Wnon-virtual-dtor TRUE)
 ccl_check_cxx_flag_support(Woverloaded-virtual TRUE)
 
+ccl_check_cxx_flag_support(fdata-sections TRUE)
+ccl_check_cxx_flag_support(ffunction-sections TRUE)
+
 if (USE_ADDRESS_SANITIZER)
     add_compile_options(-fsanitize=address,undefined,leak)
     add_link_options(-fsanitize=address,undefined,leak)

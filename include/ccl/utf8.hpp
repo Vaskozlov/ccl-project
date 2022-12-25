@@ -12,8 +12,7 @@ namespace ccl::utf8
     using integral_literals::operator""_U8;
 
     template<typename T>
-    concept ValueTypeUtf8 = std::is_same_v<char, typename T::value_type> ||
-                            std::is_same_v<char8_t, typename T::value_type>;
+    concept ValueTypeUtf8 = IsSameToAny<typename T::value_type, char, char8_t>;
 
     constexpr u32 OneByteMax = 127;
     constexpr u32 TwoBytesMax = 2047;
