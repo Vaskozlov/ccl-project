@@ -1,5 +1,5 @@
-#ifndef CCL_PROJECT_CONTAINER_STRING_HPP
-#define CCL_PROJECT_CONTAINER_STRING_HPP
+#ifndef CCL_PROJECT_SEQUENCE_HPP
+#define CCL_PROJECT_SEQUENCE_HPP
 
 #include <ccl/lex/dot_item/basic_item.hpp>
 
@@ -78,4 +78,4 @@ namespace ccl::lex::dot_item
     };
 }// namespace ccl::lex::dot_item
 
-#endif /* CCL_PROJECT_CONTAINER_STRING_HPP */
+#endif /* CCL_PROJECT_SEQUENCE_HPP */

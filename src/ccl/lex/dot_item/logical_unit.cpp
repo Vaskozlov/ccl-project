@@ -3,11 +3,11 @@
 namespace ccl::lex::dot_item
 {
     LogicalUnit::LogicalUnit(
-        UniquePtr<BasicItem> lhs_, UniquePtr<BasicItem> rhs_, LogicalOperation type_, Id id_)
-      : BasicItem{id_}
-      , rhsItem{std::move(lhs_)}
-      , lhsItem{std::move(rhs_)}
-      , logicalOperation{type_}
+        UniquePtr<BasicItem> lhs, UniquePtr<BasicItem> rhs, LogicalOperation logical_operation, Id item_id)
+      : BasicItem{item_id}
+      , rhsItem{std::move(lhs)}
+      , lhsItem{std::move(rhs)}
+      , logicalOperation{logical_operation}
     {}
 
     auto LogicalUnit::empty() const noexcept -> bool

@@ -25,7 +25,7 @@ namespace ccl::lex::dot_item
         [[nodiscard]] auto empty() const noexcept -> bool final;
 
         LogicalUnit(
-            UniquePtr<BasicItem> lhs_, UniquePtr<BasicItem> rhs_, LogicalOperation type_, Id id_);
+            UniquePtr<BasicItem> lhs, UniquePtr<BasicItem> rhs, LogicalOperation logical_operation, Id item_id);
 
     private:
         [[nodiscard]] auto scanIteration(const ForkedGenerator &text_iterator) const
