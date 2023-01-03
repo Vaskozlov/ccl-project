@@ -232,11 +232,14 @@ namespace ccl::lex::dot_item
 
     auto Container::RuleParser::postCreationCheck() -> void
     {
-        const auto postfix_elem = std::ranges::find_if(
-            std::as_const(items), [](const auto &elem) { return elem->hasPostfix(); });
+        const auto postfix_elem = std::ranges::find_if(std::as_const(items), [](const auto &elem) {
+            return elem->hasPostfix();
+        });
 
-        const auto are_postfixes_correct = std::all_of(
-            postfix_elem, items.cend(), [](const auto &elem) { return elem->hasPostfix(); });
+        const auto are_postfixes_correct =
+            std::all_of(postfix_elem, items.cend(), [](const auto &elem) {
+                return elem->hasPostfix();
+            });
 
         if (!are_postfixes_correct) {
             throwUnableToApply("item without postfix modifier exists after items with it");

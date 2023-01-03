@@ -35,7 +35,9 @@ namespace ccl::lex::dot_item
                     .or_else([this, &text_iterator]() -> Optional<size_t> {
                         return lhsItem->scan(text_iterator);
                     })
-                    .or_else([]() -> Optional<size_t> { return 0; });
+                    .or_else([]() -> Optional<size_t> {
+                        return 0;
+                    });
     }
 
     auto LogicalUnit::andIteration(const ForkedGenerator &text_iterator) const -> size_t
@@ -49,7 +51,7 @@ namespace ccl::lex::dot_item
         const auto rhs = lhsItem->scan(text_iterator);
 
         if (rhs.has_value() && (lhs == rhs)) {
-            return *rhs;
+            return *lhs;
         }
 
         return 0;

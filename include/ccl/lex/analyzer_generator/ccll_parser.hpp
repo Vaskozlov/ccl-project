@@ -14,45 +14,39 @@ namespace ccl::lex::parser
 
         struct BlockInfo
         {
-            u16 block_id{};
-            u16 last_id{};
+            u16 blockId{};
+            u16 lastId{};
         };
 
         class Rule
         {
         public:
-            string_view block_name;
+            string_view blockName;
             string_view name;
             string_view definition;
-            u16 block_id{};
+            u16 blockId{};
             u16 id{};
 
             Rule() = default;
 
             Rule(
-                string_view block_name_, BlockInfo &block_info_, string_view rule_name_,
-                string_view definition_)
-              : block_name{block_name_}
-              , name{rule_name_}
-              , definition{definition_}
-              , block_id{block_info_.block_id}
-              , id{block_info_.last_id++}
-            {}
+                string_view block_name, BlockInfo &block_info, string_view rule_name,
+                string_view rule_definition);
         };
 
     private:
         Vector<Rule> rules{};
-        std::stack<Token> token_stack{};
+        std::stack<Token> tokenStack{};
         Map<string_view, std::string> directives{};
         Map<string_view, BlockInfo> blocks{{"NONE", {0, 2}}};
-        SpecialItems special_items{};
-        string_view current_block = "NONE";
+        SpecialItems specialItems{};
+        string_view currentBlock = "NONE";
         Tokenizer &tokenizer;
-        size_t last_block_id{1};
+        size_t lastBlockId{1};
 
     public:
-        explicit CcllParser(Tokenizer &tokenizer_)
-          : tokenizer{tokenizer_}
+        explicit CcllParser(Tokenizer &input_tokenizer)
+          : tokenizer{input_tokenizer}
         {}
 
         [[nodiscard]] auto getRules() const -> const Vector<Rule> &

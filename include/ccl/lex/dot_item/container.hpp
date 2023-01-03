@@ -24,7 +24,7 @@ namespace ccl::lex::dot_item
     {
         using BasicItem::canBeOptimized;
         using typename BasicItem::TextIterator;
-        using storage_t = SmallVector<DotItem>;
+        using DotItemsStorage = SmallVector<DotItem>;
 
         class RuleParser;
 
@@ -34,7 +34,7 @@ namespace ccl::lex::dot_item
             bool isSpecial = false;
         };
 
-        storage_t items{};
+        DotItemsStorage items{};
         SpecialItems &specialItems;
         ContainerFlags flags{};
 
@@ -74,7 +74,7 @@ namespace ccl::lex::dot_item
             return flags.isSpecial;
         }
 
-        [[nodiscard]] auto getItems() const noexcept -> const storage_t &
+        [[nodiscard]] auto getItems() const noexcept -> const DotItemsStorage &
         {
             return items;
         }
@@ -90,10 +90,10 @@ namespace ccl::lex::dot_item
 
     class Container::RuleParser
     {
-        Container &container;
-        TextIterator &ruleIterator;
-        storage_t &items{container.items};
-        SpecialItems &specialItems{container.specialItems};
+        Container &container;                              // NOLINT
+        TextIterator &ruleIterator;                        // NOLINT
+        DotItemsStorage &items{container.items};           // NOLINT
+        SpecialItems &specialItems{container.specialItems};// NOLINT
         Optional<DotItem> constructedLhs{std::nullopt};
         LogicalOperation logicalOperation{};
         bool rhsItemConstructed{false};

@@ -77,7 +77,7 @@ namespace ccl::codegen
         return {.size = size};
     }
 
-    constexpr inline auto endl = '\n';
+    constexpr inline auto endl = BasicCodeGenerator::Endl{};
     constexpr inline auto push_scope = BasicCodeGenerator::PushScope{};
     constexpr inline auto pop_scope = BasicCodeGenerator::PopScope{};
 

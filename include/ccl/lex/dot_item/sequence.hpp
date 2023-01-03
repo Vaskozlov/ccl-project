@@ -10,8 +10,8 @@ namespace ccl::lex::dot_item
     public:
         struct CCL_TRIVIAL_ABI SequenceFlags
         {
-            bool multiline : 1 = false;
-            bool noEscaping : 1 = false;
+            bool multiline = false;
+            bool noEscaping = false;
         };
 
     private:
@@ -65,11 +65,9 @@ namespace ccl::lex::dot_item
 
         [[noreturn]] auto throwStringBeginException(TextIterator &rule_iterator) const -> void;
 
-        [[noreturn]] static auto throwEmptyStringEnd(TextIterator &rule_iterator)
-            -> void;
+        [[noreturn]] static auto throwEmptyStringEnd(TextIterator &rule_iterator) -> void;
 
-        [[noreturn]] static auto throwEmptyStringBegin(TextIterator &rule_iterator)
-            -> void;
+        [[noreturn]] static auto throwEmptyStringBegin(TextIterator &rule_iterator) -> void;
 
         [[noreturn]] static auto throwUnterminatedString(
             TextIterator &rule_iterator,

@@ -17,9 +17,9 @@ namespace ccl::lex::dot_item
     {
         using typename BasicItem::TextIterator;
 
-        DotItem rhsItem{};
-        DotItem lhsItem{};
-        LogicalOperation logicalOperation{LogicalOperation::NONE};
+        DotItem rhsItem;
+        DotItem lhsItem;
+        LogicalOperation logicalOperation;
 
     public:
         [[nodiscard]] auto empty() const noexcept -> bool final;

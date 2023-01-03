@@ -14,8 +14,9 @@ BOOST_AUTO_TEST_CASE(FlatmapOverflow)
     BOOST_CHECK_EQUAL(flatmap.size(), flatmap.capacity());
 
     BOOST_CHECK_EXCEPTION(
-        flatmap.insert(110, 120), std::out_of_range,
-        [](const std::out_of_range &exception) { return "flatmap is full"sv == exception.what(); });
+        flatmap.insert(110, 120), std::out_of_range, [](const std::out_of_range &exception) {
+            return "flatmap is full"sv == exception.what();
+        });
 }
 
 // NOLINTEND

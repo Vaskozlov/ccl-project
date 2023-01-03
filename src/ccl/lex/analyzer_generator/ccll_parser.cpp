@@ -4,6 +4,16 @@
 
 namespace ccl::lex::parser
 {
+    CcllParser::Rule::Rule(
+        string_view block_name, BlockInfo &block_info, string_view rule_name,
+        string_view rule_definition)
+      : blockName{block_name}
+      , name{rule_name}
+      , definition{rule_definition}
+      , blockId{block_info.blockId}
+      , id{block_info.lastId++}
+    {}
+
     auto CcllParser::parse() -> bool
     {
         auto token = tokenizer.yield();
@@ -11,7 +21,7 @@ namespace ccl::lex::parser
 
         switch (token_id) {
         case GenToken::IDENTIFIER:
-            token_stack.push(std::move(token));
+            tokenStack.push(std::move(token));
 
             if (!parseDeclaration()) {
                 recoverFromError();
@@ -72,7 +82,7 @@ namespace ccl::lex::parser
             iterator_copy.setEnd(token.getRepr().end());
             checkRule(iterator_copy);
 
-            token_stack.push(std::move(token));
+            tokenStack.push(std::move(token));
             completeRuleDeclaration();
 
             return true;
@@ -88,7 +98,7 @@ namespace ccl::lex::parser
         auto token_id = token.getId();
 
         if (GenToken::IDENTIFIER == token_id || GenToken::STRING == token_id) {
-            token_stack.push(std::move(token));
+            tokenStack.push(std::move(token));
             completeDirectiveDeclaration();
             return true;
         }
@@ -99,24 +109,24 @@ namespace ccl::lex::parser
 
     auto CcllParser::completeRuleDeclaration() -> void
     {
-        auto rule = token_stack.top();
-        token_stack.pop();
+        auto rule = tokenStack.top();
+        tokenStack.pop();
 
-        auto name = token_stack.top();
-        token_stack.pop();
+        auto name = tokenStack.top();
+        tokenStack.pop();
 
-        rules.emplace_back(current_block, blocks[current_block], name.getRepr(), rule.getRepr());
+        rules.emplace_back(currentBlock, blocks[currentBlock], name.getRepr(), rule.getRepr());
 
         expectRuleEnd();
     }
 
     auto CcllParser::completeDirectiveDeclaration() -> void
     {
-        auto directive_value = token_stack.top();
-        token_stack.pop();
+        auto directive_value = tokenStack.top();
+        tokenStack.pop();
 
-        auto directive = token_stack.top();
-        token_stack.pop();
+        auto directive = tokenStack.top();
+        tokenStack.pop();
 
         auto directive_repr = directive_value.getRepr();
 
@@ -133,7 +143,7 @@ namespace ccl::lex::parser
     auto CcllParser::checkRule(text::TextIterator &rule) -> void
     {
         try {
-            auto container = dot_item::Container{rule, special_items, 2, true};
+            auto container = dot_item::Container{rule, specialItems, 2, true};
         } catch (const UnrecoverableError & /* unused */) {}
     }
 
@@ -143,7 +153,7 @@ namespace ccl::lex::parser
         auto token_id = token.getId();
 
         if (GenToken::IDENTIFIER == token_id) {
-            token_stack.push(std::move(token));
+            tokenStack.push(std::move(token));
             return parseBlockEnding();
         }
 
@@ -167,13 +177,13 @@ namespace ccl::lex::parser
 
     auto CcllParser::completeBlock() -> void
     {
-        auto block_name = token_stack.top();
-        token_stack.pop();
+        auto block_name = tokenStack.top();
+        tokenStack.pop();
 
-        current_block = block_name.getRepr();
+        currentBlock = block_name.getRepr();
 
-        if (!blocks.contains(current_block)) {
-            blocks.insert({current_block, {as<u16>(last_block_id++), 0}});
+        if (!blocks.contains(currentBlock)) {
+            blocks.insert({currentBlock, {as<u16>(lastBlockId++), 0}});
         }
 
         expectRuleEnd();

@@ -1,6 +1,7 @@
 #ifndef CCL_PROJECT_STATIC_GENERATOR_HPP
 #define CCL_PROJECT_STATIC_GENERATOR_HPP
 
+#include <ccl/codegen/basic_codegen.hpp>
 #include <ccl/handler/cmd_handler.hpp>
 #include <ccl/lex/analyzer_generator/ccll_parser.hpp>
 #include <ccl/lex/lexical_analyzer.hpp>
@@ -24,20 +25,15 @@ namespace ccl::lex::gen
         std::string nameSpace{};
         std::string enumName{};
         std::string generatedHeader{};
-        std::string generatedSource{};
         std::string extraSpaces{};
+        codegen::BasicCodeGenerator codeGenerator{};
 
     public:
-        explicit StaticGenerator(Tokenizer &input_tokenizer)
-          : tokenizer{input_tokenizer}
-          , ccllParser{tokenizer}
-        {
-            generate();
-        }
+        explicit StaticGenerator(Tokenizer &input_tokenizer);
 
-        [[nodiscard]] auto get() const noexcept -> Pair<std::string, std::string>
+        [[nodiscard]] auto getCode() const noexcept -> const std::string &
         {
-            return {generatedHeader, generatedSource};
+            return codeGenerator.getCode();
         }
 
     private:
@@ -46,21 +42,18 @@ namespace ccl::lex::gen
         auto generate() -> void;
         auto generateHeaderDefinition() -> void;
 
-        auto generateNamespaceBegin(std::string &string) -> void;
-        auto generateNamespaceEnd(std::string &string) -> void;
+        auto generateNamespaceBegin() -> void;
+        auto generateNamespaceEnd() -> void;
 
-        auto generateRuleNames(std::string &string, std::string addition_flags = {}) -> void;
+        auto generateRuleNames() -> void;
 
         auto generateEnum() -> void;
         auto generateEnumCases() -> void;
 
         auto generateVariable() -> void;
-        auto generateLexicalAnalyzer(std::string &string, std::string addition_flags = {}) -> void;
+        auto generateLexicalAnalyzer() -> void;
 
-        auto generateRules(std::string &string) -> void;
-        auto generateSource() -> void;
-
-        auto appendToStr(std::string &dest, const std::string &string) const -> void;
+        auto generateRules() -> void;
     };
 }// namespace ccl::lex::gen
 

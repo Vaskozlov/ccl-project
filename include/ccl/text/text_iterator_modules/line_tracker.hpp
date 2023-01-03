@@ -32,8 +32,9 @@ namespace ccl::text
           : text{text_to_track}
         {
             const auto new_line_index = text.find('\n');
-            const auto line_end =
-                *new_line_index.or_else([this]() -> Optional<size_t> { return text.size(); });
+            const auto line_end = *new_line_index.or_else([this]() -> Optional<size_t> {
+                return text.size();
+            });
 
             line = {text.begin(), line_end};
         }
@@ -44,8 +45,9 @@ namespace ccl::text
             const auto *new_line_begin = std::min(text.end(), line.end() + 1);
             const auto new_line_index = text.find('\n', new_line_begin);
             const auto *line_end =
-                text.begin() +
-                *new_line_index.or_else([this]() -> Optional<size_t> { return text.size(); });
+                text.begin() + *new_line_index.or_else([this]() -> Optional<size_t> {
+                    return text.size();
+                });
 
             line = {new_line_begin, std::min(text.end(), line_end)};
         }
