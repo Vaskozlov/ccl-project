@@ -41,6 +41,11 @@ namespace ccl::codegen
             return generatedCode;
         }
 
+        [[nodiscard]] auto getBackInserter() noexcept -> auto
+        {
+            return std::back_inserter(generatedCode);
+        }
+
         auto operator<<(ScopeSize scope_size) -> BasicCodeGenerator &;
         auto operator<<(PushScope /* unused */) -> BasicCodeGenerator &;
         auto operator<<(PopScope /* unused */) -> BasicCodeGenerator &;
@@ -53,14 +58,14 @@ namespace ccl::codegen
         template<std::integral Int>
         auto operator<<(Int value) -> BasicCodeGenerator &
         {
-            fmt::format_to(std::back_inserter(generatedCode), "{}", value);
+            fmt::format_to(getBackInserter(), "{}", value);
             return *this;
         }
 
         template<std::floating_point Float>
         auto operator<<(Float value) -> BasicCodeGenerator &
         {
-            fmt::format_to(std::back_inserter(generatedCode), "{}", value);
+            fmt::format_to(getBackInserter(), "{}", value);
             return *this;
         }
 
