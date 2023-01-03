@@ -70,21 +70,10 @@ namespace ccl::codegen
 
     auto BasicCodeGenerator::operator<<(std::string_view string) -> BasicCodeGenerator &
     {
-        if constexpr (HasStdSplit) {
-            auto need_to_add_new_line = false;
+        generatedCode.reserve(generatedCode.size() + string.size());
 
-            for (auto &&word : std::views::split(string, '\n')) {
-                if (need_to_add_new_line) {
-                    newLine();
-                }
-
-                need_to_add_new_line = true;
-                generatedCode.append(std::string_view{word});
-            }
-        } else {
-            for (auto character : string) {
-                *this << character;
-            }
+        for (auto character : string) {
+            *this << character;
         }
 
         return *this;

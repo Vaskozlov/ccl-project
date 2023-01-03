@@ -3,6 +3,8 @@
 
 #include <ccl/const_string.hpp>
 #include <ccl/string_view.hpp>
+#include <fmt/core.h>
+#include <iterator>
 
 namespace ccl::codegen
 {
@@ -34,7 +36,7 @@ namespace ccl::codegen
     public:
         BasicCodeGenerator() = default;
 
-        auto getCode() const noexcept -> const std::string &
+        [[nodiscard]] auto getCode() const noexcept -> const std::string &
         {
             return generatedCode;
         }
@@ -47,6 +49,20 @@ namespace ccl::codegen
         auto operator<<(string_view string) -> BasicCodeGenerator &;
         auto operator<<(std::string_view string) -> BasicCodeGenerator &;
         auto operator<<(const std::string &string) -> BasicCodeGenerator &;
+
+        template<std::integral Int>
+        auto operator<<(Int value) -> BasicCodeGenerator &
+        {
+            fmt::format_to(std::back_inserter(generatedCode), "{}", value);
+            return *this;
+        }
+
+        template<std::floating_point Float>
+        auto operator<<(Float value) -> BasicCodeGenerator &
+        {
+            fmt::format_to(std::back_inserter(generatedCode), "{}", value);
+            return *this;
+        }
 
         auto operator<<(Endl /* unused */) -> BasicCodeGenerator &
         {
