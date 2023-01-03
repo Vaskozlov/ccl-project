@@ -137,8 +137,9 @@ namespace ccl
         CCL_DECL static auto staticFind(Self &self, const Key &key) noexcept
             -> decltype(self.begin())
         {
-            return std::ranges::find_if(
-                self, [&key](const value_type &value) { return value.first == key; });
+            return std::ranges::find_if(self, [&key](const value_type &value) {
+                return value.first == key;
+            });
         }
 
         template<typename Self>

@@ -4,7 +4,6 @@
 #include <ccl/lex/dot_item/repetition.hpp>
 #include <ccl/lex/token.hpp>
 #include <ccl/text/text_iterator.hpp>
-#include <optional>
 
 namespace ccl::lex::dot_item
 {
@@ -121,6 +120,40 @@ namespace ccl::lex::dot_item
     private:
         [[nodiscard]] virtual auto scanIteration(const ForkedGenerator &text_iterator) const
             -> size_t = 0;
+    };
+
+    class DotItem
+    {
+    private:
+        UniquePtr<BasicItem> item{};
+
+    public:
+        DotItem() = default;
+
+        template<std::derived_from<BasicItem> T>
+        explicit DotItem(T dot_item)
+          : item{makeUnique<T>(std::move(dot_item))}
+        {}
+
+        auto operator->() -> BasicItem *
+        {
+            return get();
+        }
+
+        auto operator->() const -> const BasicItem *
+        {
+            return get();
+        }
+
+        [[nodiscard]] auto get() -> BasicItem *
+        {
+            return item.get();
+        }
+
+        [[nodiscard]] auto get() const -> const BasicItem *
+        {
+            return item.get();
+        }
     };
 }// namespace ccl::lex::dot_item
 

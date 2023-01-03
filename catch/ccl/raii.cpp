@@ -1,5 +1,5 @@
-#include <ccl/core/raii.hpp>
 #include <ccl/debug/debug_file.hpp>
+#include <ccl/raii.hpp>
 
 using namespace ccl;
 
@@ -10,7 +10,12 @@ BOOST_AUTO_TEST_CASE(RaiiTest)
     DEBUG_VAR test_variable = 10;
     {
         const auto raii = Raii{
-            [&test_variable]() { test_variable = 42; }, [&test_variable]() { test_variable = 10; }};
+            [&test_variable]() {
+                test_variable = 42;
+            },
+            [&test_variable]() {
+                test_variable = 10;
+            }};
 
         BOOST_CHECK_EQUAL(test_variable, 42);
     }

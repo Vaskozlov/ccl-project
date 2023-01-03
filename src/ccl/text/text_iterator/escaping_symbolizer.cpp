@@ -58,8 +58,9 @@ namespace ccl::text
 
     auto TextIterator::EscapingSymbolizer::searchInExtraSymbols(char32_t chr) -> char32_t
     {
-        auto it =
-            std::ranges::find_if(extraSymbols, [chr](auto elem) { return elem.first == chr; });
+        auto it = std::ranges::find_if(extraSymbols, [chr](auto elem) {
+            return elem.first == chr;
+        });
 
         if (it == extraSymbols.end()) [[unlikely]] {
             throwMatchException();

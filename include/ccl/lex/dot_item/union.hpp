@@ -8,6 +8,7 @@ namespace ccl::lex::dot_item
 {
     class Union final : public BasicItem
     {
+    private:
         UtfSet bitset{};
 
     public:

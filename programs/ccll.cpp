@@ -33,8 +33,7 @@ auto main(int argc, char *argv[]) -> int
         return 1;
     }
 
-    auto [generated_header, generated_source] =
-        ccl::lex::AnalyzerGenerator::generateStaticVersion(source_file);
+    auto generated_header = ccl::lex::AnalyzerGenerator::generateStaticVersion(source_file);
 
     auto file_stream = std::fstream{};
     file_stream.open(header_name, std::ios::out);

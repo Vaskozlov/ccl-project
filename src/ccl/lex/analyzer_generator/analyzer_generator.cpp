@@ -36,8 +36,7 @@ namespace ccl::lex
         return buffer.str();
     }
 
-    auto AnalyzerGenerator::generateStaticVersion(const std::filesystem::path &path)
-        -> Pair<std::string, std::string>
+    auto AnalyzerGenerator::generateStaticVersion(const std::filesystem::path &path) -> std::string
     {
         auto filename = path.string();
         auto file_content = readFile(path);
@@ -46,10 +45,10 @@ namespace ccl::lex
     }
 
     auto AnalyzerGenerator::generateStaticVersion(string_view filename, string_view text)
-        -> Pair<std::string, std::string>
+        -> std::string
     {
         auto tokenizer = lexForGenerator.getTokenizer(text, filename);
         auto static_generator = gen::StaticGenerator{tokenizer};
-        return static_generator.get();
+        return static_generator.getCode();
     }
 }// namespace ccl::lex

@@ -22,7 +22,7 @@ namespace ccl::lex
         SpecialItems specialItems{};
         std::basic_string<Id> ignoredIds{};
         std::string skippedCharacters{};
-        ExceptionHandler &exceptionHandler;
+        ExceptionHandler &exceptionHandler;// NOLINT
 
     public:
         class Tokenizer;

@@ -112,21 +112,21 @@ namespace ccl::lex::dot_item
         }
     }
 
-    auto Sequence::throwEmptyStringBegin(TextIterator &rule_iterator) -> void
+    CCL_INLINE auto Sequence::throwEmptyStringBegin(TextIterator &rule_iterator) -> void
     {
         rule_iterator.throwPanicError(
             AnalysisStage::LEXICAL_ANALYSIS, "sequence item begin cannot be empty"_sv);
         throw UnrecoverableError{"unrecoverable error in SequenceType"};
     }
 
-    auto Sequence::throwEmptyStringEnd(TextIterator &rule_iterator) -> void
+    CCL_INLINE auto Sequence::throwEmptyStringEnd(TextIterator &rule_iterator) -> void
     {
         rule_iterator.throwPanicError(
             AnalysisStage::LEXICAL_ANALYSIS, "sequence item end cannot be empty"_sv);
         throw UnrecoverableError{"unrecoverable error in SequenceType"};
     }
 
-    auto Sequence::throwUnterminatedString(
+    CCL_INLINE auto Sequence::throwUnterminatedString(
         TextIterator &rule_iterator,
         const string_view &message,
         const string_view &suggestion) -> void
@@ -135,7 +135,7 @@ namespace ccl::lex::dot_item
         throw UnrecoverableError{"unrecoverable error in SequenceType"};
     }
 
-    auto Sequence::throwStringBeginException(TextIterator &rule_iterator) const -> void
+    CCL_INLINE auto Sequence::throwStringBeginException(TextIterator &rule_iterator) const -> void
     {
         auto message = fmt::format("string literal must begin with {}", starter);
 

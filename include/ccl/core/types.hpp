@@ -99,6 +99,9 @@ namespace ccl
     template<typename T>
     using SharedPtr = std::shared_ptr<T>;
 
+    template<typename T>
+    using WeakPtr = std::weak_ptr<T>;
+
     template<typename T, typename... Ts>
     constexpr auto makeUnique(Ts &&...args) -> UniquePtr<T>
     {

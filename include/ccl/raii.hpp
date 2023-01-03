@@ -1,25 +1,26 @@
 #ifndef CCL_PROJECT_RAII_HPP
 #define CCL_PROJECT_RAII_HPP
 
+#include <type_traits>
+
 namespace ccl
 {
-    template<typename T, typename... Ts>
-    concept Callable =
-        requires(T &&function, Ts &&...args) { function(std::forward<Ts>(args)...); };
+    template<typename Fn, typename... Args>
+    concept Callable = std::is_invocable_v<Fn, Args...>;
 
     template<Callable Constructor, Callable Deleter>
     class Raii
     {
     private:
-        Constructor constructor;
-        Deleter deleter;
+        Optional<Constructor> constructor;
+        Optional<Deleter> deleter;
 
     public:
         constexpr Raii(Constructor &&t_constructor, Deleter &&t_deleter)
           : constructor{std::forward<Constructor>(t_constructor)}
           , deleter{std::forward<Deleter>(t_deleter)}
         {
-            constructor();
+            (*constructor)();
         }
 
         Raii(const Raii &) = delete;
@@ -27,7 +28,9 @@ namespace ccl
 
         constexpr ~Raii()
         {
-            deleter();
+            if (deleter.has_value()) {
+                (*deleter)();
+            }
         }
 
         auto operator=(const Raii &) -> Raii & = delete;

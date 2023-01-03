@@ -11,8 +11,6 @@ function(ccl_check_cxx_flag_support flag enable_condition)
     string(REPLACE ":" "_COLON_" VARIABLE_NAME ${VARIABLE_NAME})
     string(TOUPPER ${VARIABLE_NAME} VARIABLE_NAME)
 
-    unset(${VARIABLE_NAME} CACHE)
-
     check_cxx_compiler_flag(${COMPILER_OPTION} ${VARIABLE_NAME})
 
     if (${enable_condition} AND ${VARIABLE_NAME})

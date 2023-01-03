@@ -105,32 +105,31 @@ namespace ccl::lex::dot_item
         }
     }
 
-    auto Container::RuleParser::constructLogicalUnit() -> UniquePtr<BasicItem>
+    auto Container::RuleParser::constructLogicalUnit() -> LogicalUnit
     {
         auto rhs = std::move(items.back());
         items.pop_back();
 
-        return makeUnique<BasicItem, LogicalUnit>(
-            std::move(constructedLhs.value()), std::move(rhs), logicalOperation, getId());
+        return LogicalUnit{
+            std::move(constructedLhs.value()), std::move(rhs), logicalOperation, getId()};
     }
 
-    auto Container::RuleParser::constructNewSequence() -> UniquePtr<BasicItem>
+    auto Container::RuleParser::constructNewSequence() -> Sequence
     {
         tryToFinishLogicalOperation();
 
-        return makeUnique<BasicItem, Sequence>(
-            Sequence::SequenceFlags{}, "\"", ruleIterator, getId());
+        return Sequence{Sequence::SequenceFlags{}, "\"", ruleIterator, getId()};
     }
 
-    auto Container::RuleParser::constructNewUnion() -> UniquePtr<BasicItem>
+    auto Container::RuleParser::constructNewUnion() -> Union
     {
         tryToFinishLogicalOperation();
 
-        return makeUnique<BasicItem, Union>(ruleIterator, getId());
+        return Union{ruleIterator, getId()};
     }
 
     // NOLINTNEXTLINE (recursive function)
-    auto Container::RuleParser::constructNewContainer() -> UniquePtr<BasicItem>
+    auto Container::RuleParser::constructNewContainer() -> Container
     {
         tryToFinishLogicalOperation();
 
@@ -140,19 +139,11 @@ namespace ccl::lex::dot_item
 
         ruleIterator.setEnd(text.begin() + bracket_index);
 
-        auto new_container = makeUnique<BasicItem, Container>(
-            ruleIterator, specialItems, getId(), false, container.isSpecial());
+        auto new_container =
+            Container{ruleIterator, specialItems, getId(), false, container.isSpecial()};
         ruleIterator.setEnd(saved_end);
 
         return new_container;
-    }
-
-    auto Container::RuleParser::emplaceItem(UniquePtr<BasicItem> item) -> void
-    {
-        if (!item->canBeOptimized()) {
-            finishPreviousItemInitialization();
-            items.emplace_back(std::move(item));
-        }
     }
 
     auto Container::RuleParser::finishPreviousItemInitialization() -> void
@@ -161,7 +152,7 @@ namespace ccl::lex::dot_item
             return;
         }
 
-        const auto *item = items.back().get();
+        const auto &item = items.back();
         auto item_repetition = item->getRepetition();
 
         neverRecognizedSuggestion(
@@ -241,11 +232,14 @@ namespace ccl::lex::dot_item
 
     auto Container::RuleParser::postCreationCheck() -> void
     {
-        const auto postfix_elem = std::ranges::find_if(
-            std::as_const(items), [](const auto &elem) { return elem->hasPostfix(); });
+        const auto postfix_elem = std::ranges::find_if(std::as_const(items), [](const auto &elem) {
+            return elem->hasPostfix();
+        });
 
-        const auto are_postfixes_correct = std::all_of(
-            postfix_elem, items.cend(), [](const auto &elem) { return elem->hasPostfix(); });
+        const auto are_postfixes_correct =
+            std::all_of(postfix_elem, items.cend(), [](const auto &elem) {
+                return elem->hasPostfix();
+            });
 
         if (!are_postfixes_correct) {
             throwUnableToApply("item without postfix modifier exists after items with it");
@@ -331,7 +325,7 @@ namespace ccl::lex::dot_item
     auto BasicItem::SpecialItems::checkForSpecial(const ForkedGenerator &text_iterator) const
         -> bool
     {
-        return std::ranges::any_of(special_items, [&text_iterator](const auto &special_item) {
+        return std::ranges::any_of(specialItems, [&text_iterator](const auto &special_item) {
             auto scan_result = special_item.scan(text_iterator);
             return scan_result != 0;
         });
@@ -341,7 +335,7 @@ namespace ccl::lex::dot_item
         -> bool
     {
         return std::ranges::any_of(
-            special_items, [&text_iterator, &token](const auto &special_item) {
+            specialItems, [&text_iterator, &token](const auto &special_item) {
                 return special_item.beginScan(text_iterator, token, ScanningType::SPECIAL);
             });
     }
