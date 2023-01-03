@@ -131,8 +131,8 @@ namespace ccl::lex::dot_item
         DotItem() = default;
 
         template<std::derived_from<BasicItem> T>
-        explicit DotItem(T item)
-          : item{makeUnique<T>(std::move(item))}
+        explicit DotItem(T dot_item)
+          : item{makeUnique<T>(std::move(dot_item))}
         {}
 
         auto operator->() -> BasicItem *
