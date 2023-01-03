@@ -5,13 +5,13 @@ namespace ccl::lex::dot_item
     using namespace ccl::string_view_literals;
 
     CCL_INLINE auto
-        Container::addPrefixOrPostfix(const BasicItem &item, Token &token, const string_view &repr)
+        Container::addPrefixOrPostfix(const BasicItem *item, Token &token, const string_view &repr)
             -> void
     {
         if (repr.empty()) {
-        } else if (item.hasPrefix()) {
+        } else if (item->hasPrefix()) {
             token.addPrefix(repr);
-        } else if (item.hasPostfix()) {
+        } else if (item->hasPostfix()) {
             token.addPostfix(repr);
         }
     }
@@ -57,7 +57,7 @@ namespace ccl::lex::dot_item
             }
 
             addPrefixOrPostfix(
-                *item, token, {local_iterator.getRemainingAsCarriage(), *char_to_skip});
+                item.get(), token, {local_iterator.getRemainingAsCarriage(), *char_to_skip});
 
             totally_skipped += *char_to_skip;
             local_iterator.skip(*char_to_skip);

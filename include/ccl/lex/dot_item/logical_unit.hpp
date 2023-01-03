@@ -17,15 +17,14 @@ namespace ccl::lex::dot_item
     {
         using typename BasicItem::TextIterator;
 
-        UniquePtr<BasicItem> rhsItem{};
-        UniquePtr<BasicItem> lhsItem{};
+        DotItem rhsItem{};
+        DotItem lhsItem{};
         LogicalOperation logicalOperation{LogicalOperation::NONE};
 
     public:
         [[nodiscard]] auto empty() const noexcept -> bool final;
 
-        LogicalUnit(
-            UniquePtr<BasicItem> lhs, UniquePtr<BasicItem> rhs, LogicalOperation logical_operation, Id item_id);
+        LogicalUnit(DotItem lhs, DotItem rhs, LogicalOperation logical_operation, Id item_id);
 
     private:
         [[nodiscard]] auto scanIteration(const ForkedGenerator &text_iterator) const

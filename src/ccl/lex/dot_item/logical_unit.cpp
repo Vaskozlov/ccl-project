@@ -3,7 +3,7 @@
 namespace ccl::lex::dot_item
 {
     LogicalUnit::LogicalUnit(
-        UniquePtr<BasicItem> lhs, UniquePtr<BasicItem> rhs, LogicalOperation logical_operation, Id item_id)
+        DotItem lhs, DotItem rhs, LogicalOperation logical_operation, Id item_id)
       : BasicItem{item_id}
       , rhsItem{std::move(lhs)}
       , lhsItem{std::move(rhs)}

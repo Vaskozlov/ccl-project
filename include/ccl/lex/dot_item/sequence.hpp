@@ -65,13 +65,13 @@ namespace ccl::lex::dot_item
 
         [[noreturn]] auto throwStringBeginException(TextIterator &rule_iterator) const -> void;
 
-        [[noreturn]] CCL_INLINE static auto throwEmptyStringEnd(TextIterator &rule_iterator)
+        [[noreturn]] static auto throwEmptyStringEnd(TextIterator &rule_iterator)
             -> void;
 
-        [[noreturn]] CCL_INLINE static auto throwEmptyStringBegin(TextIterator &rule_iterator)
+        [[noreturn]] static auto throwEmptyStringBegin(TextIterator &rule_iterator)
             -> void;
 
-        [[noreturn]] CCL_INLINE static auto throwUnterminatedString(
+        [[noreturn]] static auto throwUnterminatedString(
             TextIterator &rule_iterator,
             const string_view &message,
             const string_view &suggestion = {}) -> void;

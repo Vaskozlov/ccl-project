@@ -5,7 +5,8 @@
 #include <ccl/lex/dot_item/basic_item.hpp>
 #include <ccl/lex/dot_item/logical_unit.hpp>
 #include <ccl/lex/dot_item/repetition.hpp>
-#include <stack>
+#include <ccl/lex/dot_item/sequence.hpp>
+#include <ccl/lex/dot_item/union.hpp>
 
 namespace ccl::lex::dot_item
 {
@@ -17,13 +18,13 @@ namespace ccl::lex::dot_item
         CHECK
     };
 
+    class Container;
+
     class Container final : public BasicItem
     {
         using BasicItem::canBeOptimized;
         using typename BasicItem::TextIterator;
-
-        using ForkedGen = typename TextIterator::ForkedTextIterator;
-        using storage_t = SmallVector<UniquePtr<BasicItem>>;
+        using storage_t = SmallVector<DotItem>;
 
         class RuleParser;
 
@@ -83,7 +84,7 @@ namespace ccl::lex::dot_item
 
         [[nodiscard]] auto failedToEndItem(const ForkedGenerator &text_iterator) const -> bool;
 
-        static auto addPrefixOrPostfix(const BasicItem &item, Token &token, const string_view &repr)
+        static auto addPrefixOrPostfix(const BasicItem *item, Token &token, const string_view &repr)
             -> void;
     };
 
@@ -93,7 +94,7 @@ namespace ccl::lex::dot_item
         TextIterator &ruleIterator;
         storage_t &items{container.items};
         SpecialItems &specialItems{container.specialItems};
-        Optional<UniquePtr<BasicItem>> constructedLhs{std::nullopt};
+        Optional<DotItem> constructedLhs{std::nullopt};
         LogicalOperation logicalOperation{};
         bool rhsItemConstructed{false};
 
@@ -121,15 +122,22 @@ namespace ccl::lex::dot_item
 
         [[nodiscard]] auto hasMovedToTheNextChar() -> bool;
 
-        [[nodiscard]] auto constructLogicalUnit() -> UniquePtr<BasicItem>;
+        [[nodiscard]] auto constructLogicalUnit() -> LogicalUnit;
 
-        [[nodiscard]] auto constructNewSequence() -> UniquePtr<BasicItem>;
+        [[nodiscard]] auto constructNewSequence() -> Sequence;
 
-        [[nodiscard]] auto constructNewUnion() -> UniquePtr<BasicItem>;
+        [[nodiscard]] auto constructNewUnion() -> Union;
 
-        [[nodiscard]] auto constructNewContainer() -> UniquePtr<BasicItem>;
+        [[nodiscard]] auto constructNewContainer() -> Container;
 
-        auto emplaceItem(UniquePtr<BasicItem> item) -> void;
+        template<std::derived_from<BasicItem> T>
+        auto emplaceItem(T item) -> void
+        {
+            if (!item.canBeOptimized()) {
+                finishPreviousItemInitialization();
+                items.emplace_back(std::move(item));
+            }
+        }
 
         auto finishPreviousItemInitialization() -> void;
 
@@ -157,7 +165,7 @@ namespace ccl::lex::dot_item
     class BasicItem::SpecialItems
     {
     public:
-        Vector<Container> special_items;
+        Vector<Container> specialItems;
 
         [[nodiscard]] auto specialScan(TextIterator &text_iterator, Token &token) const -> bool;
         [[nodiscard]] auto checkForSpecial(const ForkedGenerator &text_iterator) const -> bool;
