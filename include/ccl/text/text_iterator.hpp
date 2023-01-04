@@ -27,7 +27,7 @@ namespace ccl::text
         class NotationEscapingSymbolizer;
 
         [[nodiscard]] static auto
-            doEscapeSymbolizing(TextIterator &text_iterator, const extra_symbols_t &extra_symbols_)
+            doEscapeSymbolizing(TextIterator &text_iterator, const extra_symbols_t &extra_symbols)
                 -> char32_t;
 
         [[nodiscard]] static auto calculateNotationEscapeSymbol(

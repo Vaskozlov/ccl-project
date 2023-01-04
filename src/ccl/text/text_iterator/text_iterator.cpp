@@ -28,9 +28,9 @@ namespace ccl::text
     }
 
     auto TextIterator::doEscapeSymbolizing(
-        TextIterator &text_iterator, const extra_symbols_t &extra_symbols_) -> char32_t
+        TextIterator &text_iterator, const extra_symbols_t &extra_symbols) -> char32_t
     {
-        return EscapingSymbolizer(text_iterator, extra_symbols_).matchNextChar();
+        return EscapingSymbolizer(text_iterator, extra_symbols).matchNextChar();
     }
 
     auto TextIterator::calculateNotationEscapeSymbol(
