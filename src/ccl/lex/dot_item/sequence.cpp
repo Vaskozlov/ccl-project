@@ -4,10 +4,6 @@ namespace ccl::lex::dot_item
 {
     using namespace ccl::string_view_literals;
 
-    static const std::basic_string<Pair<char32_t, char32_t>> SpecialSymbolsForSequence{
-        {U'[', U'['},
-        {U']', U']'}};
-
     Sequence::Sequence(
         SequenceFlags sequence_flags, const string_view &sequence_starter,
         const string_view &sequence_ender, TextIterator &rule_iterator, Id item_id)
@@ -18,6 +14,9 @@ namespace ccl::lex::dot_item
       , starter{sequence_starter}
       , ender{sequence_ender}
     {
+        static const std::basic_string<Pair<char32_t, char32_t>> special_symbols_for_sequence{
+            {U'[', U'['}, {U']', U']'}};
+
         auto begin_iterator_state = rule_iterator;
 
         checkSequenceArguments(rule_iterator);
@@ -31,7 +30,7 @@ namespace ccl::lex::dot_item
                 chr = rule_iterator.next();
             } else {
                 auto [escaping, character] =
-                    rule_iterator.nextRawCharWithEscapingSymbols(SpecialSymbolsForSequence);
+                    rule_iterator.nextRawCharWithEscapingSymbols(special_symbols_for_sequence);
                 is_escaping = escaping;
                 chr = character;
             }
