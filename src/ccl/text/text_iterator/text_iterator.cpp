@@ -12,7 +12,6 @@ namespace ccl::text
       , exceptionHandler{&exception_handler}
     {}
 
-    typedef CrtpBasicTextIterator<TextIterator> textIterator;
     auto TextIterator::nextRawCharWithEscapingSymbols(const extra_symbols_t &extra_symbols)
         -> Pair<bool, char32_t>
     {
@@ -24,7 +23,7 @@ namespace ccl::text
             chr = doEscapeSymbolizing(*this, extra_symbols);
         }
 
-        textIterator::setCurrentChar(chr);
+        CrtpBasicTextIterator::setCurrentChar(chr);
         return {escaping, chr};
     }
 
