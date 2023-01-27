@@ -45,14 +45,14 @@ namespace ccl
         BasicStringView() noexcept = default;
 
         template<size_t N>
-        constexpr explicit BasicStringView(const std::array<CharT, N> &array_) noexcept
-          : string{array_.data()}
-          , length{array_.size()}
+        constexpr explicit BasicStringView(const std::array<CharT, N> &char_array) noexcept
+          : string{char_array.data()}
+          , length{char_array.size()}
         {}
 
-        constexpr BasicStringView(pointer string_, size_t length_) noexcept
-          : string{string_}
-          , length{length_}
+        constexpr BasicStringView(pointer char_pointer, size_t string_length) noexcept
+          : string{char_pointer}
+          , length{string_length}
         {}
 
         constexpr BasicStringView(iterator first, iterator last) noexcept

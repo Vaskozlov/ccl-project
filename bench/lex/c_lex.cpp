@@ -85,6 +85,9 @@ static auto lexicalAnalysisOfC(benchmark::State &state) -> void
 
         while (const auto &token = tokenizer.yield()) {
             benchmark::DoNotOptimize(token);
+            benchmark::DoNotOptimize(token.getRepr());
+            benchmark::DoNotOptimize(token.getLine());
+            benchmark::DoNotOptimize(token.getColumn());
         }
     }
 }

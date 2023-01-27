@@ -9,7 +9,6 @@
 namespace ccl::utf8
 {
     using integral_literals::operator""_B;
-    using integral_literals::operator""_U8;
 
     template<typename T>
     concept ValueTypeUtf8 = IsSameToAny<typename T::value_type, char, char8_t>;
@@ -118,6 +117,9 @@ namespace ccl::utf8
         }
         // NOLINTEND
     }
+
+    extern template auto appendUtf32ToUtf8Container<>(std::string &string, char32_t chr) -> void;
+    extern template auto appendUtf32ToUtf8Container<>(Vector<char> &string, char32_t chr) -> void;
 }// namespace ccl::utf8
 
 

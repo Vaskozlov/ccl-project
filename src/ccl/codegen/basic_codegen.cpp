@@ -4,9 +4,6 @@
 
 namespace ccl::codegen
 {
-    constexpr bool HasStdSplit =
-        requires(std::string_view string) { std::views::split(string, '\n'); };
-
     auto BasicCodeGenerator::newLine() -> void
     {
         generatedCode.push_back('\n');

@@ -287,8 +287,6 @@ namespace ccl::text
     class CCL_TRIVIAL_ABI BasicTextIterator final : public CrtpBasicTextIterator<BasicTextIterator>
     {
     public:
-        using Base = CrtpBasicTextIterator<BasicTextIterator>;
-
         BasicTextIterator() noexcept = default;
 
         constexpr explicit BasicTextIterator(string_view input) noexcept

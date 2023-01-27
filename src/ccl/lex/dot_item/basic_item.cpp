@@ -30,14 +30,14 @@ namespace ccl::lex::dot_item
                 break;
             }
 
-            auto scan_result = scanIteration(text_iterator);
+            auto chars_to_skip = scanIteration(text_iterator);
 
-            if (0 == scan_result) {
+            if (chars_to_skip == 0) {
                 break;
             }
 
-            text_iterator.skip(scan_result);
-            totally_skipped += scan_result;
+            text_iterator.skip(chars_to_skip);
+            totally_skipped += chars_to_skip;
             ++times;
         }
 

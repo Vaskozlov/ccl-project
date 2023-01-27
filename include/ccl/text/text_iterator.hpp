@@ -14,7 +14,6 @@ namespace ccl::text
     class TextIterator : public CrtpBasicTextIterator<TextIterator>
     {
     private:
-        using Base = CrtpBasicTextIterator<TextIterator>;
         using extra_symbols_t = std::basic_string<Pair<char32_t, char32_t>>;
 
         Location location{};
@@ -231,7 +230,8 @@ namespace ccl::text
         NotationEscapingSymbolizer(const NotationEscapingSymbolizer &) = delete;
 
         NotationEscapingSymbolizer(
-            TextIterator &text_iterator, u16 u_16, u16 notation_power, bool are_all_chars_required);
+            TextIterator &text_iterator, u16 maximum_symbols, u16 notation_power,
+            bool are_all_chars_required);
 
         ~NotationEscapingSymbolizer() = default;
 
