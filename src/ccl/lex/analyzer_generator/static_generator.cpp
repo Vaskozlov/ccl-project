@@ -112,7 +112,7 @@ namespace ccl::lex::gen
             variableName);
         codeGenerator << '{' << push_scope;
 
-        for (const auto &rule : BuiltinRules | std::views::keys) {
+        for (const auto &[rule, id] : BuiltinRules) {
             output_rule(rule);
         }
 
