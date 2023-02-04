@@ -1,5 +1,5 @@
-#ifndef CCL_PROJECT_BASIC_ITEM_HPP
-#define CCL_PROJECT_BASIC_ITEM_HPP
+#ifndef CCL_PROJECT_ITEM_CONCEPT_HPP
+#define CCL_PROJECT_ITEM_CONCEPT_HPP
 
 #include <ccl/lex/dot_item/repetition.hpp>
 #include <ccl/lex/token.hpp>
@@ -16,7 +16,7 @@ namespace ccl::lex::dot_item
 
     class Container;
 
-    class BasicItem
+    class DotItemConcept
     {
     public:
         using TextIterator = text::TextIterator;
@@ -39,22 +39,22 @@ namespace ccl::lex::dot_item
         Flags flags;
 
     public:
-        explicit BasicItem(Id item_id)
+        explicit DotItemConcept(Id item_id)
           : id{item_id}
         {}
 
-        BasicItem(Id item_id, Flags item_flags)
+        DotItemConcept(Id item_id, Flags item_flags)
           : id{item_id}
           , flags{item_flags}
         {}
 
-        BasicItem(const BasicItem &) = default;
-        BasicItem(BasicItem &&) noexcept = default;
+        DotItemConcept(const DotItemConcept &) = default;
+        DotItemConcept(DotItemConcept &&) noexcept = default;
 
-        virtual ~BasicItem() = default;
+        virtual ~DotItemConcept() = default;
 
-        auto operator=(const BasicItem &) -> void = delete;
-        auto operator=(BasicItem &&) noexcept -> void = delete;
+        auto operator=(const DotItemConcept &) -> void = delete;
+        auto operator=(DotItemConcept &&) noexcept -> void = delete;
 
         [[nodiscard]] auto getRepetition() const noexcept -> Repetition
         {
@@ -125,32 +125,32 @@ namespace ccl::lex::dot_item
     class DotItem
     {
     private:
-        UniquePtr<BasicItem> item{};
+        UniquePtr<DotItemConcept> item{};
 
     public:
         DotItem() = default;
 
-        template<std::derived_from<BasicItem> T>
+        template<std::derived_from<DotItemConcept> T>
         explicit DotItem(T dot_item)
           : item{makeUnique<T>(std::move(dot_item))}
         {}
 
-        auto operator->() -> BasicItem *
+        auto operator->() -> DotItemConcept *
         {
             return get();
         }
 
-        auto operator->() const -> const BasicItem *
+        auto operator->() const -> const DotItemConcept *
         {
             return get();
         }
 
-        [[nodiscard]] auto get() -> BasicItem *
+        [[nodiscard]] auto get() -> DotItemConcept *
         {
             return item.get();
         }
 
-        [[nodiscard]] auto get() const -> const BasicItem *
+        [[nodiscard]] auto get() const -> const DotItemConcept *
         {
             return item.get();
         }
@@ -159,7 +159,7 @@ namespace ccl::lex::dot_item
 
 namespace ccl::lex
 {
-    using SpecialItems = dot_item::BasicItem::SpecialItems;
+    using SpecialItems = dot_item::DotItemConcept::SpecialItems;
 }
 
-#endif /* CCL_PROJECT_BASIC_ITEM_HPP */
+#endif /* CCL_PROJECT_ITEM_CONCEPT_HPP */

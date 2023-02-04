@@ -1,10 +1,10 @@
-#include <ccl/lex/dot_item/basic_item.hpp>
+#include <ccl/lex/dot_item/item_concept.hpp>
 
 using namespace ccl::integral_literals;
 
 namespace ccl::lex::dot_item
 {
-    auto BasicItem::alwaysRecognizedSuggestion(TextIterator &text_iterator, bool condition) -> void
+    auto DotItemConcept::alwaysRecognizedSuggestion(TextIterator &text_iterator, bool condition) -> void
     {
         if (condition) [[unlikely]] {
             text_iterator.throwWarning(
@@ -12,7 +12,7 @@ namespace ccl::lex::dot_item
         }
     }
 
-    auto BasicItem::neverRecognizedSuggestion(TextIterator &text_iterator, bool condition) -> void
+    auto DotItemConcept::neverRecognizedSuggestion(TextIterator &text_iterator, bool condition) -> void
     {
         if (condition) [[unlikely]] {
             text_iterator.throwWarning(
@@ -20,7 +20,7 @@ namespace ccl::lex::dot_item
         }
     }
 
-    auto BasicItem::scan(ForkedGenerator text_iterator) const -> Optional<size_t>
+    auto DotItemConcept::scan(ForkedGenerator text_iterator) const -> Optional<size_t>
     {
         auto times = as<size_t>(0);
         auto totally_skipped = as<size_t>(0);

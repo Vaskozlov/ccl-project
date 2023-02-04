@@ -1,11 +1,11 @@
 #ifndef CCL_PROJECT_SEQUENCE_HPP
 #define CCL_PROJECT_SEQUENCE_HPP
 
-#include <ccl/lex/dot_item/basic_item.hpp>
+#include <ccl/lex/dot_item/item_concept.hpp>
 
 namespace ccl::lex::dot_item
 {
-    class Sequence final : public BasicItem
+    class Sequence final : public DotItemConcept
     {
     public:
         struct CCL_TRIVIAL_ABI SequenceFlags
@@ -15,7 +15,7 @@ namespace ccl::lex::dot_item
         };
 
     private:
-        using typename BasicItem::TextIterator;
+        using typename DotItemConcept::TextIterator;
 
         std::string sequenceValue{};
         string_view starter{};

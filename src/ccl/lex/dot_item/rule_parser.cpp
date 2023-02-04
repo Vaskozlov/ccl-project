@@ -257,8 +257,8 @@ namespace ccl::lex::dot_item
         }
 
         finishPreviousItemInitialization();
-        BasicItem::neverRecognizedSuggestion(ruleIterator, items.empty() && !isReversed());
-        BasicItem::alwaysRecognizedSuggestion(ruleIterator, items.empty() && isReversed());
+        DotItemConcept::neverRecognizedSuggestion(ruleIterator, items.empty() && !isReversed());
+        DotItemConcept::alwaysRecognizedSuggestion(ruleIterator, items.empty() && isReversed());
     }
 
     auto Container::RuleParser::findContainerEnd(string_view repr) -> size_t
@@ -322,7 +322,7 @@ namespace ccl::lex::dot_item
         throw UnrecoverableError{"unrecoverable error in ContainerType"};
     }
 
-    auto BasicItem::SpecialItems::checkForSpecial(const ForkedGenerator &text_iterator) const
+    auto DotItemConcept::SpecialItems::checkForSpecial(const ForkedGenerator &text_iterator) const
         -> bool
     {
         return std::ranges::any_of(specialItems, [&text_iterator](const auto &special_item) {
@@ -331,7 +331,7 @@ namespace ccl::lex::dot_item
         });
     }
 
-    auto BasicItem::SpecialItems::specialScan(TextIterator &text_iterator, Token &token) const
+    auto DotItemConcept::SpecialItems::specialScan(TextIterator &text_iterator, Token &token) const
         -> bool
     {
         return std::ranges::any_of(

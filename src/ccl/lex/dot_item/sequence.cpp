@@ -7,7 +7,7 @@ namespace ccl::lex::dot_item
     Sequence::Sequence(
         SequenceFlags sequence_flags, const string_view &sequence_starter,
         const string_view &sequence_ender, TextIterator &rule_iterator, Id item_id)
-      : BasicItem{item_id, Flags{
+      : DotItemConcept{item_id, Flags{
                                .sequenceIsMultiline=sequence_flags.multiline,
                                .sequenceNoEscapingSymbols=sequence_flags.noEscaping
                            }}

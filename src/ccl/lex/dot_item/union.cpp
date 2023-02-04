@@ -5,7 +5,7 @@ namespace ccl::lex::dot_item
     using namespace ccl::string_view_literals;
 
     Union::Union(TextIterator &rule_iterator, Id rule_id)
-      : BasicItem{rule_id}
+      : DotItemConcept{rule_id}
     {
         static const std::basic_string<Pair<char32_t, char32_t>> special_symbols = {
             {U'[', U'['}, {U']', U']'}, {U'-', U'-'}};
