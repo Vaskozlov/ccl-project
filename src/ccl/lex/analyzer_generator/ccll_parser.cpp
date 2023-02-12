@@ -14,6 +14,7 @@ namespace ccl::lex::parser
       , id{block_info.lastId++}
     {}
 
+    // NOLINT recursive function
     auto CcllParser::parse() -> bool
     {
         auto token = tokenizer.yield();
