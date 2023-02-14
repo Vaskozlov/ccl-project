@@ -5,7 +5,11 @@
 
 namespace ccl
 {
-    template<Trivial T>
+    template<typename T>
+    concept LazyStorable = std::is_trivially_copyable_v<T> && std::is_trivially_destructible_v<T> &&
+                           std::is_trivially_copy_assignable_v<T>;
+
+    template<LazyStorable T>
     class Lazy
     {
     private:
