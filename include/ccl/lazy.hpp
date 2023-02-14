@@ -19,7 +19,7 @@ namespace ccl
         Lazy() = default;
 
         // NOLINTNEXTLINE
-        constexpr Lazy(T &&object)
+        constexpr Lazy(T object)
           : lazyObject{std::forward<T>(object)}
         {}
 
