@@ -65,10 +65,11 @@ namespace ccl
         }
     };
 
-    template<LazyStorable T>
+    template<typename T>
     CCL_DECL auto toLazy(T &&value) -> Lazy<std::remove_cvref_t<T>>
+        requires(LazyStorable<std::remove_cvref_t<T>>)
     {
-        return Lazy<std::remove_cvref_t<T>>(value);
+        return {std::forward<T>(value)};
     }
 
     template<Callable Func>
