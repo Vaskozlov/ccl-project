@@ -68,7 +68,7 @@ namespace ccl
     template<LazyStorable T>
     CCL_DECL auto toLazy(T &&value) -> Lazy<std::remove_cvref_t<T>>
     {
-        return value;
+        return Lazy<std::remove_cvref_t<T>>(value);
     }
 
     template<Callable Func>
