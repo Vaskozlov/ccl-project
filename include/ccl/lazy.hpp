@@ -64,6 +64,18 @@ namespace ccl
             lazyObject = std::get<0>(lazyObject)();
         }
     };
+
+    template<LazyStorable T>
+    CCL_DECL auto toLazy(T &&value) -> Lazy<std::remove_cvref_t<T>>
+    {
+        return value;
+    }
+
+    template<Callable Func>
+    CCL_DECL auto toLazy(Func &&function) -> Lazy<decltype(function())>
+    {
+        return Lazy<decltype(function())>(std::forward<Func>(function));
+    }
 }// namespace ccl
 
 #endif /* CCL_PROJECT_LAZY_HPP */
