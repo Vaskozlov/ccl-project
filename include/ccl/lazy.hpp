@@ -1,11 +1,11 @@
 #ifndef CCL_PROJECT_LAZY_HPP
 #define CCL_PROJECT_LAZY_HPP
 
-#include <ccl/core/defines.hpp>
+#include <ccl/ccl.hpp>
 
 namespace ccl
 {
-    template<typename T>
+    template<Trivial T>
     class Lazy
     {
     private:
@@ -14,7 +14,8 @@ namespace ccl
     public:
         Lazy() = default;
 
-        constexpr explicit Lazy(T &&object)
+        // NOLINTNEXTLINE
+        constexpr Lazy(T &&object)
           : lazyObject{std::forward<T>(object)}
         {}
 
@@ -25,14 +26,12 @@ namespace ccl
 
         // NOLINTNEXTLINE
         CCL_DECL operator T()
-            requires(std::is_trivial_v<T>)
         {
             return get();
         }
 
         // NOLINTNEXTLINE
         CCL_DECL operator T() const
-            requires(std::is_trivial_v<T>)
         {
             return get();
         }
