@@ -1,13 +1,11 @@
 #ifndef CCL_PROJECT_RAII_HPP
 #define CCL_PROJECT_RAII_HPP
 
+#include <ccl/core/concepts.hpp>
 #include <type_traits>
 
 namespace ccl
 {
-    template<typename Fn, typename... Args>
-    concept Callable = std::is_invocable_v<Fn, Args...>;
-
     template<Callable Constructor, Callable Deleter>
     class Raii
     {

@@ -23,7 +23,7 @@ namespace ccl
           : lazyObject{std::forward<T>(object)}
         {}
 
-        template<typename Func>
+        template<Callable Func>
         constexpr explicit Lazy(Func &&function)
           : lazyObject{std::forward<Func>(function)}
         {}

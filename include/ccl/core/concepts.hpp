@@ -26,6 +26,9 @@ namespace ccl
 
     template<typename T>
     concept CharacterArray = std::is_pointer_v<T> || std::is_array_v<T>;
+
+    template<typename Fn, typename... Args>
+    concept Callable = std::is_invocable_v<Fn, Args...>;
 }// namespace ccl
 
 #endif /* CCL_PROJECT_CONCEPTS_HPP */
