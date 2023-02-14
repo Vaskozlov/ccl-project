@@ -7,6 +7,9 @@
 namespace ccl
 {
     template<typename T>
+    concept Trivial = std::is_trivial_v<T>;
+
+    template<typename T>
     concept Enum = std::is_enum_v<T>;
 
     template<typename T>

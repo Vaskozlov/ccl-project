@@ -8,7 +8,7 @@ namespace ccl
     template<typename T1, typename T2>
     class CCL_TRIVIAL_ABI TrivialPair
     {
-        static_assert(std::is_trivial_v<T1> && std::is_trivial_v<T2>);
+        static_assert(Trivial<T1> && Trivial<T2>);
 
     public:
         T1 first;
@@ -26,8 +26,8 @@ namespace ccl
     };
 
     template<typename T1, typename T2>
-    using Pair = std::conditional_t<
-        std::is_trivial_v<T1> && std::is_trivial_v<T2>, TrivialPair<T1, T2>, std::pair<T1, T2>>;
+    using Pair =
+        std::conditional_t<Trivial<T1> && Trivial<T2>, TrivialPair<T1, T2>, std::pair<T1, T2>>;
 }// namespace ccl
 
 #endif /* CCL_PROJECT_PAIR_HPP */
