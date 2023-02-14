@@ -74,6 +74,7 @@ namespace ccl
 
     template<Callable Func>
     CCL_DECL auto toLazy(Func &&function) -> Lazy<decltype(function())>
+        requires(LazyStorable<decltype(function())>)
     {
         return Lazy<decltype(function())>(std::forward<Func>(function));
     }
