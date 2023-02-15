@@ -24,7 +24,8 @@ namespace ccl
 
     template<typename T, typename CharT>
     concept StringLike = IsSameToAny<
-        T, BasicStringView<CharT>, std::basic_string_view<CharT>, std::basic_string<CharT>>;
+        std::remove_cvref_t<T>, BasicStringView<CharT>, std::basic_string_view<CharT>,
+        std::basic_string<CharT>>;
 
     template<CharacterLiteral CharT>
     class BasicStringView
