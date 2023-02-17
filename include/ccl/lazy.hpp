@@ -2,6 +2,8 @@
 #define CCL_PROJECT_LAZY_HPP
 
 #include <ccl/ccl.hpp>
+#include <functional>
+#include <variant>
 
 namespace ccl
 {
@@ -23,7 +25,7 @@ namespace ccl
           : lazyObject{std::forward<T>(object)}
         {}
 
-        template<Callable Func>
+        template<Invocable Func>
         constexpr explicit Lazy(Func &&function)
           : lazyObject{std::forward<Func>(function)}
         {}
@@ -72,7 +74,7 @@ namespace ccl
         return {std::forward<T>(value)};
     }
 
-    template<Callable Func>
+    template<Invocable Func>
     CCL_DECL auto toLazy(Func &&function) -> Lazy<decltype(function())>
         requires(LazyStorable<decltype(function())>)
     {

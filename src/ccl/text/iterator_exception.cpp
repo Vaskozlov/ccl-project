@@ -3,7 +3,7 @@
 
 namespace ccl
 {
-    constexpr static auto ExceptionDescription =
+    static constexpr auto ExceptionDescription =
         StaticFlatmap<ExceptionCriticality, std::string_view, 5>{
             {ExceptionCriticality::SUGGESTION, "just a suggestion"},
             {ExceptionCriticality::WARNING, "something, that should be fixed"},

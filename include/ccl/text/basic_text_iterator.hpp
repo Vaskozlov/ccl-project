@@ -50,7 +50,7 @@ namespace ccl::text
             bool errorDetected{false};
         };
 
-        static constexpr auto noexceptCarriageMove = std::is_same_v<CRTP, ForkedTextIterator>;
+        constexpr static auto noexceptCarriageMove = std::is_same_v<CRTP, ForkedTextIterator>;
 
         CrtpBasicTextIterator() noexcept = default;
 
@@ -177,9 +177,11 @@ namespace ccl::text
 
         constexpr auto next() noexcept(noexceptCarriageMove) -> char32_t
         {
-            do {
+            moveCarriageToTheNextByte();
+
+            while (remainingBytesToFinishSymbol != 0) {
                 moveCarriageToTheNextByte();
-            } while (remainingBytesToFinishSymbol != 0);
+            }
 
             return currentChar;
         }
@@ -305,7 +307,7 @@ namespace ccl::text
 
         [[noreturn]] static auto utfError(char /* chr */) -> void
         {
-            throw std::logic_error{"unable to convert character to utf8"};// Noncompliant
+            throw std::logic_error{"unable to convert character to utf8"};
         }
     };
 }// namespace ccl::text

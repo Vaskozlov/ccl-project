@@ -337,10 +337,6 @@ namespace ccl
     };
 
     extern template class BasicStringView<char>;
-    extern template class BasicStringView<char8_t>;
-    extern template class BasicStringView<char16_t>;
-    extern template class BasicStringView<char32_t>;
-    extern template class BasicStringView<wchar_t>;
 
     namespace string_view_literals
     {

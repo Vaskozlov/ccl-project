@@ -6,7 +6,7 @@
 
 namespace ccl
 {
-    template<Callable Constructor, Callable Deleter>
+    template<Invocable Constructor, Invocable Deleter>
     class Raii
     {
     private:

@@ -17,6 +17,11 @@ namespace ccl
         using iterator = typename storage_t::iterator;
         using const_iterator = typename storage_t::const_iterator;
 
+    private:
+        storage_t storage{};
+        size_t occupied{};
+
+    public:
         CCL_DECL auto size() const noexcept -> size_t
         {
             return occupied;
@@ -152,9 +157,6 @@ namespace ccl
 
             return elem->second;
         }
-
-        storage_t storage{};
-        size_t occupied{};
     };
 }// namespace ccl
 
