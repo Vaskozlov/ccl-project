@@ -119,8 +119,6 @@ namespace ccl::utf8
     }
 
     extern template auto appendUtf32ToUtf8Container<>(std::string &string, char32_t chr) -> void;
-    extern template auto appendUtf32ToUtf8Container<>(Vector<char> &string, char32_t chr) -> void;
 }// namespace ccl::utf8
-
 
 #endif /* CCL_PROJECT_UTF8_HPP */
