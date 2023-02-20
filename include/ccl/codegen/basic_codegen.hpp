@@ -3,8 +3,7 @@
 
 #include <ccl/const_string.hpp>
 #include <ccl/string_view.hpp>
-#include <fmt/core.h>
-#include <iterator>
+#include <map>
 
 namespace ccl::codegen
 {
@@ -28,27 +27,31 @@ namespace ccl::codegen
             size_t size = 4;
         };
 
+        struct CCL_TRIVIAL_ABI StreamId
+        {
+            Id streamId = 0;
+        };
+
     private:
-        std::string generatedCode{};
+        std::map<Id, std::string> generatedCode{};
+        Id streamId = 0;
         size_t scopesCounter = 0;
         size_t scopeSize = 4;
 
     public:
         BasicCodeGenerator() = default;
 
-        [[nodiscard]] auto getCode() const noexcept -> const std::string &
-        {
-            return generatedCode;
-        }
+        [[nodiscard]] auto getCode() const noexcept -> std::string;
 
         [[nodiscard]] auto getBackInserter() noexcept -> auto
         {
-            return std::back_inserter(generatedCode);
+            return std::back_inserter(getCurrentStream());
         }
 
         auto operator<<(ScopeSize scope_size) -> BasicCodeGenerator &;
         auto operator<<(PushScope /* unused */) -> BasicCodeGenerator &;
         auto operator<<(PopScope /* unused */) -> BasicCodeGenerator &;
+        auto operator<<(StreamId stream_id) -> BasicCodeGenerator &;
 
         auto operator<<(char character) -> BasicCodeGenerator &;
         auto operator<<(string_view string) -> BasicCodeGenerator &;
@@ -89,6 +92,16 @@ namespace ccl::codegen
         }
 
     private:
+        [[nodiscard]] auto getCurrentStream() noexcept -> std::string &
+        {
+            return generatedCode[streamId];
+        }
+
+        [[nodiscard]] auto getCurrentStream() const noexcept -> const std::string &
+        {
+            return generatedCode.at(streamId);
+        }
+
         auto newLine() -> void;
         auto addScope(size_t scopes_count) -> void;
     };
@@ -96,6 +109,11 @@ namespace ccl::codegen
     inline auto setScopeSize(size_t size) noexcept -> BasicCodeGenerator::ScopeSize
     {
         return {.size = size};
+    }
+
+    inline auto setStream(Id stream_id) noexcept -> BasicCodeGenerator::StreamId
+    {
+        return {.streamId = stream_id};
     }
 
     constexpr inline auto endl = BasicCodeGenerator::Endl{};
