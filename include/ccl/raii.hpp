@@ -1,7 +1,7 @@
 #ifndef CCL_PROJECT_RAII_HPP
 #define CCL_PROJECT_RAII_HPP
 
-#include <ccl/core/concepts.hpp>
+#include <ccl/ccl.hpp>
 #include <type_traits>
 
 namespace ccl
