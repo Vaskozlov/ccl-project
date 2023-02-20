@@ -6,7 +6,7 @@
 
 namespace ccl
 {
-    template<typename Key, typename Value, size_t Size>
+    template<std::equality_comparable Key, typename Value, size_t Size>
     class StaticFlatmap
     {
     public:
@@ -84,6 +84,7 @@ namespace ccl
 
         template<typename... Ts>
         constexpr auto emplace(Ts &&...args) -> value_type &
+            requires std::constructible_from<value_type, Ts...>
         {
             if (occupied == capacity()) {
                 throw std::out_of_range("flatmap is full");

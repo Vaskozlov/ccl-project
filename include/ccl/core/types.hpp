@@ -47,24 +47,18 @@ namespace ccl
     using SmallBitset = std::bitset<N>;
 
     template<typename T>
+    using Set = std::set<T>;
+
+    template<typename Key, typename Value>
+    using Map = std::map<Key, Value>;
+
+    template<typename T>
     using UnorderedSet = std::unordered_set<T>;
 
     template<typename Key, typename Value>
     using UnorderedMap = std::unordered_map<Key, Value>;
 
 #ifndef CCL_DEBUG
-    template<typename T>
-    using Set = boost::container::set<T>;
-
-    template<typename T>
-    using UnorderedSet = std::unordered_set<T>;
-
-    template<typename Key, typename Value>
-    using Map = boost::container::map<Key, Value>;
-
-    template<typename Key, typename Value>
-    using UnorderedMap = std::unordered_map<Key, Value>;
-
     template<typename T>
     using FlatSet = boost::container::flat_set<T>;
 
@@ -74,12 +68,6 @@ namespace ccl
     template<typename T, size_t N = 4>
     using SmallVector = boost::container::small_vector<T, N>;
 #else
-    template<typename T>
-    using Set = std::set<T>;
-
-    template<typename Key, typename Value>
-    using Map = std::map<Key, Value>;
-
     template<typename T>
     using FlatSet = std::set<T>;
 
@@ -104,26 +92,30 @@ namespace ccl
 
     template<typename T, typename... Ts>
     constexpr auto makeUnique(Ts &&...args) -> UniquePtr<T>
+        requires std::constructible_from<T, Ts...>
     {
         return std::make_unique<T>(std::forward<Ts>(args)...);
     }
 
     template<typename Target, typename Constructed, typename... Ts>
-        requires std::derived_from<Constructed, Target>
     constexpr auto makeUnique(Ts &&...args) -> UniquePtr<Target>
+        requires std::derived_from<Constructed, Target> &&
+                 std::constructible_from<Constructed, Ts...>
     {
         return UniquePtr<Target>{as<Target *>(new Constructed(std::forward<Ts>(args)...))};
     }
 
     template<typename T, typename... Ts>
     constexpr auto makeShared(Ts &&...args) -> SharedPtr<T>
+        requires std::constructible_from<T, Ts...>
     {
         return std::make_shared<T>(std::forward<Ts>(args)...);
     }
 
     template<typename Target, typename Constructed, typename... Ts>
-        requires std::derived_from<Constructed, Target>
     constexpr auto makeShared(Ts &&...args) -> SharedPtr<Target>
+        requires std::derived_from<Constructed, Target> &&
+                 std::constructible_from<Constructed, Ts...>
     {
         return SharedPtr<Target>{as<Target *>(new Constructed(std::forward<Ts>(args)...))};
     }
