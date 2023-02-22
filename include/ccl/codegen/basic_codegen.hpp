@@ -58,12 +58,10 @@ namespace ccl::codegen
         auto operator<<(std::string_view string) -> BasicCodeGenerator &;
         auto operator<<(const std::string &string) -> BasicCodeGenerator &;
 
-        template<typename Numeric>
-        auto operator<<(Numeric value) -> BasicCodeGenerator &
-            requires std::floating_point<Numeric> || std::integral<Numeric>
+        template<typename T>
+        auto operator<<(T &&value) -> BasicCodeGenerator &
         {
-            getCurrentStream().append(fmt::to_string(value));
-            return *this;
+            return *this << std::string_view{fmt::to_string(std::forward<T>(value))};
         }
 
         auto operator<<(Endl /* unused */) -> BasicCodeGenerator &
