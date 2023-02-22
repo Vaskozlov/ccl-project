@@ -69,7 +69,8 @@ namespace ccl::codegen
         auto operator<<(T &&value) -> BasicCodeGenerator &
             requires(!(std::floating_point<T> || std::integral<T>))
         {
-            return *this << std::string_view{fmt::format("{}", value)};
+            fmt::format_to(getBackInserter(), "{}", value);
+            return *this;
         }
 
         auto operator<<(Endl /* unused */) -> BasicCodeGenerator &
