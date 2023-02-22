@@ -66,15 +66,6 @@ namespace ccl::codegen
             return *this << std::string_view{fmt::to_string(value)};
         }
 
-        template<typename T>
-        auto operator<<(T &&value) -> BasicCodeGenerator &
-            requires(
-                !(std::floating_point<std::remove_cvref_t<T>> || std::integral<std::remove_cvref_t<T>>))
-        {
-            fmt::format_to(getBackInserter(), "{}", std::forward<T>(value));
-            return *this;
-        }
-
         auto operator<<(Endl /* unused */) -> BasicCodeGenerator &
         {
             newLine();
