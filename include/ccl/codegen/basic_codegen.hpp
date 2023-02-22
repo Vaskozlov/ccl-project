@@ -60,14 +60,16 @@ namespace ccl::codegen
 
         template<typename Numeric>
         auto operator<<(Numeric value) -> BasicCodeGenerator &
-            requires std::floating_point<Numeric> || std::integral<Numeric>
+            requires std::floating_point<std::remove_cvref<Numeric>> ||
+                     std::integral<std::remove_cvref<Numeric>>
         {
             return *this << std::string_view{fmt::to_string(value)};
         }
 
         template<typename T>
         auto operator<<(T &&value) -> BasicCodeGenerator &
-            requires(!(std::floating_point<T> || std::integral<T>))
+            requires(
+                !(std::floating_point<std::remove_cvref<T>> || std::integral<std::remove_cvref<T>>))
         {
             fmt::format_to(getBackInserter(), "{}", std::forward<T>(value));
             return *this;
