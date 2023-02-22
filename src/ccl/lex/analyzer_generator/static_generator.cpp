@@ -160,7 +160,7 @@ namespace ccl::lex::gen
         };
 
         auto output_enum_case = [this](string_view name, Id id) {
-            codeGenerator << endl << name << " = " << fmt::format("{}", id) << ',';
+            codeGenerator << endl << name << " = " << fmt::to_string(id) << ',';
         };
 
         for (const auto &[block_name, block_info] : blocks | std::views::filter(undefined_blocks)) {

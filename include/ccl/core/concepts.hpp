@@ -15,6 +15,9 @@ namespace ccl
     template<typename T>
     concept Exception = std::is_base_of_v<std::exception, T>;
 
+    template<typename T>
+    concept Iterable = requires(const T &value) { (++value.begin()) != value.end(); };
+
     template<typename T, typename... Ts>
     concept IsSameToAny = (... || std::is_same_v<T, Ts>);
 
