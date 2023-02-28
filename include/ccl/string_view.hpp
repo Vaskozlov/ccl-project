@@ -64,7 +64,7 @@ namespace ccl
         // NOLINTNEXTLINE
         constexpr BasicStringView(const CharacterArray auto &str) noexcept
           : string{str}
-          , length{strlen(str)}
+          , length{strlen(std::forward<decltype(str)>(str))}
         {}
 
         // NOLINTNEXTLINE
@@ -152,8 +152,8 @@ namespace ccl
                 return npos;
             }
 
-            auto elem = std::find(begin() + offset, end(), chr);
-            return elem == end() ? npos : distance(begin(), elem);
+            const auto it_to_elem = std::find(begin() + offset, end(), chr);
+            return it_to_elem == end() ? npos : distance(begin(), it_to_elem);
         }
 
         CCL_SAFE_VERSION
@@ -175,8 +175,8 @@ namespace ccl
                 return npos;
             }
 
-            auto elem = std::find(from, end(), chr);
-            return elem == end() ? npos : distance(begin(), elem);
+            const auto it_to_elem = std::find(from, end(), chr);
+            return it_to_elem == end() ? npos : distance(begin(), it_to_elem);
         }
 
         CCL_SAFE_VERSION
@@ -202,17 +202,18 @@ namespace ccl
         {
             auto passed_pairs = as<size_t>(0);
 
-            auto elem = std::ranges::find_if(*this, [&passed_pairs, starter, ender](CharT chr) {
-                passed_pairs += (chr == starter);
-                passed_pairs -= (chr == ender);
-                return 0 == passed_pairs;
-            });
+            const auto it_to_elem =
+                std::ranges::find_if(*this, [&passed_pairs, starter, ender](CharT chr) {
+                    passed_pairs += (chr == starter);
+                    passed_pairs -= (chr == ender);
+                    return 0 == passed_pairs;
+                });
 
-            if (elem == end()) {
+            if (it_to_elem == end()) {
                 return npos;
             }
 
-            return distance(begin(), elem);
+            return distance(begin(), it_to_elem);
         }
 
         /**
@@ -240,8 +241,8 @@ namespace ccl
                 return npos;
             }
 
-            auto elem = std::find(rbegin() + as<long>(offset), rend(), chr);
-            return elem == rend() ? npos : distance(elem, rend()) - 1;
+            const auto it_to_elem = std::find(rbegin() + as<long>(offset), rend(), chr);
+            return it_to_elem == rend() ? npos : distance(it_to_elem, rend()) - 1;
         }
 
         CCL_SAFE_VERSION
