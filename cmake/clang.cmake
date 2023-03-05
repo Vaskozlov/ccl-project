@@ -7,3 +7,8 @@ else ()
     add_compile_options(-stdlib=libstdc++)
     add_link_options(-stdlib=libstdc++)
 endif ()
+
+if (CCL_ADDRESS_SANITIZER)
+    add_compile_options(-fsanitize=integer,nullability)
+    add_link_options(-fsanitize=integer,nullability)
+endif ()
