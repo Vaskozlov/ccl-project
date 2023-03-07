@@ -4,7 +4,12 @@
 
 namespace ccl
 {
-    ExceptionHandler ExceptionHandler::defaultExceptionHandler;// NOLINT
+    auto ExceptionHandler::instance() -> ExceptionHandler &
+    {
+        static auto default_instance = ExceptionHandler{};
+
+        return default_instance;
+    }
 
     // NOLINTNEXTLINE
     auto ExceptionHandler::handle(const ExceptionT *const error) -> void

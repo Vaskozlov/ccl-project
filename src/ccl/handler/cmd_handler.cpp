@@ -2,7 +2,12 @@
 
 namespace ccl::handler
 {
-    Cmd Cmd::defaultCmdHandler;
+    auto Cmd::instance() -> Cmd &
+    {
+        static auto default_instance = Cmd{};
+
+        return default_instance;
+    }
 
     Cmd::CmdFormatter::CmdFormatter(const ExceptionT *exception) noexcept
       : workingLine{exception->getWorkingLine()}

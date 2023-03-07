@@ -31,10 +31,7 @@ namespace ccl
         auto operator=(ExceptionHandler &&) -> void = delete;
         auto operator=(const ExceptionHandler &) -> void = delete;
 
-        [[nodiscard]] static auto instance() -> ExceptionHandler &
-        {
-            return defaultExceptionHandler;
-        }
+        [[nodiscard]] static auto instance() -> ExceptionHandler &;
 
         auto handle(const ExceptionT *error) -> void;
 
