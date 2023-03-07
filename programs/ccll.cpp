@@ -7,16 +7,26 @@
 
 namespace po = boost::program_options;
 
+std::string SourceFile;
+std::string HeaderFile;
+
+auto getOptionDescription() -> po::options_description
+{
+    po::options_description desc("Allowed options");
+
+    desc.add_options()("help,h", "produce help message");
+
+    desc.add_options()(
+        "lexical-analyzer-rules,l", po::value(&SourceFile), "file with rules for lexical analyzer");
+
+    desc.add_options()("output,o", po::value(&HeaderFile), "output header name");
+
+    return desc;
+}
+
 auto main(int argc, char *argv[]) -> int
 {
-    std::string source_file;
-    std::string header_name;
-
-    po::options_description desc("Allowed options");
-    desc.add_options()("help,h", "produce help message")(
-        "lexical-analyzer-rules,l", po::value(&source_file),
-        "file with rules for lexical analyzer")(
-        "output,o", po::value(&header_name), "output header name");
+    auto desc = getOptionDescription();
 
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -34,13 +44,13 @@ auto main(int argc, char *argv[]) -> int
         return 1;
     }
 
-    auto generated_header = ccl::lex::AnalyzerGenerator::generateStaticVersion(source_file);
+    auto generated_header = ccl::lex::AnalyzerGenerator::generateStaticVersion(SourceFile);
 
     auto file_stream = std::fstream{};
-    file_stream.open(header_name, std::ios::out);
+    file_stream.open(HeaderFile, std::ios::out);
 
     if (!file_stream.is_open()) {
-        fmt::print("Error: cannot open file {}\n", header_name);
+        fmt::print("Error: cannot open file {}\n", HeaderFile);
         return 1;
     }
 
