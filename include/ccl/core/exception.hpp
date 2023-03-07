@@ -12,7 +12,9 @@
             requires std::constructible_from<base_exception, Ts...>                                \
         explicit name(Ts &&...args)                                                                \
           : base_exception{std::forward<Ts>(args)...}                                              \
-        {}                                                                                         \
+        {                                                                                          \
+            static_assert(true);                                                                   \
+        }                                                                                          \
     }
 
 #define CCL_SAFE_VERSION                                                                           \

@@ -4,7 +4,8 @@ using namespace ccl::integral_literals;
 
 namespace ccl::lex::dot_item
 {
-    auto DotItemConcept::alwaysRecognizedSuggestion(TextIterator &text_iterator, bool condition) -> void
+    auto DotItemConcept::alwaysRecognizedSuggestion(TextIterator &text_iterator, bool condition)
+        -> void
     {
         if (condition) [[unlikely]] {
             text_iterator.throwWarning(
@@ -12,7 +13,8 @@ namespace ccl::lex::dot_item
         }
     }
 
-    auto DotItemConcept::neverRecognizedSuggestion(TextIterator &text_iterator, bool condition) -> void
+    auto DotItemConcept::neverRecognizedSuggestion(TextIterator &text_iterator, bool condition)
+        -> void
     {
         if (condition) [[unlikely]] {
             text_iterator.throwWarning(
