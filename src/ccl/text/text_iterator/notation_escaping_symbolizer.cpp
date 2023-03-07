@@ -2,14 +2,30 @@
 
 namespace ccl::text
 {
-    auto TextIterator::NotationEscapingSymbolizer::calculateResult() -> void
+    using NotationEscapingSymbolizer = TextIterator::NotationEscapingSymbolizer;
+
+    NotationEscapingSymbolizer::NotationEscapingSymbolizer(
+        TextIterator &text_iterator,
+        u16 maximum_symbols,
+        u16 notation_power,
+        bool are_all_chars_required)
+      : textIterator{text_iterator}
+      , maximumSymbols{maximum_symbols}
+      , notationPower{notation_power}
+      , areAllCharsRequired{are_all_chars_required}
     {
-        size_t chars_count = 0;
+        checkNotation();
+        calculateResult();
+    }
+
+    auto NotationEscapingSymbolizer::calculateResult() -> void
+    {
+        auto chars_count = as<size_t>(0);
 
         for (; chars_count != maximumSymbols; ++chars_count) {
             auto chr = textIterator.futureChar(1);
 
-            if (lor(isEoF(chr), isOutOfNotation(chr))) {
+            if (isEoF(chr) || isOutOfNotation(chr)) [[unlikely]] {
                 break;
             }
 
@@ -22,15 +38,15 @@ namespace ccl::text
         checkAllCharsUsage(chars_count);
     }
 
-    auto TextIterator::NotationEscapingSymbolizer::createSuggestionNotEnoughChars(
-        size_t chars_count) const -> std::string
+    auto NotationEscapingSymbolizer::createSuggestionNotEnoughChars(size_t chars_count) const
+        -> std::string
     {
         auto suggestion_message = as<std::string>(textIterator.getWorkingLine());
         insertExtraZerosToNotEnoughMessage(chars_count, suggestion_message);
         return suggestion_message;
     }
 
-    auto TextIterator::NotationEscapingSymbolizer::insertExtraZerosToNotEnoughMessage(
+    auto NotationEscapingSymbolizer::insertExtraZerosToNotEnoughMessage(
         size_t chars_count,
         std::string &message) const -> void
     {
@@ -41,27 +57,25 @@ namespace ccl::text
         message.insert(insertion_position, insertion_size, '0');
     }
 
-    auto TextIterator::NotationEscapingSymbolizer::checkNotation() const -> void
+    auto NotationEscapingSymbolizer::checkNotation() const -> void
     {
         CCL_ASSERT(land(notationPower > 0, notationPower <= 4));
     }
 
-    auto TextIterator::NotationEscapingSymbolizer::isOutOfNotation(char32_t chr) const -> bool
+    auto NotationEscapingSymbolizer::isOutOfNotation(char32_t chr) const -> bool
     {
         return !HexadecimalCharsToInt<char32_t>.contains(chr) ||
                HexadecimalCharsToInt<char32_t>.at(chr) >= pow2(notationPower);
     }
 
-    auto TextIterator::NotationEscapingSymbolizer::checkAllCharsUsage(size_t chars_count) const
-        -> void
+    auto NotationEscapingSymbolizer::checkAllCharsUsage(size_t chars_count) const -> void
     {
         if (land(areAllCharsRequired, chars_count != maximumSymbols)) {
             throwNotEnoughCharsException(chars_count);
         }
     }
 
-    auto TextIterator::NotationEscapingSymbolizer::throwNotEnoughCharsException(
-        size_t chars_count) const -> void
+    auto NotationEscapingSymbolizer::throwNotEnoughCharsException(size_t chars_count) const -> void
     {
         auto exception_message = fmt::format(
             "expected {} characters, but only {} of them were provided", maximumSymbols,
@@ -71,19 +85,5 @@ namespace ccl::text
 
         textIterator.throwUncriticalError(
             AnalysisStage::LEXICAL_ANALYSIS, exception_message, suggestion_message);
-    }
-
-    TextIterator::NotationEscapingSymbolizer::NotationEscapingSymbolizer(
-        TextIterator &text_iterator,
-        u16 u_16,
-        u16 notation_power,
-        bool are_all_chars_required)
-      : textIterator{text_iterator}
-      , maximumSymbols{u_16}
-      , notationPower{notation_power}
-      , areAllCharsRequired{are_all_chars_required}
-    {
-        checkNotation();
-        calculateResult();
     }
 }// namespace ccl::text

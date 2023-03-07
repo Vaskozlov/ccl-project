@@ -7,22 +7,29 @@
 namespace ccl
 {
     template<typename T>
-    concept Enum = std::is_enum_v<T>;
+    concept Trivial = std::is_trivial_v<T>;
 
     template<typename T>
-    concept Boolean = std::is_convertible_v<T, bool>;
+    concept Boolean = std::is_convertible_v<std::remove_cvref_t<T>, bool>;
 
     template<typename T>
     concept Exception = std::is_base_of_v<std::exception, T>;
+
+    template<typename T>
+    concept Iterable = requires(const T &value) { (++value.begin()) != value.end(); };
 
     template<typename T, typename... Ts>
     concept IsSameToAny = (... || std::is_same_v<T, Ts>);
 
     template<typename T>
-    concept CharacterLiteral = IsSameToAny<T, char, char8_t, char16_t, char32_t, wchar_t>;
+    concept CharacterLiteral =
+        IsSameToAny<std::remove_cvref_t<T>, char, char8_t, char16_t, char32_t, wchar_t>;
 
     template<typename T>
     concept CharacterArray = std::is_pointer_v<T> || std::is_array_v<T>;
+
+    template<typename Fn, typename... Args>
+    concept Invocable = std::is_invocable_v<Fn, Args...>;
 }// namespace ccl
 
 #endif /* CCL_PROJECT_CONCEPTS_HPP */

@@ -4,12 +4,9 @@
 
 namespace ccl::codegen
 {
-    constexpr bool HasStdSplit =
-        requires(std::string_view string) { std::views::split(string, '\n'); };
-
     auto BasicCodeGenerator::newLine() -> void
     {
-        generatedCode.push_back('\n');
+        getCurrentStream().push_back('\n');
 
         addScope(scopesCounter);
     }
@@ -17,12 +14,23 @@ namespace ccl::codegen
     auto BasicCodeGenerator::addScope(size_t scopes_count) -> void
     {
         for (size_t i = 0; i < scopes_count * scopeSize; i += 4) {
-            generatedCode.append("    ");
+            getCurrentStream().append("    ");
         }
 
         for (size_t i = 0; i != scopes_count * scopeSize % 4; ++i) {
-            generatedCode.push_back(' ');
+            getCurrentStream().push_back(' ');
         }
+    }
+
+    auto BasicCodeGenerator::getCode() const noexcept -> std::string
+    {
+        auto result = std::string{};
+
+        for (const auto &[id, stream] : generatedCode) {
+            result.append(stream);
+        }
+
+        return result;
     }
 
     auto BasicCodeGenerator::operator<<(ScopeSize scope_size) -> BasicCodeGenerator &
@@ -52,12 +60,18 @@ namespace ccl::codegen
         return *this;
     }
 
+    auto BasicCodeGenerator::operator<<(StreamId stream_id) -> BasicCodeGenerator &
+    {
+        streamId = stream_id.streamId;
+        return *this;
+    }
+
     auto BasicCodeGenerator::operator<<(char character) -> BasicCodeGenerator &
     {
         if (character == '\n') {
             newLine();
         } else {
-            generatedCode.push_back(character);
+            getCurrentStream().push_back(character);
         }
 
         return *this;
@@ -70,21 +84,10 @@ namespace ccl::codegen
 
     auto BasicCodeGenerator::operator<<(std::string_view string) -> BasicCodeGenerator &
     {
-        if constexpr (HasStdSplit) {
-            auto need_to_add_new_line = false;
+        getCurrentStream().reserve(generatedCode.size() + string.size());
 
-            for (auto &&word : std::views::split(string, '\n')) {
-                if (need_to_add_new_line) {
-                    newLine();
-                }
-
-                need_to_add_new_line = true;
-                generatedCode.append(std::string_view{word});
-            }
-        } else {
-            for (auto character : string) {
-                *this << character;
-            }
+        for (auto character : string) {
+            *this << character;
         }
 
         return *this;

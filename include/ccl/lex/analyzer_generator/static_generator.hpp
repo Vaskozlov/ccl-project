@@ -31,7 +31,7 @@ namespace ccl::lex::gen
     public:
         explicit StaticGenerator(Tokenizer &input_tokenizer);
 
-        [[nodiscard]] auto getCode() const noexcept -> const std::string &
+        [[nodiscard]] auto getCode() const noexcept -> std::string
         {
             return codeGenerator.getCode();
         }

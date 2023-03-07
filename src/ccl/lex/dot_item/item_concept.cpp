@@ -1,10 +1,11 @@
-#include <ccl/lex/dot_item/basic_item.hpp>
+#include <ccl/lex/dot_item/item_concept.hpp>
 
 using namespace ccl::integral_literals;
 
 namespace ccl::lex::dot_item
 {
-    auto BasicItem::alwaysRecognizedSuggestion(TextIterator &text_iterator, bool condition) -> void
+    auto DotItemConcept::alwaysRecognizedSuggestion(TextIterator &text_iterator, bool condition)
+        -> void
     {
         if (condition) [[unlikely]] {
             text_iterator.throwWarning(
@@ -12,7 +13,8 @@ namespace ccl::lex::dot_item
         }
     }
 
-    auto BasicItem::neverRecognizedSuggestion(TextIterator &text_iterator, bool condition) -> void
+    auto DotItemConcept::neverRecognizedSuggestion(TextIterator &text_iterator, bool condition)
+        -> void
     {
         if (condition) [[unlikely]] {
             text_iterator.throwWarning(
@@ -20,7 +22,7 @@ namespace ccl::lex::dot_item
         }
     }
 
-    auto BasicItem::scan(ForkedGenerator text_iterator) const -> Optional<size_t>
+    auto DotItemConcept::scan(ForkedGenerator text_iterator) const -> Optional<size_t>
     {
         auto times = as<size_t>(0);
         auto totally_skipped = as<size_t>(0);
@@ -30,14 +32,14 @@ namespace ccl::lex::dot_item
                 break;
             }
 
-            auto scan_result = scanIteration(text_iterator);
+            auto chars_to_skip = scanIteration(text_iterator);
 
-            if (0 == scan_result) {
+            if (chars_to_skip == 0) {
                 break;
             }
 
-            text_iterator.skip(scan_result);
-            totally_skipped += scan_result;
+            text_iterator.skip(chars_to_skip);
+            totally_skipped += chars_to_skip;
             ++times;
         }
 

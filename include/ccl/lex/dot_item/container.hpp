@@ -2,7 +2,7 @@
 #define CCL_PROJECT_CONTAINER_HPP
 
 #include <boost/container/small_vector.hpp>
-#include <ccl/lex/dot_item/basic_item.hpp>
+#include <ccl/lex/dot_item/item_concept.hpp>
 #include <ccl/lex/dot_item/logical_unit.hpp>
 #include <ccl/lex/dot_item/repetition.hpp>
 #include <ccl/lex/dot_item/sequence.hpp>
@@ -20,10 +20,10 @@ namespace ccl::lex::dot_item
 
     class Container;
 
-    class Container final : public BasicItem
+    class Container final : public DotItemConcept
     {
-        using BasicItem::canBeOptimized;
-        using typename BasicItem::TextIterator;
+        using DotItemConcept::canBeOptimized;
+        using typename DotItemConcept::TextIterator;
         using DotItemsStorage = SmallVector<DotItem>;
 
         class RuleParser;
@@ -84,8 +84,9 @@ namespace ccl::lex::dot_item
 
         [[nodiscard]] auto failedToEndItem(const ForkedGenerator &text_iterator) const -> bool;
 
-        static auto addPrefixOrPostfix(const BasicItem *item, Token &token, const string_view &repr)
-            -> void;
+        static auto
+            addPrefixOrPostfix(const DotItemConcept *item, Token &token, const string_view &repr)
+                -> void;
     };
 
     class Container::RuleParser
@@ -130,7 +131,7 @@ namespace ccl::lex::dot_item
 
         [[nodiscard]] auto constructNewContainer() -> Container;
 
-        template<std::derived_from<BasicItem> T>
+        template<std::derived_from<DotItemConcept> T>
         auto emplaceItem(T item) -> void
         {
             if (!item.canBeOptimized()) {
@@ -162,7 +163,7 @@ namespace ccl::lex::dot_item
         auto throwUndefinedAction() -> void;
     };
 
-    class BasicItem::SpecialItems
+    class DotItemConcept::SpecialItems
     {
     public:
         Vector<Container> specialItems;

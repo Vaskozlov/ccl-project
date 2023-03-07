@@ -5,8 +5,11 @@ namespace ccl::lex::dot_item
     using namespace ccl::string_view_literals;
 
     Union::Union(TextIterator &rule_iterator, Id rule_id)
-      : BasicItem{rule_id}
+      : DotItemConcept{rule_id}
     {
+        static const std::basic_string<Pair<char32_t, char32_t>> special_symbols = {
+            {U'[', U'['}, {U']', U']'}, {U'-', U'-'}};
+
         auto is_range = false;
         auto previous_chr = U'\0';
         auto begin_iterator_state = rule_iterator;
@@ -14,8 +17,7 @@ namespace ccl::lex::dot_item
         checkUnionBegin(rule_iterator);
 
         while (true) {
-            auto [is_escaping, chr] = rule_iterator.nextRawCharWithEscapingSymbols(
-                {{U'[', U'['}, {U']', U']'}, {U'-', U'-'}});
+            auto [is_escaping, chr] = rule_iterator.nextRawCharWithEscapingSymbols(special_symbols);
 
             checkForUnexpectedEnd(begin_iterator_state, is_escaping, chr);
 

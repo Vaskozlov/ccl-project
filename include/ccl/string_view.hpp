@@ -24,7 +24,8 @@ namespace ccl
 
     template<typename T, typename CharT>
     concept StringLike = IsSameToAny<
-        T, BasicStringView<CharT>, std::basic_string_view<CharT>, std::basic_string<CharT>>;
+        std::remove_cvref_t<T>, BasicStringView<CharT>, std::basic_string_view<CharT>,
+        std::basic_string<CharT>>;
 
     template<CharacterLiteral CharT>
     class BasicStringView
@@ -45,14 +46,14 @@ namespace ccl
         BasicStringView() noexcept = default;
 
         template<size_t N>
-        constexpr explicit BasicStringView(const std::array<CharT, N> &array_) noexcept
-          : string{array_.data()}
-          , length{array_.size()}
+        constexpr explicit BasicStringView(const std::array<CharT, N> &char_array) noexcept
+          : string{char_array.data()}
+          , length{char_array.size()}
         {}
 
-        constexpr BasicStringView(pointer string_, size_t length_) noexcept
-          : string{string_}
-          , length{length_}
+        constexpr BasicStringView(pointer char_pointer, size_t string_length) noexcept
+          : string{char_pointer}
+          , length{string_length}
         {}
 
         constexpr BasicStringView(iterator first, iterator last) noexcept
@@ -63,7 +64,7 @@ namespace ccl
         // NOLINTNEXTLINE
         constexpr BasicStringView(const CharacterArray auto &str) noexcept
           : string{str}
-          , length{strlen(str)}
+          , length{strlen(std::forward<decltype(str)>(str))}
         {}
 
         // NOLINTNEXTLINE
@@ -151,8 +152,8 @@ namespace ccl
                 return npos;
             }
 
-            auto elem = std::find(begin() + offset, end(), chr);
-            return elem == end() ? npos : distance(begin(), elem);
+            const auto it_to_elem = std::find(begin() + offset, end(), chr);
+            return it_to_elem == end() ? npos : distance(begin(), it_to_elem);
         }
 
         CCL_SAFE_VERSION
@@ -174,8 +175,8 @@ namespace ccl
                 return npos;
             }
 
-            auto elem = std::find(from, end(), chr);
-            return elem == end() ? npos : distance(begin(), elem);
+            const auto it_to_elem = std::find(from, end(), chr);
+            return it_to_elem == end() ? npos : distance(begin(), it_to_elem);
         }
 
         CCL_SAFE_VERSION
@@ -201,17 +202,18 @@ namespace ccl
         {
             auto passed_pairs = as<size_t>(0);
 
-            auto elem = std::ranges::find_if(*this, [&passed_pairs, starter, ender](CharT chr) {
-                passed_pairs += (chr == starter);
-                passed_pairs -= (chr == ender);
-                return 0 == passed_pairs;
-            });
+            const auto it_to_elem =
+                std::ranges::find_if(*this, [&passed_pairs, starter, ender](CharT chr) {
+                    passed_pairs += (chr == starter);
+                    passed_pairs -= (chr == ender);
+                    return 0 == passed_pairs;
+                });
 
-            if (elem == end()) {
+            if (it_to_elem == end()) {
                 return npos;
             }
 
-            return distance(begin(), elem);
+            return distance(begin(), it_to_elem);
         }
 
         /**
@@ -239,8 +241,8 @@ namespace ccl
                 return npos;
             }
 
-            auto elem = std::find(rbegin() + as<long>(offset), rend(), chr);
-            return elem == rend() ? npos : distance(elem, rend()) - 1;
+            const auto it_to_elem = std::find(rbegin() + as<long>(offset), rend(), chr);
+            return it_to_elem == rend() ? npos : distance(it_to_elem, rend()) - 1;
         }
 
         CCL_SAFE_VERSION
@@ -336,10 +338,6 @@ namespace ccl
     };
 
     extern template class BasicStringView<char>;
-    extern template class BasicStringView<char8_t>;
-    extern template class BasicStringView<char16_t>;
-    extern template class BasicStringView<char32_t>;
-    extern template class BasicStringView<wchar_t>;
 
     namespace string_view_literals
     {
@@ -379,7 +377,7 @@ struct fmt::formatter<ccl::string_view> : fmt::formatter<std::string_view>
 {
     auto format(const ccl::string_view &str, format_context &ctx) const
     {
-        return formatter<std::string_view>::format(as<std::string_view>(str), ctx);
+        return formatter<std::string_view>::format(ccl::as<std::string_view>(str), ctx);
     }
 };
 

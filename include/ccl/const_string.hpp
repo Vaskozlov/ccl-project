@@ -66,7 +66,8 @@ namespace ccl
             return 0 == size();
         }
 
-        CCL_DECL operator string_view() const noexcept// NOLINT implicit conversion
+        template<StringLike<value_type> StringT>
+        CCL_DECL operator StringT() const noexcept// NOLINT implicit conversion
         {
             return {string.data(), size()};
         }

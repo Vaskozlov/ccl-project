@@ -1,18 +1,18 @@
 #ifndef CCL_PROJECT_UNION_HPP
 #define CCL_PROJECT_UNION_HPP
 
-#include <ccl/lex/dot_item/basic_item.hpp>
+#include <ccl/lex/dot_item/item_concept.hpp>
 #include <ccl/utf_set.hpp>
 
 namespace ccl::lex::dot_item
 {
-    class Union final : public BasicItem
+    class Union final : public DotItemConcept
     {
     private:
         UtfSet bitset{};
 
     public:
-        using typename BasicItem::TextIterator;
+        using typename DotItemConcept::TextIterator;
 
         explicit Union(TextIterator &rule_iterator, Id rule_id = 0);
 

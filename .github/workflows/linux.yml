@@ -40,8 +40,8 @@ jobs:
         run: |
           cmake ${{ matrix.config.cmake_params }} -G Ninja \
             -B ${{github.workspace}}/${{github.actor}}-${{ github.head_ref }}/${{ matrix.config.key }} \
-            -DCMAKE_BUILD_TYPE=Debug -DSTRICT_COMPILATION=ON -DUSE_LIBCPP=OFF -DUSE_ADDRESS_SANITIZER=ON \
-            -DPRECOMPILED_HEADERS=ON -DCMAKE_CXX_COMPILER=/usr/bin/g++
+            -DCMAKE_BUILD_TYPE=Debug -DCCL_STRICT_COMPILATION=ON -DCCL_LIBCPP=OFF -DCCL_ADDRESS_SANITIZER=ON \
+            -DCCL_PRECOMPILED_HEADERS=ON -DCMAKE_CXX_COMPILER=/usr/bin/g++
           
           cmake --build ${{github.workspace}}/${{github.actor}}-${{ github.head_ref }}/${{ matrix.config.key }} -j ${{ matrix.config.threads_count }}
 

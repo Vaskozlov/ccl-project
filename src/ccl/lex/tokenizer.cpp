@@ -4,14 +4,28 @@ using namespace std::string_literals;
 
 namespace ccl::lex
 {
-    CCL_INLINE auto LexicalAnalyzer::Tokenizer::shouldIgnoreToken(const Token &token) const -> bool
+    using Tokenizer = LexicalAnalyzer::Tokenizer;
+
+    Tokenizer::Tokenizer(LexicalAnalyzer &lexical_analyzer, string_view text, string_view filename)
+      : lexicalAnalyzer{lexical_analyzer}
+      , textIterator{text, lexical_analyzer.exceptionHandler, filename}
+    {}
+
+    Tokenizer::Tokenizer(
+        LexicalAnalyzer &lexical_analyzer, string_view text, string_view filename,
+        ExceptionHandler &exception_handler)
+      : lexicalAnalyzer{lexical_analyzer}
+      , textIterator{text, exception_handler, filename}
+    {}
+
+    CCL_INLINE auto Tokenizer::shouldIgnoreToken(const Token &token) const -> bool
     {
         const auto &ignoring_list = lexicalAnalyzer.ignoredIds;
         return ignoring_list.contains(token.getId());
     }
 
     // NOLINTNEXTLINE (recursive function)
-    auto LexicalAnalyzer::Tokenizer::nextToken(Token &token) -> void
+    auto Tokenizer::nextToken(Token &token) -> void
     {
         auto &chars_to_skip = lexicalAnalyzer.skippedCharacters;
         auto scan_container = [this, &token](const auto &container) {
@@ -58,27 +72,14 @@ namespace ccl::lex
         }
     }
 
-    LexicalAnalyzer::Tokenizer::Tokenizer(
-        LexicalAnalyzer &lexical_analyzer, string_view text, string_view filename)
-      : lexicalAnalyzer{lexical_analyzer}
-      , textIterator{text, lexical_analyzer.exceptionHandler, filename}
-    {}
-
-    LexicalAnalyzer::Tokenizer::Tokenizer(
-        LexicalAnalyzer &lexical_analyzer, string_view text, string_view filename,
-        ExceptionHandler &exception_handler)
-      : lexicalAnalyzer{lexical_analyzer}
-      , textIterator{text, exception_handler, filename}
-    {}
-
-    auto LexicalAnalyzer::Tokenizer::throwException(
+    auto Tokenizer::throwException(
         ExceptionCriticality criticality, string_view message, string_view suggestion) -> void
     {
         textIterator.throwToHandle(
             textIterator, criticality, AnalysisStage::LEXICAL_ANALYSIS, message, suggestion);
     }
 
-    auto LexicalAnalyzer::Tokenizer::yield() -> const Token &
+    auto Tokenizer::yield() -> const Token &
     {
         if (hasFutureToken) {
             hasFutureToken = false;
@@ -90,7 +91,7 @@ namespace ccl::lex
         return tokens[tokenIndex];
     }
 
-    auto LexicalAnalyzer::Tokenizer::yieldFutureToken() -> const Token &
+    auto Tokenizer::yieldFutureToken() -> const Token &
     {
         if (!hasFutureToken) {
             nextToken(tokens[!tokenIndex]);
@@ -100,12 +101,12 @@ namespace ccl::lex
         return tokens[!tokenIndex];
     }
 
-    CCL_INLINE auto LexicalAnalyzer::Tokenizer::constructEoiToken(Token &token) -> void
+    CCL_INLINE auto Tokenizer::constructEoiToken(Token &token) -> void
     {
         token = {textIterator, std::to_underlying(ReservedTokenType::EOI)};
     }
 
-    CCL_INLINE auto LexicalAnalyzer::Tokenizer::constructBadToken(Token &token) -> void
+    CCL_INLINE auto Tokenizer::constructBadToken(Token &token) -> void
     {
         token = {textIterator, std::to_underlying(ReservedTokenType::BAD_TOKEN)};
 

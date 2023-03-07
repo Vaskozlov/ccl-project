@@ -1,14 +1,12 @@
 #ifndef CCL_PROJECT_RAII_HPP
 #define CCL_PROJECT_RAII_HPP
 
+#include <ccl/ccl.hpp>
 #include <type_traits>
 
 namespace ccl
 {
-    template<typename Fn, typename... Args>
-    concept Callable = std::is_invocable_v<Fn, Args...>;
-
-    template<Callable Constructor, Callable Deleter>
+    template<Invocable Constructor, Invocable Deleter>
     class Raii
     {
     private:
@@ -24,7 +22,14 @@ namespace ccl
         }
 
         Raii(const Raii &) = delete;
-        Raii(Raii &&) noexcept = default;
+
+        constexpr Raii(Raii &&other) noexcept
+          : constructor{std::move(other.constructor)}
+          , deleter{std::move(other.deleter)}
+        {
+            other.constructor = std::nullopt;
+            other.deleter = std::nullopt;
+        }
 
         constexpr ~Raii()
         {
@@ -34,7 +39,12 @@ namespace ccl
         }
 
         auto operator=(const Raii &) -> Raii & = delete;
-        auto operator=(Raii &&) noexcept -> Raii & = default;
+
+        constexpr auto operator=(Raii &&other) noexcept -> Raii &
+        {
+            std::swap(constructor, other.constructor);
+            std::swap(deleter, other.deleter);
+        }
     };
 }// namespace ccl
 

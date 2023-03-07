@@ -6,7 +6,7 @@ namespace ccl::text
         const string_view &input,
         ExceptionHandler &exception_handler,
         const string_view &filename)
-      : Base{input}
+      : CrtpBasicTextIterator{input}
       , location{filename}
       , lineTracker{input}
       , exceptionHandler{&exception_handler}
@@ -23,14 +23,14 @@ namespace ccl::text
             chr = doEscapeSymbolizing(*this, extra_symbols);
         }
 
-        Base::setCurrentChar(chr);
+        CrtpBasicTextIterator::setCurrentChar(chr);
         return {escaping, chr};
     }
 
     auto TextIterator::doEscapeSymbolizing(
-        TextIterator &text_iterator, const extra_symbols_t &extra_symbols_) -> char32_t
+        TextIterator &text_iterator, const extra_symbols_t &extra_symbols) -> char32_t
     {
-        return EscapingSymbolizer(text_iterator, extra_symbols_).matchNextChar();
+        return EscapingSymbolizer(text_iterator, extra_symbols).matchNextChar();
     }
 
     auto TextIterator::calculateNotationEscapeSymbol(

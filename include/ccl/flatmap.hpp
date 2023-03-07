@@ -6,7 +6,7 @@
 
 namespace ccl
 {
-    template<typename Key, typename Value, size_t Size>
+    template<std::equality_comparable Key, typename Value, size_t Size>
     class StaticFlatmap
     {
     public:
@@ -17,6 +17,11 @@ namespace ccl
         using iterator = typename storage_t::iterator;
         using const_iterator = typename storage_t::const_iterator;
 
+    private:
+        storage_t storage{};
+        size_t occupied{};
+
+    public:
         CCL_DECL auto size() const noexcept -> size_t
         {
             return occupied;
@@ -79,6 +84,7 @@ namespace ccl
 
         template<typename... Ts>
         constexpr auto emplace(Ts &&...args) -> value_type &
+            requires std::constructible_from<value_type, Ts...>
         {
             if (occupied == capacity()) {
                 throw std::out_of_range("flatmap is full");
@@ -134,8 +140,7 @@ namespace ccl
 
     private:
         template<typename Self>
-        CCL_DECL static auto staticFind(Self &self, const Key &key) noexcept
-            -> decltype(self.begin())
+        CCL_DECL static auto staticFind(Self &self, const Key &key) noexcept -> auto
         {
             return std::ranges::find_if(self, [&key](const value_type &value) {
                 return value.first == key;
@@ -153,9 +158,6 @@ namespace ccl
 
             return elem->second;
         }
-
-        storage_t storage{};
-        size_t occupied{};
     };
 }// namespace ccl
 

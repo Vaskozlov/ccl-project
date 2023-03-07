@@ -14,9 +14,9 @@ auto main(int argc, char *argv[]) -> int
 
     po::options_description desc("Allowed options");
     desc.add_options()("help,h", "produce help message")(
-        "lexical-analyzer-rules,l", po::value<std::string>(&source_file),
+        "lexical-analyzer-rules,l", po::value(&source_file),
         "file with rules for lexical analyzer")(
-        "output,o", po::value<std::string>(&header_name), "header file name");
+        "output,o", po::value(&header_name), "output header name");
 
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -28,8 +28,9 @@ auto main(int argc, char *argv[]) -> int
     }
 
     if (vm.count("output") == 0) {
-        std::cout << "File with rules for lexical analyzer was not specified." << std::endl;
-        std::cout << "Type --help to see how to use ccll" << std::endl;
+        fmt::print(
+            "File with rules for lexical analyzer was not specified.\n"
+            "Type --help to see how to use ccll\n");
         return 1;
     }
 

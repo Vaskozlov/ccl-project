@@ -9,8 +9,8 @@ namespace ccl::lex
     {
     private:
         using Container = dot_item::Container;
-        using BasicItem = dot_item::BasicItem;
-        using TextIterator = typename BasicItem::TextIterator;
+        using DotItemConcept = dot_item::DotItemConcept;
+        using TextIterator = typename DotItemConcept::TextIterator;
 
         struct CCL_TRIVIAL_ABI Rule
         {

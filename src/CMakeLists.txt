@@ -4,7 +4,7 @@ file(
         "src/ccl/*.cpp"
 )
 
-if (CREATE_STATIC_LIBRARY)
+if (CCL_STATIC_LIBRARY)
     add_library(ccl STATIC ${CCL_OBJECTS})
 else ()
     add_library(ccl SHARED ${CCL_OBJECTS})
@@ -17,7 +17,7 @@ target_link_libraries(
         fmt::fmt-header-only
 )
 
-if (${PRECOMPILED_HEADERS})
+if (${CCL_PRECOMPILED_HEADERS})
     target_precompile_headers(
             ccl
             PUBLIC

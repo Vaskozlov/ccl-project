@@ -4,9 +4,8 @@ namespace ccl::lex::dot_item
 {
     using namespace ccl::string_view_literals;
 
-    CCL_INLINE auto
-        Container::addPrefixOrPostfix(const BasicItem *item, Token &token, const string_view &repr)
-            -> void
+    CCL_INLINE auto Container::addPrefixOrPostfix(
+        const DotItemConcept *item, Token &token, const string_view &repr) -> void
     {
         if (repr.empty()) {
         } else if (item->hasPrefix()) {
@@ -19,7 +18,7 @@ namespace ccl::lex::dot_item
     Container::Container(
         TextIterator &rule_iterator, SpecialItems &special_items, Id item_id, bool main_item,
         bool is_special)
-      : BasicItem{item_id}
+      : DotItemConcept{item_id}
       , specialItems{special_items}
       , flags{.isMain = main_item, .isSpecial = is_special}
     {
@@ -29,7 +28,7 @@ namespace ccl::lex::dot_item
     Container::Container(
         const TextIterator &rule_iterator, SpecialItems &special_items, Id item_id, bool main_item,
         bool is_special)
-      : BasicItem{item_id}
+      : DotItemConcept{item_id}
       , specialItems{special_items}
       , flags{.isMain = main_item, .isSpecial = is_special}
     {
