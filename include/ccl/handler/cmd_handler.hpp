@@ -19,10 +19,7 @@ namespace ccl::handler
 
         Cmd() noexcept = default;
 
-        [[nodiscard]] static auto instance() -> Cmd &
-        {
-            return defaultCmdHandler;
-        }
+        [[nodiscard]] static auto instance() -> Cmd &;
 
     private:
         auto onHandle(const ExceptionT *error) -> void final;
@@ -33,6 +30,8 @@ namespace ccl::handler
 
     class Cmd::CmdFormatter
     {
+        friend class Cmd;
+
         std::string formattingBuffer{};
         string_view workingLine{};
         string_view filename{};
@@ -45,10 +44,10 @@ namespace ccl::handler
     public:
         explicit CmdFormatter(const ExceptionT *exception) noexcept;
 
+    private:
         template<fmt::color Color, typename HandleType>
         [[nodiscard]] auto format(HandleType &&handle_type) -> std::string;
 
-    private:
         auto formatFilename() -> void;
 
         template<fmt::color Color, typename HandleType>
