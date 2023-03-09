@@ -204,7 +204,7 @@ namespace ccl::lex::dot_item
         container.flags.isSpecial = true;
     }
 
-    auto Container::RuleParser::checkId() const -> void
+    CCL_INLINE auto Container::RuleParser::checkId() const -> void
     {
         if (getId() == std::to_underlying(ReservedTokenType::BAD_TOKEN) ||
             getId() == std::to_underlying(ReservedTokenType::EOI)) {

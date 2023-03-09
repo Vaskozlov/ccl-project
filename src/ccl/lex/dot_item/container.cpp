@@ -7,10 +7,10 @@ namespace ccl::lex::dot_item
     CCL_INLINE auto Container::addPrefixOrPostfix(
         const DotItemConcept *item, Token &token, const string_view &repr) -> void
     {
-        if (repr.empty()) {
-        } else if (item->hasPrefix()) {
+        if (repr.empty()) [[unlikely]] {
+        } else if (item->hasPrefix()) [[unlikely]] {
             token.addPrefix(repr);
-        } else if (item->hasPostfix()) {
+        } else if (item->hasPostfix()) [[unlikely]] {
             token.addPostfix(repr);
         }
     }
@@ -44,7 +44,7 @@ namespace ccl::lex::dot_item
 
         token.clear(getId());
 
-        for (auto &&item : items) {
+        for (const DotItem &item : items) {
             auto char_to_skip = item->scan(local_iterator);
 
             if ((!char_to_skip.has_value()) && isReversed()) {
@@ -63,7 +63,7 @@ namespace ccl::lex::dot_item
         }
 
         if (ScanningType::BASIC == special_scan) {
-            if (failedToEndItem(local_iterator)) {
+            if (failedToEndItem(local_iterator)) [[unlikely]] {
                 return false;
             }
         } else if (ScanningType::CHECK == special_scan) {

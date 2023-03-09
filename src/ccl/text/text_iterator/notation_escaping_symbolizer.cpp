@@ -23,7 +23,7 @@ namespace ccl::text
         auto chars_count = as<size_t>(0);
 
         for (; chars_count != maximumSymbols; ++chars_count) {
-            auto chr = textIterator.futureChar(1);
+            auto chr = textIterator.futureChar();
 
             if (isEoF(chr) || isOutOfNotation(chr)) [[unlikely]] {
                 break;

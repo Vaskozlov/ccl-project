@@ -50,7 +50,7 @@ namespace ccl::lex::dot_item
     {
         auto future_text = text_iterator.getFutureRemaining();
 
-        if (future_text.startsWith(sequenceValue) ^ isReversed()) {
+        if (future_text.startsWith(sequenceValue) ^ isReversed()) [[unlikely]] {
             return isReversed() ? utf8::size(future_text[0]) : sequenceValue.size();
         }
 

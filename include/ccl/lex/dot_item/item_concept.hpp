@@ -39,11 +39,11 @@ namespace ccl::lex::dot_item
         Flags flags;
 
     public:
-        explicit DotItemConcept(Id item_id)
+        CCL_INLINE explicit DotItemConcept(Id item_id)
           : id{item_id}
         {}
 
-        DotItemConcept(Id item_id, Flags item_flags)
+        CCL_INLINE DotItemConcept(Id item_id, Flags item_flags)
           : id{item_id}
           , flags{item_flags}
         {}
@@ -61,42 +61,42 @@ namespace ccl::lex::dot_item
             return repetition;
         }
 
-        [[nodiscard]] auto getFlags() const noexcept -> Flags
+        [[nodiscard]] CCL_INLINE auto getFlags() const noexcept -> Flags
         {
             return flags;
         }
 
-        [[nodiscard]] auto isReversed() const noexcept -> bool
+        [[nodiscard]] CCL_INLINE auto isReversed() const noexcept -> bool
         {
             return flags.reversed;
         }
 
-        [[nodiscard]] auto hasPrefix() const noexcept -> bool
+        [[nodiscard]] CCL_INLINE auto hasPrefix() const noexcept -> bool
         {
             return flags.isPrefix;
         }
 
-        [[nodiscard]] auto hasPostfix() const noexcept -> bool
+        [[nodiscard]] CCL_INLINE auto hasPostfix() const noexcept -> bool
         {
             return flags.isPostfix;
         }
 
-        void setPrefix() noexcept
+        CCL_INLINE void setPrefix() noexcept
         {
             flags.isPrefix = true;
         }
 
-        void setPostfix() noexcept
+        CCL_INLINE void setPostfix() noexcept
         {
             flags.isPostfix = true;
         }
 
-        auto reverse() noexcept -> void
+        CCL_INLINE auto reverse() noexcept -> void
         {
             flags.reversed = !flags.reversed;
         }
 
-        auto setRepetition(Repetition new_repetition) noexcept -> void
+        CCL_INLINE auto setRepetition(Repetition new_repetition) noexcept -> void
         {
             repetition = new_repetition;
         }
@@ -106,7 +106,7 @@ namespace ccl::lex::dot_item
             return (!isReversed() && (0 == repetition.from)) && empty();
         }
 
-        [[nodiscard]] auto getId() const noexcept -> Id
+        [[nodiscard]] CCL_INLINE auto getId() const noexcept -> Id
         {
             return id;
         }
@@ -135,22 +135,22 @@ namespace ccl::lex::dot_item
           : item{makeUnique<T>(std::move(dot_item))}
         {}
 
-        auto operator->() -> DotItemConcept *
+        CCL_INLINE auto operator->() -> DotItemConcept *
         {
             return get();
         }
 
-        auto operator->() const -> const DotItemConcept *
+        CCL_INLINE auto operator->() const -> const DotItemConcept *
         {
             return get();
         }
 
-        [[nodiscard]] auto get() -> DotItemConcept *
+        [[nodiscard]] CCL_INLINE auto get() -> DotItemConcept *
         {
             return item.get();
         }
 
-        [[nodiscard]] auto get() const -> const DotItemConcept *
+        [[nodiscard]] CCL_INLINE auto get() const -> const DotItemConcept *
         {
             return item.get();
         }

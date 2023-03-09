@@ -103,12 +103,12 @@ namespace ccl::lex::dot_item
         RuleParser(Container &target_container, TextIterator &text_iterator);
 
     private:
-        [[nodiscard]] auto getId() const noexcept -> Id
+        [[nodiscard]] CCL_INLINE auto getId() const noexcept -> Id
         {
             return container.getId();
         }
 
-        [[nodiscard]] auto isReversed() const noexcept -> bool
+        [[nodiscard]] CCL_INLINE auto isReversed() const noexcept -> bool
         {
             return container.isReversed();
         }

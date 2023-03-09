@@ -18,7 +18,7 @@ namespace ccl::lex::dot_item
     auto LogicalUnit::scanIteration(const ForkedGenerator &text_iterator) const -> size_t
     {
         switch (logicalOperation) {
-        case LogicalOperation::OR:
+        [[likely]] case LogicalOperation::OR:
             return orIteration(text_iterator);
 
         case LogicalOperation::AND:
@@ -44,7 +44,7 @@ namespace ccl::lex::dot_item
     {
         const auto lhs = rhsItem->scan(text_iterator);
 
-        if (!lhs.has_value()) {
+        if (!lhs.has_value()) [[likely]] {
             return 0;
         }
 
