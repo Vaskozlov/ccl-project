@@ -70,72 +70,72 @@ namespace ccl::lex
           , id{token_id}
         {}
 
-        [[nodiscard]] auto getId() const noexcept -> size_t
+        [[nodiscard]] CCL_INLINE auto getId() const noexcept -> size_t
         {
             return id;
         }
 
-        [[nodiscard]] auto emptyRepr() const noexcept -> bool
+        [[nodiscard]] CCL_INLINE auto emptyRepr() const noexcept -> bool
         {
             return repr.empty();
         }
 
-        [[nodiscard]] explicit operator bool() const noexcept
+        [[nodiscard]] CCL_INLINE explicit operator bool() const noexcept
         {
             return getId() != 0;
         }
 
-        [[nodiscard]] auto getReprSize() const noexcept -> size_t
+        [[nodiscard]] CCL_INLINE auto getReprSize() const noexcept -> size_t
         {
             return repr.size();
         }
 
-        [[nodiscard]] auto getLocation() const noexcept -> const text::Location &
+        [[nodiscard]] CCL_INLINE auto getLocation() const noexcept -> const text::Location &
         {
             return attributes.location;
         }
 
-        [[nodiscard]] auto getLine() const noexcept -> size_t
+        [[nodiscard]] CCL_INLINE auto getLine() const noexcept -> size_t
         {
             return attributes.location.getLine();
         }
 
-        [[nodiscard]] auto getColumn() const noexcept -> size_t
+        [[nodiscard]] CCL_INLINE auto getColumn() const noexcept -> size_t
         {
             return attributes.location.getColumn();
         }
 
-        [[nodiscard]] auto getRealColumn() const noexcept -> size_t
+        [[nodiscard]] CCL_INLINE auto getRealColumn() const noexcept -> size_t
         {
             return attributes.location.getRealColumn();
         }
 
-        [[nodiscard]] auto getFilename() const noexcept -> const string_view &
+        [[nodiscard]] CCL_INLINE auto getFilename() const noexcept -> string_view
         {
             return attributes.location.getFilename();
         }
 
-        [[nodiscard]] auto getRepr() const noexcept -> string_view
+        [[nodiscard]] CCL_INLINE auto getRepr() const noexcept -> string_view
         {
             return repr;
         }
 
-        [[nodiscard]] auto getPrefixes() const noexcept -> const Vector<string_view> &
+        [[nodiscard]] CCL_INLINE auto getPrefixes() const noexcept -> const Vector<string_view> &
         {
             return prefixes;
         }
 
-        [[nodiscard]] auto getPostfixes() const noexcept -> const Vector<string_view> &
+        [[nodiscard]] CCL_INLINE auto getPostfixes() const noexcept -> const Vector<string_view> &
         {
             return postfixes;
         }
 
-        [[nodiscard]] auto getInlineRepr() const noexcept -> const string_view &
+        [[nodiscard]] CCL_INLINE auto getInlineRepr() const noexcept -> string_view
         {
             return attributes.workingLine;
         }
 
-        [[nodiscard]] auto getTabsAndSpaces() const noexcept -> const std::string &
+        [[nodiscard]] CCL_INLINE auto getTabsAndSpaces() const noexcept -> std::string_view
         {
             return attributes.tabsAndSpaces;
         }
@@ -148,22 +148,22 @@ namespace ccl::lex
             postfixes.clear();
         }
 
-        auto setReprLength(size_t length) noexcept -> void
+        CCL_INLINE auto setReprLength(size_t length) noexcept -> void
         {
             repr.setLength<UNSAFE>(length);
         }
 
-        auto addPrefix(string_view prefix) -> void
+        CCL_INLINE auto addPrefix(string_view prefix) -> void
         {
             prefixes.push_back(prefix);
         }
 
-        auto addPostfix(string_view postfix) -> void
+        CCL_INLINE auto addPostfix(string_view postfix) -> void
         {
             postfixes.push_back(postfix);
         }
 
-        auto setEnd(typename string_view::iterator end_of_repr) noexcept -> void
+        CCL_INLINE auto setEnd(typename string_view::iterator end_of_repr) noexcept -> void
         {
             repr = {repr.begin(), end_of_repr};
         }

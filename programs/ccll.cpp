@@ -28,8 +28,11 @@ auto main(int argc, char *argv[]) -> int
 {
     auto desc = getOptionDescription();
 
+    po::positional_options_description po;
+    po.add("lexical-analyzer-rules", -1);
+
     po::variables_map vm;
-    po::store(po::parse_command_line(argc, argv, desc), vm);
+    po::store(po::command_line_parser(argc, argv).options(desc).positional(po).run(), vm);
     po::notify(vm);
 
     if (vm.count("help") == 1) {
