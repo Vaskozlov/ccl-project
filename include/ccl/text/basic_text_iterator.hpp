@@ -60,7 +60,8 @@ namespace ccl::text
         {}
 
         template<typename T>
-        CCL_INLINE constexpr explicit CrtpBasicTextIterator(CrtpForkType /* unused */, T &from) noexcept
+        CCL_INLINE constexpr explicit CrtpBasicTextIterator(
+            CrtpForkType /* unused */, T &from) noexcept
         {
             *this = std::bit_cast<CrtpBasicTextIterator>(from);
         }

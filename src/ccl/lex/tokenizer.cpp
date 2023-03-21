@@ -85,20 +85,20 @@ namespace ccl::lex
             hasFutureToken = false;
             tokenIndex = !tokenIndex;
         } else {
-            nextToken(tokens[tokenIndex]); // NOLINT
+            nextToken(tokens[tokenIndex]);// NOLINT
         }
 
-        return tokens[tokenIndex]; // NOLINT
+        return tokens[tokenIndex];// NOLINT
     }
 
     auto Tokenizer::yieldFutureToken() -> const Token &
     {
         if (!hasFutureToken) {
-            nextToken(tokens[!tokenIndex]); // NOLINT
+            nextToken(tokens[!tokenIndex]);// NOLINT
             hasFutureToken = true;
         }
 
-        return tokens[!tokenIndex]; // NOLINT
+        return tokens[!tokenIndex];// NOLINT
     }
 
     CCL_INLINE auto Tokenizer::constructEoiToken(Token &token) -> void
