@@ -118,7 +118,7 @@ namespace ccl::text
 
         CCL_DECL auto getFutureRemaining() const noexcept -> string_view
         {
-            if (isInitialized()) {
+            if (isInitialized()) [[likely]] {
                 return {carriage + utf8::size(getNextCarriageValue()), end};
             }
 
@@ -137,7 +137,7 @@ namespace ccl::text
 
         constexpr auto setEnd(iterator new_end) -> void
         {
-            if (new_end < carriage) {
+            if (new_end < carriage) [[unlikely]] {
                 throw std::invalid_argument{"end must be above carriage"};
             }
 
@@ -175,7 +175,7 @@ namespace ccl::text
             auto fork = ForkedTextIterator{CrtpFork, *this};
             fork.next();
 
-            if (fork.errorDetected) {
+            if (fork.errorDetected) [[unlikely]] {
                 return {};
             }
 
@@ -200,15 +200,15 @@ namespace ccl::text
 
         constexpr auto moveCarriageToTheNextByte() noexcept(noexceptCarriageMove) -> char
         {
-            if (!isInitialized()) {
-                if (carriage == end) {
+            if (!isInitialized()) [[unlikely]] {
+                if (carriage == end) [[unlikely]] {
                     currentChar = 0;
                     return 0;
                 }
 
                 initialized = true;
-            } else {
-                if ((carriage + 1) >= end) {
+            } else [[likely]] {
+                if ((carriage + 1) >= end) [[unlikely]] {
                     carriage = end;
                     currentChar = 0;
                     return 0;
@@ -244,7 +244,7 @@ namespace ccl::text
         CCL_INLINE constexpr auto trailingCharacterMove(char chr) noexcept(noexceptCarriageMove)
             -> void
         {
-            if (!utf8::isTrailingCharacter(chr)) {
+            if (!utf8::isTrailingCharacter(chr)) [[unlikely]] {
                 onUtfError(chr);
             }
 
@@ -256,7 +256,7 @@ namespace ccl::text
         {
             remainingBytesToFinishSymbol = utf8::size(chr);
 
-            if (0 == remainingBytesToFinishSymbol) {
+            if (0 == remainingBytesToFinishSymbol) [[unlikely]] {
                 onUtfError(chr);
             }
 
