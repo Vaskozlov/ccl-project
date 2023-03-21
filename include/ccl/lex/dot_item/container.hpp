@@ -1,7 +1,6 @@
 #ifndef CCL_PROJECT_CONTAINER_HPP
 #define CCL_PROJECT_CONTAINER_HPP
 
-#include <boost/container/small_vector.hpp>
 #include <ccl/lex/dot_item/item_concept.hpp>
 #include <ccl/lex/dot_item/logical_unit.hpp>
 #include <ccl/lex/dot_item/repetition.hpp>
@@ -24,7 +23,7 @@ namespace ccl::lex::dot_item
     {
         using DotItemConcept::canBeOptimized;
         using typename DotItemConcept::TextIterator;
-        using DotItemsStorage = SmallVector<DotItem>;
+        using DotItemsStorage = Vector<DotItem>;
 
         class RuleParser;
 

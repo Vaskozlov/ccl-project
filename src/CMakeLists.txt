@@ -14,7 +14,7 @@ add_dependencies(ccl fmt::fmt)
 
 target_link_libraries(
         ccl
-        fmt::fmt-header-only
+        fmt::fmt
 )
 
 if (${CCL_PRECOMPILED_HEADERS})

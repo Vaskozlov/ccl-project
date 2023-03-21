@@ -2,11 +2,6 @@
 #define CCL_PROJECT_TYPES_HPP
 
 #include <bitset>
-#include <boost/container/flat_map.hpp>
-#include <boost/container/flat_set.hpp>
-#include <boost/container/map.hpp>
-#include <boost/container/set.hpp>
-#include <boost/container/small_vector.hpp>
 #include <ccl/core/pair.hpp>
 #include <cinttypes>
 #include <cmath>
@@ -58,25 +53,11 @@ namespace ccl
     template<typename Key, typename Value>
     using UnorderedMap = std::unordered_map<Key, Value>;
 
-#ifndef CCL_DEBUG
-    template<typename T>
-    using FlatSet = boost::container::flat_set<T>;
-
-    template<typename Key, typename Value>
-    using Flatmap = boost::container::flat_map<Key, Value>;
-
-    template<typename T, size_t N = 4>
-    using SmallVector = boost::container::small_vector<T, N>;
-#else
     template<typename T>
     using FlatSet = std::set<T>;
 
     template<typename Key, typename Value>
     using Flatmap = std::map<Key, Value>;
-
-    template<typename T, size_t N = 4>
-    using SmallVector = std::vector<T>;
-#endif
 
     template<typename T>
     using InitializerList = const std::initializer_list<T> &;
