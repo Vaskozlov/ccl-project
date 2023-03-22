@@ -32,17 +32,11 @@ target_link_libraries(
         ccl
 )
 
-target_link_libraries(
-        ccl-catch
-        ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
-)
-
 if (${PRECOMPILED_HEADER})
     target_precompile_headers(
             ccl-catch
             PUBLIC
             "pch.hpp"
-            <boost/test/unit_test.hpp>
     )
 endif ()
 

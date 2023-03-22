@@ -1,8 +1,5 @@
-#include <boost/test/unit_test_suite.hpp>
-#include <ccl/core/as.hpp>
+#include <ccl/ccl.hpp>
 #include <ccl/debug/debug_file.hpp>
-#include <limits>
-#include <type_traits>
 
 using namespace ccl;
 
