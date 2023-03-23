@@ -5,7 +5,7 @@ using namespace ccl;
 using namespace lex;
 using namespace text;
 
-BOOST_AUTO_TEST_CASE(LexicalAnalyzerUnrecognizableTokenError)
+TEST_CASE("LexicalAnalyzerUnrecognizableTokenError", "[ContainerUnion]")
 {
     auto analyzer = LexicalAnalyzer{ExceptionHandler::instance(), {{2, "[a-z]+"}}};
     auto tokenizer = analyzer.getTokenizer(R"(20)");

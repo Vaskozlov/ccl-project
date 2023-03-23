@@ -9,9 +9,7 @@ using namespace dot_item;
 
 // NOLINTNEXTLINE
 
-BOOST_AUTO_TEST_SUITE(ContainerUnion)
-
-BOOST_AUTO_TEST_CASE(UnionWithOneElem)
+TEST_CASE("UnionWithOneElem", "[ContainerUnion]")
 {
     auto text_iterator = TextIterator{"[a]"};
     text_iterator.next();
@@ -20,11 +18,11 @@ BOOST_AUTO_TEST_CASE(UnionWithOneElem)
     DEBUG_VAR &&bitset = union_item.getBitset();
 
     for (char32_t i = 0; i < 127; ++i) {// NOLINT
-        BOOST_ASSERT(bitset.at(i) == (i == 'a'));
+        REQUIRE(bitset.at(i) == (i == 'a'));
     }
 }
 
-BOOST_AUTO_TEST_CASE(UnionWithMultipleElems)
+TEST_CASE("UnionWithMultipleElems", "[ContainerUnion]")
 {
     auto text_iterator = TextIterator{"[a-z_]"};
     text_iterator.next();
@@ -33,22 +31,20 @@ BOOST_AUTO_TEST_CASE(UnionWithMultipleElems)
     DEBUG_VAR &&bitset = union_item.getBitset();
 
     for (char32_t i = '\0'; i != '_'; ++i) {
-        BOOST_ASSERT(!bitset.at(i));
+        REQUIRE(!bitset.at(i));
     }
 
-    BOOST_ASSERT(bitset.at('_'));
+    REQUIRE(bitset.at('_'));
 
     for (char32_t i = '_' + 1; i != 'a'; ++i) {
-        BOOST_ASSERT(!bitset.at(i));
+        REQUIRE(!bitset.at(i));
     }
 
     for (char32_t i = 'a'; i <= 'z'; ++i) {
-        BOOST_ASSERT(bitset.at(i));
+        REQUIRE(bitset.at(i));
     }
 
     for (char32_t i = 'z' + 1; i != '\x7F'; ++i) {
-        BOOST_ASSERT(!bitset.at(i));
+        REQUIRE(!bitset.at(i));
     }
 }
-
-BOOST_AUTO_TEST_SUITE_END()

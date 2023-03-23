@@ -4,7 +4,7 @@
 using namespace ccl;
 using namespace ccl::codegen;
 
-BOOST_AUTO_TEST_CASE(BasicCodegen)
+TEST_CASE("BasicCodegen", "[Codegen]")
 {
     auto generator = BasicCodeGenerator{};
 
@@ -18,7 +18,7 @@ BOOST_AUTO_TEST_CASE(BasicCodegen)
 
     DEBUG_VAR generated_code = generator.getCode();
 
-    BOOST_ASSERT(
+    REQUIRE(
         generated_code ==
         "Writing at the begin\n"
         "Test begin\n"

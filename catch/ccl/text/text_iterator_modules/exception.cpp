@@ -5,7 +5,7 @@
 using namespace ccl;
 using namespace text;
 
-BOOST_AUTO_TEST_CASE(TextIteratorExceptionConstruction)
+TEST_CASE("TextIteratorExceptionConstruction", "[TextIterator]")
 {
     auto text_iterator =
         TextIterator("Hello, World!\nIt's a test string!", ExceptionHandler::instance(), "builtin");
@@ -13,10 +13,10 @@ BOOST_AUTO_TEST_CASE(TextIteratorExceptionConstruction)
         ExceptionCriticality::UNCRITICAL, AnalysisStage::LEXICAL_ANALYSIS,
         text_iterator.getLocation(), 1, text_iterator.getWorkingLine(), "some message");
 
-    BOOST_ASSERT(exception.getColumn() == 0);
-    BOOST_ASSERT(exception.getMessage() == "some message");
+    REQUIRE(exception.getColumn() == 0);
+    REQUIRE(exception.getMessage() == "some message");
 
-    BOOST_ASSERT(
+    REQUIRE(
         exception.createFullMessage() ==
         "Error occurred at: builtin, line: 1, column: 0, message: some message\n"
         "Hello, World!\n"

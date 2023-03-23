@@ -1,24 +1,23 @@
 #include "ccl/lazy.hpp"
 #include "ccl/debug/debug_file.hpp"
 
-
-BOOST_AUTO_TEST_CASE(LazyObjecyInitilizedGet)
+TEST_CASE("LazyObjectInitializedGet", "[Lazy]")
 {
-    DEBUG_VAR int_object = ccl::toLazy(10);
+    DEBUG_VAR int_object = ccl::toLazy(10);// NOLINT
 
-    BOOST_ASSERT(int_object == 10);
-    BOOST_ASSERT(int_object.get() == 10);
-    BOOST_ASSERT(std::as_const(int_object).get() == 10);
+    REQUIRE(int_object == 10);
+    REQUIRE(int_object.get() == 10);
+    REQUIRE(std::as_const(int_object).get() == 10);
 }
 
-BOOST_AUTO_TEST_CASE(LazyObjecyUninitilizedGet)
+TEST_CASE("LazyObjectUninitializedGet", "[Lazy]")
 {
-    DEBUG_VAR some_int = 42;
+    DEBUG_VAR some_int = 42;// NOLINT
     DEBUG_VAR int_object = ccl::toLazy([some_int]() {
         return some_int;
     });
 
-    BOOST_ASSERT(int_object == some_int);
-    BOOST_ASSERT(int_object.get() == some_int);
-    BOOST_ASSERT(std::as_const(int_object).get() == some_int);
+    REQUIRE(int_object == some_int);
+    REQUIRE(int_object.get() == some_int);
+    REQUIRE(std::as_const(int_object).get() == some_int);
 }

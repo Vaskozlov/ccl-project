@@ -4,8 +4,8 @@
 using namespace ccl;
 using namespace string_view_literals;
 
-BOOST_AUTO_TEST_CASE(StringViewOpenCloseFind)
+TEST_CASE("StringViewOpenCloseFind", "[StringView]")
 {
     DEBUG_VAR cerb_string = "(Hello(, )World)!"_sv;
-    BOOST_ASSERT(cerb_string.openCloseFind('(', ')').value() == cerb_string.rfind(')'));
+    REQUIRE(cerb_string.openCloseFind('(', ')').value() == cerb_string.rfind(')'));
 }

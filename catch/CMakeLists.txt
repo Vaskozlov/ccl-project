@@ -11,12 +11,6 @@ add_executable(
         ${CCL_CATCH_OBJECTS}
 )
 
-target_compile_definitions(
-        ccl-catch
-        PRIVATE
-        "BOOST_TEST_DYN_LINK"
-)
-
 set_source_files_properties(
         catch/runner.cpp PRIVATE
         PROPERTIES SKIP_PRECOMPILE_HEADERS ON
@@ -24,13 +18,12 @@ set_source_files_properties(
 
 target_link_libraries(
         ccl-catch
+        ccl
         fmt::fmt
+        Catch2::Catch2
+        Catch2::Catch2WithMain
 )
 
-target_link_libraries(
-        ccl-catch
-        ccl
-)
 
 if (${PRECOMPILED_HEADER})
     target_precompile_headers(

@@ -2,8 +2,8 @@
     "name": "ccl-project",
     "version": "0.0.1",
     "dependencies": [
-        "boost-test",
-        "boost-program-options",
-        "fmt"
+        "fmt",
+        "cxxopts",
+        "catch2"
     ]
 }

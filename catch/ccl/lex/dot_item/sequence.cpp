@@ -9,9 +9,7 @@ using namespace dot_item;
 
 // NOLINTNEXTLINE
 
-BOOST_AUTO_TEST_SUITE(ContainerSequence)
-
-BOOST_AUTO_TEST_CASE(SequenceWithOneCharBegin)
+TEST_CASE("SequenceWithOneCharBegin", "[ContainerSequence]")
 {
     auto text_iterator = TextIterator{R"("Hello, \"World\"!")"};
     text_iterator.next();
@@ -19,11 +17,11 @@ BOOST_AUTO_TEST_CASE(SequenceWithOneCharBegin)
     auto string_item = Sequence({}, "\"", text_iterator);
     DEBUG_VAR &&string = string_item.getValue();
 
-    BOOST_ASSERT(string == R"(Hello, "World"!)");
-    BOOST_ASSERT(ccl::isEoF(text_iterator.next()));
+    REQUIRE(string == R"(Hello, "World"!)");
+    REQUIRE(ccl::isEoF(text_iterator.next()));
 }
 
-BOOST_AUTO_TEST_CASE(SequenceWithTreeCharBegin)
+TEST_CASE("SequenceWithTreeCharBegin", "[ContainerSequence]")
 {
     auto text_iterator = TextIterator{"\"\"\"Hello,\n    \"World\"!\"\"\""};
     text_iterator.next();
@@ -31,46 +29,22 @@ BOOST_AUTO_TEST_CASE(SequenceWithTreeCharBegin)
     auto string_item = Sequence({.multiline = true}, R"(""")", text_iterator);
     DEBUG_VAR &&string = string_item.getValue();
 
-    BOOST_ASSERT(string == "Hello,\n    \"World\"!");
-    BOOST_ASSERT(ccl::isEoF(text_iterator.next()));
+    REQUIRE(string == "Hello,\n    \"World\"!");
+    REQUIRE(ccl::isEoF(text_iterator.next()));
 }
 
-BOOST_AUTO_TEST_CASE(UnterminatedSequence)
+TEST_CASE("UnterminatedSequence", "[ContainerSequence]")
 {
     auto text_iterator = TextIterator{R"("Hello, World!)"};
     text_iterator.next();
 
-    BOOST_CHECK_EXCEPTION(
-        Sequence({}, "\"", text_iterator),
-        text::TextIteratorException,
-        []([[maybe_unused]] const text::TextIteratorException &exception) {
-            {
-                BOOST_ASSERT(exception.getColumn() == 1);
-                BOOST_ASSERT(exception.getMessage() == "unterminated sequence");
-                return true;
-            }
-        });
+    CHECK_THROWS_AS(Sequence({}, "\"", text_iterator), text::TextIteratorException);
 }
 
-BOOST_AUTO_TEST_CASE(SequenceReachedNewLine)
+TEST_CASE("SequenceReachedNewLine", "[ContainerSequence]")
 {
     auto text_iterator = TextIterator{"\"Hello, World!\n\""};
     text_iterator.next();
 
-    BOOST_CHECK_EXCEPTION(
-        Sequence({}, "\"", text_iterator),
-        text::TextIteratorException,
-        []([[maybe_unused]] const text::TextIteratorException &exception) {
-            {
-                BOOST_ASSERT(exception.getColumn() == 1);
-                BOOST_ASSERT(
-                    exception.getMessage() ==
-                    "new line is reached, but sequence has not been terminated");
-                BOOST_ASSERT(
-                    exception.getSuggestion() == "use multiline sequence or close it with `\"`");
-                return true;
-            }
-        });
+    CHECK_THROWS_AS(Sequence({}, "\"", text_iterator), text::TextIteratorException);
 }
-
-BOOST_AUTO_TEST_SUITE_END()

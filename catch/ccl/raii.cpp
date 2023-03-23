@@ -3,7 +3,7 @@
 
 using namespace ccl;
 
-BOOST_AUTO_TEST_CASE(RaiiTest)
+TEST_CASE("RaiiTest")
 {
     // NOLINTBEGIN
 
@@ -17,10 +17,10 @@ BOOST_AUTO_TEST_CASE(RaiiTest)
                 test_variable = 10;
             }};
 
-        BOOST_CHECK_EQUAL(test_variable, 42);
+        REQUIRE(test_variable == 42);
     }
 
     // NOLINTEND
 
-    BOOST_CHECK_EQUAL(test_variable, 10);
+    REQUIRE(test_variable == 10);
 }

@@ -5,7 +5,7 @@ using namespace ccl;
 using namespace lex;
 using namespace text;
 
-BOOST_AUTO_TEST_CASE(LexicalAnalyzerUnion, *utf::depends_on("ContainerUnion"))
+TEST_CASE("LexicalAnalyzerUnion", "[ContainerUnion]")
 {
     auto analyzer = LexicalAnalyzer{
         ExceptionHandler::instance(),
@@ -16,24 +16,24 @@ BOOST_AUTO_TEST_CASE(LexicalAnalyzerUnion, *utf::depends_on("ContainerUnion"))
 
     auto token = tokenizer.yield();
 
-    BOOST_ASSERT(token.getId() == 3);
-    BOOST_ASSERT(token.getRepr() == "20");
-    BOOST_ASSERT(token.getPrefixes().empty());
-    BOOST_ASSERT(token.getPostfixes().empty());
+    REQUIRE(token.getId() == 3);
+    REQUIRE(token.getRepr() == "20");
+    REQUIRE(token.getPrefixes().empty());
+    REQUIRE(token.getPostfixes().empty());
 
     token = tokenizer.yield();
 
-    BOOST_ASSERT(token.getId() == 2);
-    BOOST_ASSERT(token.getRepr() == R"(abz10)");
-    BOOST_ASSERT(token.getPrefixes().size() == 1);
-    BOOST_ASSERT(token.getPostfixes().empty());
-    BOOST_ASSERT(token.getPrefixes()[0] == "abz");
+    REQUIRE(token.getId() == 2);
+    REQUIRE(token.getRepr() == R"(abz10)");
+    REQUIRE(token.getPrefixes().size() == 1);
+    REQUIRE(token.getPostfixes().empty());
+    REQUIRE(token.getPrefixes()[0] == "abz");
 
     token = tokenizer.yield();
 
-    BOOST_ASSERT(token.getId() == 3);
-    BOOST_ASSERT(token.getRepr() == "10abz");
-    BOOST_ASSERT(token.getPrefixes().empty());
-    BOOST_ASSERT(token.getPostfixes().size() == 1);
-    BOOST_ASSERT(token.getPostfixes()[0] == "abz");
+    REQUIRE(token.getId() == 3);
+    REQUIRE(token.getRepr() == "10abz");
+    REQUIRE(token.getPrefixes().empty());
+    REQUIRE(token.getPostfixes().size() == 1);
+    REQUIRE(token.getPostfixes()[0] == "abz");
 }

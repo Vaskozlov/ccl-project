@@ -3,38 +3,34 @@
 
 using namespace ccl;
 
-BOOST_AUTO_TEST_SUITE(UnicodeConvertion)
-
-BOOST_AUTO_TEST_CASE(OneBytesUnicodeConvertion)
+TEST_CASE("OneBytesUnicodeConversion", "[UnicodeConversion]")
 {
     auto test = std::string{};
     utf8::appendUtf32ToUtf8Container(test, U'\u000F');
-    BOOST_ASSERT(test == "\u000F");
+    REQUIRE(test == "\u000F");
 
     test.clear();
     utf8::appendUtf32ToUtf8Container(test, 'A');
-    BOOST_ASSERT(test == "A");
+    REQUIRE(test == "A");
 }
 
-BOOST_AUTO_TEST_CASE(TwoBytesUnicodeConvertion)
+TEST_CASE("TwoBytesUnicodeConversion", "[UnicodeConversion]")
 {
     auto test = std::string{};
     utf8::appendUtf32ToUtf8Container(test, U'\u00FD');
-    BOOST_ASSERT(test == "\u00FD");
+    REQUIRE(test == "\u00FD");
 }
 
-BOOST_AUTO_TEST_CASE(TreeBytesUnicodeConvertion)
+TEST_CASE("TreeBytesUnicodeConversion", "[UnicodeConversion]")
 {
     auto test = std::string{};
     utf8::appendUtf32ToUtf8Container(test, U'\uFCAF');
-    BOOST_ASSERT(test == "\uFCAF");
+    REQUIRE(test == "\uFCAF");
 }
 
-BOOST_AUTO_TEST_CASE(FourBytesUnicodeConvertion)
+TEST_CASE("FourBytesUnicodeConversion", "[UnicodeConversion]")
 {
     auto test = std::string{};
     utf8::appendUtf32ToUtf8Container(test, U'\U0010FDFE');
-    BOOST_ASSERT(test == "\U0010FDFE");
+    REQUIRE(test == "\U0010FDFE");
 }
-
-BOOST_AUTO_TEST_SUITE_END()

@@ -5,11 +5,11 @@ using namespace ccl;
 using namespace string_view_literals;
 using namespace std::string_view_literals;
 
-BOOST_AUTO_TEST_CASE(Join)
+TEST_CASE("JoinInts", "[Join]")
 {
     DEBUG_VAR vector_of_int = Vector<int>{10, 20, 30};// NOLINT
 
-    BOOST_ASSERT(
+    REQUIRE(
         ccl::join(
             vector_of_int,
             [](auto &&elem) {
@@ -17,5 +17,5 @@ BOOST_AUTO_TEST_CASE(Join)
             },
             ", ") == "10, 20, 30");
 
-    BOOST_ASSERT(ccl::join(vector_of_int, ", ") == "10, 20, 30");
+    REQUIRE(ccl::join(vector_of_int, ", ") == "10, 20, 30");
 }

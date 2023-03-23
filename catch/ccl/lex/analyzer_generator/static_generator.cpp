@@ -81,7 +81,7 @@ CHAR:               ! "\'" ([']^ | "\\\'" ) "\'"
 STRING:             ! "\"" (["]^ | "\\\"")* "\""
 )"_sv;
 
-BOOST_AUTO_TEST_CASE(StaticGeneration)
+TEST_CASE("StaticGeneration", "[StaticGenerator]")
 {
     ccl::lex::AnalyzerGenerator::generateStaticVersion(__FILE__, C_RULE);
 }
