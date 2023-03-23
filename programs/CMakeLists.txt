@@ -11,17 +11,9 @@ add_executable(
 
 target_link_libraries(
         ccl-lexer
-        Boost::program_options
-)
-
-target_link_libraries(
-        ccl-lexer
-        fmt::fmt
-)
-
-target_link_libraries(
-        ccl-lexer
         ccl
+        fmt::fmt
+        cxxopts::cxxopts
 )
 
 if (${PRECOMPILED_HEADER})

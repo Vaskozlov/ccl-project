@@ -43,9 +43,3 @@
 #include <fmt/compile.h>
 #include <fmt/format.h>
 #include <fmt/std.h>
-
-#include <boost/container/flat_map.hpp>
-#include <boost/container/flat_set.hpp>
-#include <boost/container/map.hpp>
-#include <boost/container/set.hpp>
-#include <boost/container/small_vector.hpp>

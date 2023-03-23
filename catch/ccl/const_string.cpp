@@ -8,26 +8,22 @@ auto testConstString(string_view input) -> bool
 {
     DEBUG_VAR test_string = input;
 
-    BOOST_ASSERT(String.empty() == test_string.empty());
-    BOOST_ASSERT(String.size() == test_string.size());
-    BOOST_ASSERT(as<string_view>(String) == test_string);
+    REQUIRE(String.empty() == test_string.empty());
+    REQUIRE(String.size() == test_string.size());
+    REQUIRE(as<string_view>(String) == test_string);
 
-    BOOST_ASSERT(std::ranges::equal(String, test_string));
-    BOOST_ASSERT(std::equal(String.begin(), String.end(), test_string.begin()));
+    REQUIRE(std::ranges::equal(String, test_string));
+    REQUIRE(std::equal(String.begin(), String.end(), test_string.begin()));
 
     return true;
 }
 
-BOOST_AUTO_TEST_SUITE(ConstString)
-
-BOOST_AUTO_TEST_CASE(ConstStringEmptyInput)
+TEST_CASE("ConstStringEmptyInput", "[ConstString]")
 {
-    BOOST_ASSERT(testConstString<"">(""));
+    REQUIRE(testConstString<"">(""));
 }
 
-BOOST_AUTO_TEST_CASE(ConstStringSingleBasicInput)
+TEST_CASE("ConstStringSingleBasicInput", "[ConstString]")
 {
-    BOOST_ASSERT(testConstString<"Hello, World!">("Hello, World!"));
+    REQUIRE(testConstString<"Hello, World!">("Hello, World!"));
 }
-
-BOOST_AUTO_TEST_SUITE_END()

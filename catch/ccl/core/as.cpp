@@ -1,8 +1,5 @@
-#include <boost/test/unit_test_suite.hpp>
-#include <ccl/core/as.hpp>
+#include <ccl/ccl.hpp>
 #include <ccl/debug/debug_file.hpp>
-#include <limits>
-#include <type_traits>
 
 using namespace ccl;
 
@@ -28,21 +25,19 @@ struct B : A
     }
 };
 
-BOOST_AUTO_TEST_SUITE(AsConvertion)
-
-BOOST_AUTO_TEST_CASE(TestAsOnInts)
+TEST_CASE("TestAsOnInts", "[AsConversion]")
 {
     static_assert(std::is_same_v<i64, decltype(as<i64>(10))>);
-    BOOST_ASSERT(as<i64>(10) == 10);
+    REQUIRE(as<i64>(10) == 10);
 }
 
-BOOST_AUTO_TEST_CASE(TestAsOnFloats)
+TEST_CASE("TestAsOnFloats", "[AsConversion]")
 {
     static_assert(std::is_same_v<f32, decltype(as<f32>(10))>);
-    BOOST_ASSERT((as<f32>(10) - 10.0F) <= std::numeric_limits<f32>::epsilon());
+    REQUIRE((as<f32>(10) - 10.0F) <= std::numeric_limits<f32>::epsilon());
 }
 
-BOOST_AUTO_TEST_CASE(TestAsOnPointer)
+TEST_CASE("TestAsOnPointer", "[AsConversion]")
 {
     auto b = B{};
 
@@ -52,11 +47,11 @@ BOOST_AUTO_TEST_CASE(TestAsOnPointer)
     auto *b_from_a = as<B *>(a);
     static_assert(std::is_same_v<decltype(b_from_a), B *>);
 
-    BOOST_ASSERT(a->getId() == 20);
-    BOOST_ASSERT(b_from_a->getId() == 20);
+    REQUIRE(a->getId() == 20);
+    REQUIRE(b_from_a->getId() == 20);
 }
 
-BOOST_AUTO_TEST_CASE(TestAsOnReferences)
+TEST_CASE("TestAsOnReferences", "[AsConversion]")
 {
     auto b = B{};
 
@@ -66,10 +61,8 @@ BOOST_AUTO_TEST_CASE(TestAsOnReferences)
     auto &b_from_a = as<B &>(a);
     static_assert(std::is_same_v<decltype(b_from_a), B &>);
 
-    BOOST_ASSERT(a.getId() == 20);
-    BOOST_ASSERT(b_from_a.getId() == 20);
+    REQUIRE(a.getId() == 20);
+    REQUIRE(b_from_a.getId() == 20);
 }
 
 // NOLINTEND
-
-BOOST_AUTO_TEST_SUITE_END()

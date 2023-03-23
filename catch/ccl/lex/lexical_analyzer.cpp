@@ -8,7 +8,7 @@ using namespace lex;
 using namespace text;
 using namespace string_view_literals;
 
-BOOST_AUTO_TEST_CASE(LexTest)
+TEST_CASE("LexTest", "[LexicalAnalyzer]")
 {
     auto text =
         R"(
@@ -34,6 +34,6 @@ BOOST_AUTO_TEST_CASE(LexTest)
     // NOLINTEND
 
     while (DEBUG_VAR &&token = tokenizer.yield()) {
-        BOOST_ASSERT(token.getId() != BAD_TOKEN);
+        REQUIRE(token.getId() != BAD_TOKEN);
     }
 }

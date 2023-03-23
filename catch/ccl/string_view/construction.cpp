@@ -4,35 +4,35 @@
 using namespace ccl;
 using namespace std::string_literals;
 
-BOOST_AUTO_TEST_CASE(StringViewConstructionEmptyArray)
+TEST_CASE("StringViewConstructionEmptyArray", "[StringView]")
 {
     DEBUG_VAR string = string_view{""};
-    BOOST_ASSERT(string.empty());
+    REQUIRE(string.empty());
 }
 
-BOOST_AUTO_TEST_CASE(StringViewConstructionArray)
+TEST_CASE("StringViewConstructionArray", "[StringView]")
 {
     DEBUG_VAR string = string_view{"Hello, World!"};
-    BOOST_ASSERT(string.size() == 13);
+    REQUIRE(string.size() == 13);
 }
 
-BOOST_AUTO_TEST_CASE(StringViewConstructionEmptyPointer)
+TEST_CASE("StringViewConstructionEmptyPointer", "[StringView]")
 {
     const char *str = "";
     DEBUG_VAR string = string_view{str};
-    BOOST_ASSERT(string.empty());
+    REQUIRE(string.empty());
 }
 
-BOOST_AUTO_TEST_CASE(StringViewConstructionPointer)
+TEST_CASE("StringViewConstructionPointer", "[StringView]")
 {
     const char *str = "Hello, World!";
     DEBUG_VAR string = string_view{str};
-    BOOST_ASSERT(string.size() == 13);
+    REQUIRE(string.size() == 13);
 }
 
-BOOST_AUTO_TEST_CASE(StringViewConstructionFromTwoPointers)
+TEST_CASE("StringViewConstructionFromTwoPointers", "[StringView]")
 {
     auto str = "Hello, World!"s;
     DEBUG_VAR string = string_view{str.data(), str.data() + str.size()};// NOLINT
-    BOOST_ASSERT(string.size() == 13);
+    REQUIRE(string.size() == 13);
 }

@@ -3,18 +3,18 @@
 
 using namespace ccl;
 
-BOOST_AUTO_TEST_CASE(FlatmapContains)
+TEST_CASE("FlatmapContains", "[Flatmap]")
 {
     static constexpr auto flatmap =
         StaticFlatmap<int, int, 10>{{10, 20}, {20, 30}, {30, 40}};// NOLINT
 
-    BOOST_CHECK_EQUAL(flatmap.size(), 3);
-    BOOST_CHECK_EQUAL(flatmap.capacity(), 10);
+    REQUIRE(flatmap.size() == 3);
+    REQUIRE(flatmap.capacity() == 10);
 
-    BOOST_ASSERT(flatmap.contains(10));
-    BOOST_ASSERT(flatmap.contains(20));
-    BOOST_ASSERT(flatmap.contains(30));
+    REQUIRE(flatmap.contains(10));
+    REQUIRE(flatmap.contains(20));
+    REQUIRE(flatmap.contains(30));
 
-    BOOST_ASSERT(!flatmap.contains(0));
-    BOOST_ASSERT(!flatmap.contains(40));
+    REQUIRE(!flatmap.contains(0));
+    REQUIRE(!flatmap.contains(40));
 }

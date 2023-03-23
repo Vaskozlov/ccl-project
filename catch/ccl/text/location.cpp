@@ -4,39 +4,39 @@
 using namespace ccl;
 using namespace text;
 
-BOOST_AUTO_TEST_CASE(LocationTracking)
+TEST_CASE("LocationTracking", "[Location]")
 {
     auto location = Location{"none"};
 
-    BOOST_ASSERT(location.getLine() == 1U);
-    BOOST_ASSERT(location.getColumn() == 0U);
-    BOOST_ASSERT(location.getRealColumn() == 0U);
-    BOOST_ASSERT(location.getFilename() == "none");
+    REQUIRE(location.getLine() == 1U);
+    REQUIRE(location.getColumn() == 0U);
+    REQUIRE(location.getRealColumn() == 0U);
+    REQUIRE(location.getFilename() == "none");
 
     location.intermediateNext('a');
     location.next(U'a');
 
-    BOOST_ASSERT(location.getLine() == 1U);
-    BOOST_ASSERT(location.getColumn() == 1U);
-    BOOST_ASSERT(location.getRealColumn() == 1U);
+    REQUIRE(location.getLine() == 1U);
+    REQUIRE(location.getColumn() == 1U);
+    REQUIRE(location.getRealColumn() == 1U);
 
     location.intermediateNext('\n');
     location.next(U'\n');
 
-    BOOST_ASSERT(location.getLine() == 2U);
-    BOOST_ASSERT(location.getColumn() == 0U);
-    BOOST_ASSERT(location.getRealColumn() == 0U);
+    REQUIRE(location.getLine() == 2U);
+    REQUIRE(location.getColumn() == 0U);
+    REQUIRE(location.getRealColumn() == 0U);
 
     location.intermediateNext(as<char>(0b1100'0010));// NOLINT utf8 2 byte character
 
-    BOOST_ASSERT(location.getLine() == 2U);
-    BOOST_ASSERT(location.getColumn() == 0U);
-    BOOST_ASSERT(location.getRealColumn() == 1U);
+    REQUIRE(location.getLine() == 2U);
+    REQUIRE(location.getColumn() == 0U);
+    REQUIRE(location.getRealColumn() == 1U);
 
     location.intermediateNext(as<char>(0b1000'0000));// NOLINT utf8 2 byte character end
     location.next(U'a');                             // just some character
 
-    BOOST_ASSERT(location.getLine() == 2U);
-    BOOST_ASSERT(location.getColumn() == 1U);
-    BOOST_ASSERT(location.getRealColumn() == 2U);
+    REQUIRE(location.getLine() == 2U);
+    REQUIRE(location.getColumn() == 1U);
+    REQUIRE(location.getRealColumn() == 2U);
 }

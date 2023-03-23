@@ -3,16 +3,16 @@
 
 using namespace ccl;
 
-BOOST_AUTO_TEST_CASE(LogicalOr)
+TEST_CASE("LogicalOr", "[LogicalOps]")
 {
-    BOOST_STATIC_ASSERT(lor(true));
-    BOOST_STATIC_ASSERT(!lor(false));
+    REQUIRE(lor(true));
+    REQUIRE(!lor(false));
 
-    BOOST_STATIC_ASSERT(lor(true, true));
-    BOOST_STATIC_ASSERT(lor(true, false));
-    BOOST_STATIC_ASSERT(!lor(false, false));
+    REQUIRE(lor(true, true));
+    REQUIRE(lor(true, false));
+    REQUIRE(!lor(false, false));
 
-    BOOST_STATIC_ASSERT(lor(true, true, true));
-    BOOST_STATIC_ASSERT(lor(true, true, false));
-    BOOST_STATIC_ASSERT(!lor(false, false, false));
+    REQUIRE(lor(true, true, true));
+    REQUIRE(lor(true, true, false));
+    REQUIRE(!lor(false, false, false));
 }

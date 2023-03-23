@@ -1,59 +1,48 @@
-#include <boost/program_options.hpp>
-#include <boost/program_options/option.hpp>
-#include <boost/program_options/parsers.hpp>
 #include <ccl/lex/analyzer_generator/analyzer_generator.hpp>
+#include <cxxopts.hpp>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 
-namespace po = boost::program_options;
-
-std::string SourceFile;
-std::string HeaderFile;
-
-auto getOptionDescription() -> po::options_description
-{
-    po::options_description desc("Allowed options");
-
-    desc.add_options()("help,h", "produce help message");
-
-    desc.add_options()(
-        "lexical-analyzer-rules,l", po::value(&SourceFile), "file with rules for lexical analyzer");
-
-    desc.add_options()("output,o", po::value(&HeaderFile), "output header name");
-
-    return desc;
-}
-
 auto main(int argc, char *argv[]) -> int
 {
-    auto desc = getOptionDescription();
+    auto source_file = std::string{};
+    auto output_file = std::string{};
+    auto options = cxxopts::Options("ccll", "Lexical analyzer generator for ccl");
 
-    po::positional_options_description po;
-    po.add("lexical-analyzer-rules", -1);
+    options.add_options()(
+        "l,lexical-analyzer-rules",
+        "file with rules for lexical analyzer",
+        cxxopts::value(source_file))("o,output", "output header name", cxxopts::value(output_file))(
+        "h,help", "produce help message");
 
-    po::variables_map vm;
-    po::store(po::command_line_parser(argc, argv).options(desc).positional(po).run(), vm);
-    po::notify(vm);
+    options.parse_positional({"l", "o"});
 
-    if (vm.count("help") == 1) {
-        std::cout << desc << "\n";
+    auto result = options.parse(argc, argv);
+
+    if (result.count("help") == 1) {
+        fmt::print("{}\n", options.help());
         return 1;
     }
 
-    if (vm.count("output") == 0) {
+    if (output_file.empty()) {
         fmt::print(
             "File with rules for lexical analyzer was not specified.\n"
             "Type --help to see how to use ccll\n");
         return 1;
     }
 
-    auto generated_header = ccl::lex::AnalyzerGenerator::generateStaticVersion(SourceFile);
+    if (!std::filesystem::exists(source_file)) {
+        fmt::print("Source file {} does not exist\n", source_file);
+    }
+
+    auto generated_header = ccl::lex::AnalyzerGenerator::generateStaticVersion(source_file);
 
     auto file_stream = std::fstream{};
-    file_stream.open(HeaderFile, std::ios::out);
+    file_stream.open(output_file, std::ios::out);
 
     if (!file_stream.is_open()) {
-        fmt::print("Error: cannot open file {}\n", HeaderFile);
+        fmt::print("Error: cannot open file {}\n", output_file);
         return 1;
     }
 

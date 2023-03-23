@@ -38,10 +38,11 @@ jobs:
 
       - name: Build
         run: |
-          cmake ${{ matrix.config.cmake_params }} -G Ninja \
+          VCPKG_FORCE_SYSTEM_BINARIES=arm cmake ${{ matrix.config.cmake_params }} -G Ninja \
             -B ${{github.workspace}}/${{github.actor}}-${{ github.head_ref }}/${{ matrix.config.key }} \
             -DCMAKE_BUILD_TYPE=Debug -DCCL_STRICT_COMPILATION=ON -DCCL_LIBCPP=OFF -DCCL_ADDRESS_SANITIZER=ON \
-            -DCCL_PRECOMPILED_HEADERS=ON -DCMAKE_CXX_COMPILER=/usr/bin/g++
+            -DCCL_PRECOMPILED_HEADERS=ON -DCMAKE_CXX_COMPILER=/usr/bin/g++ \
+            -DCMAKE_TOOLCHAIN_FILE=/home/cerberus-project_2/vcpkg/scripts/buildsystems/vcpkg.cmake
           
           cmake --build ${{github.workspace}}/${{github.actor}}-${{ github.head_ref }}/${{ matrix.config.key }} -j ${{ matrix.config.threads_count }}
 

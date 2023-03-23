@@ -5,7 +5,7 @@ using namespace ccl;
 using namespace lex;
 using namespace text;
 
-BOOST_AUTO_TEST_CASE(LexicalAnalyzerSequence, *utf::depends_on("ContainerSequence"))
+TEST_CASE("LexicalAnalyzerSequence", "[ContainerSequence]")
 {
     auto analyzer =
         LexicalAnalyzer(ExceptionHandler::instance(), {{2, R"("abz"p"10")"}, {3, R"("10""abz"p)"}});
@@ -14,17 +14,17 @@ BOOST_AUTO_TEST_CASE(LexicalAnalyzerSequence, *utf::depends_on("ContainerSequenc
     DEBUG_VAR &&future_token = tokenizer.yieldFutureToken();
     DEBUG_VAR &&token = tokenizer.yield();
 
-    BOOST_ASSERT(token.getId() == future_token.getId());
+    REQUIRE(token.getId() == future_token.getId());
 
-    BOOST_ASSERT(token.getId() == 2);
-    BOOST_ASSERT(token.getRepr() == R"(abz10)");
-    BOOST_ASSERT(token.getPrefixes().size() == 1);
-    BOOST_ASSERT(token.getPrefixes()[0] == "abz");
+    REQUIRE(token.getId() == 2);
+    REQUIRE(token.getRepr() == R"(abz10)");
+    REQUIRE(token.getPrefixes().size() == 1);
+    REQUIRE(token.getPrefixes()[0] == "abz");
 
     DEBUG_VAR &&token_2 = tokenizer.yield();
 
-    BOOST_ASSERT(token_2.getId() == 3);
-    BOOST_ASSERT(token_2.getRepr() == R"(10abz)");
-    BOOST_ASSERT(token_2.getPostfixes().size() == 1);
-    BOOST_ASSERT(token_2.getPostfixes()[0] == "abz");
+    REQUIRE(token_2.getId() == 3);
+    REQUIRE(token_2.getRepr() == R"(10abz)");
+    REQUIRE(token_2.getPostfixes().size() == 1);
+    REQUIRE(token_2.getPostfixes()[0] == "abz");
 }

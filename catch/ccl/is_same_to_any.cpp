@@ -3,8 +3,8 @@
 
 using namespace ccl;
 
-BOOST_AUTO_TEST_CASE(SameToAny)
+TEST_CASE("SameToAny", "[Concepts]")
 {
-    BOOST_STATIC_ASSERT(IsSameToAny<int, float, double, int>);
-    BOOST_STATIC_ASSERT(!IsSameToAny<int, float, double, unsigned int>);
+    REQUIRE(IsSameToAny<int, float, double, int>);
+    REQUIRE(!IsSameToAny<int, float, double, unsigned int>);
 }
