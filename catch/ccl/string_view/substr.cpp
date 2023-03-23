@@ -5,7 +5,7 @@ using namespace ccl;
 using namespace string_view_literals;
 using namespace std::string_view_literals;
 
- TEST_CASE("StringViewSubstr", "[StringView]")
+TEST_CASE("StringViewSubstr", "[StringView]")
 {
     DEBUG_VAR std_string = "Hello, World!"sv;
     DEBUG_VAR cerb_string = "Hello, World!"_sv;
