@@ -4,6 +4,7 @@
     "dependencies": [
         "fmt",
         "cxxopts",
-        "catch2"
+        "catch2",
+        "benchmark"
     ]
 }
