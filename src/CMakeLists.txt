@@ -10,14 +10,23 @@ else ()
     add_library(ccl SHARED ${CCL_OBJECTS})
 endif ()
 
-add_dependencies(ccl fmt::fmt)
+if (CCL_LIBCPP AND LINUX)
+    add_dependencies(ccl fmt::fmt-header-only)
 
-target_link_libraries(
-        ccl
-        fmt::fmt
-)
+    target_link_libraries(
+            ccl
+            fmt::fmt-header-only
+    )
+else ()
+    add_dependencies(ccl fmt::fmt)
 
-if (${CCL_PRECOMPILED_HEADERS})
+    target_link_libraries(
+            ccl
+            fmt::fmt
+    )
+endif ()
+
+if (CCL_PRECOMPILED_HEADERS)
     target_precompile_headers(
             ccl
             PUBLIC
