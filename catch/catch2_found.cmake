@@ -11,11 +11,6 @@
           ${CCL_CATCH_OBJECTS}
   )
 
-  set_source_files_properties(
-          catch/runner.cpp PRIVATE
-          PROPERTIES SKIP_PRECOMPILE_HEADERS ON
-  )
-
   target_link_libraries(
           ccl-catch
           ccl
