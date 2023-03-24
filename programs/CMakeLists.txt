@@ -16,10 +16,10 @@ target_link_libraries(
         cxxopts::cxxopts
 )
 
-if (${PRECOMPILED_HEADER})
+if (PRECOMPILED_HEADER)
     target_precompile_headers(
             ccl-lexer
-            REUSE_FROM
-            ccl-catch
+            PUBLIC
+            "pch.hpp"
     )
 endif ()
