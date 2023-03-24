@@ -10,11 +10,10 @@ auto main(int argc, char *argv[]) -> int
     auto output_file = std::string{};
     auto options = cxxopts::Options("ccll", "Lexical analyzer generator for ccl");
 
-    options.add_options()(
+    options.add_options()("h,help", "produce help message")(
         "l,lexical-analyzer-rules",
         "file with rules for lexical analyzer",
-        cxxopts::value(source_file))("o,output", "output header name", cxxopts::value(output_file))(
-        "h,help", "produce help message");
+        cxxopts::value(source_file))("o,output", "output header name", cxxopts::value(output_file));
 
     options.parse_positional({"l", "o"});
 

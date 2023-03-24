@@ -11,11 +11,6 @@
           ${CCL_CATCH_OBJECTS}
   )
 
-  set_source_files_properties(
-          catch/runner.cpp PRIVATE
-          PROPERTIES SKIP_PRECOMPILE_HEADERS ON
-  )
-
   target_link_libraries(
           ccl-catch
           ccl
@@ -24,12 +19,17 @@
           Catch2::Catch2WithMain
   )
 
-
-  if (${PRECOMPILED_HEADER})
+  if (PRECOMPILED_HEADER)
       target_precompile_headers(
               ccl-catch
-              PUBLIC
-              "pch.hpp"
+              REUSE_FROM
+              ccl-lexer
+      )
+
+      target_precompile_headers(
+              ccl-catch
+              PRIVATE
+              <ccl/debug/debug_file.hpp>
       )
   endif ()
 
