@@ -5,9 +5,9 @@
 
 namespace ccl
 {
-    CCL_DECL auto join(
-        Iterable auto &&container, Invocable<decltype(*container.begin())> auto &&function,
-        StringLike<char> auto &&separator) -> std::string
+    CCL_DECL auto
+        join(Iterable auto &&container, auto &&function, StringLike<char> auto &&separator)
+            -> std::string
     {
         auto result = std::string{};
         auto begin = std::begin(container);
@@ -28,9 +28,8 @@ namespace ccl
         return result;
     }
 
-    CCL_DECL CCL_INLINE auto join(
-        Iterable auto &&container, Invocable<decltype(*container.begin())> auto &&function,
-        string_view &&separator) -> std::string
+    CCL_DECL CCL_INLINE auto
+        join(Iterable auto &&container, auto &&function, string_view &&separator) -> std::string
     {
         return join(
             std::forward<decltype(container)>(container),
