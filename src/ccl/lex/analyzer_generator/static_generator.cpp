@@ -5,15 +5,15 @@
 
 namespace ccl::lex::gen
 {
-    constexpr static auto endl = codegen::endl;
-    constexpr static auto push_scope = codegen::push_scope;
-    constexpr static auto pop_scope = codegen::pop_scope;
+    using codegen::endl;
+    using codegen::pop_scope;
+    using codegen::push_scope;
 
     constexpr static auto ShiftSize = sizeof(size_t) * 8 / 2;
 
     constexpr static auto IncludedHeaders = []() {
-        std::array<string_view, 2> result = {
-            "<ccl/handler/cmd_handler.hpp>", "<ccl/lex/tokenizer.hpp>"};
+        std::array<string_view, 3> result = {
+            "<ccl/handler/cmd_handler.hpp>", "<ccl/lex/tokenizer.hpp>", "<ccl/flatmap.hpp>"};
 
         std::ranges::sort(result);
         return result;
@@ -108,8 +108,8 @@ namespace ccl::lex::gen
         const auto &rules = ccllParser.getRules();
 
         codeGenerator << fmt::format(
-            "inline const ccl::UnorderedMap<ccl::Id, ccl::string_view> ToString{}Token\n",
-            variableName);
+            "inline constexpr ccl::StaticFlatmap<ccl::Id, ccl::string_view, {}> ToString{}Token\n",
+            BuiltinRules.size() + rules.size(), variableName);
         codeGenerator << '{' << push_scope;
 
         for (const auto &[rule, id] : BuiltinRules) {
