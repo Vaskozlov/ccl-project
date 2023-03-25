@@ -4,7 +4,8 @@
 #include <ccl/handler/cmd_handler.hpp>
 #include <ccl/lex/tokenizer.hpp>
 
-enum CLexerToken : ccl::Id {    
+enum CLexerToken : ccl::Id
+{
     DECLS = 17179869184,
     KEYWORD = 12884901888,
     NONE = 0,
@@ -64,9 +65,9 @@ enum CLexerToken : ccl::Id {
 };
 
 // NOLINTNEXTLINE
-inline auto CLexer = ccl::lex::LexicalAnalyzer{    
+inline auto CLexer = ccl::lex::LexicalAnalyzer{
     ccl::handler::Cmd::instance(),
-    {    
+    {
         {CLexerToken::COMMENT, R"(  ! "//"[\n]*^ )"},
         {CLexerToken::COMMENT, R"(  ! "/*" "*/"^* "*/" )"},
         {CLexerToken::CURLY_OPENING, R"(       ! [{] )"},
@@ -117,11 +118,9 @@ inline auto CLexer = ccl::lex::LexicalAnalyzer{
         {CLexerToken::IDENTIFIER, R"(          [a-zA-Z_]+[a-zA-Z0-9_]* )"},
         {CLexerToken::CHAR, R"(                ! "\'" ([']^ | "\\\'" ) "\'" )"},
         {CLexerToken::STRING, R"(              ! "\"" (["]^ | "\\\"")* "\"" )"},
-    }
-};
+    }};
 
-inline constexpr ccl::StaticFlatmap<ccl::Id, ccl::string_view, 52> ToStringCLexerToken
-{    
+inline constexpr ccl::StaticFlatmap<ccl::Id, ccl::string_view, 52> ToStringCLexerToken{
     {CLexerToken::EOI, "EOI"},
     {CLexerToken::BAD_TOKEN, "BAD_TOKEN"},
     {CLexerToken::COMMENT, "COMMENT"},
