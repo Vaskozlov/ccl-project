@@ -1,224 +1,121 @@
+#include <ccl/handler/cmd_handler.hpp>
 #include <ccl/lex/analyzer_generator/ccll_parser.hpp>
 #include <ccl/lex/tokenizer.hpp>
-#include <iostream>
 
 namespace ccl::lex::parser
 {
     CcllParser::Rule::Rule(
-        string_view block_name, BlockInfo &block_info, string_view rule_name,
-        string_view rule_definition)
-      : blockName{block_name}
-      , name{rule_name}
+        BlockInfo &block_info, string_view rule_name, string_view rule_definition)
+      : name{rule_name}
       , definition{rule_definition}
       , blockId{block_info.blockId}
       , id{block_info.lastId++}
     {}
 
-    // NOLINT recursive function
     auto CcllParser::parse() -> bool
     {
-        auto token = tokenizer.yield();
-        auto token_id = token.getId();
+        while (const Token &token = tokenizer.yield()) {
+            switch (token.getId()) {
+            case GenToken::GROUP_DECLARATION:
+                completeBlock(token);
+                break;
 
-        switch (token_id) {
-        case GenToken::IDENTIFIER:
-            tokenStack.push(std::move(token));
+            case GenToken::BAD_GROUP_DECLARATION_ONLY_BRACKET:
+                parsingError("group name expected");
+                break;
 
-            if (!parseDeclaration()) {
-                recoverFromError();
+            case GenToken::BAD_GROUP_DECLARATION_BRACKET_AND_NAME:
+                parsingError("group end expected", "insert ]");
+                break;
+
+            case GenToken::BAD_GROUP_DECLARATION_EMPTY_NAME:
+                parsingError("group name can not be empty");
+                break;
+
+            case GenToken::DIRECTIVE:
+                completeDirective(token);
+                break;
+
+            case GenToken::BAD_DIRECTIVE_DECLARATION:
+                parsingError("directive value expected");
+                break;
+
+            case GenToken::RULE:
+                completeRule(token);
+                break;
+
+            case GenToken::BAD_RULE_DECLARATION:
+                parsingError("rule definition expected");
+                break;
+
+            case GenToken::BAD_RULE_OR_DIRECTIVE_DECLARATION:
+                parsingError("rule or directive declaration expected");
+                break;
+
+            case GenToken::BAD_GROUP_NO_OPEN_BRACKET:
+                parsingError("unable to match [ to close group declaration");
+                break;
+
+            default:
+                parsingError("unknown token");
+                break;
             }
-
-            return parse();
-
-        case GenToken::CURLY_OPENING:
-            if (!parseBlockDefinition()) {
-                recoverFromError();
-            }
-
-            return parse();
-
-        case GenToken::NEW_LINE:
-            return parse();
-
-        case GenToken::EOI:
-            return true;
-
-        default:
-            parsingError(
-                "unrecognizable action",
-                "use { `identifier` } to declare group of items or `identifier` = identifier | "
-                "'$STRING' to declare variable");
-            recoverFromError();
-            return parse();
-        }
-    }
-
-    auto CcllParser::parseDeclaration() -> bool
-    {
-        auto token = tokenizer.yield();
-        auto token_id = token.getId();
-
-        switch (token_id) {
-        case GenToken::COLUMN:
-            return parseRuleDeclaration();
-
-        case GenToken::ASSIGN:
-            return parseDirectiveDeclaration();
-
-        default:
-            parsingError(
-                "bad rule or variable declaration declaration",
-                "use `:` to declare rule or `=` to declare variable");
-            return false;
-        }
-    }
-
-    auto CcllParser::parseRuleDeclaration() -> bool
-    {
-        auto iterator_copy = tokenizer.getIterator();
-        auto token = tokenizer.yield();
-        auto token_id = token.getId();
-
-        if (GenToken::RULE_DECLARATION == token_id) {
-            iterator_copy.setEnd(token.getRepr().end());
-            checkRule(iterator_copy);
-
-            tokenStack.push(std::move(token));
-            completeRuleDeclaration();
-
-            return true;
         }
 
-        parsingError("expected rule declaration");
-        return false;
+        return {};
     }
 
-    auto CcllParser::parseDirectiveDeclaration() -> bool
+    auto CcllParser::completeBlock(const Token &token) -> void
     {
-        auto token = tokenizer.yield();
-        auto token_id = token.getId();
+        auto repr = token.getRepr();
+        repr = repr.substr(1, repr.size() - 2);
 
-        if (GenToken::IDENTIFIER == token_id || GenToken::STRING == token_id) {
-            tokenStack.push(std::move(token));
-            completeDirectiveDeclaration();
-            return true;
-        }
-
-        parsingError("expected identifier or string ( '$CHARACTERS' )");
-        return false;
-    }
-
-    auto CcllParser::completeRuleDeclaration() -> void
-    {
-        auto rule = tokenStack.top();
-        tokenStack.pop();
-
-        auto name = tokenStack.top();
-        tokenStack.pop();
-
-        rules.emplace_back(currentBlock, blocks[currentBlock], name.getRepr(), rule.getRepr());
-
-        expectRuleEnd();
-    }
-
-    auto CcllParser::completeDirectiveDeclaration() -> void
-    {
-        auto directive_value = tokenStack.top();
-        tokenStack.pop();
-
-        auto directive = tokenStack.top();
-        tokenStack.pop();
-
-        auto directive_repr = directive_value.getRepr();
-
-        if (GenToken::STRING == directive_value.getId()) {
-            auto string_part_of_repr = directive_repr.substr(1, directive_repr.size() - 2);
-            directives.emplace(directive.getRepr(), string_part_of_repr);
-        } else {
-            directives.emplace(directive.getRepr(), directive_repr);
-        }
-
-        expectRuleEnd();
-    }
-
-    auto CcllParser::checkRule(text::TextIterator &rule) -> void
-    {
-        try {
-            auto container = dot_item::Container{rule, specialItems, 2, true};
-        } catch (const UnrecoverableError & /* unused */) {}
-    }
-
-    auto CcllParser::parseBlockDefinition() -> bool
-    {
-        auto token = tokenizer.yield();
-        auto token_id = token.getId();
-
-        if (GenToken::IDENTIFIER == token_id) {
-            tokenStack.push(std::move(token));
-            return parseBlockEnding();
-        }
-
-        parsingError("expected identifier after `{`", "add identifier");
-        return false;
-    }
-
-    auto CcllParser::parseBlockEnding() -> bool
-    {
-        auto token = tokenizer.yield();
-        auto token_id = token.getId();
-
-        if (GenToken::CURLY_CLOSING == token_id) {
-            completeBlock();
-            return true;
-        }
-
-        parsingError("expected `}` after identifier", "add `}`");
-        return false;
-    }
-
-    auto CcllParser::completeBlock() -> void
-    {
-        auto block_name = tokenStack.top();
-        tokenStack.pop();
-
-        currentBlock = block_name.getRepr();
+        currentBlock = repr;
 
         if (!blocks.contains(currentBlock)) {
             blocks.insert({currentBlock, {as<u16>(lastBlockId++), 0}});
         }
-
-        expectRuleEnd();
     }
 
-    auto CcllParser::expectRuleEnd() -> void
+    auto CcllParser::completeRule(const Token &token) -> void
     {
-        auto token = tokenizer.yield();
-        auto token_id = token.getId();
+        const auto &prefixes = token.getPrefixes();
+        const auto &postfixes = token.getPostfixes();
 
-        switch (token_id) {
-        case GenToken::EOI:
-        case GenToken::NEW_LINE:
-            break;
-        default:
-            parsingError("expected new line of end of input");
-        }
+        auto name = prefixes.at(0);
+        auto rule = postfixes.at(0);
+
+        checkRule(token);
+        rules.emplace_back(blocks[currentBlock], name, rule);
     }
 
-    auto CcllParser::recoverFromError() -> void
+    auto CcllParser::completeDirective(const Token &token) -> void
     {
-        while (true) {
-            auto token = tokenizer.yield();
-            auto token_id = token.getId();
+        const auto &prefixes = token.getPrefixes();
+        const auto &postfixes = token.getPostfixes();
 
-            switch (token_id) {
-            case GenToken::EOI:
-            case GenToken::NEW_LINE:
-                return;
+        auto name = prefixes.at(0);
+        auto value = postfixes.at(0);
 
-            default:
-                break;
-            }
-        }
+        value = value.substr(1, value.size() - 2);
+        directives.emplace(name, value);
+    }
+
+    auto CcllParser::checkRule(const Token &token) -> void
+    {
+        const auto &prefixes = token.getPrefixes();
+
+        auto rule_name = prefixes.at(0);
+        auto line_repr = token.getInlineRepr();
+        auto location = token.getLocation();
+        auto text_iterator = text::TextIterator{
+            line_repr, tokenizer.getHandler(),
+            text::Location{
+                location.getFilename(), location.getLine(), location.getColumn() - 1,
+                location.getRealColumn() - 1}};
+
+        text_iterator.skip(rule_name.size() + 1);
+        dot_item::Container{text_iterator, specialItems, 2, true};
     }
 
     auto CcllParser::parsingError(string_view message, string_view suggestion) -> void

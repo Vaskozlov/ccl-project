@@ -70,9 +70,7 @@ namespace ccl::lex::dot_item
             return true;
         }
 
-        token.finishInitialization(text_iterator);
-        token.setReprLength(totally_skipped);
-        text_iterator.skip(totally_skipped);
+        token.finishInitialization(text_iterator, totally_skipped);
 
         return true;
     }

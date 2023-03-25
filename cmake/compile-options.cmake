@@ -11,7 +11,11 @@ function(ccl_check_cxx_flag_support flag enable_condition)
     string(REPLACE ":" "_COLON_" VARIABLE_NAME ${VARIABLE_NAME})
     string(TOUPPER ${VARIABLE_NAME} VARIABLE_NAME)
 
-    check_cxx_compiler_flag(${COMPILER_OPTION} ${VARIABLE_NAME})
+    if (MSVC)
+        set(${VARIABLE_NAME} TRUE)
+    else ()
+        check_cxx_compiler_flag(${COMPILER_OPTION} ${VARIABLE_NAME})
+    endif ()
 
     if (${enable_condition} AND ${VARIABLE_NAME})
         add_compile_options(${COMPILER_OPTION})

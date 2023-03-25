@@ -7,19 +7,6 @@
 
 namespace ccl::lex
 {
-    // NOLINTNEXTLINE global variable
-    LexicalAnalyzer AnalyzerGenerator::lexForGenerator{
-        handler::Cmd::instance(),
-        {{GenToken::IDENTIFIER, "[a-zA-Z_]+[a-zA-Z0-9_]*"},
-         {GenToken::INTEGER, "[0-9]+"},
-         {GenToken::RULE_DECLARATION, R"(["!'([]+[\n]*^)"},
-         {GenToken::STRING, R"( ! "\'" ([']^ | "\\\'" )* "\'" )"},
-         {GenToken::NEW_LINE, R"(! "\n")"},
-         {GenToken::COLUMN, R"(! ":")"},
-         {GenToken::ASSIGN, R"(! "=")"},
-         {GenToken::CURLY_OPENING, R"(! "{")"},
-         {GenToken::CURLY_CLOSING, R"(! "}")"}}};
-
     static auto readFile(const std::filesystem::path &path) -> std::string
     {
         auto stream = std::ifstream(path);
@@ -47,8 +34,23 @@ namespace ccl::lex
     auto AnalyzerGenerator::generateStaticVersion(string_view filename, string_view text)
         -> std::string
     {
-        auto tokenizer = lexForGenerator.getTokenizer(text, filename);
+        static LexicalAnalyzer lex_for_generator{
+            handler::Cmd::instance(),
+            {{GenToken::DIRECTIVE,
+              R"( ( [a-zA-Z_][a-zA-Z_0-9]* )p [ \t]* [=] [ \t]* ("\"" (["]^ | "\\\"" )* "\"")p )"},
+             {GenToken::BAD_DIRECTIVE_DECLARATION, R"( ( [a-zA-Z_][a-zA-Z_0-9]* )p [ \t]* [=] )"},
+             {GenToken::RULE, R"( ( [a-zA-Z_][a-zA-Z_0-9]* )p [ \t]* [:] ( [\n]+^ )p)"},
+             {GenToken::BAD_RULE_OR_DIRECTIVE_DECLARATION, R"( [a-zA-Z_][a-zA-Z_0-9]* )"},
+             {GenToken::BAD_RULE_DECLARATION, R"( ( [a-zA-Z_][a-zA-Z_0-9]* )p [ \t]* [:] [ \t]* )"},
+             {GenToken::GROUP_DECLARATION, R"( [\[] [a-zA-Z_][a-zA-Z_0-9]* [\]] )"},
+             {GenToken::BAD_GROUP_DECLARATION_ONLY_BRACKET, R"( [\[] )"},
+             {GenToken::BAD_GROUP_DECLARATION_BRACKET_AND_NAME, R"( [\[] [a-zA-Z_][a-zA-Z_0-9]*)"},
+             {GenToken::BAD_GROUP_DECLARATION_EMPTY_NAME, R"( [\[] [\]])"},
+             {GenToken::BAD_GROUP_NO_OPEN_BRACKET, R"( [a-zA-Z_][a-zA-Z_0-9]* [\]])"}}};
+
+        auto tokenizer = lex_for_generator.getTokenizer(text, filename);
         auto static_generator = gen::StaticGenerator{tokenizer};
+
         return static_generator.getCode();
     }
 }// namespace ccl::lex

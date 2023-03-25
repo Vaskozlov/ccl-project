@@ -10,28 +10,22 @@ namespace ccl::lex
     // NOLINTNEXTLINE
     enum GenToken : Id
     {
-        EOI,
-        BAD_TOKEN,
-        IDENTIFIER,
-        INTEGER,
-        NEW_LINE,
-        COLUMN,
-        ASSIGN,
-        CURLY_OPENING,
-        CURLY_CLOSING,
-        SEQUENCE,
-        UNION,
-        COMMENT,
-        MULTILINE_STRING,
-        CHARACTER,
-        RULE_DECLARATION,
-        STRING
+        EOI = 0,
+        BAD_TOKEN = 1,
+        RULE,
+        BAD_RULE_DECLARATION,
+        DIRECTIVE,
+        BAD_DIRECTIVE_DECLARATION,
+        BAD_RULE_OR_DIRECTIVE_DECLARATION,
+        GROUP_DECLARATION,
+        BAD_GROUP_DECLARATION_ONLY_BRACKET,
+        BAD_GROUP_DECLARATION_BRACKET_AND_NAME,
+        BAD_GROUP_DECLARATION_EMPTY_NAME,
+        BAD_GROUP_NO_OPEN_BRACKET,
     };
 
     class AnalyzerGenerator
     {
-        static LexicalAnalyzer lexForGenerator;// NOLINT non const variable
-
     public:
         static auto generateStaticVersion(const std::filesystem::path &path) -> std::string;
         static auto generateStaticVersion(string_view filename, string_view text) -> std::string;

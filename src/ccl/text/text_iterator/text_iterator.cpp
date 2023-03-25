@@ -12,6 +12,16 @@ namespace ccl::text
       , exceptionHandler{&exception_handler}
     {}
 
+    TextIterator::TextIterator(
+        const string_view &input,
+        ExceptionHandler &exception_handler,
+        const Location &iterator_location)
+      : CrtpBasicTextIterator{input}
+      , location{iterator_location}
+      , lineTracker{input}
+      , exceptionHandler{&exception_handler}
+    {}
+
     auto TextIterator::nextRawCharWithEscapingSymbols(const extra_symbols_t &extra_symbols)
         -> Pair<bool, char32_t>
     {

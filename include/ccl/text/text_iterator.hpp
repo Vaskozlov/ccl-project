@@ -38,6 +38,11 @@ namespace ccl::text
             ExceptionHandler &exception_handler = ExceptionHandler::instance(),
             const string_view &filename = {});
 
+        explicit TextIterator(
+            const string_view &input,
+            ExceptionHandler &exception_handler,
+            const Location &iterator_location);
+
         [[nodiscard]] auto getLocation() const noexcept -> const Location &
         {
             return location;
