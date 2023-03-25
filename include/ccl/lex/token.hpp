@@ -48,27 +48,15 @@ namespace ccl::lex
     public:
         Token() = default;
 
-        explicit Token(Id token_id)
-          : id{token_id}
-        {}
+        explicit Token(Id token_id);
 
-        Token(TokenAttributes &&token_attributes, const string_view &token_repr, Id token_id)
-          : attributes{std::move(token_attributes)}
-          , repr{token_repr}
-          , id{token_id}
-        {}
+        Token(TokenAttributes &&token_attributes, const string_view &token_repr, Id token_id);
 
         Token(
             TokenAttributes &&token_attributes, typename string_view::iterator text_begin,
-            Id token_id)
-          : Token{std::move(token_attributes), {text_begin, as<size_t>(0)}, token_id}
-        {}
+            Id token_id);
 
-        Token(const text::TextIterator &text_iterator, Id token_id)
-          : attributes{text_iterator}
-          , repr{text_iterator.getRemaining()}
-          , id{token_id}
-        {}
+        Token(const text::TextIterator &text_iterator, Id token_id);
 
         [[nodiscard]] CCL_INLINE auto getId() const noexcept -> size_t
         {
@@ -141,12 +129,7 @@ namespace ccl::lex
         }
 
     private:
-        auto clear(Id new_id) noexcept -> void
-        {
-            id = new_id;
-            prefixes.clear();
-            postfixes.clear();
-        }
+        auto clear(Id new_id) noexcept -> void;
 
         CCL_INLINE auto setReprLength(size_t length) noexcept -> void
         {
@@ -168,11 +151,8 @@ namespace ccl::lex
             repr = {repr.begin(), end_of_repr};
         }
 
-        auto finishInitialization(const text::TextIterator &text_iterator) -> void
-        {
-            repr = text_iterator.getRemaining();
-            attributes = TokenAttributes{text_iterator};
-        }
+        auto finishInitialization(text::TextIterator &text_iterator, size_t totally_skipped)
+            -> void;
     };
 }// namespace ccl::lex
 
