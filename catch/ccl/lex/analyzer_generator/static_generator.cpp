@@ -4,29 +4,30 @@
 using namespace ccl::string_view_literals;
 
 constexpr auto C_RULE = R"(
-VAR_NAME = CLexer
+VAR_NAME = "CLexer"
+
 COMMENT: ! "//"[\n]*^
 COMMENT: ! "/*" "*/"^* "*/"
 
-{SEPARATOR}
-CURLY_OPENING:      ! "{"
-CURLY_CLOSING:      ! "}"
-LEFT_PARENTHESIS:   ! "("
+[SEPARATOR]
+CURLY_OPENING:      ! [{]
+CURLY_CLOSING:      ! [}]
+LEFT_PARENTHESIS:   ! [(]
 RIGHT_PARENTHESIS:  ! [)]
-ANGLE_OPENING:      ! "["
-ANGLE_CLOSING:      ! "]"
-COMMA:              ! ","
-COLUMN:             ! ";"
-PREPROCESSOR:       ! "#"
-QUESTION_MARK:      ! "?"
+ANGLE_OPENING:      ! [\[]
+ANGLE_CLOSING:      ! [\]]
+COMMA:              ! [,]
+COLUMN:             ! [;]
+PREPROCESSOR:       ! [#]
+QUESTION_MARK:      ! [?]
 
-{OPERATORS}
-ADD:                ! "+"
-SUB:                ! "-"
-MUL:                ! "*"
-DIV:                ! "/"
-MOD:                ! "%"
-ASSIGN:             ! "="
+[OPERATORS]
+ADD:                ! [+]
+SUB:                ! [\-]
+MUL:                ! [*]
+DIV:                ! [/]
+MOD:                ! [%]
+ASSIGN:             ! [=]
 
 ADD_ASSIGN:         ! "+="
 SUB_ASSIGN:         ! "-="
@@ -34,10 +35,10 @@ MUL_ASSIGN:         ! "*="
 DIB_ASSIGN:         ! "/="
 MOD_ASSIGN:         ! "%="
 
-OR:                 ! "|"
-AND:                ! "&"
-XOR:                ! "^"
-BITWISE_NOT:        ! "~"
+OR:                 ! [|]
+AND:                ! [&]
+XOR:                ! [^]
+BITWISE_NOT:        ! [~]
 
 OR_ASSIGN:          ! "|="
 AND_ASSIGN:         ! "&="
@@ -53,25 +54,15 @@ GREATER_EQUAL:      ! ">="
 
 LOGICAL_OR:         ! "||"
 LOGICAL_AND:        ! "&&"
-LOGICAL_NOT:        ! "!"
+LOGICAL_NOT:        ! [!]
 
-{KEYWORD}
+[KEYWORD]
 FOR:                "for"
 WHILE:              "while"
 SWITCH:             "switch"
 CASE:               "case"
 RETURN:             "return"
 STRUCT:             "struct"
-
-{TYPE}
-INT_T:              "int"
-CHAR_T:             "char"
-LONG_T:             "long"
-SHORT_T:            "short"
-FLOAT_T:            "float"
-DOUBLE_T:           "double"
-SIGNED_T:           "signed"
-UNSIGNED_T:         "unsigned"
 
 {DECLS}
 NUMBER:             [0-9]+ ( [a-zA-Z_]+ [a-zA-Z0-9_]* )?p

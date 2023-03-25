@@ -28,6 +28,7 @@ TEST_CASE("LexicalAnalyzerUnion", "[ContainerUnion]")
     REQUIRE(token.getPrefixes().size() == 1);
     REQUIRE(token.getPostfixes().empty());
     REQUIRE(token.getPrefixes()[0] == "abz");
+    REQUIRE(token.getColumn() == 4);
 
     token = tokenizer.yield();
 
@@ -36,4 +37,5 @@ TEST_CASE("LexicalAnalyzerUnion", "[ContainerUnion]")
     REQUIRE(token.getPrefixes().empty());
     REQUIRE(token.getPostfixes().size() == 1);
     REQUIRE(token.getPostfixes()[0] == "abz");
+    REQUIRE(token.getColumn() == 10);
 }

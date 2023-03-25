@@ -108,7 +108,11 @@ namespace ccl::lex::parser
         auto rule_name = prefixes.at(0);
         auto line_repr = token.getInlineRepr();
         auto location = token.getLocation();
-        auto text_iterator = text::TextIterator{line_repr, tokenizer.getHandler(), location};
+        auto text_iterator = text::TextIterator{
+            line_repr, tokenizer.getHandler(),
+            text::Location{
+                location.getFilename(), location.getLine(), location.getColumn() - 1,
+                location.getRealColumn() - 1}};
 
         text_iterator.skip(rule_name.size() + 1);
         dot_item::Container{text_iterator, specialItems, 2, true};
