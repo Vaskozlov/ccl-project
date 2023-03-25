@@ -65,7 +65,7 @@ namespace ccl::lex::parser
     private:
         auto completeRule(const Token &token) -> void;
         auto completeDirective(const Token &token) -> void;
-        auto completeBlock(const Token &token) -> void;
+        auto completeGroup(const Token &token) -> void;
 
         auto checkRule(const Token &token) -> void;
 

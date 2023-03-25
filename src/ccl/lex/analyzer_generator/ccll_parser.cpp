@@ -17,7 +17,7 @@ namespace ccl::lex::parser
         while (const Token &token = tokenizer.yield()) {
             switch (token.getId()) {
             case GenToken::GROUP_DECLARATION:
-                completeBlock(token);
+                completeGroup(token);
                 break;
 
             case GenToken::BAD_GROUP_DECLARATION_ONLY_BRACKET:
@@ -65,12 +65,12 @@ namespace ccl::lex::parser
         return {};
     }
 
-    auto CcllParser::completeBlock(const Token &token) -> void
+    auto CcllParser::completeGroup(const Token &token) -> void
     {
-        auto repr = token.getRepr();
-        repr = repr.substr(1, repr.size() - 2);
+        const auto &prefixes = token.getPrefixes();
+        auto group_name = prefixes.at(1);
 
-        currentBlock = repr;
+        currentBlock = group_name;
 
         if (!blocks.contains(currentBlock)) {
             blocks.insert({currentBlock, {as<u16>(lastBlockId++), 0}});
@@ -97,24 +97,23 @@ namespace ccl::lex::parser
         auto name = prefixes.at(0);
         auto value = postfixes.at(0);
 
+        // value is represented as string, so we need to remove " from both sides
         value = value.substr(1, value.size() - 2);
         directives.emplace(name, value);
     }
 
     auto CcllParser::checkRule(const Token &token) -> void
     {
-        const auto &prefixes = token.getPrefixes();
-
-        auto rule_name = prefixes.at(0);
         auto line_repr = token.getInlineRepr();
         auto location = token.getLocation();
+
         auto text_iterator = text::TextIterator{
             line_repr, tokenizer.getHandler(),
             text::Location{
                 location.getFilename(), location.getLine(), location.getColumn() - 1,
                 location.getRealColumn() - 1}};
 
-        text_iterator.skip(rule_name.size() + 1);
+        text_iterator.skip(line_repr.find(':').value() + 1);
         dot_item::Container{text_iterator, specialItems, 2, true};
     }
 
