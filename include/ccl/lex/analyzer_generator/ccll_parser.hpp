@@ -2,7 +2,6 @@
 #define CCL_PROJECT_CCLL_PARSER_HPP
 
 #include <ccl/lex/analyzer_generator/analyzer_generator.hpp>
-#include <map>
 #include <stack>
 
 namespace ccl::lex::parser
@@ -21,7 +20,6 @@ namespace ccl::lex::parser
         class Rule
         {
         public:
-            string_view blockName;
             string_view name;
             string_view definition;
             u16 blockId{};
@@ -29,9 +27,7 @@ namespace ccl::lex::parser
 
             Rule() = default;
 
-            Rule(
-                string_view block_name, BlockInfo &block_info, string_view rule_name,
-                string_view rule_definition);
+            Rule(BlockInfo &block_info, string_view rule_name, string_view rule_definition);
         };
 
     private:
@@ -67,23 +63,11 @@ namespace ccl::lex::parser
         auto parse() -> bool;
 
     private:
-        auto parseDeclaration() -> bool;
-        auto parseRuleDeclaration() -> bool;
-        auto parseDirectiveDeclaration() -> bool;
+        auto completeRule(const Token &token) -> void;
+        auto completeDirective(const Token &token) -> void;
+        auto completeBlock(const Token &token) -> void;
 
-        auto completeRuleDeclaration() -> void;
-        auto completeDirectiveDeclaration() -> void;
-
-        auto checkRule(text::TextIterator &rule) -> void;
-
-        auto parseBlockDefinition() -> bool;
-        auto parseBlockEnding() -> bool;
-
-        auto completeBlock() -> void;
-
-        auto expectRuleEnd() -> void;
-
-        auto recoverFromError() -> void;
+        auto checkRule(const Token &token) -> void;
 
         auto parsingError(string_view message, string_view suggestion = {}) -> void;
     };
