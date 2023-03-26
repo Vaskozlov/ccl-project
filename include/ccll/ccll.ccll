@@ -1,5 +1,5 @@
 VAR_NAME    = "CcllAnalyzer"
-NAMESPACE   = "ccl::lex::ccll"
+NAMESPACE   = "ccll"
 HANDLER     = "ccl::handler::Cmd::instance()"
 
 [SUCCESS]
