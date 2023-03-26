@@ -4,12 +4,13 @@
 #include <ccl/handler/cmd_handler.hpp>
 #include <ccl/lex/tokenizer.hpp>
 
+using namespace ccl;
 using namespace std::string_view_literals;
 
 static auto lexicalAnalysisOfC(benchmark::State &state) -> void
 {
     for (auto _ : state) {
-        auto tokenizer = CLexer.getTokenizer(ccl::debug::C_RULE);
+        auto tokenizer = CLexer.getTokenizer(debug::C_RULE);
 
         while (const auto &token = tokenizer.yield()) {
             benchmark::DoNotOptimize(token);
@@ -25,8 +26,8 @@ BENCHMARK(lexicalAnalysisOfC);
 static auto lexicalAnalyzerInitialization(benchmark::State &state) -> void
 {
     for (auto _ : state) {
-        [[maybe_unused]] auto c_lexer = ccl::lex::LexicalAnalyzer(
-            ccl::handler::Cmd::instance(),
+        [[maybe_unused]] auto c_lexer = lex::LexicalAnalyzer(
+            handler::Cmd::instance(),
             {
                 {CLexerToken::COMMENT, R"( ! "//"[\n]*^ )"},
                 {CLexerToken::COMMENT, R"( ! "/*" "*/"^* "*/" )"},
