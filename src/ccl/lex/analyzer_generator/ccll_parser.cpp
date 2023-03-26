@@ -1,4 +1,4 @@
-#include <ccl/ccll/ccll.hpp>
+#include <ccll/ccll.hpp>
 #include <ccl/lex/analyzer_generator/ccll_parser.hpp>
 
 namespace ccl::lex::parser
