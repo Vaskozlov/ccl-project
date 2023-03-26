@@ -1,7 +1,7 @@
 #pragma once
 
 #include <ccl/flatmap.hpp>
-#include <ccl/handler/cmd_handler.hpp>
+#include <ccl/handler/cmd.hpp>
 #include <ccl/lex/tokenizer.hpp>
 
 namespace ccl
@@ -116,8 +116,8 @@ namespace ccl
             {CLexerToken::RETURN, R"( "return" )"},
             {CLexerToken::STRUCT, R"( "struct" )"},
             {CLexerToken::NUMBER, R"( [0-9]+ ( [a-zA-Z_]+ [a-zA-Z0-9_]* )?p )"},
-            {CLexerToken::FLOAT, R"( [0-9]+"."[0-9]* ( [a-zA-Z_]+ [a-zA-Z0-9_]* )?p )"},
-            {CLexerToken::IDENTIFIER, R"( [a-zA-Z_]+[a-zA-Z0-9_]* )"},
+            {CLexerToken::FLOAT, R"( [0-9]+ "."[0-9]* ( [a-zA-Z_]+ [a-zA-Z0-9_]* )?p )"},
+            {CLexerToken::IDENTIFIER, R"( [a-zA-Z_]+ [a-zA-Z0-9_]* )"},
             {CLexerToken::CHAR, R"( ! "\'" ([']^ | "\\\'" ) "\'" )"},
             {CLexerToken::STRING, R"( ! "\"" (["]^ | "\\\"")* "\"" )"},
         }};

@@ -1,5 +1,5 @@
 #include <atomic>
-#include <ccl/handler/cmd_handler.hpp>
+#include <ccl/handler/cmd.hpp>
 #include <ccl/handler/exception_handler.hpp>
 
 namespace ccl
