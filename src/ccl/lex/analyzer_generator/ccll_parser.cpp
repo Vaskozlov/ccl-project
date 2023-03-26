@@ -56,6 +56,9 @@ namespace ccl::lex::parser
                 parsingError("unable to match [ to close group declaration");
                 break;
 
+            case GenToken::COMMENT:
+                break;
+
             default:
                 parsingError("unknown token");
                 break;

@@ -36,7 +36,8 @@ namespace ccl::lex
     {
         static LexicalAnalyzer lex_for_generator{
             handler::Cmd::instance(),
-            {{GenToken::DIRECTIVE,
+            {{GenToken::COMMENT, R"( ! [#] [\n]*^ )"},
+             {GenToken::DIRECTIVE,
               R"( ( [a-zA-Z_][a-zA-Z_0-9]* )p [ \t]* [=] [ \t]* ("\"" (["]^ | "\\\"" )* "\"")p )"},
              {GenToken::BAD_DIRECTIVE_DECLARATION, R"( ( [a-zA-Z_][a-zA-Z_0-9]* )p [ \t]* [=] )"},
              {GenToken::RULE, R"( ( [a-zA-Z_][a-zA-Z_0-9]* )p [ \t]* [:] ( [\n]+^ )p)"},
