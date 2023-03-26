@@ -1,4 +1,5 @@
 VAR_NAME = "CLexer"
+NAMESPACE = "ccl"
 
 COMMENT: ! "//"[\n]*^
 COMMENT: ! "/*" "*/"^* "*/"
