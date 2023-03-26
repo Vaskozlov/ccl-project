@@ -34,6 +34,6 @@ TEST_CASE("LexTest", "[LexicalAnalyzer]")
     // NOLINTEND
 
     while (DEBUG_VAR &&token = tokenizer.yield()) {
-        REQUIRE(token.getId() != BAD_TOKEN);
+        REQUIRE(token.getId() != 1);
     }
 }

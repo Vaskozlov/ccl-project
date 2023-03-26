@@ -1,7 +1,7 @@
+#include <ccl/ccll/ccll.hpp>
 #include <ccl/handler/cmd.hpp>
 #include <ccl/lex/analyzer_generator/analyzer_generator.hpp>
 #include <ccl/lex/analyzer_generator/static_generator.hpp>
-#include <ccl/lex/tokenizer.hpp>
 #include <fstream>
 #include <sstream>
 
@@ -34,22 +34,7 @@ namespace ccl::lex
     auto AnalyzerGenerator::generateStaticVersion(string_view filename, string_view text)
         -> std::string
     {
-        static LexicalAnalyzer lex_for_generator{
-            handler::Cmd::instance(),
-            {{GenToken::COMMENT, R"( ! [#] [\n]*^ )"},
-             {GenToken::DIRECTIVE,
-              R"( ( [a-zA-Z_][a-zA-Z_0-9]* )p [ \t]* [=] [ \t]* ("\"" (["]^ | "\\\"" )* "\"")p )"},
-             {GenToken::BAD_DIRECTIVE_DECLARATION, R"( ( [a-zA-Z_][a-zA-Z_0-9]* )p [ \t]* [=] )"},
-             {GenToken::RULE, R"( ( [a-zA-Z_][a-zA-Z_0-9]* )p [ \t]* [:] ( [\n]+^ )p)"},
-             {GenToken::BAD_RULE_OR_DIRECTIVE_DECLARATION, R"( [a-zA-Z_][a-zA-Z_0-9]* )"},
-             {GenToken::BAD_RULE_DECLARATION, R"( ( [a-zA-Z_][a-zA-Z_0-9]* )p [ \t]* [:] [ \t]* )"},
-             {GenToken::GROUP_DECLARATION, R"( [\[]p ([a-zA-Z_][a-zA-Z_0-9]*)p [\]]p )"},
-             {GenToken::BAD_GROUP_DECLARATION_ONLY_BRACKET, R"( [\[] )"},
-             {GenToken::BAD_GROUP_DECLARATION_BRACKET_AND_NAME, R"( [\[] [a-zA-Z_][a-zA-Z_0-9]*)"},
-             {GenToken::BAD_GROUP_DECLARATION_EMPTY_NAME, R"( [\[] [\]])"},
-             {GenToken::BAD_GROUP_NO_OPEN_BRACKET, R"( [a-zA-Z_][a-zA-Z_0-9]* [\]])"}}};
-
-        auto tokenizer = lex_for_generator.getTokenizer(text, filename);
+        auto tokenizer = ccll::CcllAnalyzer.getTokenizer(text, filename);
         auto static_generator = gen::StaticGenerator{tokenizer};
 
         return static_generator.getCode();

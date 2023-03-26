@@ -1,6 +1,5 @@
-#include <ccl/handler/cmd.hpp>
+#include <ccl/ccll/ccll.hpp>
 #include <ccl/lex/analyzer_generator/ccll_parser.hpp>
-#include <ccl/lex/tokenizer.hpp>
 
 namespace ccl::lex::parser
 {
@@ -14,49 +13,51 @@ namespace ccl::lex::parser
 
     auto CcllParser::parse() -> bool
     {
+        using namespace ccll;
+
         while (const Token &token = tokenizer.yield()) {
             switch (token.getId()) {
-            case GenToken::GROUP_DECLARATION:
+            case GROUP_DECLARATION:
                 completeGroup(token);
                 break;
 
-            case GenToken::BAD_GROUP_DECLARATION_ONLY_BRACKET:
+            case BAD_GROUP_DECLARATION_ONLY_BRACKET:
                 parsingError("group name expected");
                 break;
 
-            case GenToken::BAD_GROUP_DECLARATION_BRACKET_AND_NAME:
+            case BAD_GROUP_DECLARATION_BRACKET_AND_NAME:
                 parsingError("group end expected", "insert ]");
                 break;
 
-            case GenToken::BAD_GROUP_DECLARATION_EMPTY_NAME:
+            case BAD_GROUP_DECLARATION_EMPTY_NAME:
                 parsingError("group name can not be empty");
                 break;
 
-            case GenToken::DIRECTIVE:
+            case DIRECTIVE:
                 completeDirective(token);
                 break;
 
-            case GenToken::BAD_DIRECTIVE_DECLARATION:
+            case BAD_DIRECTIVE_DECLARATION:
                 parsingError("directive value expected");
                 break;
 
-            case GenToken::RULE:
+            case RULE:
                 completeRule(token);
                 break;
 
-            case GenToken::BAD_RULE_DECLARATION:
+            case BAD_RULE_DECLARATION:
                 parsingError("rule definition expected");
                 break;
 
-            case GenToken::BAD_RULE_OR_DIRECTIVE_DECLARATION:
+            case BAD_RULE_OR_DIRECTIVE_DECLARATION:
                 parsingError("rule or directive declaration expected");
                 break;
 
-            case GenToken::BAD_GROUP_NO_OPEN_BRACKET:
+            case BAD_GROUP_NO_OPEN_BRACKET:
                 parsingError("unable to match [ to close group declaration");
                 break;
 
-            case GenToken::COMMENT:
+            case COMMENT:
                 break;
 
             default:

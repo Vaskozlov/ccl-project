@@ -6,8 +6,7 @@
 
 namespace ccl
 {
-    enum CLexerToken : ccl::Id
-    {
+    enum CLexerToken : ccl::Id {    
         DECLS = 17179869184,
         KEYWORD = 12884901888,
         NONE = 0,
@@ -65,11 +64,11 @@ namespace ccl
         CHAR = 17179869187,
         STRING = 17179869188,
     };
-
+    
     // NOLINTNEXTLINE
-    inline auto CLexer = ccl::lex::LexicalAnalyzer{
+    inline auto CLexer = ccl::lex::LexicalAnalyzer{    
         ccl::handler::Cmd::instance(),
-        {
+        {    
             {CLexerToken::COMMENT, R"( ! "//"[\n]*^ )"},
             {CLexerToken::COMMENT, R"( ! "/*" "*/"^* "*/" )"},
             {CLexerToken::CURLY_OPENING, R"( ! [{] )"},
@@ -120,9 +119,11 @@ namespace ccl
             {CLexerToken::IDENTIFIER, R"( [a-zA-Z_]+ [a-zA-Z0-9_]* )"},
             {CLexerToken::CHAR, R"( ! "\'" ([']^ | "\\\'" ) "\'" )"},
             {CLexerToken::STRING, R"( ! "\"" (["]^ | "\\\"")* "\"" )"},
-        }};
-
-    inline constexpr ccl::StaticFlatmap<ccl::Id, ccl::string_view, 52> ToStringCLexerToken{
+        }
+    };
+    
+    inline constexpr ccl::StaticFlatmap<ccl::Id, ccl::string_view, 52> ToStringCLexerToken
+    {    
         {CLexerToken::EOI, "EOI"},
         {CLexerToken::BAD_TOKEN, "BAD_TOKEN"},
         {CLexerToken::COMMENT, "COMMENT"},
