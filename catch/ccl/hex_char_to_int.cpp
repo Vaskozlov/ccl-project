@@ -4,7 +4,7 @@
 using namespace ccl;
 using namespace integral_literals;
 
-static constexpr auto HCTI = HexadecimalCharsToInt<char>;
+static constexpr auto HCTI = HexadecimalCharsToInt;
 
 // NOLINTBEGIN
 
