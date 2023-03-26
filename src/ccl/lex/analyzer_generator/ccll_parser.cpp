@@ -80,12 +80,10 @@ namespace ccl::lex::parser
     auto CcllParser::completeRule(const Token &token) -> void
     {
         const auto &prefixes = token.getPrefixes();
-        const auto &postfixes = token.getPostfixes();
 
         auto name = prefixes.at(0);
-        auto rule = postfixes.at(0);
+        auto rule = getAndCheckRule(token);
 
-        checkRule(token);
         rules.emplace_back(blocks[currentBlock], name, rule);
     }
 
@@ -102,7 +100,7 @@ namespace ccl::lex::parser
         directives.emplace(name, value);
     }
 
-    auto CcllParser::checkRule(const Token &token) -> void
+    auto CcllParser::getAndCheckRule(const Token &token) -> string_view
     {
         auto line_repr = token.getInlineRepr();
         auto location = token.getLocation();
@@ -114,7 +112,12 @@ namespace ccl::lex::parser
                 location.getRealColumn() - 1}};
 
         text_iterator.skip(line_repr.find(':').value() + 1);
+        text_iterator.moveToCleanChar();
+        auto rule_repr = text_iterator.getRemaining();
+
         dot_item::Container{text_iterator, specialItems, 2, true};
+
+        return rule_repr;
     }
 
     auto CcllParser::parsingError(string_view message, string_view suggestion) -> void
