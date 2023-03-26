@@ -6,7 +6,8 @@
 
 namespace ccll
 {
-    enum CcllAnalyzerToken : ccl::Id {    
+    enum CcllAnalyzerToken : ccl::Id
+    {
         EXTRA = 12884901888,
         FAILURE = 8589934592,
         NONE = 0,
@@ -25,27 +26,31 @@ namespace ccll
         BAD_GROUP_NO_OPEN_BRACKET = 8589934598,
         COMMENT = 12884901888,
     };
-    
+
     // NOLINTNEXTLINE
-    inline auto CcllAnalyzer = ccl::lex::LexicalAnalyzer{    
+    inline auto CcllAnalyzer = ccl::lex::LexicalAnalyzer{
         ccl::handler::Cmd::instance(),
-        {    
+        {
             {CcllAnalyzerToken::GROUP_DECLARATION, R"( [\[]p ( [a-zA-Z_][a-zA-Z_0-9]* )p [\]]p )"},
             {CcllAnalyzerToken::RULE, R"( ( [a-zA-Z_][a-zA-Z_0-9]* )p [ \t]* [:] ( [\n]+^ )p )"},
-            {CcllAnalyzerToken::DIRECTIVE, R"( ( [a-zA-Z_][a-zA-Z_0-9]* )p [ \t]* [=] [ \t]* ("\"" (["]^ | "\\\"" )* "\"")p )"},
-            {CcllAnalyzerToken::BAD_RULE_OR_DIRECTIVE_DECLARATION, R"( [a-zA-Z_][a-zA-Z_0-9]* [\n]+^ )"},
-            {CcllAnalyzerToken::BAD_RULE_DECLARATION, R"( ( [a-zA-Z_][a-zA-Z_0-9]* )p [ \t]* [:] [ \t]* [\n]+^ )"},
-            {CcllAnalyzerToken::BAD_DIRECTIVE_DECLARATION, R"( ( [a-zA-Z_][a-zA-Z_0-9]* )p [ \t]* [=] [ \t]* [\n]+^ )"},
+            {CcllAnalyzerToken::DIRECTIVE,
+             R"( ( [a-zA-Z_][a-zA-Z_0-9]* )p [ \t]* [=] [ \t]* ("\"" (["]^ | "\\\"" )* "\"")p )"},
+            {CcllAnalyzerToken::BAD_RULE_OR_DIRECTIVE_DECLARATION,
+             R"( [a-zA-Z_][a-zA-Z_0-9]* [\n]+^ )"},
+            {CcllAnalyzerToken::BAD_RULE_DECLARATION,
+             R"( ( [a-zA-Z_][a-zA-Z_0-9]* )p [ \t]* [:] [ \t]* [\n]+^ )"},
+            {CcllAnalyzerToken::BAD_DIRECTIVE_DECLARATION,
+             R"( ( [a-zA-Z_][a-zA-Z_0-9]* )p [ \t]* [=] [ \t]* [\n]+^ )"},
             {CcllAnalyzerToken::BAD_GROUP_DECLARATION_ONLY_BRACKET, R"( [\[] [\n]+^ )"},
             {CcllAnalyzerToken::BAD_GROUP_DECLARATION_EMPTY_NAME, R"( [\[] [\]] [\n]+^ )"},
-            {CcllAnalyzerToken::BAD_GROUP_DECLARATION_BRACKET_AND_NAME, R"( [\[] [a-zA-Z_][a-zA-Z_0-9]* [\n]+^ )"},
-            {CcllAnalyzerToken::BAD_GROUP_NO_OPEN_BRACKET, R"( [a-zA-Z_][a-zA-Z_0-9]* [\]] [\n]+^ )"},
+            {CcllAnalyzerToken::BAD_GROUP_DECLARATION_BRACKET_AND_NAME,
+             R"( [\[] [a-zA-Z_][a-zA-Z_0-9]* [\n]+^ )"},
+            {CcllAnalyzerToken::BAD_GROUP_NO_OPEN_BRACKET,
+             R"( [a-zA-Z_][a-zA-Z_0-9]* [\]] [\n]+^ )"},
             {CcllAnalyzerToken::COMMENT, R"( ! [#] [\n]*^ )"},
-        }
-    };
-    
-    inline constexpr ccl::StaticFlatmap<ccl::Id, ccl::string_view, 13> ToStringCcllAnalyzerToken
-    {    
+        }};
+
+    inline constexpr ccl::StaticFlatmap<ccl::Id, ccl::string_view, 13> ToStringCcllAnalyzerToken{
         {CcllAnalyzerToken::EOI, "EOI"},
         {CcllAnalyzerToken::BAD_TOKEN, "BAD_TOKEN"},
         {CcllAnalyzerToken::GROUP_DECLARATION, "GROUP_DECLARATION"},
@@ -54,9 +59,11 @@ namespace ccll
         {CcllAnalyzerToken::BAD_RULE_OR_DIRECTIVE_DECLARATION, "BAD_RULE_OR_DIRECTIVE_DECLARATION"},
         {CcllAnalyzerToken::BAD_RULE_DECLARATION, "BAD_RULE_DECLARATION"},
         {CcllAnalyzerToken::BAD_DIRECTIVE_DECLARATION, "BAD_DIRECTIVE_DECLARATION"},
-        {CcllAnalyzerToken::BAD_GROUP_DECLARATION_ONLY_BRACKET, "BAD_GROUP_DECLARATION_ONLY_BRACKET"},
+        {CcllAnalyzerToken::BAD_GROUP_DECLARATION_ONLY_BRACKET,
+         "BAD_GROUP_DECLARATION_ONLY_BRACKET"},
         {CcllAnalyzerToken::BAD_GROUP_DECLARATION_EMPTY_NAME, "BAD_GROUP_DECLARATION_EMPTY_NAME"},
-        {CcllAnalyzerToken::BAD_GROUP_DECLARATION_BRACKET_AND_NAME, "BAD_GROUP_DECLARATION_BRACKET_AND_NAME"},
+        {CcllAnalyzerToken::BAD_GROUP_DECLARATION_BRACKET_AND_NAME,
+         "BAD_GROUP_DECLARATION_BRACKET_AND_NAME"},
         {CcllAnalyzerToken::BAD_GROUP_NO_OPEN_BRACKET, "BAD_GROUP_NO_OPEN_BRACKET"},
         {CcllAnalyzerToken::COMMENT, "COMMENT"},
     };

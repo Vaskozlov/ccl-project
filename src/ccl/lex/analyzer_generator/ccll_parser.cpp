@@ -1,5 +1,5 @@
-#include <ccll/ccll.hpp>
 #include <ccl/lex/analyzer_generator/ccll_parser.hpp>
+#include <ccll/ccll.hpp>
 
 namespace ccl::lex::parser
 {
