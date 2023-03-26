@@ -42,7 +42,7 @@ namespace ccl::lex
              {GenToken::RULE, R"( ( [a-zA-Z_][a-zA-Z_0-9]* )p [ \t]* [:] ( [\n]+^ )p)"},
              {GenToken::BAD_RULE_OR_DIRECTIVE_DECLARATION, R"( [a-zA-Z_][a-zA-Z_0-9]* )"},
              {GenToken::BAD_RULE_DECLARATION, R"( ( [a-zA-Z_][a-zA-Z_0-9]* )p [ \t]* [:] [ \t]* )"},
-             {GenToken::GROUP_DECLARATION, R"( [\[] [a-zA-Z_][a-zA-Z_0-9]* [\]] )"},
+             {GenToken::GROUP_DECLARATION, R"( [\[]p ([a-zA-Z_][a-zA-Z_0-9]*)p [\]]p )"},
              {GenToken::BAD_GROUP_DECLARATION_ONLY_BRACKET, R"( [\[] )"},
              {GenToken::BAD_GROUP_DECLARATION_BRACKET_AND_NAME, R"( [\[] [a-zA-Z_][a-zA-Z_0-9]*)"},
              {GenToken::BAD_GROUP_DECLARATION_EMPTY_NAME, R"( [\[] [\]])"},

@@ -1,87 +1,16 @@
-#include <benchmark/benchmark.h>
-#include <chrono>
-
 #include "c_lexer.hpp"
-
+#include <benchmark/benchmark.h>
+#include <ccl/debug/c_rule.hpp>
 #include <ccl/handler/cmd_handler.hpp>
 #include <ccl/lex/tokenizer.hpp>
 
+using namespace ccl;
 using namespace std::string_view_literals;
-
-const auto CProgram = R"(
-int main(int argc, char **argv) {
-    int a = 10;
-    int b = 20;
-    char *c = "Hello, World!\xff";
-    char d = 't';
-
-      /*
-    This is a comment!*/
-
-    float a2 = 20.0f;
-
-    a += b;
-    b *= a;
-
-    return a + b;
-}
-
-int main(int argc, char **argv) {
-    int a = 10;
-    int b = 20;
-    char *c = "Hello, World!\xff";
-    char d = 't';
-
-      /*
-    This is a comment!*/
-
-    float a2 = 20.0f;
-
-    a += b;
-    b *= a;
-
-    return a + b;
-}
-
-int main(int argc, char **argv) {
-    int a = 10;
-    int b = 20;
-    char *c = "Hello, World!\xff";
-    char d = 't';
-
-      /*
-    This is a comment!*/
-
-    float a2 = 20.0f;
-
-    a += b;
-    b *= a;
-
-    return a + b;
-}
-
-int main(int argc, char **argv) {
-    int a = 10;
-    int b = 20;
-    char *c = "Hello, World!\xff";
-    char d = 't';
-
-      /*
-    This is a comment!*/
-
-    float a2 = 20.0f;
-
-    a += b;
-    b *= a;
-
-    return a + b;
-}
-)"sv;
 
 static auto lexicalAnalysisOfC(benchmark::State &state) -> void
 {
     for (auto _ : state) {
-        auto tokenizer = CLexer.getTokenizer(CProgram);
+        auto tokenizer = CLexer.getTokenizer(debug::C_RULE);
 
         while (const auto &token = tokenizer.yield()) {
             benchmark::DoNotOptimize(token);
@@ -97,8 +26,8 @@ BENCHMARK(lexicalAnalysisOfC);
 static auto lexicalAnalyzerInitialization(benchmark::State &state) -> void
 {
     for (auto _ : state) {
-        [[maybe_unused]] auto c_lexer = ccl::lex::LexicalAnalyzer(
-            ccl::handler::Cmd::instance(),
+        [[maybe_unused]] auto c_lexer = lex::LexicalAnalyzer(
+            handler::Cmd::instance(),
             {
                 {CLexerToken::COMMENT, R"( ! "//"[\n]*^ )"},
                 {CLexerToken::COMMENT, R"( ! "/*" "*/"^* "*/" )"},

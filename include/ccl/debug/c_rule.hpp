@@ -1,5 +1,12 @@
+#ifndef CCL_PROJECT_C_RULE_HPP
+#define CCL_PROJECT_C_RULE_HPP
+
+#include <ccl/string_view.hpp>
+
+namespace ccl::debug
+{
+    constexpr inline ccl::string_view C_RULE = R"(
 VAR_NAME = "CLexer"
-NAMESPACE = "ccl"
 
 COMMENT: ! "//"[\n]*^
 COMMENT: ! "/*" "*/"^* "*/"
@@ -65,3 +72,7 @@ FLOAT:              [0-9]+"."[0-9]* ( [a-zA-Z_]+ [a-zA-Z0-9_]* )?p
 IDENTIFIER:         [a-zA-Z_]+[a-zA-Z0-9_]*
 CHAR:               ! "\'" ([']^ | "\\\'" ) "\'"
 STRING:             ! "\"" (["]^ | "\\\"")* "\""
+)";
+}
+
+#endif /* CCL_PROJECT_C_RULE_HPP */
