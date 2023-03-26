@@ -1,7 +1,7 @@
 #include "c_lexer.hpp"
 #include <benchmark/benchmark.h>
 #include <ccl/debug/c_rule.hpp>
-#include <ccl/handler/cmd_handler.hpp>
+#include <ccl/handler/cmd.hpp>
 #include <ccl/lex/tokenizer.hpp>
 
 using namespace ccl;

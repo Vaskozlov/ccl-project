@@ -12,6 +12,7 @@ namespace ccl::lex
     {
         EOI = 0,
         BAD_TOKEN = 1,
+        COMMENT,
         RULE,
         BAD_RULE_DECLARATION,
         DIRECTIVE,

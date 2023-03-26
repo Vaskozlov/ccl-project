@@ -1,5 +1,5 @@
-#ifndef CCL_PROJECT_CMD_HANDLER_HPP
-#define CCL_PROJECT_CMD_HANDLER_HPP
+#ifndef CCL_PROJECT_CMD_HPP
+#define CCL_PROJECT_CMD_HPP
 
 #include <ccl/handler/exception_handler.hpp>
 #include <ccl/text/text_iterator.hpp>
@@ -65,4 +65,4 @@ namespace ccl::handler
     };
 }// namespace ccl::handler
 
-#endif /* CCL_PROJECT_CMD_HANDLER_HPP */
+#endif /* CCL_PROJECT_CMD_HPP */

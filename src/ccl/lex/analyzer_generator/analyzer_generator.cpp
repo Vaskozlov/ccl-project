@@ -1,4 +1,4 @@
-#include <ccl/handler/cmd_handler.hpp>
+#include <ccl/handler/cmd.hpp>
 #include <ccl/lex/analyzer_generator/analyzer_generator.hpp>
 #include <ccl/lex/analyzer_generator/static_generator.hpp>
 #include <ccl/lex/tokenizer.hpp>
@@ -36,7 +36,8 @@ namespace ccl::lex
     {
         static LexicalAnalyzer lex_for_generator{
             handler::Cmd::instance(),
-            {{GenToken::DIRECTIVE,
+            {{GenToken::COMMENT, R"( ! [#] [\n]*^ )"},
+             {GenToken::DIRECTIVE,
               R"( ( [a-zA-Z_][a-zA-Z_0-9]* )p [ \t]* [=] [ \t]* ("\"" (["]^ | "\\\"" )* "\"")p )"},
              {GenToken::BAD_DIRECTIVE_DECLARATION, R"( ( [a-zA-Z_][a-zA-Z_0-9]* )p [ \t]* [=] )"},
              {GenToken::RULE, R"( ( [a-zA-Z_][a-zA-Z_0-9]* )p [ \t]* [:] ( [\n]+^ )p)"},

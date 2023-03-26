@@ -2,7 +2,7 @@
 #define CCL_PROJECT_STATIC_GENERATOR_HPP
 
 #include <ccl/codegen/basic_codegen.hpp>
-#include <ccl/handler/cmd_handler.hpp>
+#include <ccl/handler/cmd.hpp>
 #include <ccl/lex/analyzer_generator/ccll_parser.hpp>
 #include <ccl/lex/lexical_analyzer.hpp>
 #include <map>

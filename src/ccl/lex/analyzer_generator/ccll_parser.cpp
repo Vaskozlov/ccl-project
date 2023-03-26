@@ -1,4 +1,4 @@
-#include <ccl/handler/cmd_handler.hpp>
+#include <ccl/handler/cmd.hpp>
 #include <ccl/lex/analyzer_generator/ccll_parser.hpp>
 #include <ccl/lex/tokenizer.hpp>
 
@@ -54,6 +54,9 @@ namespace ccl::lex::parser
 
             case GenToken::BAD_GROUP_NO_OPEN_BRACKET:
                 parsingError("unable to match [ to close group declaration");
+                break;
+
+            case GenToken::COMMENT:
                 break;
 
             default:
