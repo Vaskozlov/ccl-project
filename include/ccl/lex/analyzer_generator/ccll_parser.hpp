@@ -67,7 +67,7 @@ namespace ccl::lex::parser
         auto completeDirective(const Token &token) -> void;
         auto completeGroup(const Token &token) -> void;
 
-        auto getAndCheckRule(const Token &token) -> string_view;
+        auto checkRule(const Token &token) -> void;
 
         auto parsingError(string_view message, string_view suggestion = {}) -> void;
     };

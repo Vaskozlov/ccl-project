@@ -1,6 +1,5 @@
 #include <ccl/debug/debug_file.hpp>
 #include <ccl/handler/cmd.hpp>
-#include <ccl/lex/analyzer_generator/analyzer_generator.hpp>
 #include <ccl/lex/tokenizer.hpp>
 
 using namespace ccl;
@@ -34,6 +33,6 @@ TEST_CASE("LexTest", "[LexicalAnalyzer]")
     // NOLINTEND
 
     while (DEBUG_VAR &&token = tokenizer.yield()) {
-        REQUIRE(token.getId() != BAD_TOKEN);
+        REQUIRE(token.getId() != 1);
     }
 }

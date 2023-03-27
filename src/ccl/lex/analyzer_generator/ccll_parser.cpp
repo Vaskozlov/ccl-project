@@ -1,6 +1,5 @@
-#include <ccl/handler/cmd.hpp>
 #include <ccl/lex/analyzer_generator/ccll_parser.hpp>
-#include <ccl/lex/tokenizer.hpp>
+#include <ccll/ccll.hpp>
 
 namespace ccl::lex::parser
 {
@@ -14,49 +13,51 @@ namespace ccl::lex::parser
 
     auto CcllParser::parse() -> bool
     {
+        using namespace ccll;
+
         while (const Token &token = tokenizer.yield()) {
             switch (token.getId()) {
-            case GenToken::GROUP_DECLARATION:
+            case GROUP_DECLARATION:
                 completeGroup(token);
                 break;
 
-            case GenToken::BAD_GROUP_DECLARATION_ONLY_BRACKET:
+            case BAD_GROUP_DECLARATION_ONLY_BRACKET:
                 parsingError("group name expected");
                 break;
 
-            case GenToken::BAD_GROUP_DECLARATION_BRACKET_AND_NAME:
+            case BAD_GROUP_DECLARATION_BRACKET_AND_NAME:
                 parsingError("group end expected", "insert ]");
                 break;
 
-            case GenToken::BAD_GROUP_DECLARATION_EMPTY_NAME:
+            case BAD_GROUP_DECLARATION_EMPTY_NAME:
                 parsingError("group name can not be empty");
                 break;
 
-            case GenToken::DIRECTIVE:
+            case DIRECTIVE:
                 completeDirective(token);
                 break;
 
-            case GenToken::BAD_DIRECTIVE_DECLARATION:
+            case BAD_DIRECTIVE_DECLARATION:
                 parsingError("directive value expected");
                 break;
 
-            case GenToken::RULE:
+            case RULE:
                 completeRule(token);
                 break;
 
-            case GenToken::BAD_RULE_DECLARATION:
+            case BAD_RULE_DECLARATION:
                 parsingError("rule definition expected");
                 break;
 
-            case GenToken::BAD_RULE_OR_DIRECTIVE_DECLARATION:
+            case BAD_RULE_OR_DIRECTIVE_DECLARATION:
                 parsingError("rule or directive declaration expected");
                 break;
 
-            case GenToken::BAD_GROUP_NO_OPEN_BRACKET:
-                parsingError("unable to match [ to close group declaration");
+            case BAD_GROUP_NO_OPEN_BRACKET:
+                parsingError("unable to match ] to close group declaration");
                 break;
 
-            case GenToken::COMMENT:
+            case COMMENT:
                 break;
 
             default:
@@ -83,10 +84,12 @@ namespace ccl::lex::parser
     auto CcllParser::completeRule(const Token &token) -> void
     {
         const auto &prefixes = token.getPrefixes();
+        const auto &postfixes = token.getPostfixes();
 
         auto name = prefixes.at(0);
-        auto rule = getAndCheckRule(token);
+        auto rule = postfixes.at(0);
 
+        checkRule(token);
         rules.emplace_back(blocks[currentBlock], name, rule);
     }
 
@@ -103,7 +106,7 @@ namespace ccl::lex::parser
         directives.emplace(name, value);
     }
 
-    auto CcllParser::getAndCheckRule(const Token &token) -> string_view
+    auto CcllParser::checkRule(const Token &token) -> void
     {
         auto line_repr = token.getInlineRepr();
         auto location = token.getLocation();
@@ -115,12 +118,7 @@ namespace ccl::lex::parser
                 location.getRealColumn() - 1}};
 
         text_iterator.skip(line_repr.find(':').value() + 1);
-        text_iterator.moveToCleanChar();
-        auto rule_repr = text_iterator.getRemaining();
-
         dot_item::Container{text_iterator, specialItems, 2, true};
-
-        return rule_repr;
     }
 
     auto CcllParser::parsingError(string_view message, string_view suggestion) -> void

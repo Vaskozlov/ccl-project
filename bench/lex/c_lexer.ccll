@@ -5,7 +5,7 @@ HANDLER = "ccl::handler::Cmd::instance()"
 COMMENT: ! "//"[\n]*^
 COMMENT: ! "/*" "*/"^* "*/"
 
-# this is a comment
+# Comment
 
 [SEPARATOR]
 CURLY_OPENING:      ! [{]
