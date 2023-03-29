@@ -5,11 +5,9 @@
 
 namespace ccl
 {
-    template<typename T1, typename T2>
+    template<Trivial T1, Trivial T2>
     class CCL_TRIVIAL_ABI TrivialPair
     {
-        static_assert(Trivial<T1> && Trivial<T2>);
-
     public:
         T1 first;
         T2 second;
