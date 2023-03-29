@@ -14,6 +14,11 @@ namespace ccl::codegen
         return generatedCode.at(streamId);
     }
 
+    auto BasicCodeGenerator::getBackInserter() noexcept -> std::back_insert_iterator<std::string>
+    {
+        return std::back_inserter(getCurrentStream());
+    }
+
     auto BasicCodeGenerator::newLine() -> void
     {
         getCurrentStream().push_back('\n');
