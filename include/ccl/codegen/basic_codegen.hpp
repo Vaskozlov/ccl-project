@@ -43,10 +43,7 @@ namespace ccl::codegen
 
         [[nodiscard]] auto getCode() const noexcept -> std::string;
 
-        [[nodiscard]] auto getBackInserter() noexcept -> auto
-        {
-            return std::back_inserter(getCurrentStream());
-        }
+        auto getBackInserter() noexcept -> std::back_insert_iterator<std::string>;
 
         auto reserve(size_t size) -> void;
 
