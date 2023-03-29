@@ -9,6 +9,7 @@ TEST_CASE("TextIteratorExceptionConstruction", "[TextIterator]")
 {
     auto text_iterator =
         TextIterator("Hello, World!\nIt's a test string!", ExceptionHandler::instance(), "builtin");
+
     auto exception = TextIteratorException(
         ExceptionCriticality::UNCRITICAL, AnalysisStage::LEXICAL_ANALYSIS,
         text_iterator.getLocation(), 1, text_iterator.getWorkingLine(), "some message");

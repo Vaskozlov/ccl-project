@@ -34,7 +34,7 @@ TEST_CASE("LocationTracking", "[Location]")
     REQUIRE(location.getRealColumn() == 1U);
 
     location.intermediateNext(as<char>(0b1000'0000));// NOLINT utf8 2 byte character end
-    location.next(U'a');                             // just some character
+    location.next(U'a');
 
     REQUIRE(location.getLine() == 2U);
     REQUIRE(location.getColumn() == 1U);
