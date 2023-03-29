@@ -4,6 +4,16 @@
 
 namespace ccl::codegen
 {
+    CCL_INLINE auto BasicCodeGenerator::getCurrentStream() noexcept -> std::string &
+    {
+        return generatedCode[streamId];
+    }
+
+    CCL_INLINE auto BasicCodeGenerator::getCurrentStream() const noexcept -> const std::string &
+    {
+        return generatedCode.at(streamId);
+    }
+
     auto BasicCodeGenerator::newLine() -> void
     {
         getCurrentStream().push_back('\n');
@@ -33,9 +43,14 @@ namespace ccl::codegen
         return result;
     }
 
+    auto BasicCodeGenerator::reserve(size_t size) -> void
+    {
+        getCurrentStream().reserve(size);
+    }
+
     auto BasicCodeGenerator::operator<<(ScopeSize scope_size) -> BasicCodeGenerator &
     {
-        if (0 == scope_size.size) {
+        if (0 == scope_size.size) [[unlikely]] {
             throw std::logic_error("Scope size can not be equal to zero.");
         }
 
@@ -52,7 +67,7 @@ namespace ccl::codegen
 
     auto BasicCodeGenerator::operator<<(PopScope /* unused */) -> BasicCodeGenerator &
     {
-        if (scopesCounter == 0) {
+        if (scopesCounter == 0) [[unlikely]] {
             throw std::runtime_error("Cannot pop scope, because there are not any of them");
         }
 
@@ -68,9 +83,9 @@ namespace ccl::codegen
 
     auto BasicCodeGenerator::operator<<(char character) -> BasicCodeGenerator &
     {
-        if (character == '\n') {
+        if (character == '\n') [[unlikely]] {
             newLine();
-        } else {
+        } else [[likely]] {
             getCurrentStream().push_back(character);
         }
 

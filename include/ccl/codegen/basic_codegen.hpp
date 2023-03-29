@@ -48,6 +48,8 @@ namespace ccl::codegen
             return std::back_inserter(getCurrentStream());
         }
 
+        auto reserve(size_t size) -> void;
+
         auto operator<<(ScopeSize scope_size) -> BasicCodeGenerator &;
         auto operator<<(PushScope /* unused */) -> BasicCodeGenerator &;
         auto operator<<(PopScope /* unused */) -> BasicCodeGenerator &;
@@ -85,15 +87,8 @@ namespace ccl::codegen
         }
 
     private:
-        [[nodiscard]] auto getCurrentStream() noexcept -> std::string &
-        {
-            return generatedCode[streamId];
-        }
-
-        [[nodiscard]] auto getCurrentStream() const noexcept -> const std::string &
-        {
-            return generatedCode.at(streamId);
-        }
+        [[nodiscard]] auto getCurrentStream() noexcept -> std::string &;
+        [[nodiscard]] auto getCurrentStream() const noexcept -> const std::string &;
 
         auto newLine() -> void;
         auto addScope(size_t scopes_count) -> void;

@@ -3,7 +3,7 @@
 
 using namespace ccl;
 
-TEST_CASE("RaiiTest")
+TEST_CASE("RaiiTest", "[Raii]")
 {
     // NOLINTBEGIN
 

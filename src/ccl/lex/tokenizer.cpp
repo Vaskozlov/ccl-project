@@ -28,7 +28,7 @@ namespace ccl::lex
     auto Tokenizer::nextToken(Token &token) -> void
     {
         auto &chars_to_skip = lexicalAnalyzer.skippedCharacters;
-        auto scan_container = [this, &token](const auto &container) {
+        auto scan_container = [this, &token](const Container &container) {
             return container.beginScan(textIterator, token);
         };
 
