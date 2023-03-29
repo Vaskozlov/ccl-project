@@ -29,7 +29,7 @@ CCL - библиотека конструирования компилятора
 ## Сборка проекта
 
 ```cmake
-https://github.com/Vaskozlov/ccl-project.git
+git clone https://github.com/Vaskozlov/ccl-project.git
 cd ccl-project
 mkdir build
 cd build
