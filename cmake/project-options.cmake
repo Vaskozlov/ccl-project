@@ -4,6 +4,7 @@ option(CCL_PRECOMPILED_HEADERS "Use precompiled headers" OFF)
 option(CCL_ADDRESS_SANITIZER "Use sanitizers" OFF)
 option(CCL_THREAD_SANITIZER "Use thread sanitizers" OFF)
 option(CCL_STATIC_LIBRARY "Create static version of library " OFF)
+option(CCL_WSHADOW "Enable shadow warning " ON)
 
 message(STATUS "CC " ${CMAKE_C_COMPILER})
 message(STATUS "CXX " ${CMAKE_CXX_COMPILER})
