@@ -28,31 +28,31 @@ CCL - библиотека конструирования компилятора
 
 ## Сборка проекта
 
-```cmake
+```bash
 git clone https://github.com/Vaskozlov/ccl-project.git
 cd ccl-project
 mkdir build
 cd build
 ```
 
-```cmake
+```bash
 cmake .. -G Ninja
 ninja
 ```
 
 При использовании vcpkg:
-```cmake
+```bash
 cmake .. -G Ninja -DCMAKE_TOOLCHAIN_FILE=`путь до vcpkg + scripts/buildsystems/vcpkg.cmake`
 ninja
 ```
 
 ## Установка
-```cmake
+```bash
 ninja install all
 ```
 
 Также имеется возможность сборки rpm пакет при помощи CPack
 
-```cmake
+```bash
 cpack -G RPM
 ```

@@ -1,6 +1,6 @@
 option(CCL_LIBCPP "Use libc++ when compiling with clang" OFF)
-option(CCL_STRICT_COMPILATION "Enable -Werror strict compilation" ON)
-option(CCL_PRECOMPILED_HEADERS "Use precompiled headers" OFF)
+option(CCL_STRICT_COMPILATION "Enable -Werror strict compilation" OFF)
+option(CCL_PRECOMPILED_HEADERS "Use precompiled headers" ON)
 option(CCL_ADDRESS_SANITIZER "Use sanitizers" OFF)
 option(CCL_THREAD_SANITIZER "Use thread sanitizers" OFF)
 option(CCL_STATIC_LIBRARY "Create static version of library " OFF)
