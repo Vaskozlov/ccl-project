@@ -2,7 +2,7 @@ include(CheckCXXCompilerFlag)
 
 ccl_check_cxx_flag_support(Wall TRUE)
 ccl_check_cxx_flag_support(Wextra TRUE)
-ccl_check_cxx_flag_support(Wshadow TRUE)
+ccl_check_cxx_flag_support(Wshadow ${CCL_WSHADOW})
 ccl_check_cxx_flag_support(Wuseless-cast TRUE)
 ccl_check_cxx_flag_support(Werror ${CCL_STRICT_COMPILATION})
 
