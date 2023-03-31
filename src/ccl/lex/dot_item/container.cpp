@@ -4,8 +4,9 @@ namespace ccl::lex::dot_item
 {
     using namespace ccl::string_view_literals;
 
-    CCL_INLINE auto Container::addPrefixOrPostfix(
-        const DotItemConcept *item, Token &token, const string_view &repr) -> void
+    CCL_INLINE auto
+        Container::addPrefixOrPostfix(const DotItemConcept *item, Token &token, string_view repr)
+            -> void
     {
         if (repr.empty()) [[unlikely]] {
         } else if (item->hasPrefix()) [[unlikely]] {

@@ -69,4 +69,14 @@
 #    define CCL_UNROLL_N(N)
 #endif /* CCL_UNROLL_N */
 
+#ifdef __has_builtin
+#    if __has_builtin(__builtin_prefetch)
+#    define CCL_PREFETCH(ADDR) __builtin_prefetch(ADDR)
+#    else
+#        define CCL_PREFETCH(ADDR)
+#    endif
+#else
+#    define CCL_PREFETCH(ADDR)
+#endif
+
 #endif /* CCL_PROJECT_DEFINES_HPP */

@@ -83,15 +83,16 @@ namespace ccl::text
 
         CCL_DECL CCL_INLINE auto getRemainingAsCarriage() const noexcept -> iterator
         {
-            if (isInitialized()) {
-                return std::min(carriage + 1, end);
+            if (!isInitialized()) [[unlikely]] {
+                return carriage;
             }
 
-            return carriage;
+            return std::min(carriage + 1, end);
         }
 
         CCL_DECL auto getNextCarriageValue() const noexcept -> char
         {
+            CCL_PREFETCH(carriage);
             const auto *it = getRemainingAsCarriage();
 
             if (it == end) {
@@ -200,6 +201,8 @@ namespace ccl::text
 
         constexpr auto moveCarriageToTheNextByte() noexcept(noexceptCarriageMove) -> char
         {
+            CCL_PREFETCH(carriage);
+
             if (!isInitialized()) [[unlikely]] {
                 if (carriage == end) [[unlikely]] {
                     currentChar = 0;

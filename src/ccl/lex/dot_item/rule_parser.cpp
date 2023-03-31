@@ -325,7 +325,7 @@ namespace ccl::lex::dot_item
     auto DotItemConcept::SpecialItems::checkForSpecial(const ForkedGenerator &text_iterator) const
         -> bool
     {
-        return std::ranges::any_of(specialItems, [&text_iterator](const auto &special_item) {
+        return std::ranges::any_of(specialItems, [&text_iterator](const Container &special_item) {
             auto scan_result = special_item.scan(text_iterator);
             return scan_result != 0;
         });
@@ -335,7 +335,7 @@ namespace ccl::lex::dot_item
         -> bool
     {
         return std::ranges::any_of(
-            specialItems, [&text_iterator, &token](const auto &special_item) {
+            specialItems, [&text_iterator, &token](const Container &special_item) {
                 return special_item.beginScan(text_iterator, token, ScanningType::SPECIAL);
             });
     }

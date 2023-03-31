@@ -83,9 +83,8 @@ namespace ccl::lex::dot_item
 
         [[nodiscard]] auto failedToEndItem(const ForkedGenerator &text_iterator) const -> bool;
 
-        static auto
-            addPrefixOrPostfix(const DotItemConcept *item, Token &token, const string_view &repr)
-                -> void;
+        static auto addPrefixOrPostfix(const DotItemConcept *item, Token &token, string_view repr)
+            -> void;
     };
 
     class Container::RuleParser
