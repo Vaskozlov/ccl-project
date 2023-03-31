@@ -71,7 +71,7 @@
 
 #ifdef __has_builtin
 #    if __has_builtin(__builtin_prefetch)
-#    define CCL_PREFETCH(ADDR) __builtin_prefetch(ADDR)
+#        define CCL_PREFETCH(ADDR) __builtin_prefetch(ADDR)
 #    else
 #        define CCL_PREFETCH(ADDR)
 #    endif
