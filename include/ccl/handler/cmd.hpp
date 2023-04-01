@@ -22,7 +22,7 @@ namespace ccl::handler
         [[nodiscard]] static auto instance() -> Cmd &;
 
     private:
-        auto onHandle(const ExceptionT *error) -> void final;
+        auto onHandle(const ExceptionT *error) -> void override;
 
         template<fmt::color Color, typename HandleType>
         auto formatAndPrint(const ExceptionT *value, HandleType &&handle_type) -> void;

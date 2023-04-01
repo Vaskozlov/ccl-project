@@ -76,11 +76,10 @@ namespace ccl::codegen
             return *this << as<string_view>(string);
         }
 
-        template<size_t N>
-        auto operator<<(const char (&character_array)[N]) -> BasicCodeGenerator &// NOLINT
+        template<size_t N>// NOLINTNEXTLINE
+        auto operator<<(const char (&character_array)[N]) -> BasicCodeGenerator &
         {
-            return *this << std::string_view{
-                       std::forward<const char(&)[N]>(character_array)};// NOLINT
+            return *this << std::string_view{character_array};// NOLINT
         }
 
     private:

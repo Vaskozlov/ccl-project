@@ -10,7 +10,7 @@ else ()
     add_library(ccl SHARED ${CCL_OBJECTS})
 endif ()
 
-if (CCL_LIBCPP AND LINUX)
+if (CCL_LIBCPP)
     add_dependencies(ccl fmt::fmt-header-only)
 
     target_link_libraries(

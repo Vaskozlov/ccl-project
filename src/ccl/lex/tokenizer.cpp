@@ -45,14 +45,15 @@ namespace ccl::lex
             return returnIfNotInIgnored(token);
         }
 
-        if (std::ranges::any_of(lexicalAnalyzer.items, scan_container)) {
+        if (std::any_of(
+                lexicalAnalyzer.items.cbegin(), lexicalAnalyzer.items.cend(), scan_container)) {
             return returnIfNotInIgnored(token);
         }
 
         auto next_carriage_value = textIterator.getNextCarriageValue();
 
         if (isLayout(next_carriage_value)) {
-            chars_to_skip.push_back(next_carriage_value);
+            chars_to_skip.emplace(next_carriage_value);
             textIterator.skip(1);
             return nextToken(token);
         }
@@ -101,14 +102,14 @@ namespace ccl::lex
         return tokens[!tokenIndex];// NOLINT
     }
 
-    CCL_INLINE auto Tokenizer::constructEoiToken(Token &token) -> void
+    CCL_INLINE auto Tokenizer::constructEoiToken(Token &token) const -> void
     {
-        token = {textIterator, std::to_underlying(ReservedTokenType::EOI)};
+        token = {textIterator, static_cast<Id>(ReservedTokenType::EOI)};
     }
 
     CCL_INLINE auto Tokenizer::constructBadToken(Token &token) -> void
     {
-        token = {textIterator, std::to_underlying(ReservedTokenType::BAD_TOKEN)};
+        token = {textIterator, static_cast<Id>(ReservedTokenType::BAD_TOKEN)};
 
         while (!isLayoutOrEoF(textIterator.getNextCarriageValue())) {
             textIterator.next();

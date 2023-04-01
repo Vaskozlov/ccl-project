@@ -5,9 +5,10 @@
 
 namespace ccl
 {
-    CCL_DECL auto
-        join(Iterable auto &&container, auto &&function, StringLike<char> auto &&separator)
-            -> std::string
+
+    template<Iterable Container, typename Function, StringLike<char> Separator>
+    CCL_DECL auto join(const Container &container, Function &&function, const Separator &separator)
+        -> std::string
     {
         auto result = std::string{};
         auto begin = std::begin(container);
@@ -28,36 +29,39 @@ namespace ccl
         return result;
     }
 
-    CCL_DECL CCL_INLINE auto
-        join(Iterable auto &&container, auto &&function, string_view &&separator) -> std::string
+    template<Iterable Container, typename Function, size_t N>
+    CCL_DECL auto join(Container &&container, Function &&function, const char (&separator)[N])
+        -> std::string
     {
         return join(
-            std::forward<decltype(container)>(container),
-            std::forward<decltype(function)>(function), as<std::string_view>(separator));
+            std::forward<Container>(container), std::forward<Function>(function),
+            std::string_view{separator});
     }
 
-    CCL_DECL auto join(Iterable auto &&container, StringLike<char> auto &&separator) -> std::string
+    template<Iterable Container, StringLike<char> Separator>
+    CCL_DECL auto join(Container &&container, Separator &&separator) -> std::string
     {
         if constexpr (StringLike<decltype(*container.begin()), char>) {
             return join(
                 std::forward<decltype(container)>(container),
-                [](auto &&elem) -> decltype(auto) {
-                    return elem;
+                []<typename T>(T &&elem) -> decltype(auto) {
+                    return std::forward<T>(elem);
                 },
-                std::forward<decltype(separator)>(separator));
+                std::forward<Separator>(separator));
         } else {
             return join(
                 std::forward<decltype(container)>(container),
-                [](auto &&elem) -> decltype(auto) {
-                    return fmt::to_string(elem);
+                []<typename T>(T &&elem) -> decltype(auto) {
+                    return fmt::to_string(std::forward<T>(elem));
                 },
-                std::forward<decltype(separator)>(separator));
+                std::forward<Separator>(separator));
         }
     }
 
-    CCL_DECL CCL_INLINE auto join(Iterable auto &&container, string_view &&separator) -> std::string
+    template<Iterable Container>
+    CCL_DECL auto join(Container &&container, string_view separator) -> std::string
     {
-        return join(std::forward<decltype(container)>(container), as<std::string_view>(separator));
+        return join(std::forward<Container>(container), as<std::string_view>(separator));
     }
 }// namespace ccl
 

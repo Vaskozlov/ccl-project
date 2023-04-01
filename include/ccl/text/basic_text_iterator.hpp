@@ -62,36 +62,50 @@ namespace ccl::text
         template<typename T>
         CCL_INLINE constexpr explicit CrtpBasicTextIterator(
             CrtpForkType /* unused */, T &from) noexcept
-        {
-            *this = std::bit_cast<CrtpBasicTextIterator>(from);
-        }
+          : carriage{from.getCarriage()}
+          , end{from.getEnd()}
+          , currentChar{from.getCurrentChar()}
+          , remainingBytesToFinishSymbol{from.getRemainingBytesToFinishSymbol()}
+          , initialized{from.isInitialized()}
+        {}
 
         CCL_DECL auto fork() const noexcept -> ForkedTextIterator
         {
             return ForkedTextIterator{CrtpFork, *this};
         }
 
-        CCL_DECL CCL_INLINE auto isInitialized() const noexcept -> bool
+        CCL_DECL auto isInitialized() const noexcept -> bool
         {
             return initialized;
         }
 
-        CCL_DECL CCL_INLINE auto getEnd() const noexcept -> iterator
+        CCL_DECL auto getCarriage() const noexcept -> iterator
+        {
+            return carriage;
+        }
+
+        CCL_DECL auto getEnd() const noexcept -> iterator
         {
             return end;
         }
 
-        CCL_DECL CCL_INLINE auto getRemainingAsCarriage() const noexcept -> iterator
+        CCL_DECL auto getRemainingBytesToFinishSymbol() const noexcept -> u16
         {
-            if (isInitialized()) {
-                return std::min(carriage + 1, end);
+            return remainingBytesToFinishSymbol;
+        }
+
+        CCL_DECL auto getRemainingAsCarriage() const noexcept -> iterator
+        {
+            if (!isInitialized()) [[unlikely]] {
+                return carriage;
             }
 
-            return carriage;
+            return std::min(carriage + 1, end);
         }
 
         CCL_DECL auto getNextCarriageValue() const noexcept -> char
         {
+            CCL_PREFETCH(carriage);
             const auto *it = getRemainingAsCarriage();
 
             if (it == end) {
@@ -130,7 +144,7 @@ namespace ccl::text
             return currentChar;
         }
 
-        CCL_INLINE constexpr auto setCurrentChar(char32_t new_current_char) noexcept -> void
+        constexpr auto setCurrentChar(char32_t new_current_char) noexcept -> void
         {
             currentChar = new_current_char;
         }
@@ -183,12 +197,12 @@ namespace ccl::text
         }
 
     private:
-        CCL_INLINE constexpr auto onCarriageMove(char chr) -> void
+        constexpr auto onCarriageMove(char chr) -> void
         {
             static_cast<CRTP &>(*this).onMove(chr);
         }
 
-        CCL_INLINE constexpr auto onNextCharacter(char32_t chr) -> void
+        constexpr auto onNextCharacter(char32_t chr) -> void
         {
             static_cast<CRTP &>(*this).onCharacter(chr);
         }
@@ -200,6 +214,8 @@ namespace ccl::text
 
         constexpr auto moveCarriageToTheNextByte() noexcept(noexceptCarriageMove) -> char
         {
+            CCL_PREFETCH(carriage);
+
             if (!isInitialized()) [[unlikely]] {
                 if (carriage == end) [[unlikely]] {
                     currentChar = 0;
@@ -252,7 +268,7 @@ namespace ccl::text
             currentChar |= as<char32_t>(as<std::byte>(chr) & ~utf8::ContinuationMask);
         }
 
-        CCL_INLINE constexpr auto newCharacterMove(char chr) noexcept(noexceptCarriageMove) -> void
+        constexpr auto newCharacterMove(char chr) noexcept(noexceptCarriageMove) -> void
         {
             remainingBytesToFinishSymbol = utf8::size(chr);
 
@@ -276,16 +292,16 @@ namespace ccl::text
     public:
         BasicTextIterator() noexcept = default;
 
-        CCL_INLINE constexpr explicit BasicTextIterator(string_view input) noexcept
+        constexpr explicit BasicTextIterator(string_view input) noexcept
           : CrtpBasicTextIterator<BasicTextIterator>(input)
         {}
 
-        CCL_INLINE constexpr static auto onMove(char /* chr */) noexcept -> void
+        constexpr static auto onMove(char /* chr */) noexcept -> void
         {
             // no action by the default
         }
 
-        CCL_INLINE constexpr static auto onCharacter(char32_t /* chr */) noexcept -> void
+        constexpr static auto onCharacter(char32_t /* chr */) noexcept -> void
         {
             // no action by the default
         }

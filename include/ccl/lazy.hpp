@@ -22,25 +22,13 @@ namespace ccl
 
         // NOLINTNEXTLINE
         constexpr Lazy(T object)
-          : lazyObject{std::forward<T>(object)}
+          : lazyObject{std::move(object)}
         {}
 
         template<Invocable Func>
         constexpr explicit Lazy(Func &&function)
           : lazyObject{std::forward<Func>(function)}
         {}
-
-        // NOLINTNEXTLINE
-        CCL_DECL operator T()
-        {
-            return get();
-        }
-
-        // NOLINTNEXTLINE
-        CCL_DECL operator T() const
-        {
-            return get();
-        }
 
         CCL_DECL auto get() -> T &
         {

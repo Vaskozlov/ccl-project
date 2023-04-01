@@ -5,7 +5,6 @@ TEST_CASE("LazyObjectInitializedGet", "[Lazy]")
 {
     DEBUG_VAR int_object = ccl::toLazy(10);// NOLINT
 
-    REQUIRE(int_object == 10);
     REQUIRE(int_object.get() == 10);
     REQUIRE(std::as_const(int_object).get() == 10);
 }
@@ -17,7 +16,6 @@ TEST_CASE("LazyObjectUninitializedGet", "[Lazy]")
         return some_int;
     });
 
-    REQUIRE(int_object == some_int);
     REQUIRE(int_object.get() == some_int);
     REQUIRE(std::as_const(int_object).get() == some_int);
 }

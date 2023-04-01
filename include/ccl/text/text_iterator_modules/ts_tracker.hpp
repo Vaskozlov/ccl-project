@@ -12,17 +12,17 @@ namespace ccl::text
         bool needToClear{};
 
     public:
-        CCL_DECL auto size() const noexcept -> size_t
+        [[nodiscard]] auto size() const noexcept -> size_t
         {
             return tabsAnsSpaces.size();
         }
 
-        CCL_DECL auto empty() const noexcept -> bool
+        [[nodiscard]] auto empty() const noexcept -> bool
         {
             return tabsAnsSpaces.empty();
         }
 
-        CCL_DECL auto get() const noexcept -> const std::string &
+        [[nodiscard]] auto get() const noexcept -> const std::string &
         {
             return tabsAnsSpaces;
         }

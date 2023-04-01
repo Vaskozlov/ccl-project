@@ -77,7 +77,10 @@ namespace ccl::lex::parser
         currentBlock = group_name;
 
         if (!blocks.contains(currentBlock)) {
-            blocks.insert({currentBlock, {as<u16>(lastBlockId++), 0}});
+            const auto block_id = as<u16>(lastBlockId);
+            ++lastBlockId;
+
+            blocks.try_emplace(currentBlock, BlockInfo{block_id, 0});
         }
     }
 
@@ -103,13 +106,13 @@ namespace ccl::lex::parser
 
         // value is represented as string, so we need to remove " from both sides
         value = value.substr(1, value.size() - 2);
-        directives.emplace(name, value);
+        directives.try_emplace(name, value);
     }
 
     auto CcllParser::checkRule(const Token &token) -> void
     {
         auto line_repr = token.getInlineRepr();
-        auto location = token.getLocation();
+        auto const &location = token.getLocation();
 
         auto text_iterator = text::TextIterator{
             line_repr, tokenizer.getHandler(),

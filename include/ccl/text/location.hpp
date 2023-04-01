@@ -68,7 +68,7 @@ template<>
 class fmt::formatter<ccl::text::Location>
 {
 public:
-    [[maybe_unused]] constexpr static auto parse(format_parse_context &ctx)
+    [[maybe_unused]] constexpr static auto parse(const format_parse_context &ctx)
     {
         return ctx.begin();
     }

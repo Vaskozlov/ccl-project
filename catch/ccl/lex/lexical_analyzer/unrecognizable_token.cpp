@@ -9,5 +9,9 @@ TEST_CASE("LexicalAnalyzerUnrecognizableTokenError", "[ContainerUnion]")
 {
     auto analyzer = LexicalAnalyzer{ExceptionHandler::instance(), {{2, "[a-z]+"}}};
     auto tokenizer = analyzer.getTokenizer(R"(20)");
-    auto token = tokenizer.yield();
+    const auto &token = tokenizer.yield();
+
+    REQUIRE(token.getRepr() == "20");
+    REQUIRE(token.getColumn() == 0);
+    REQUIRE(token.getLine() == 1);
 }

@@ -37,7 +37,7 @@ namespace ccl
             break;
 
         default:
-            std::unreachable();
+            CCL_UNREACHABLE;
         }
 
         onHandle(error);

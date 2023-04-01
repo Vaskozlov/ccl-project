@@ -82,7 +82,6 @@ namespace ccl::lex::dot_item
 
         default:
             throwUndefinedAction();
-            break;
         }
     }
 
@@ -181,14 +180,12 @@ namespace ccl::lex::dot_item
     {
         if (items.empty()) {
             throwUnableToApply("no items found to set repetition");
-            return;
         }
 
         auto &last_item = items.back();
 
         if (last_item->getRepetition() != Repetition::basic()) {
             throwUnableToApply("item already has repetition");
-            return;
         }
 
         last_item->setRepetition(new_repetition);
@@ -198,7 +195,6 @@ namespace ccl::lex::dot_item
     {
         if (!items.empty()) {
             throwUnableToApply("special must be applied before anything else");
-            return;
         }
 
         container.flags.isSpecial = true;
@@ -206,8 +202,8 @@ namespace ccl::lex::dot_item
 
     CCL_INLINE auto Container::RuleParser::checkId() const -> void
     {
-        if (getId() == std::to_underlying(ReservedTokenType::BAD_TOKEN) ||
-            getId() == std::to_underlying(ReservedTokenType::EOI)) {
+        if (ReservedTokenType(getId()) == ReservedTokenType::BAD_TOKEN ||
+            ReservedTokenType(getId()) == ReservedTokenType::EOI) {
             throw UnrecoverableError{
                 "reserved token type (0 and 1 are reserved for EOI and BAD TOKEN)"};
         }
@@ -217,14 +213,12 @@ namespace ccl::lex::dot_item
     {
         if (items.empty()) {
             throwUnableToApply("no items to reverse");
-            return;
         }
 
         auto &last_item = items.back();
 
         if (last_item->isReversed()) {
             throwUnableToApply("item already has reverse modifier");
-            return;
         }
 
         last_item->reverse();
@@ -232,23 +226,21 @@ namespace ccl::lex::dot_item
 
     auto Container::RuleParser::postCreationCheck() -> void
     {
-        const auto postfix_elem = std::ranges::find_if(std::as_const(items), [](const auto &elem) {
+        const auto postfix_elem = std::find_if(items.cbegin(), items.cend(), [](const auto &elem) {
             return elem->hasPostfix();
         });
 
-        const auto are_postfixes_correct =
+        const auto postfixes_correct =
             std::all_of(postfix_elem, items.cend(), [](const auto &elem) {
                 return elem->hasPostfix();
             });
 
-        if (!are_postfixes_correct) {
+        if (!postfixes_correct) {
             throwUnableToApply("item without postfix modifier exists after items with it");
-            return;
         }
 
         if (constructedLhs.has_value() && !rhsItemConstructed) {
             throwUnableToApply("no rhs items to apply operation");
-            return;
         }
 
         if (constructedLhs.has_value() && rhsItemConstructed) {
@@ -263,10 +255,14 @@ namespace ccl::lex::dot_item
 
     auto Container::RuleParser::findContainerEnd(string_view repr) -> size_t
     {
-        return *repr.openCloseFind('(', ')').or_else([this]() -> Optional<size_t> {
-            ruleIterator.throwPanicError(AnalysisStage::LEXICAL_ANALYSIS, "unterminated dot item");
-            throw UnrecoverableError{"unrecoverable error in ContainerType"};
-        });
+        const auto open_close_find_result = repr.openCloseFind('(', ')');
+
+        if (open_close_find_result.has_value()) {
+            return *open_close_find_result;
+        }
+
+        ruleIterator.throwPanicError(AnalysisStage::LEXICAL_ANALYSIS, "unterminated dot item");
+        throw UnrecoverableError{"unrecoverable error in ContainerType"};
     }
 
     auto Container::RuleParser::checkThereIsLhsItem() -> void
@@ -281,24 +277,20 @@ namespace ccl::lex::dot_item
         if (!container.flags.isMain) {
             throwUnableToApply(
                 "you are not allowed to create prefixes or postfixes inside other containers");
-            return;
         }
 
         if (items.empty()) {
             throwUnableToApply("there are not any items to apply prefix/postfix");
-            return;
         }
 
         auto &last_item = items.back();
 
         if (last_item->hasPrefix()) {
             throwUnableToApply("item already has prefix modifier");
-            return;
         }
 
         if (last_item->hasPostfix()) {
             throwUnableToApply("item already has postfix modifier");
-            return;
         }
     }
 
@@ -325,17 +317,22 @@ namespace ccl::lex::dot_item
     auto DotItemConcept::SpecialItems::checkForSpecial(const ForkedGenerator &text_iterator) const
         -> bool
     {
-        return std::ranges::any_of(specialItems, [&text_iterator](const auto &special_item) {
-            auto scan_result = special_item.scan(text_iterator);
-            return scan_result != 0;
-        });
+        return std::any_of(
+            specialItems.cbegin(),
+            specialItems.cend(),
+            [&text_iterator](const Container &special_item) {
+                auto scan_result = special_item.scan(text_iterator);
+                return scan_result != 0;
+            });
     }
 
     auto DotItemConcept::SpecialItems::specialScan(TextIterator &text_iterator, Token &token) const
         -> bool
     {
-        return std::ranges::any_of(
-            specialItems, [&text_iterator, &token](const auto &special_item) {
+        return std::any_of(
+            specialItems.cbegin(),
+            specialItems.cend(),
+            [&text_iterator, &token](const Container &special_item) {
                 return special_item.beginScan(text_iterator, token, ScanningType::SPECIAL);
             });
     }

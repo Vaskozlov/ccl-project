@@ -2,6 +2,8 @@
 #define CCL_PROJECT_FLATMAP_HPP
 
 #include <ccl/ccl.hpp>
+#include <range/v3/range.hpp>
+#include <range/v3/view.hpp>
 #include <utility>
 
 namespace ccl
@@ -142,7 +144,7 @@ namespace ccl
         template<typename Self>
         CCL_DECL static auto staticFind(Self &self, const Key &key) noexcept -> auto
         {
-            return std::ranges::find_if(self, [&key](const value_type &value) {
+            return std::find_if(self.cbegin(), self.cend(), [&key](const value_type &value) {
                 return value.first == key;
             });
         }

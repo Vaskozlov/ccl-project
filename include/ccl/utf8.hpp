@@ -32,27 +32,27 @@ namespace ccl::utf8
     constexpr std::array<std::byte, 5> UtfMasks{
         0_B, OneByteMask, TwoBytesMask, TreeBytesMask, FourBytesMask};
 
-    CCL_DECL CCL_INLINE auto isTrailingCharacter(char chr) noexcept -> bool
+    CCL_DECL auto isTrailingCharacter(char chr) noexcept -> bool
     {
         return (as<std::byte>(chr) & ContinuationMask) == ContinuationSignature;
     }
 
-    CCL_DECL CCL_INLINE auto isOneByteSize(char chr) noexcept -> bool
+    CCL_DECL auto isOneByteSize(char chr) noexcept -> bool
     {
         return (as<std::byte>(chr) & OneByteMask) == as<std::byte>(0);
     }
 
-    CCL_DECL CCL_INLINE auto isTwoBytesSize(char chr) noexcept -> bool
+    CCL_DECL auto isTwoBytesSize(char chr) noexcept -> bool
     {
         return (as<std::byte>(chr) & TwoBytesMask) == TwoBytesSignature;
     }
 
-    CCL_DECL CCL_INLINE auto isThreeBytesSize(char chr) noexcept -> bool
+    CCL_DECL auto isThreeBytesSize(char chr) noexcept -> bool
     {
         return (as<std::byte>(chr) & TreeBytesMask) == TreeBytesSignature;
     }
 
-    CCL_DECL CCL_INLINE auto isFourBytesSize(char chr) noexcept -> bool
+    CCL_DECL auto isFourBytesSize(char chr) noexcept -> bool
     {
         return (as<std::byte>(chr) & FourBytesMask) == FourBytesSignature;
     }
@@ -88,7 +88,7 @@ namespace ccl::utf8
     {
         using namespace std::string_view_literals;
 
-        static constexpr auto non_continuation_mask = ~ContinuationMask;
+        constexpr auto non_continuation_mask = ~ContinuationMask;
 
         // NOLINTBEGIN
 
