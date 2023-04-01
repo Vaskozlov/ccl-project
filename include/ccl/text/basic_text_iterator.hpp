@@ -62,9 +62,12 @@ namespace ccl::text
         template<typename T>
         CCL_INLINE constexpr explicit CrtpBasicTextIterator(
             CrtpForkType /* unused */, T &from) noexcept
-        {
-            *this = std::bit_cast<CrtpBasicTextIterator>(from);
-        }
+          : carriage{from.getCarriage()}
+          , end{from.getEnd()}
+          , currentChar{from.getCurrentChar()}
+          , remainingBytesToFinishSymbol{from.getRemainingBytesToFinishSymbol()}
+          , initialized{from.isInitialized()}
+        {}
 
         CCL_DECL auto fork() const noexcept -> ForkedTextIterator
         {
@@ -76,9 +79,19 @@ namespace ccl::text
             return initialized;
         }
 
+        CCL_DECL auto getCarriage() const noexcept -> iterator
+        {
+            return carriage;
+        }
+
         CCL_DECL auto getEnd() const noexcept -> iterator
         {
             return end;
+        }
+
+        CCL_DECL auto getRemainingBytesToFinishSymbol() const noexcept -> u16
+        {
+            return remainingBytesToFinishSymbol;
         }
 
         CCL_DECL auto getRemainingAsCarriage() const noexcept -> iterator
