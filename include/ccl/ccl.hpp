@@ -1,10 +1,6 @@
 #ifndef CCL_PROJECT_CCL_HPP
 #define CCL_PROJECT_CCL_HPP
 
-#if !defined(__cplusplus) || !(__cplusplus >= 202002L)
-#    error CCL requires C++23
-#endif /* minimum requirements */
-
 #include <algorithm>
 #include <array>
 
