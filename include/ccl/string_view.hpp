@@ -33,6 +33,7 @@ namespace ccl
     public:
         using pointer = const CharT *;
         using iterator = pointer;
+        using value_type = CharT;
         using const_iterator = iterator;
         using reverse_iterator = std::reverse_iterator<iterator>;
 
@@ -203,7 +204,7 @@ namespace ccl
             auto passed_pairs = as<size_t>(0);
 
             const auto it_to_elem =
-                std::ranges::find_if(*this, [&passed_pairs, starter, ender](CharT chr) {
+                std::find_if(cbegin(), cend(), [&passed_pairs, starter, ender](CharT chr) {
                     passed_pairs += (chr == starter);
                     passed_pairs -= (chr == ender);
                     return 0 == passed_pairs;
@@ -305,7 +306,7 @@ namespace ccl
 
         CCL_DECL auto operator==(const StringLike<CharT> auto &other) const noexcept -> bool
         {
-            return std::ranges::equal(*this, other);
+            return std::equal(cbegin(), cend(), other.cbegin(), other.cend());
         }
 
         CCL_DECL auto operator<=>(const CharT *other) const noexcept -> std::weak_ordering

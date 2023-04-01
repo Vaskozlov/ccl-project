@@ -45,7 +45,8 @@ namespace ccl::lex
             return returnIfNotInIgnored(token);
         }
 
-        if (std::ranges::any_of(lexicalAnalyzer.items, scan_container)) {
+        if (std::any_of(
+                lexicalAnalyzer.items.cbegin(), lexicalAnalyzer.items.cend(), scan_container)) {
             return returnIfNotInIgnored(token);
         }
 

@@ -1,7 +1,7 @@
 #include <ccl/codegen/basic_codegen.hpp>
 #include <ccl/lex/analyzer_generator/static_generator.hpp>
 #include <ccl/raii.hpp>
-#include <ranges>
+#include <range/v3/view.hpp>
 
 namespace ccl::lex::gen
 {
@@ -15,7 +15,7 @@ namespace ccl::lex::gen
         std::array<string_view, 3> result = {
             "<ccl/handler/cmd.hpp>", "<ccl/lex/tokenizer.hpp>", "<ccl/flatmap.hpp>"};
 
-        std::ranges::sort(result);
+        std::sort(result.begin(), result.end());
         return result;
     }();
 
@@ -116,7 +116,7 @@ namespace ccl::lex::gen
             output_rule(rule);
         }
 
-        for (const auto &rule : rules | std::views::filter(undefined_rules)) {
+        for (const auto &rule : rules | ranges::views::filter(undefined_rules)) {
             generated_rules.emplace(rule.name);
             output_rule(rule.name);
         }
@@ -163,7 +163,8 @@ namespace ccl::lex::gen
             codeGenerator << endl << name << " = " << fmt::to_string(id) << ',';
         };
 
-        for (const auto &[block_name, block_info] : blocks | std::views::filter(undefined_blocks)) {
+        for (const auto &[block_name, block_info] :
+             blocks | ranges::views::filter(undefined_blocks)) {
             auto block_id = as<Id>(block_info.blockId) << ShiftSize;
 
             generated_blocks.emplace(block_name);
@@ -175,7 +176,7 @@ namespace ccl::lex::gen
             output_enum_case(rule_name, rule_id);
         }
 
-        for (const auto &rule : rules | std::views::filter(undefined_enum_cases)) {
+        for (const auto &rule : rules | ranges::views::filter(undefined_enum_cases)) {
             auto id = (as<Id>(rule.blockId) << ShiftSize) + rule.id;
 
             generated_enum_cases.emplace(rule.name);
