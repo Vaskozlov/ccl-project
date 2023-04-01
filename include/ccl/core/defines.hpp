@@ -79,4 +79,16 @@
 #    define CCL_PREFETCH(ADDR)
 #endif
 
+#if defined(__has_builtin)
+#    if __has_builtin(__builtin_unreachable)
+#        define CCL_UNREACHABLE __builtin_unreachable()
+#    else
+#        define CCL_UNREACHABLE assert(false)
+#    endif
+#elif defined(_MSC_VER)
+#    define CCL_UNREACHABLE __assume(false);
+#else
+#    define CCL_UNREACHABLE assert(false)
+#endif
+
 #endif /* CCL_PROJECT_DEFINES_HPP */

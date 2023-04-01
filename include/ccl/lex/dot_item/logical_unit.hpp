@@ -22,13 +22,13 @@ namespace ccl::lex::dot_item
         LogicalOperation logicalOperation;
 
     public:
-        [[nodiscard]] auto empty() const noexcept -> bool final;
+        [[nodiscard]] auto empty() const noexcept -> bool override;
 
         LogicalUnit(DotItem lhs, DotItem rhs, LogicalOperation logical_operation, Id item_id);
 
     private:
         [[nodiscard]] auto scanIteration(const ForkedGenerator &text_iterator) const
-            -> size_t final;
+            -> size_t override;
 
         [[nodiscard]] auto orIteration(const ForkedGenerator &text_iterator) const -> size_t;
         [[nodiscard]] auto andIteration(const ForkedGenerator &text_iterator) const -> size_t;

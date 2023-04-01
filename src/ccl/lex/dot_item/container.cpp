@@ -9,6 +9,7 @@ namespace ccl::lex::dot_item
             -> void
     {
         if (repr.empty()) [[unlikely]] {
+            // empty repr should not be a postfix
         } else if (item->hasPrefix()) [[unlikely]] {
             token.addPrefix(repr);
         } else if (item->hasPostfix()) [[unlikely]] {
@@ -78,7 +79,7 @@ namespace ccl::lex::dot_item
 
     CCL_INLINE auto Container::failedToEndItem(const ForkedGenerator &text_iterator) const -> bool
     {
-        return not(
+        return !(
             isLayoutOrEoF(text_iterator.getNextCarriageValue()) ||
             specialItems.checkForSpecial(text_iterator));
     }

@@ -49,7 +49,7 @@ namespace ccl::lex
         [[nodiscard]] auto shouldIgnoreToken(const Token &token) const -> bool;
 
         auto constructBadToken(Token &token) -> void;
-        auto constructEoiToken(Token &token) -> void;
+        auto constructEoiToken(Token &token) const -> void;
     };
 }// namespace ccl::lex
 

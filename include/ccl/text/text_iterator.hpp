@@ -98,7 +98,7 @@ namespace ccl::text
             lineTracker.next(chr);
         }
 
-        auto utfError(char /* unused */) -> void
+        [[noreturn]] auto utfError(char /* unused */) -> void
         {
             throwPanicError(AnalysisStage::LEXICAL_ANALYSIS, "invalid utf symbol");
             throw UnrecoverableError{"unable to recover, because of invalid utf symbol"};

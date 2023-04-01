@@ -51,7 +51,7 @@ namespace ccl::lex::dot_item
             ScanningType special_scan = ScanningType::BASIC) const -> bool;
 
         [[nodiscard]] auto scanIteration(const ForkedGenerator &text_iterator) const
-            -> size_t final;
+            -> size_t override;
 
         [[nodiscard]] auto operator==(const Container &other) const noexcept -> bool
         {
@@ -63,7 +63,7 @@ namespace ccl::lex::dot_item
             return getId() <=> other.getId();
         }
 
-        [[nodiscard]] auto empty() const noexcept -> bool final
+        [[nodiscard]] auto empty() const noexcept -> bool override
         {
             return items.empty();
         }
@@ -156,9 +156,10 @@ namespace ccl::lex::dot_item
 
         auto checkAbilityToCreatePrefixPostfix() -> void;
 
-        auto throwUnableToApply(string_view reason, string_view suggestion = {}) -> void;
+        [[noreturn]] auto throwUnableToApply(string_view reason, string_view suggestion = {})
+            -> void;
 
-        auto throwUndefinedAction() -> void;
+        [[noreturn]] auto throwUndefinedAction() -> void;
     };
 
     class DotItemConcept::SpecialItems

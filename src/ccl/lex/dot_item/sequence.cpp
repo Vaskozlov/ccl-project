@@ -50,14 +50,14 @@ namespace ccl::lex::dot_item
     {
         auto future_text = text_iterator.getFutureRemaining();
 
-        if (future_text.startsWith(sequenceValue) ^ isReversed()) [[unlikely]] {
+        if (future_text.startsWith(sequenceValue) != isReversed()) [[unlikely]] {
             return isReversed() ? utf8::size(future_text[0]) : sequenceValue.size();
         }
 
         return {};
     }
 
-    CCL_INLINE auto Sequence::isStringEnd(TextIterator &rule_iterator, bool is_escaping) const
+    CCL_INLINE auto Sequence::isStringEnd(const TextIterator &rule_iterator, bool is_escaping) const
         -> bool
     {
         if (is_escaping) {

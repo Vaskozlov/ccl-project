@@ -7,18 +7,18 @@
 
 namespace ccl
 {
-    CCL_DECL CCL_INLINE auto land(Boolean auto &&...args) noexcept -> bool
+    CCL_DECL auto land(Boolean auto &&...args) noexcept -> bool
     {
         return (... && args);
     }
 
-    CCL_DECL CCL_INLINE auto lor(Boolean auto &&...args) noexcept -> bool
+    CCL_DECL auto lor(Boolean auto &&...args) noexcept -> bool
     {
         return (... || args);
     }
 
     template<std::integral Int>
-    CCL_DECL CCL_INLINE auto pow2(Int value) -> Int
+    CCL_DECL auto pow2(Int value) -> Int
     {
         return as<Int>(as<Int>(1) << value);
     }

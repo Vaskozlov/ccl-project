@@ -39,7 +39,7 @@ namespace ccl::lex::dot_item
 
     auto Union::scanIteration(const ForkedGenerator &text_iterator) const -> size_t
     {
-        if (bitset.at(text_iterator.futureChar()) ^ isReversed()) [[unlikely]] {
+        if (bitset.at(text_iterator.futureChar()) != isReversed()) [[unlikely]] {
             return utf8::size(text_iterator.getNextCarriageValue());
         }
 

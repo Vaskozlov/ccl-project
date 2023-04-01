@@ -44,16 +44,17 @@ namespace ccl::lex::dot_item
             return sequenceValue;
         }
 
-        [[nodiscard]] auto empty() const noexcept -> bool final
+        [[nodiscard]] auto empty() const noexcept -> bool override
         {
             return sequenceValue.empty();
         }
 
     private:
         [[nodiscard]] auto scanIteration(const ForkedGenerator &text_iterator) const
-            -> size_t final;
+            -> size_t override;
 
-        [[nodiscard]] auto isStringEnd(TextIterator &rule_iterator, bool is_escaping) const -> bool;
+        [[nodiscard]] auto isStringEnd(const TextIterator &rule_iterator, bool is_escaping) const
+            -> bool;
 
         auto skipStringDefinition(TextIterator &rule_iterator) const -> void;
 

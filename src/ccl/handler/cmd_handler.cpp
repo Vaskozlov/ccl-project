@@ -22,7 +22,8 @@ namespace ccl::handler
     template<fmt::color Color, typename HandleType>
     auto Cmd::CmdFormatter::formatErrorCategory(HandleType &&handle_type) -> void
     {
-        format_to(std::back_inserter(formattingBuffer), fg(Color), handle_type);
+        format_to(
+            std::back_inserter(formattingBuffer), fg(Color), std::forward<HandleType>(handle_type));
     }
 
     template<fmt::color Color, typename HandleType>

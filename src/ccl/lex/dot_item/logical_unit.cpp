@@ -5,8 +5,8 @@ namespace ccl::lex::dot_item
     LogicalUnit::LogicalUnit(
         DotItem lhs, DotItem rhs, LogicalOperation logical_operation, Id item_id)
       : DotItemConcept{item_id}
-      , rhsItem{std::move(lhs)}
-      , lhsItem{std::move(rhs)}
+      , rhsItem{std::move(rhs)}
+      , lhsItem{std::move(lhs)}
       , logicalOperation{logical_operation}
     {}
 
@@ -25,19 +25,19 @@ namespace ccl::lex::dot_item
             return andIteration(text_iterator);
 
         default:
-            std::unreachable();
+            CCL_UNREACHABLE;
         }
     }
 
     auto LogicalUnit::orIteration(const ForkedGenerator &text_iterator) const -> size_t
     {
-        return *rhsItem->scan(text_iterator)
-                    .or_else([this, &text_iterator]() -> Optional<size_t> {
-                        return lhsItem->scan(text_iterator);
-                    })
-                    .or_else([]() -> Optional<size_t> {
-                        return 0;
-                    });
+        const auto lhs_scan_result = lhsItem->scan(text_iterator);
+
+        if (lhs_scan_result.has_value()) {
+            return *lhs_scan_result;
+        }
+
+        return rhsItem->scan(text_iterator).value_or(0);
     }
 
     auto LogicalUnit::andIteration(const ForkedGenerator &text_iterator) const -> size_t

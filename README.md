@@ -3,6 +3,7 @@
 CCL - библиотека конструирования компилятора
 
 ## Поддерживаемые платформы
+
 - Linux x64 (включая ALT linux)
 - macOS x64 и arm64
 - Windows x86 и x64
@@ -12,15 +13,18 @@ CCL - библиотека конструирования компилятора
 ## Требования
 
 Для сборки проекта подходят следующие версии компиляторов:
+
 - Clang-16
 - GCC-12
 - MSVC-19.32
 
-### Зависимости 
+### Зависимости
+
 - [fmt](https://github.com/fmtlib/fmt)
 - [cxxopts](https://github.com/jarro2783/cxxopts)
 
 ### Опциональные зависимости
+
 - [catch2](https://github.com/catchorg/Catch2)
 - [google-benchmark](https://github.com/google/benchmark)
 
@@ -41,12 +45,14 @@ ninja
 ```
 
 При использовании vcpkg:
+
 ```bash
 cmake .. -G Ninja -DCMAKE_TOOLCHAIN_FILE=`путь до vcpkg + scripts/buildsystems/vcpkg.cmake`
 ninja
 ```
 
 ## Установка
+
 ```bash
 ninja install all
 ```

@@ -206,8 +206,8 @@ namespace ccl::lex::dot_item
 
     CCL_INLINE auto Container::RuleParser::checkId() const -> void
     {
-        if (getId() == std::to_underlying(ReservedTokenType::BAD_TOKEN) ||
-            getId() == std::to_underlying(ReservedTokenType::EOI)) {
+        if (ReservedTokenType(getId()) == ReservedTokenType::BAD_TOKEN ||
+            ReservedTokenType(getId()) == ReservedTokenType::EOI) {
             throw UnrecoverableError{
                 "reserved token type (0 and 1 are reserved for EOI and BAD TOKEN)"};
         }
@@ -263,10 +263,14 @@ namespace ccl::lex::dot_item
 
     auto Container::RuleParser::findContainerEnd(string_view repr) -> size_t
     {
-        return *repr.openCloseFind('(', ')').or_else([this]() -> Optional<size_t> {
-            ruleIterator.throwPanicError(AnalysisStage::LEXICAL_ANALYSIS, "unterminated dot item");
-            throw UnrecoverableError{"unrecoverable error in ContainerType"};
-        });
+        const auto open_close_find_result = repr.openCloseFind('(', ')');
+
+        if (open_close_find_result.has_value()) {
+            return *open_close_find_result;
+        }
+
+        ruleIterator.throwPanicError(AnalysisStage::LEXICAL_ANALYSIS, "unterminated dot item");
+        throw UnrecoverableError{"unrecoverable error in ContainerType"};
     }
 
     auto Container::RuleParser::checkThereIsLhsItem() -> void

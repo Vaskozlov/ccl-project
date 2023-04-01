@@ -64,7 +64,7 @@ namespace ccl
         // NOLINTNEXTLINE
         constexpr BasicStringView(const CharacterArray auto &str) noexcept
           : string{str}
-          , length{strlen(std::forward<decltype(str)>(str))}
+          , length{strlen(str)}
         {}
 
         // NOLINTNEXTLINE
@@ -298,19 +298,17 @@ namespace ccl
             return {string, length};
         }
 
-        CCL_DECL CCL_INLINE auto operator==(const CharT *other) const noexcept -> bool
+        CCL_DECL auto operator==(const CharT *other) const noexcept -> bool
         {
             return this->operator==(BasicStringView{other});
         }
 
-        CCL_DECL CCL_INLINE auto operator==(const StringLike<CharT> auto &other) const noexcept
-            -> bool
+        CCL_DECL auto operator==(const StringLike<CharT> auto &other) const noexcept -> bool
         {
             return std::ranges::equal(*this, other);
         }
 
-        CCL_DECL CCL_INLINE auto operator<=>(const CharT *other) const noexcept
-            -> std::weak_ordering
+        CCL_DECL auto operator<=>(const CharT *other) const noexcept -> std::weak_ordering
         {
             return this->operator<=>(BasicStringView{other});
         }
