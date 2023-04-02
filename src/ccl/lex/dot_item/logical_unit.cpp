@@ -25,7 +25,7 @@ namespace ccl::lex::dot_item
             return andIteration(text_iterator);
 
         default:
-            CCL_UNREACHABLE;
+            unreachable();
         }
     }
 

@@ -37,7 +37,7 @@ namespace ccl
             break;
 
         default:
-            CCL_UNREACHABLE;
+            unreachable();
         }
 
         onHandle(error);
