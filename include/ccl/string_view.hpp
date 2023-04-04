@@ -2,7 +2,6 @@
 #define CCL_PROJECT_STRING_VIEW_HPP
 
 #include <ccl/ccl.hpp>
-#include <concepts>
 #include <numeric>
 
 namespace ccl
