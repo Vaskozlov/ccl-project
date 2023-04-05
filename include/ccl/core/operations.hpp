@@ -17,7 +17,7 @@ namespace ccl
         return (... || args);
     }
 
-    template<Integral Int>
+    template<std::integral Int>
     CCL_DECL auto pow2(Int value) -> Int
     {
         return as<Int>(as<Int>(1) << value);

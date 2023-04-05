@@ -1,4 +1,5 @@
 #include <cinttypes>
+#include <concepts>
 #include <cstddef>
 #include <exception>
 #include <version>

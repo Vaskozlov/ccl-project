@@ -1,6 +1,7 @@
 #ifndef CCL_PROJECT_CONCEPTS_HPP
 #define CCL_PROJECT_CONCEPTS_HPP
 
+#include <concepts>
 #include <exception>
 
 namespace ccl
@@ -29,12 +30,6 @@ namespace ccl
 
     template<typename Fn, typename... Args>
     concept Invocable = std::is_invocable_v<Fn, Args...>;
-
-    template<typename T>
-    concept Integral = std::is_integral_v<T>;
-
-    template<typename T>
-    concept FloatingPoint = std::is_floating_point_v<T>;
 }// namespace ccl
 
 #endif /* CCL_PROJECT_CONCEPTS_HPP */

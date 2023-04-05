@@ -59,7 +59,7 @@ namespace ccl::codegen
 
         template<typename Numeric>
         auto operator<<(Numeric value) -> BasicCodeGenerator &
-            requires FloatingPoint<Numeric> || Integral<Numeric>
+            requires std::floating_point<Numeric> || std::integral<Numeric>
         {
             return *this << std::string_view{fmt::to_string(value)};
         }

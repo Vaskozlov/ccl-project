@@ -2,6 +2,7 @@
 #define CCL_PROJECT_AS_HPP
 
 #include <ccl/core/defines.hpp>
+#include <concepts>
 #include <type_traits>
 #include <utility>
 
