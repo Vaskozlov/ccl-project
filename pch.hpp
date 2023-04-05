@@ -10,6 +10,7 @@
 
 #include <memory>
 
+#include <ranges>
 #include <utility>
 
 #include <string>
