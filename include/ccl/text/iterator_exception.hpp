@@ -108,9 +108,8 @@ namespace ccl::text
 
         TextIteratorException(
             ExceptionCriticality exception_criticality, AnalysisStage analysis_stage,
-            const Location &exception_location, size_t exception_length,
-            string_view working_line, std::string exception_message,
-            std::string exception_suggestion = std::string{});
+            const Location &exception_location, size_t exception_length, string_view working_line,
+            std::string exception_message, std::string exception_suggestion = std::string{});
 
         [[nodiscard]] auto createFullMessage() const -> std::string;
 

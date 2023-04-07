@@ -23,8 +23,8 @@ namespace ccl::lex::dot_item
 
     public:
         Sequence(
-            SequenceFlags sequence_flags, string_view sequence_starter,
-            string_view sequence_ender, TextIterator &rule_iterator, Id item_id = 0);
+            SequenceFlags sequence_flags, string_view sequence_starter, string_view sequence_ender,
+            TextIterator &rule_iterator, Id item_id = 0);
 
         Sequence(
             SequenceFlags sequence_flags, string_view sequence_begin_and_end,

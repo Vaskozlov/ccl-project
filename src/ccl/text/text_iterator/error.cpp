@@ -46,8 +46,9 @@ namespace ccl::text
         throwToHandle(*this, ExceptionCriticality::SUGGESTION, stage, message, suggestion);
     }
 
-    auto TextIterator::throwWarning(
-        AnalysisStage stage, string_view message, string_view suggestion) -> void
+    auto
+        TextIterator::throwWarning(AnalysisStage stage, string_view message, string_view suggestion)
+            -> void
     {
         throwToHandle(*this, ExceptionCriticality::WARNING, stage, message, suggestion);
     }

@@ -38,14 +38,17 @@ namespace ccl::text
     }
 
     auto TextIterator::doEscapeSymbolizing(
-        TextIterator &text_iterator, const extra_symbols_t &extra_symbols) -> char32_t
+        TextIterator &text_iterator,
+        const extra_symbols_t &extra_symbols) -> char32_t
     {
         return EscapingSymbolizer(text_iterator, extra_symbols).matchNextChar();
     }
 
     auto TextIterator::calculateNotationEscapeSymbol(
-        TextIterator &text_iterator, u16 max_times, u16 notation_power, bool need_all_chars)
-        -> char32_t
+        TextIterator &text_iterator,
+        u16 max_times,
+        u16 notation_power,
+        bool need_all_chars) -> char32_t
     {
         return NotationEscapingSymbolizer(text_iterator, max_times, notation_power, need_all_chars)
             .get();
