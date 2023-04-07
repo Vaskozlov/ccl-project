@@ -6,7 +6,7 @@ namespace ccl::lex
       : id{token_id}
     {}
 
-    Token::Token(TokenAttributes &&token_attributes, const string_view &token_repr, Id token_id)
+    Token::Token(TokenAttributes &&token_attributes, string_view token_repr, Id token_id)
       : attributes{std::move(token_attributes)}
       , repr{token_repr}
       , id{token_id}

@@ -23,11 +23,11 @@ namespace ccl::lex::dot_item
 
     public:
         Sequence(
-            SequenceFlags sequence_flags, const string_view &sequence_starter,
-            const string_view &sequence_ender, TextIterator &rule_iterator, Id item_id = 0);
+            SequenceFlags sequence_flags, string_view sequence_starter,
+            string_view sequence_ender, TextIterator &rule_iterator, Id item_id = 0);
 
         Sequence(
-            SequenceFlags sequence_flags, const string_view &sequence_begin_and_end,
+            SequenceFlags sequence_flags, string_view sequence_begin_and_end,
             TextIterator &rule_iterator, Id item_id = 0)
           : Sequence{
                 sequence_flags, sequence_begin_and_end, sequence_begin_and_end, rule_iterator,
@@ -72,8 +72,8 @@ namespace ccl::lex::dot_item
 
         [[noreturn]] static auto throwUnterminatedString(
             TextIterator &rule_iterator,
-            const string_view &message,
-            const string_view &suggestion = {}) -> void;
+            string_view message,
+            string_view suggestion = {}) -> void;
     };
 }// namespace ccl::lex::dot_item
 

@@ -6,7 +6,7 @@ namespace ccl::handler
 {
     using namespace std::string_view_literals;
 
-    static auto replaceTabWithSpaces(const string_view &string) -> Pair<size_t, std::string>
+    static auto replaceTabWithSpaces(string_view string) -> Pair<size_t, std::string>
     {
         auto result = std::string{};
         auto replaced_tabs = as<size_t>(0);

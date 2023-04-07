@@ -68,9 +68,15 @@ namespace ccl
         {}
 
         // NOLINTNEXTLINE
-        constexpr BasicStringView(const StringLike<CharT> auto &str) noexcept
-          : string{std::data(str)}
-          , length{std::size(str)}
+        constexpr BasicStringView(std::string_view str) noexcept
+          : string{str.data()}
+          , length{str.size()}
+        {}
+
+        // NOLINTNEXTLINE
+        constexpr BasicStringView(const std::string &str) noexcept
+          : string{str.c_str()}
+          , length{str.size()}
         {}
 
         CCL_DECL auto size() const noexcept -> size_t

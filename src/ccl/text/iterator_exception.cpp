@@ -26,11 +26,11 @@ namespace ccl::text
     TextIteratorException::TextIteratorException(
         ExceptionCriticality exception_criticality, AnalysisStage analysis_stage,
         const Location &exception_location, size_t exception_length,
-        const string_view &working_line, const string_view &exception_message,
-        const string_view &exception_suggestion)
+        string_view working_line, std::string exception_message,
+        std::string exception_suggestion)
       : location{exception_location}
-      , message{exception_message}
-      , suggestion{exception_suggestion}
+      , message{std::move(exception_message)}
+      , suggestion{std::move(exception_suggestion)}
       , workingLine{working_line}
       , length{exception_length}
       , criticality{exception_criticality}

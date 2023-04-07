@@ -34,12 +34,12 @@ namespace ccl::text
             -> char32_t;
 
         explicit TextIterator(
-            const string_view &input,
+            string_view input,
             ExceptionHandler &exception_handler = ExceptionHandler::instance(),
-            const string_view &filename = {});
+            string_view filename = {});
 
         explicit TextIterator(
-            const string_view &input,
+            string_view input,
             ExceptionHandler &exception_handler,
             const Location &iterator_location);
 
@@ -63,12 +63,12 @@ namespace ccl::text
             return location.getRealColumn();
         }
 
-        [[nodiscard]] auto getFilename() const noexcept -> const string_view &
+        [[nodiscard]] auto getFilename() const noexcept -> string_view
         {
             return location.getFilename();
         }
 
-        [[nodiscard]] auto getWorkingLine() const noexcept -> const string_view &
+        [[nodiscard]] auto getWorkingLine() const noexcept -> string_view
         {
             return lineTracker.get();
         }
@@ -105,84 +105,43 @@ namespace ccl::text
         }
 
         auto throwSuggestion(
-            AnalysisStage stage, const TextIterator &iterator_location, const string_view &message,
-            const string_view &suggestion = {}) -> void
-        {
-            throwToHandle(
-                iterator_location, ExceptionCriticality::SUGGESTION, stage, message, suggestion);
-        }
+            AnalysisStage stage, const TextIterator &iterator_location, string_view message,
+            string_view suggestion = {}) -> void;
 
         auto throwWarning(
-            AnalysisStage stage, const TextIterator &iterator_location, const string_view &message,
-            const string_view &suggestion = {}) -> void
-        {
-            throwToHandle(
-                iterator_location, ExceptionCriticality::WARNING, stage, message, suggestion);
-        }
+            AnalysisStage stage, const TextIterator &iterator_location, string_view message,
+            string_view suggestion = {}) -> void;
 
         auto throwUncriticalError(
-            AnalysisStage stage, const TextIterator &iterator_location, const string_view &message,
-            const string_view &suggestion = {}) -> void
-        {
-            throwToHandle(
-                iterator_location, ExceptionCriticality::SUGGESTION, stage, message, suggestion);
-        }
+            AnalysisStage stage, const TextIterator &iterator_location, string_view message,
+            string_view suggestion = {}) -> void;
 
         auto throwCriticalError(
-            AnalysisStage stage, const TextIterator &iterator_location, const string_view &message,
-            const string_view &suggestion = {}) -> void
-        {
-            throwToHandle(
-                iterator_location, ExceptionCriticality::CRITICAL, stage, message, suggestion);
-        }
+            AnalysisStage stage, const TextIterator &iterator_location, string_view message,
+            string_view suggestion = {}) -> void;
 
         auto throwPanicError(
-            AnalysisStage stage, const TextIterator &iterator_location, const string_view &message,
-            const string_view &suggestion = {}) -> void
-        {
-            throwToHandle(
-                iterator_location, ExceptionCriticality::PANIC, stage, message, suggestion);
-        }
+            AnalysisStage stage, const TextIterator &iterator_location, string_view message,
+            string_view suggestion = {}) -> void;
 
-        auto throwSuggestion(
-            AnalysisStage stage, const string_view &message, const string_view &suggestion = {})
-            -> void
-        {
-            throwToHandle(*this, ExceptionCriticality::SUGGESTION, stage, message, suggestion);
-        }
+        auto throwSuggestion(AnalysisStage stage, string_view message, string_view suggestion = {})
+            -> void;
 
-        auto throwWarning(
-            AnalysisStage stage, const string_view &message, const string_view &suggestion = {})
-            -> void
-        {
-            throwToHandle(*this, ExceptionCriticality::WARNING, stage, message, suggestion);
-        }
+        auto throwWarning(AnalysisStage stage, string_view message, string_view suggestion = {})
+            -> void;
 
         auto throwUncriticalError(
-            AnalysisStage stage, const string_view &message, const string_view &suggestion = {})
-            -> void
-        {
-            throwToHandle(*this, ExceptionCriticality::UNCRITICAL, stage, message, suggestion);
-        }
+            AnalysisStage stage, string_view message, string_view suggestion = {}) -> void;
 
         auto throwCriticalError(
-            AnalysisStage stage, const string_view &message, const string_view &suggestion = {})
-            -> void
-        {
-            throwToHandle(*this, ExceptionCriticality::CRITICAL, stage, message, suggestion);
-        }
+            AnalysisStage stage, string_view message, string_view suggestion = {}) -> void;
 
-        auto throwPanicError(
-            AnalysisStage stage, const string_view &message, const string_view &suggestion = {})
-            -> void
-        {
-            throwToHandle(*this, ExceptionCriticality::PANIC, stage, message, suggestion);
-        }
+        auto throwPanicError(AnalysisStage stage, string_view message, string_view suggestion = {})
+            -> void;
 
         auto throwToHandle(
             const TextIterator &iterator_location, ExceptionCriticality criticality,
-            AnalysisStage stage, const string_view &message, const string_view &suggestion = {})
-            -> void;
+            AnalysisStage stage, string_view message, string_view suggestion = {}) -> void;
     };
 
     class TextIterator::EscapingSymbolizer

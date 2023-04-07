@@ -15,7 +15,7 @@ namespace ccl
         const auto end = std::end(container);
         const auto converted_separator = as<std::string_view>(separator);
 
-        if (begin == end) {
+        if (begin == end) [[unlikely]] {
             return result;
         }
 
