@@ -50,7 +50,7 @@ namespace ccl::lex
 
         explicit Token(Id token_id);
 
-        Token(TokenAttributes &&token_attributes, const string_view &token_repr, Id token_id);
+        Token(TokenAttributes &&token_attributes, string_view token_repr, Id token_id);
 
         Token(
             TokenAttributes &&token_attributes, typename string_view::iterator text_begin,

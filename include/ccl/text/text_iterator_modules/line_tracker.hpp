@@ -28,7 +28,7 @@ namespace ccl::text
             newLinePassed = '\n' == chr;
         }
 
-        constexpr explicit LineTracker(const string_view &text_to_track) noexcept
+        constexpr explicit LineTracker(string_view text_to_track) noexcept
           : text{text_to_track}
         {
             const auto new_line_index = text.find('\n');

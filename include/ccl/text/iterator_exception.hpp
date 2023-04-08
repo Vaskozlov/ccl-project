@@ -108,24 +108,8 @@ namespace ccl::text
 
         TextIteratorException(
             ExceptionCriticality exception_criticality, AnalysisStage analysis_stage,
-            const Location &exception_location, size_t exception_length,
-            const string_view &working_line, const string_view &exception_message,
-            const string_view &exception_suggestion = {});
-
-        CCL_PERFECT_FORWARDING_2(T1, std::string, T2, std::string)
-        TextIteratorException(
-            ExceptionCriticality exception_criticality, AnalysisStage analysis_stage,
-            const Location &exception_location, size_t exception_length,
-            const string_view &working_line, T1 &&exception_message,
-            T2 &&exception_suggestion = std::string{})
-          : location{exception_location}
-          , message{std::forward<T1>(exception_message)}
-          , suggestion{std::forward<T2>(exception_suggestion)}
-          , workingLine{working_line}
-          , length{exception_length}
-          , criticality{exception_criticality}
-          , stage{analysis_stage}
-        {}
+            const Location &exception_location, size_t exception_length, string_view working_line,
+            std::string exception_message, std::string exception_suggestion = std::string{});
 
         [[nodiscard]] auto createFullMessage() const -> std::string;
 

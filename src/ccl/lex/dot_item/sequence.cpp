@@ -5,8 +5,8 @@ namespace ccl::lex::dot_item
     using namespace ccl::string_view_literals;
 
     Sequence::Sequence(
-        SequenceFlags sequence_flags, const string_view &sequence_starter,
-        const string_view &sequence_ender, TextIterator &rule_iterator, Id item_id)
+        SequenceFlags sequence_flags, string_view sequence_starter,
+        string_view sequence_ender, TextIterator &rule_iterator, Id item_id)
       : DotItemConcept{item_id, Flags{
                                .sequenceIsMultiline=sequence_flags.multiline,
                                .sequenceNoEscapingSymbols=sequence_flags.noEscaping
@@ -127,8 +127,8 @@ namespace ccl::lex::dot_item
 
     CCL_INLINE auto Sequence::throwUnterminatedString(
         TextIterator &rule_iterator,
-        const string_view &message,
-        const string_view &suggestion) -> void
+        string_view message,
+        string_view suggestion) -> void
     {
         rule_iterator.throwPanicError(AnalysisStage::LEXICAL_ANALYSIS, message, suggestion);
         throw UnrecoverableError{"unrecoverable error in SequenceType"};
