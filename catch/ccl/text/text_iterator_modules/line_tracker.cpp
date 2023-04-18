@@ -7,7 +7,7 @@ using namespace string_view_literals;
 
 constexpr static auto Input = "Hello, World!\nIt's a \nTest!\nOf line tracker\n "_sv;
 
-[[maybe_unused]] constexpr static auto ExpectedLines = std::array{
+[[maybe_unused]] constexpr static auto ExpectedLines = std::array<string_view, 6>{
     "Hello, World!", "It's a ", "Test!",
     "Of line "
     "tracker",

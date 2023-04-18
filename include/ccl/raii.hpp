@@ -14,7 +14,7 @@ namespace ccl
         Optional<Deleter> deleter;
 
     public:
-        constexpr Raii(Constructor &&t_constructor, Deleter &&t_deleter)
+        [[nodiscard]] constexpr Raii(Constructor &&t_constructor, Deleter &&t_deleter)
           : constructor{std::move(t_constructor)}
           , deleter{std::move(t_deleter)}
         {
@@ -23,7 +23,7 @@ namespace ccl
 
         Raii(const Raii &) = delete;
 
-        constexpr Raii(Raii &&other) noexcept
+        [[nodiscard]] constexpr Raii(Raii &&other) noexcept
           : constructor{std::move(other.constructor)}
           , deleter{std::move(other.deleter)}
         {

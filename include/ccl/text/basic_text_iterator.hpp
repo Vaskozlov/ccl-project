@@ -54,13 +54,13 @@ namespace ccl::text
 
         CrtpBasicTextIterator() noexcept = default;
 
-        CCL_INLINE constexpr explicit CrtpBasicTextIterator(string_view input) noexcept
+        [[nodiscard]] constexpr explicit CrtpBasicTextIterator(string_view input) noexcept
           : carriage{input.begin()}
           , end{input.end()}
         {}
 
         template<typename T>
-        CCL_INLINE constexpr explicit CrtpBasicTextIterator(
+        [[nodiscard]] constexpr explicit CrtpBasicTextIterator(
             CrtpForkType /* unused */, T &from) noexcept
           : carriage{from.getCarriage()}
           , end{from.getEnd()}
@@ -287,7 +287,7 @@ namespace ccl::text
     public:
         BasicTextIterator() noexcept = default;
 
-        constexpr explicit BasicTextIterator(string_view input) noexcept
+        [[nodiscard]] constexpr explicit BasicTextIterator(string_view input) noexcept
           : CrtpBasicTextIterator<BasicTextIterator>(input)
         {}
 

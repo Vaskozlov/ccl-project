@@ -27,7 +27,7 @@ namespace ccl::lex
     public:
         class Tokenizer;
 
-        LexicalAnalyzer(
+        [[nodiscard]] LexicalAnalyzer(
             ExceptionHandler &exception_handler, InitializerList<Rule> rules,
             string_view filename = {}, FlatSet<Id> ignored_ids = {});
 

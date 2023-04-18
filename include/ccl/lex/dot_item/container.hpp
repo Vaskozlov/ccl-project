@@ -38,15 +38,15 @@ namespace ccl::lex::dot_item
         ContainerFlags flags{};
 
     public:
-        Container(
+        [[nodiscard]] Container(
             TextIterator &rule_iterator, SpecialItems &special_items, Id item_id,
             bool main_item = false, bool is_special = false);
 
-        Container(
+        [[nodiscard]] Container(
             const TextIterator &rule_iterator, SpecialItems &special_items, Id item_id,
             bool main_item = false, bool is_special = false);
 
-        auto beginScan(
+        [[nodiscard]] auto beginScan(
             TextIterator &text_iterator, Token &token,
             ScanningType special_scan = ScanningType::BASIC) const -> bool;
 

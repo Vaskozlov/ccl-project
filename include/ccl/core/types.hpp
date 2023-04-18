@@ -71,6 +71,9 @@ namespace ccl
     template<typename T>
     using WeakPtr = std::weak_ptr<T>;
 
+    template<typename T, size_t Size>
+    using CArray = T[Size];
+
     template<typename T, typename... Ts>
     constexpr auto makeUnique(Ts &&...args) -> UniquePtr<T>
         requires std::constructible_from<T, Ts...>

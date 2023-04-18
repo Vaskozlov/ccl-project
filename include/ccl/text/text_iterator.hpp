@@ -11,7 +11,7 @@
 
 namespace ccl::text
 {
-    class TextIterator : public CrtpBasicTextIterator<TextIterator>
+    class [[nodiscard]] TextIterator : public CrtpBasicTextIterator<TextIterator>
     {
     private:
         using extra_symbols_t = std::basic_string<Pair<char32_t, char32_t>>;
@@ -33,12 +33,12 @@ namespace ccl::text
             TextIterator &text_iterator, u16 max_times, u16 notation_power, bool need_all_chars)
             -> char32_t;
 
-        explicit TextIterator(
+        [[nodiscard]] explicit TextIterator(
             string_view input,
             ExceptionHandler &exception_handler = ExceptionHandler::instance(),
             string_view filename = {});
 
-        explicit TextIterator(
+        [[nodiscard]] explicit TextIterator(
             string_view input,
             ExceptionHandler &exception_handler,
             const Location &iterator_location);

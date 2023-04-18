@@ -6,7 +6,7 @@
 namespace ccl
 {
     template<size_t Size>
-    class ConstString
+    class [[nodiscard]] ConstString
     {
     public:
         using value_type = char;
@@ -86,7 +86,7 @@ namespace ccl
             -> std::weak_ordering = default;
 
         // NOLINTNEXTLINE
-        consteval ConstString(const value_type (&str)[Size])
+        [[nodiscard]] consteval ConstString(const CArray<value_type, Size> &str)
           : string{std::to_array(str)}
         {}
 

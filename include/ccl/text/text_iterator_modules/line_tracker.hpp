@@ -13,6 +13,15 @@ namespace ccl::text
         bool newLinePassed{false};
 
     public:
+        [[nodiscard]] constexpr explicit LineTracker(string_view text_to_track) noexcept
+          : text{text_to_track}
+        {
+            const auto new_line_index = text.find('\n');
+            const auto line_end_index = new_line_index.value_or(text.size());
+
+            line = {text.begin(), line_end_index};
+        }
+
         CCL_DECL auto get() const noexcept -> const string_view &
         {
             return line;
@@ -26,15 +35,6 @@ namespace ccl::text
             }
 
             newLinePassed = '\n' == chr;
-        }
-
-        constexpr explicit LineTracker(string_view text_to_track) noexcept
-          : text{text_to_track}
-        {
-            const auto new_line_index = text.find('\n');
-            const auto line_end_index = new_line_index.value_or(text.size());
-
-            line = {text.begin(), line_end_index};
         }
 
     private:

@@ -73,7 +73,7 @@ namespace ccl::lex
         }
     }
 
-    auto Tokenizer::throwException(
+    auto Tokenizer::throwExceptionToHandler(
         ExceptionCriticality criticality, string_view message, string_view suggestion) -> void
     {
         textIterator.throwToHandle(

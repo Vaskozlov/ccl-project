@@ -24,7 +24,8 @@ namespace ccl::lex::dot_item
     public:
         [[nodiscard]] auto empty() const noexcept -> bool override;
 
-        LogicalUnit(DotItem lhs, DotItem rhs, LogicalOperation logical_operation, Id item_id);
+        [[nodiscard]] LogicalUnit(
+            DotItem lhs, DotItem rhs, LogicalOperation logical_operation, Id item_id);
 
     private:
         [[nodiscard]] auto scanIteration(const ForkedGenerator &text_iterator) const
