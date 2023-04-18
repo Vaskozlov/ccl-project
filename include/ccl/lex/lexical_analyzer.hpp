@@ -21,7 +21,7 @@ namespace ccl::lex
         Vector<Container> items{};
         SpecialItems specialItems{};
         FlatSet<Id> ignoredIds{};
-        FlatSet<char> skippedCharacters{};
+        std::string skippedCharacters{};
         ExceptionHandler &exceptionHandler;// NOLINT
 
     public:

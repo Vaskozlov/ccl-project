@@ -108,7 +108,7 @@ namespace ccl::text
             CCL_PREFETCH(carriage);
             const auto *it = getRemainingAsCarriage();
 
-            if (it == end) {
+            if (it == end) [[unlikely]] {
                 return {};
             }
 
@@ -177,7 +177,7 @@ namespace ccl::text
         {
             moveCarriageToTheNextByte();
 
-            while (remainingBytesToFinishSymbol != 0) {
+            while (remainingBytesToFinishSymbol != 0) [[unlikely]] {
                 moveCarriageToTheNextByte();
             }
 
@@ -216,20 +216,15 @@ namespace ccl::text
         {
             CCL_PREFETCH(carriage);
 
-            if (!isInitialized()) [[unlikely]] {
-                if (carriage == end) [[unlikely]] {
-                    currentChar = 0;
-                    return 0;
-                }
+            if ((carriage + 1) >= end) [[unlikely]] {
+                carriage = end;
+                currentChar = 0;
+                return 0;
+            }
 
+            if (!isInitialized()) [[unlikely]] {
                 initialized = true;
             } else [[likely]] {
-                if ((carriage + 1) >= end) [[unlikely]] {
-                    carriage = end;
-                    currentChar = 0;
-                    return 0;
-                }
-
                 ++carriage;
             }
 
