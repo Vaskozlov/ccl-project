@@ -304,9 +304,9 @@ namespace ccl
             return {string, length};
         }
 
-        CCL_DECL auto operator==(const CharT *other) const noexcept -> bool
+        CCL_DECL auto operator==(BasicStringView other) const noexcept -> bool
         {
-            return this->operator==(BasicStringView{other});
+            return this->operator==(as<std::string_view>(other));
         }
 
         CCL_DECL auto operator==(const StringLike<CharT> auto &other) const noexcept -> bool
@@ -314,9 +314,9 @@ namespace ccl
             return std::equal(cbegin(), cend(), other.cbegin(), other.cend());
         }
 
-        CCL_DECL auto operator<=>(const CharT *other) const noexcept -> std::weak_ordering
+        CCL_DECL auto operator<=>(BasicStringView other) const noexcept -> std::weak_ordering
         {
-            return this->operator<=>(BasicStringView{other});
+            return this->operator<=>(as<std::string_view>(other));
         }
 
         CCL_DECL auto operator<=>(const StringLike<CharT> auto &other) const noexcept

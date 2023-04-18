@@ -18,7 +18,7 @@ namespace ccl::lex
       , textIterator{text, exception_handler, filename}
     {}
 
-    CCL_INLINE auto Tokenizer::shouldIgnoreToken(const Token &token) const -> bool
+    auto Tokenizer::shouldIgnoreToken(const Token &token) const -> bool
     {
         const auto &ignoring_list = lexicalAnalyzer.ignoredIds;
         return ignoring_list.contains(token.getId());
@@ -32,7 +32,7 @@ namespace ccl::lex
             return container.beginScan(textIterator, token);
         };
 
-        while (chars_to_skip.contains(textIterator.getNextCarriageValue())) {
+        while (chars_to_skip.find(textIterator.getNextCarriageValue()) != std::string::npos) {
             textIterator.skip(1);
         }
 
@@ -53,7 +53,7 @@ namespace ccl::lex
         auto next_carriage_value = textIterator.getNextCarriageValue();
 
         if (isLayout(next_carriage_value)) {
-            chars_to_skip.emplace(next_carriage_value);
+            chars_to_skip.push_back(next_carriage_value);
             textIterator.skip(1);
             return nextToken(token);
         }
@@ -73,7 +73,7 @@ namespace ccl::lex
         }
     }
 
-    auto Tokenizer::throwException(
+    auto Tokenizer::throwExceptionToHandler(
         ExceptionCriticality criticality, string_view message, string_view suggestion) -> void
     {
         textIterator.throwToHandle(

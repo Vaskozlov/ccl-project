@@ -21,11 +21,7 @@ namespace ccl
         if (chr < smallStorageSize) [[likely]] {
             smallStorage.set(chr, value);
         } else [[unlikely]] {
-            if (value) [[likely]] {
-                storage.insert(chr);
-            } else [[unlikely]] {
-                storage.erase(chr);
-            }
+            setBigChar(chr, value);
         }
     }
 
@@ -34,6 +30,15 @@ namespace ccl
         CCL_UNROLL_N(4)
         for (auto chr = from; chr <= to; ++chr) {
             set(chr, value);
+        }
+    }
+
+    auto UtfSet::setBigChar(char32_t chr, bool value) -> void
+    {
+        if (value) [[likely]] {
+            storage.insert(chr);
+        } else [[unlikely]] {
+            storage.erase(chr);
         }
     }
 }// namespace ccl

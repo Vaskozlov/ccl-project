@@ -14,9 +14,10 @@ namespace ccl::lex
         bool tokenIndex{};
 
     public:
-        Tokenizer(LexicalAnalyzer &lexical_analyzer, string_view text, string_view filename = {});
+        [[nodiscard]] Tokenizer(
+            LexicalAnalyzer &lexical_analyzer, string_view text, string_view filename = {});
 
-        Tokenizer(
+        [[nodiscard]] Tokenizer(
             LexicalAnalyzer &lexical_analyzer, string_view text, string_view filename,
             ExceptionHandler &exception_handler);
 
@@ -35,7 +36,7 @@ namespace ccl::lex
             return tokens[tokenIndex];// NOLINT
         }
 
-        auto throwException(
+        auto throwExceptionToHandler(
             ExceptionCriticality criticality, string_view message, string_view suggestion = {})
             -> void;
 

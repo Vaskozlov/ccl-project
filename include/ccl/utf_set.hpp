@@ -20,6 +20,9 @@ namespace ccl
 
         auto set(char32_t chr, bool value = true) -> void;
         auto set(char32_t from, char32_t to, bool value = true) -> void;
+
+    private:
+        auto setBigChar(char32_t chr, bool value) -> void;
     };
 }// namespace ccl
 

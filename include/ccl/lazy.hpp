@@ -12,7 +12,7 @@ namespace ccl
                            std::is_trivially_copy_assignable_v<T>;
 
     template<LazyStorable T>
-    class Lazy
+    class [[nodiscard]] Lazy
     {
     private:
         std::variant<std::function<T()>, T> lazyObject;
@@ -21,7 +21,7 @@ namespace ccl
         Lazy() = default;
 
         // NOLINTNEXTLINE
-        constexpr Lazy(T object)
+        constexpr explicit Lazy(T object)
           : lazyObject{std::move(object)}
         {}
 
@@ -30,7 +30,7 @@ namespace ccl
           : lazyObject{std::forward<Func>(function)}
         {}
 
-        CCL_DECL auto get() -> T &
+        constexpr auto get() -> T &
         {
             if (lazyObject.index() == 0) {
                 compute();
@@ -39,7 +39,7 @@ namespace ccl
             return std::get<1>(lazyObject);
         }
 
-        CCL_DECL auto get() const -> T
+        constexpr auto get() const -> T
         {
             if (lazyObject.index() == 0) {
                 return std::get<0>(lazyObject)();
@@ -59,7 +59,7 @@ namespace ccl
     CCL_DECL auto toLazy(T &&value) -> Lazy<std::remove_cvref_t<T>>
         requires(LazyStorable<std::remove_cvref_t<T>>)
     {
-        return {std::forward<T>(value)};
+        return Lazy{std::forward<T>(value)};
     }
 
     template<Invocable Func>

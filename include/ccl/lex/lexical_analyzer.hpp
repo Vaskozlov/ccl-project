@@ -21,13 +21,13 @@ namespace ccl::lex
         Vector<Container> items{};
         SpecialItems specialItems{};
         FlatSet<Id> ignoredIds{};
-        FlatSet<char> skippedCharacters{};
+        std::string skippedCharacters{};
         ExceptionHandler &exceptionHandler;// NOLINT
 
     public:
         class Tokenizer;
 
-        LexicalAnalyzer(
+        [[nodiscard]] LexicalAnalyzer(
             ExceptionHandler &exception_handler, InitializerList<Rule> rules,
             string_view filename = {}, FlatSet<Id> ignored_ids = {});
 

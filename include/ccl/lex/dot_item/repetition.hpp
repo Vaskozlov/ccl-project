@@ -16,7 +16,7 @@ namespace ccl::lex::dot_item
           , to{repetition_end}
         {}
 
-        explicit Repetition(text::TextIterator &text_iterator);
+        [[nodiscard]] explicit Repetition(text::TextIterator &text_iterator);
 
         [[nodiscard]] consteval static auto basic() noexcept -> Repetition
         {

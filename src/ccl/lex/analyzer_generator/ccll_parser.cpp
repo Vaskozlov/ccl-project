@@ -121,11 +121,13 @@ namespace ccl::lex::parser
                 location.getRealColumn() - 1}};
 
         text_iterator.skip(line_repr.find(':').value() + 1);
-        dot_item::Container{text_iterator, specialItems, 2, true};
+
+        [[maybe_unused]] auto just_checking_rule =
+            dot_item::Container{text_iterator, specialItems, 2, true};
     }
 
     auto CcllParser::parsingError(string_view message, string_view suggestion) -> void
     {
-        tokenizer.throwException(ExceptionCriticality::PANIC, message, suggestion);
+        tokenizer.throwExceptionToHandler(ExceptionCriticality::PANIC, message, suggestion);
     }
 }// namespace ccl::lex::parser

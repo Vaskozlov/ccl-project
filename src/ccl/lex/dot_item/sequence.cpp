@@ -5,6 +5,13 @@ namespace ccl::lex::dot_item
     using namespace ccl::string_view_literals;
 
     Sequence::Sequence(
+        SequenceFlags sequence_flags, string_view sequence_begin_and_end,
+        TextIterator &rule_iterator, Id item_id)
+      : Sequence{
+            sequence_flags, sequence_begin_and_end, sequence_begin_and_end, rule_iterator, item_id}
+    {}
+
+    Sequence::Sequence(
         SequenceFlags sequence_flags, string_view sequence_starter,
         string_view sequence_ender, TextIterator &rule_iterator, Id item_id)
       : DotItemConcept{item_id, Flags{

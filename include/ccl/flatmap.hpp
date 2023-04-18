@@ -64,36 +64,38 @@ namespace ccl
             return storage.cbegin() + occupied;
         }
 
-        constexpr auto insert(const Key &key, Value &&value) -> value_type &
+        constexpr auto insert(const Key &key, Value &&value) -> iterator
         {
             return emplace(key, std::move(value));
         }
 
-        constexpr auto insert(const Key &key, const Value &value) -> value_type &
+        constexpr auto insert(const Key &key, const Value &value) -> iterator
         {
             return emplace(key, value);
         }
 
-        constexpr auto insert(const value_type &value) -> value_type &
+        constexpr auto insert(const value_type &value) -> iterator
         {
             return emplace(value);
         }
 
-        constexpr auto insert(value_type &&value) -> value_type &
+        constexpr auto insert(value_type &&value) -> iterator
         {
             return emplace(std::move(value));
         }
 
         template<typename... Ts>
-        constexpr auto emplace(Ts &&...args) -> value_type &
+        constexpr auto emplace(Ts &&...args) -> iterator
             requires std::constructible_from<value_type, Ts...>
         {
             if (occupied == capacity()) {
                 throw std::out_of_range("flatmap is full");
             }
 
-            storage[occupied] = value_type(std::forward<Ts>(args)...);
-            return storage[occupied++];
+            auto result = end();
+            storage[occupied++] = value_type(std::forward<Ts>(args)...);
+
+            return result;
         }
 
         CCL_DECL auto at(const Key &key) -> Value &
@@ -144,9 +146,10 @@ namespace ccl
         template<typename Self>
         CCL_DECL static auto staticFind(Self &self, const Key &key) noexcept -> auto
         {
-            return std::find_if(self.cbegin(), self.cend(), [&key](const value_type &value) {
-                return value.first == key;
-            });
+            return std::find_if(
+                std::cbegin(self), std::cend(self), [&key](const value_type &value) {
+                    return value.first == key;
+                });
         }
 
         template<typename Self>

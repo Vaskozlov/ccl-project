@@ -48,15 +48,16 @@ namespace ccl::lex
     public:
         Token() = default;
 
-        explicit Token(Id token_id);
+        [[nodiscard]] explicit Token(Id token_id);
 
-        Token(TokenAttributes &&token_attributes, string_view token_repr, Id token_id);
+        [[nodiscard]] Token(
+            TokenAttributes &&token_attributes, string_view token_repr, Id token_id);
 
-        Token(
+        [[nodiscard]] Token(
             TokenAttributes &&token_attributes, typename string_view::iterator text_begin,
             Id token_id);
 
-        Token(const text::TextIterator &text_iterator, Id token_id);
+        [[nodiscard]] Token(const text::TextIterator &text_iterator, Id token_id);
 
         [[nodiscard]] CCL_INLINE auto getId() const noexcept -> size_t
         {

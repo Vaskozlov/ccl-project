@@ -17,7 +17,7 @@ namespace ccl::text
     public:
         Location() noexcept = default;
 
-        constexpr explicit Location(
+        [[nodiscard]] constexpr explicit Location(
             string_view name_of_file, size_t line_in_file = 1, size_t column_in_file = 0,
             size_t real_column = 0) noexcept
           : filename{name_of_file}
