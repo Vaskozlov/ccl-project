@@ -6,7 +6,7 @@
 namespace ccl
 {
     template<size_t Size>
-    class [[nodiscard]] ConstString
+    class [[nodiscard]] ConstString : public AutoIterator<ConstString<Size>>
     {
     public:
         using value_type = char;
@@ -24,36 +24,6 @@ namespace ccl
         CCL_DECL auto end() const noexcept -> const_iterator
         {
             return string.begin() + size();
-        }
-
-        CCL_DECL auto cbegin() const noexcept -> const_iterator
-        {
-            return begin();
-        }
-
-        CCL_DECL auto cend() const noexcept -> const_iterator
-        {
-            return end();
-        }
-
-        CCL_DECL auto rbegin() const noexcept -> const_reverse_iterator
-        {
-            return const_reverse_iterator{end()};
-        }
-
-        CCL_DECL auto rend() const noexcept -> const_reverse_iterator
-        {
-            return const_reverse_iterator{begin()};
-        }
-
-        CCL_DECL auto crbegin() const noexcept -> const_reverse_iterator
-        {
-            return rbegin();
-        }
-
-        CCL_DECL auto crend() const noexcept -> const_reverse_iterator
-        {
-            return rend();
         }
 
         CCL_DECL auto size() const noexcept -> size_t

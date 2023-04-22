@@ -79,6 +79,8 @@
 #    define CCL_PREFETCH(ADDR)
 #endif
 
+#define CCL_NOEXCEPT_IF(EXPR) noexcept(noexcept(EXPR))
+
 namespace ccl
 {
     [[noreturn]] CCL_INLINE auto unreachable() -> void
