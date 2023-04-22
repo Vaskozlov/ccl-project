@@ -32,12 +32,12 @@ namespace ccl::text
               : CrtpBasicTextIterator<ForkedTextIterator>(CrtpFork, other)
             {}
 
-            CCL_INLINE constexpr static auto onMove(char /* chr */) noexcept -> void
+            constexpr static auto onMove(char /* chr */) noexcept -> void
             {
                 // is not used
             }
 
-            CCL_INLINE constexpr static auto onCharacter(char32_t /* chr */) noexcept -> void
+            constexpr static auto onCharacter(char32_t /* chr */) noexcept -> void
             {
                 // is not used
             }
