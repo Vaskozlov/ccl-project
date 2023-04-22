@@ -232,7 +232,7 @@ namespace ccl::text
             return *carriage;
         }
 
-        CCL_INLINE constexpr auto modifyCurrentChar() noexcept(noexceptCarriageMove) -> void
+        constexpr auto modifyCurrentChar() noexcept(noexceptCarriageMove) -> void
         {
             using namespace std::string_view_literals;
 
@@ -252,8 +252,7 @@ namespace ccl::text
             }
         }
 
-        CCL_INLINE constexpr auto trailingCharacterMove(char chr) noexcept(noexceptCarriageMove)
-            -> void
+        constexpr auto trailingCharacterMove(char chr) noexcept(noexceptCarriageMove) -> void
         {
             if (!utf8::isTrailingCharacter(chr)) [[unlikely]] {
                 onUtfError(chr);
