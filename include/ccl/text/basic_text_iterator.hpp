@@ -50,8 +50,6 @@ namespace ccl::text
             bool errorDetected{false};
         };
 
-        constexpr static auto noexceptCarriageMove = std::is_same_v<CRTP, ForkedTextIterator>;
-
         CrtpBasicTextIterator() noexcept = default;
 
         [[nodiscard]] constexpr explicit CrtpBasicTextIterator(string_view input) noexcept
