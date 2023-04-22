@@ -2,6 +2,7 @@
 #define CCL_PROJECT_FLATMAP_HPP
 
 #include <ccl/ccl.hpp>
+#include <ccl/iterator.hpp>
 #include <range/v3/range.hpp>
 #include <range/v3/view.hpp>
 #include <utility>
@@ -9,7 +10,7 @@
 namespace ccl
 {
     template<std::equality_comparable Key, typename Value, size_t Size>
-    class StaticFlatmap
+    class StaticFlatmap : public AutoIterator<StaticFlatmap<Key, Value, Size>>
     {
     public:
         using key_type = Key;
@@ -52,16 +53,6 @@ namespace ccl
         CCL_DECL auto end() const noexcept -> const_iterator
         {
             return storage.begin() + occupied;
-        }
-
-        CCL_DECL auto cbegin() const noexcept -> const_iterator
-        {
-            return storage.cbegin();
-        }
-
-        CCL_DECL auto cend() const noexcept -> const_iterator
-        {
-            return storage.cbegin() + occupied;
         }
 
         constexpr auto insert(const Key &key, Value &&value) -> iterator

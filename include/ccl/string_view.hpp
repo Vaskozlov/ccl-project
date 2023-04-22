@@ -2,6 +2,7 @@
 #define CCL_PROJECT_STRING_VIEW_HPP
 
 #include <ccl/ccl.hpp>
+#include <ccl/iterator.hpp>
 #include <numeric>
 
 namespace ccl
@@ -27,7 +28,7 @@ namespace ccl
         std::basic_string<CharT>>;
 
     template<CharacterLiteral CharT>
-    class BasicStringView
+    class BasicStringView : public AutoIterator<BasicStringView<CharT>>
     {
     public:
         using pointer = const CharT *;
@@ -102,36 +103,6 @@ namespace ccl
         CCL_DECL auto end() const noexcept -> iterator
         {
             return string + length;
-        }
-
-        CCL_DECL auto cbegin() const noexcept -> iterator
-        {
-            return string;
-        }
-
-        CCL_DECL auto cend() const noexcept -> iterator
-        {
-            return string + length;
-        }
-
-        CCL_DECL auto rbegin() const noexcept -> reverse_iterator
-        {
-            return reverse_iterator{end()};
-        }
-
-        CCL_DECL auto rend() const noexcept -> reverse_iterator
-        {
-            return reverse_iterator{begin()};
-        }
-
-        CCL_DECL auto crbegin() const noexcept -> reverse_iterator
-        {
-            return reverse_iterator{end()};
-        }
-
-        CCL_DECL auto crend() const noexcept -> reverse_iterator
-        {
-            return reverse_iterator{begin()};
         }
 
         CCL_DECL auto substr(size_t first) const noexcept -> BasicStringView
@@ -209,7 +180,7 @@ namespace ccl
             auto passed_pairs = as<size_t>(0);
 
             const auto it_to_elem =
-                std::find_if(cbegin(), cend(), [&passed_pairs, starter, ender](CharT chr) {
+                std::find_if(begin(), end(), [&passed_pairs, starter, ender](CharT chr) {
                     passed_pairs += (chr == starter);
                     passed_pairs -= (chr == ender);
                     return 0 == passed_pairs;
@@ -247,8 +218,8 @@ namespace ccl
                 return npos;
             }
 
-            const auto it_to_elem = std::find(rbegin() + as<long>(offset), rend(), chr);
-            return it_to_elem == rend() ? npos : distance(it_to_elem, rend()) - 1;
+            const auto it_to_elem = std::find(this->rbegin() + as<long>(offset), this->rend(), chr);
+            return it_to_elem == this->rend() ? npos : distance(it_to_elem, this->rend()) - 1;
         }
 
         CCL_SAFE_VERSION
@@ -311,7 +282,7 @@ namespace ccl
 
         CCL_DECL auto operator==(const StringLike<CharT> auto &other) const noexcept -> bool
         {
-            return std::equal(cbegin(), cend(), other.cbegin(), other.cend());
+            return std::equal(begin(), end(), other.cbegin(), other.cend());
         }
 
         CCL_DECL auto operator<=>(BasicStringView other) const noexcept -> std::weak_ordering
