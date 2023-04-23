@@ -9,36 +9,21 @@ namespace ccl
     template<typename T>
     class AutoIterator
     {
-        CCL_DECL auto toSelf() noexcept -> T &
-        {
-            return static_cast<T &>(*this);
-        }
-
-        CCL_DECL auto toSelf() const noexcept -> const T &
+        CCL_DECL auto toParent() const noexcept -> const T &
         {
             return static_cast<const T &>(*this);
-        }
-
-        CCL_DECL auto begin() noexcept(noexcept(std::declval<T>().begin())) -> decltype(auto)
-        {
-            return std::begin(toSelf());
-        }
-
-        CCL_DECL auto end() noexcept(noexcept(std::declval<T>().end())) -> decltype(auto)
-        {
-            return std::end(toSelf());
         }
 
         CCL_DECL auto begin() const noexcept(noexcept(std::declval<const T>().begin()))
             -> decltype(auto)
         {
-            return std::begin(toSelf());
+            return std::begin(toParent());
         }
 
         CCL_DECL auto end() const noexcept(noexcept(std::declval<const T>().end()))
             -> decltype(auto)
         {
-            return std::end(toSelf());
+            return std::end(toParent());
         }
 
     public:
