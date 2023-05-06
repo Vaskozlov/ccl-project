@@ -316,6 +316,8 @@ namespace ccl::text
             throw std::logic_error{"unable to convert character to utf8"};
         }
     };
+
+    extern template class CrtpBasicTextIterator<BasicTextIterator>;
 }// namespace ccl::text
 
 #endif /* CCL_PROJECT_BASIC_TEXT_ITERATOR_HPP */

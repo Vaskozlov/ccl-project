@@ -20,7 +20,7 @@ namespace ccl::lex
 
         Vector<Container> items{};
         SpecialItems specialItems{};
-        FlatSet<Id> ignoredIds{};
+        Vector<Id> ignoredIds{};
         std::string skippedCharacters{};
         ExceptionHandler &exceptionHandler;// NOLINT
 
@@ -29,9 +29,9 @@ namespace ccl::lex
 
         [[nodiscard]] LexicalAnalyzer(
             ExceptionHandler &exception_handler, InitializerList<Rule> rules,
-            string_view filename = {}, FlatSet<Id> ignored_ids = {});
+            string_view filename = {}, Vector<Id> ignored_ids = {});
 
-        [[nodiscard]] auto getIgnoredIds() const -> const FlatSet<Id> &
+        [[nodiscard]] auto getIgnoredIds() const -> const Vector<Id> &
         {
             return ignoredIds;
         }

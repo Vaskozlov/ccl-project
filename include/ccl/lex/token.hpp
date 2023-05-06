@@ -26,11 +26,7 @@ namespace ccl::lex
 
         TokenAttributes() = default;
 
-        explicit TokenAttributes(const text::TextIterator &text_iterator)
-          : tabsAndSpaces{text_iterator.getTabsAndSpaces()}
-          , location{text_iterator.getLocation()}
-          , workingLine{text_iterator.getWorkingLine()}
-        {}
+        explicit TokenAttributes(const text::TextIterator &text_iterator);
     };
 
     class Token

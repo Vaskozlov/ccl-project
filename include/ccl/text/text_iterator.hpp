@@ -146,7 +146,24 @@ namespace ccl::text
 
     class TextIterator::EscapingSymbolizer
     {
+    private:
+        extra_symbols_t extraSymbols;
+        TextIterator &textIterator;
+
     public:
+        EscapingSymbolizer() = delete;
+        EscapingSymbolizer(EscapingSymbolizer &&) = delete;
+        EscapingSymbolizer(const EscapingSymbolizer &) = delete;
+
+        explicit EscapingSymbolizer(
+            TextIterator &text_iterator,
+            extra_symbols_t extra_symbols) noexcept;
+
+        ~EscapingSymbolizer() = default;
+
+        auto operator=(EscapingSymbolizer &&) -> void = delete;
+        auto operator=(const EscapingSymbolizer &) -> void = delete;
+
         [[nodiscard]] auto getExtraSymbols() const noexcept -> const extra_symbols_t &
         {
             return extraSymbols;
@@ -154,28 +171,9 @@ namespace ccl::text
 
         [[nodiscard]] auto matchNextChar() -> char32_t;
 
-        auto operator=(EscapingSymbolizer &&) -> void = delete;
-        auto operator=(const EscapingSymbolizer &) -> void = delete;
-
-        EscapingSymbolizer() = delete;
-        EscapingSymbolizer(EscapingSymbolizer &&) = delete;
-        EscapingSymbolizer(const EscapingSymbolizer &) = delete;
-
-        explicit EscapingSymbolizer(
-            TextIterator &text_iterator,
-            extra_symbols_t extra_symbols) noexcept
-          : extraSymbols{std::move(extra_symbols)}
-          , textIterator{text_iterator}
-        {}
-
-        ~EscapingSymbolizer() = default;
-
     private:
         auto searchInExtraSymbols(char32_t chr) -> char32_t;
         auto throwMatchException() -> void;
-
-        extra_symbols_t extraSymbols;
-        TextIterator &textIterator;
     };
 
     class TextIterator::NotationEscapingSymbolizer
@@ -220,6 +218,8 @@ namespace ccl::text
         u16 notationPower;
         bool areAllCharsRequired;
     };
+
+    extern template class CrtpBasicTextIterator<TextIterator>;
 }// namespace ccl::text
 
 #endif /* CCL_PROJECT_TEXT_ITERATOR_HPP */

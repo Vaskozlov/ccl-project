@@ -6,7 +6,7 @@
 namespace ccl
 {
     template<size_t Size>
-    class [[nodiscard]] ConstString : public AutoIterator<ConstString<Size>>
+    class ConstString : public AutoIterator<ConstString<Size>>
     {
     public:
         using value_type = char;
@@ -15,6 +15,16 @@ namespace ccl
         using const_reverse_iterator = typename storage_t::const_reverse_iterator;
 
         storage_t string{};
+
+        // NOLINTNEXTLINE
+        [[nodiscard]] consteval ConstString(const CArray<value_type, Size> &str)
+          : string{std::to_array(str)}
+        {}
+
+        // NOLINTNEXTLINE
+        [[nodiscard]] consteval ConstString(const std::array<value_type, Size> &str)
+          : string{str}
+        {}
 
         CCL_DECL auto begin() const noexcept -> const_iterator
         {
@@ -54,16 +64,6 @@ namespace ccl
 
         CCL_DECL auto operator<=>(const ConstString &other) const noexcept
             -> std::weak_ordering = default;
-
-        // NOLINTNEXTLINE
-        [[nodiscard]] consteval ConstString(const CArray<value_type, Size> &str)
-          : string{std::to_array(str)}
-        {}
-
-        // NOLINTNEXTLINE
-        consteval ConstString(const std::array<value_type, Size> &str)
-          : string{str}
-        {}
     };
 }// namespace ccl
 

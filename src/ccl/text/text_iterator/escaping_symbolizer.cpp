@@ -4,6 +4,13 @@ namespace ccl::text
 {
     using EscapingSymbolizer = TextIterator::EscapingSymbolizer;
 
+    EscapingSymbolizer::EscapingSymbolizer(
+        TextIterator &text_iterator,
+        extra_symbols_t extra_symbols) noexcept
+      : extraSymbols{std::move(extra_symbols)}
+      , textIterator{text_iterator}
+    {}
+
     auto EscapingSymbolizer::matchNextChar() -> char32_t
     {
         CCL_ASSERT_MSG(textIterator.getCurrentChar() == '\\', "called without preceding `\\`");

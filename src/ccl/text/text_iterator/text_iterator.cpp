@@ -53,4 +53,6 @@ namespace ccl::text
         return NotationEscapingSymbolizer(text_iterator, max_times, notation_power, need_all_chars)
             .get();
     }
+
+    template class CrtpBasicTextIterator<TextIterator>;
 }// namespace ccl::text
