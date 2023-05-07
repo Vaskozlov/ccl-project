@@ -42,6 +42,13 @@ namespace ccl::text
         AnalysisStage stage{};
 
     public:
+        TextIteratorException() = default;
+
+        [[nodiscard]] TextIteratorException(
+            ExceptionCriticality exception_criticality, AnalysisStage analysis_stage,
+            const Location &exception_location, size_t exception_length, string_view working_line,
+            std::string exception_message, std::string exception_suggestion = std::string{});
+
         [[nodiscard]] auto getLine() const noexcept -> size_t
         {
             return location.getLine();
@@ -103,13 +110,6 @@ namespace ccl::text
         }
 
         [[nodiscard]] auto what() const noexcept -> const char * override;
-
-        TextIteratorException() = default;
-
-        [[nodiscard]] TextIteratorException(
-            ExceptionCriticality exception_criticality, AnalysisStage analysis_stage,
-            const Location &exception_location, size_t exception_length, string_view working_line,
-            std::string exception_message, std::string exception_suggestion = std::string{});
 
         [[nodiscard]] auto createFullMessage() const -> std::string;
 

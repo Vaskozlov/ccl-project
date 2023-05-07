@@ -17,7 +17,7 @@ namespace ccl::lex::dot_item
         checkUnionBegin(rule_iterator);
 
         while (true) {
-            auto [is_escaping, chr] = rule_iterator.nextRawCharWithEscapingSymbols(special_symbols);
+            auto [is_escaping, chr] = rule_iterator.nextCharWithEscapingSymbols(special_symbols);
 
             checkForUnexpectedEnd(begin_iterator_state, is_escaping, chr);
 
@@ -37,13 +37,13 @@ namespace ccl::lex::dot_item
         checkForClosedRange(rule_iterator, is_range);
     }
 
-    auto Union::scanIteration(const ForkedGenerator &text_iterator) const -> size_t
+    auto Union::scanIteration(const ForkedGenerator &text_iterator) const -> Optional<size_t>
     {
         if (bitset.at(text_iterator.futureChar()) != isReversed()) [[unlikely]] {
             return utf8::size(text_iterator.getNextCarriageValue());
         }
 
-        return 0;
+        return std::nullopt;
     }
 
     CCL_INLINE auto Union::isRange(bool is_escaping, char32_t chr) noexcept -> bool

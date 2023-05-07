@@ -282,7 +282,7 @@ namespace ccl
 
         CCL_DECL auto operator==(const StringLike<CharT> auto &other) const noexcept -> bool
         {
-            return std::equal(begin(), end(), other.cbegin(), other.cend());
+            return std::equal(begin(), end(), std::begin(other), std::end(other));
         }
 
         CCL_DECL auto operator<=>(BasicStringView other) const noexcept -> std::weak_ordering

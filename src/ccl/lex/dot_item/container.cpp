@@ -47,21 +47,23 @@ namespace ccl::lex::dot_item
         token.clear(getId());
 
         for (const DotItem &item : items) {
-            auto char_to_skip = item->scan(local_iterator);
+            auto chars_to_skip = item->scan(local_iterator);
 
-            if ((!char_to_skip.has_value()) && isReversed()) {
-                char_to_skip = utf8::size(local_iterator.getNextCarriageValue());
+            if ((!chars_to_skip.has_value()) && isReversed()) {
+                chars_to_skip = utf8::size(local_iterator.getNextCarriageValue());
             }
 
-            if (!char_to_skip.has_value()) {
+            if (!chars_to_skip.has_value()) {
                 return false;
             }
 
-            addPrefixOrPostfix(
-                item.get(), token, {local_iterator.getRemainingAsCarriage(), *char_to_skip});
+            auto prefix_or_postfix_repr =
+                string_view{local_iterator.getRemainingAsCarriage(), *chars_to_skip};
 
-            totally_skipped += *char_to_skip;
-            local_iterator.skip(*char_to_skip);
+            addPrefixOrPostfix(item.get(), token, prefix_or_postfix_repr);
+
+            totally_skipped += *chars_to_skip;
+            local_iterator.skip(*chars_to_skip);
         }
 
         if (ScanningType::BASIC == special_scan) {
@@ -73,7 +75,6 @@ namespace ccl::lex::dot_item
         }
 
         token.finishInitialization(text_iterator, totally_skipped);
-
         return true;
     }
 
@@ -84,16 +85,16 @@ namespace ccl::lex::dot_item
             specialItems.checkForSpecial(text_iterator));
     }
 
-    auto Container::scanIteration(const ForkedGenerator &text_iterator) const -> size_t
+    auto Container::scanIteration(const ForkedGenerator &text_iterator) const -> Optional<size_t>
     {
         auto totally_skipped = as<size_t>(0);
         auto local_iterator = text_iterator;
 
-        for (auto &&item : items) {
+        for (const DotItem &item : items) {
             auto scan_result = item->scan(local_iterator);
 
             if (!scan_result.has_value()) {
-                return 0;
+                return std::nullopt;
             }
 
             totally_skipped += *scan_result;

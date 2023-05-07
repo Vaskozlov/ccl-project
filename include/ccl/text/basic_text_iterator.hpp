@@ -128,7 +128,7 @@ namespace ccl::text
             return getRemainingAsCarriage() == end;
         }
 
-        CCL_DECL auto getFutureRemaining() const noexcept -> string_view
+        CCL_DECL auto getRemainingText() const noexcept -> string_view
         {
             if (isInitialized()) [[likely]] {
                 return {carriage + utf8::size(getNextCarriageValue()), end};
@@ -316,6 +316,8 @@ namespace ccl::text
             throw std::logic_error{"unable to convert character to utf8"};
         }
     };
+
+    extern template class CrtpBasicTextIterator<BasicTextIterator>;
 }// namespace ccl::text
 
 #endif /* CCL_PROJECT_BASIC_TEXT_ITERATOR_HPP */

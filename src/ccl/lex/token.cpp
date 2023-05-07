@@ -2,6 +2,12 @@
 
 namespace ccl::lex
 {
+    TokenAttributes::TokenAttributes(const text::TextIterator &text_iterator)
+      : tabsAndSpaces{text_iterator.getTabsAndSpaces()}
+      , location{text_iterator.getLocation()}
+      , workingLine{text_iterator.getWorkingLine()}
+    {}
+
     Token::Token(Id token_id)
       : id{token_id}
     {}

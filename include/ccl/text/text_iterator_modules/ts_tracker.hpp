@@ -27,32 +27,10 @@ namespace ccl::text
             return tabsAnsSpaces;
         }
 
-        constexpr auto next(char32_t chr) -> void
-        {
-            clearIfNeed();
-
-            if (isTabOrSpace(chr)) {
-                tabsAnsSpaces.push_back(as<char>(chr));
-            } else {
-                needToClear = true;
-            }
-        }
-
-        TsTracker() = default;
+        auto next(char32_t chr) -> void;
 
     private:
-        constexpr auto clearIfNeed() noexcept -> void
-        {
-            if (needToClear) {
-                needToClear = false;
-                tabsAnsSpaces.clear();
-            }
-        }
-
-        CCL_DECL static auto isTabOrSpace(char32_t chr) noexcept -> bool
-        {
-            return lor('\t' == chr, ' ' == chr);
-        }
+        auto clearIfNeed() noexcept -> void;
     };
 }// namespace ccl::text
 

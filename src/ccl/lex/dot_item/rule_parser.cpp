@@ -226,12 +226,13 @@ namespace ccl::lex::dot_item
 
     auto Container::RuleParser::postCreationCheck() -> void
     {
-        const auto postfix_elem = std::find_if(items.cbegin(), items.cend(), [](const auto &elem) {
-            return elem->hasPostfix();
-        });
+        const auto postfix_elem =
+            std::find_if(items.cbegin(), items.cend(), [](const DotItem &elem) {
+                return elem->hasPostfix();
+            });
 
         const auto postfixes_correct =
-            std::all_of(postfix_elem, items.cend(), [](const auto &elem) {
+            std::all_of(postfix_elem, items.cend(), [](const DotItem &elem) {
                 return elem->hasPostfix();
             });
 
@@ -255,10 +256,10 @@ namespace ccl::lex::dot_item
 
     auto Container::RuleParser::findContainerEnd(string_view repr) -> size_t
     {
-        const auto open_close_find_result = repr.openCloseFind('(', ')');
+        const auto closing_bracket_index = repr.openCloseFind('(', ')');
 
-        if (open_close_find_result.has_value()) {
-            return *open_close_find_result;
+        if (closing_bracket_index.has_value()) {
+            return *closing_bracket_index;
         }
 
         ruleIterator.throwPanicError(AnalysisStage::LEXICAL_ANALYSIS, "unterminated dot item");
@@ -322,7 +323,7 @@ namespace ccl::lex::dot_item
             specialItems.cend(),
             [&text_iterator](const Container &special_item) {
                 auto scan_result = special_item.scan(text_iterator);
-                return scan_result != 0;
+                return scan_result != std::nullopt;
             });
     }
 

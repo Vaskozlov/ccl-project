@@ -16,7 +16,7 @@ namespace ccl::lex::dot_item
         string_view sequence_ender, TextIterator &rule_iterator, Id item_id)
       : DotItemConcept{item_id, Flags{
                                .sequenceIsMultiline=sequence_flags.multiline,
-                               .sequenceNoEscapingSymbols=sequence_flags.noEscaping
+                               .noEscapingSymbols=sequence_flags.noEscaping
                            }}
       , starter{sequence_starter}
       , ender{sequence_ender}
@@ -33,11 +33,11 @@ namespace ccl::lex::dot_item
             auto chr = U'\0';
             auto is_escaping = false;
 
-            if (getFlags().sequenceNoEscapingSymbols) {
+            if (getFlags().noEscapingSymbols) {
                 chr = rule_iterator.next();
             } else {
                 auto [escaping, character] =
-                    rule_iterator.nextRawCharWithEscapingSymbols(special_symbols_for_sequence);
+                    rule_iterator.nextCharWithEscapingSymbols(special_symbols_for_sequence);
                 is_escaping = escaping;
                 chr = character;
             }
@@ -53,15 +53,15 @@ namespace ccl::lex::dot_item
         }
     }
 
-    auto Sequence::scanIteration(const ForkedGenerator &text_iterator) const -> size_t
+    auto Sequence::scanIteration(const ForkedGenerator &text_iterator) const -> Optional<size_t>
     {
-        auto future_text = text_iterator.getFutureRemaining();
+        auto future_text = text_iterator.getRemainingText();
 
         if (future_text.startsWith(sequenceValue) != isReversed()) [[unlikely]] {
             return isReversed() ? utf8::size(future_text[0]) : sequenceValue.size();
         }
 
-        return {};
+        return std::nullopt;
     }
 
     CCL_INLINE auto Sequence::isStringEnd(const TextIterator &rule_iterator, bool is_escaping) const
@@ -88,7 +88,7 @@ namespace ccl::lex::dot_item
             throwUnterminatedString(rule_iterator, "unterminated sequence");
         }
 
-        if (land('\n' == chr, !getFlags().sequenceIsMultiline)) [[unlikely]] {
+        if ('\n' == chr && !getFlags().sequenceIsMultiline) [[unlikely]] {
             constexpr auto message = "new line is reached, but sequence has not been terminated"_sv;
             auto suggestion = fmt::format("use multiline sequence or close it with `{}`", ender);
 

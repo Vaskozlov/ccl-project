@@ -47,7 +47,7 @@ namespace ccl::lex::dot_item
 
     private:
         [[nodiscard]] auto scanIteration(const ForkedGenerator &text_iterator) const
-            -> size_t override;
+            -> Optional<size_t> override;
 
         [[nodiscard]] auto isStringEnd(const TextIterator &rule_iterator, bool is_escaping) const
             -> bool;

@@ -11,7 +11,7 @@
 
 namespace ccl::text
 {
-    class [[nodiscard]] TextIterator : public CrtpBasicTextIterator<TextIterator>
+    class TextIterator : public CrtpBasicTextIterator<TextIterator>
     {
     private:
         using extra_symbols_t = std::basic_string<Pair<char32_t, char32_t>>;
@@ -22,8 +22,8 @@ namespace ccl::text
         ExceptionHandler *exceptionHandler{};
 
     public:
-        class EscapingSymbolizer;
-        class NotationEscapingSymbolizer;
+        class EscapingSequenceToChar;
+        class NotationEscapingSequenceToChar;
 
         [[nodiscard]] static auto
             doEscapeSymbolizing(TextIterator &text_iterator, const extra_symbols_t &extra_symbols)
@@ -83,7 +83,7 @@ namespace ccl::text
             return *exceptionHandler;
         }
 
-        auto nextRawCharWithEscapingSymbols(const extra_symbols_t &extra_symbols = {})
+        auto nextCharWithEscapingSymbols(const extra_symbols_t &extra_symbols = {})
             -> Pair<bool, char32_t>;
 
         CCL_INLINE auto onMove(char chr) -> void
@@ -144,9 +144,26 @@ namespace ccl::text
             AnalysisStage stage, string_view message, string_view suggestion = {}) -> void;
     };
 
-    class TextIterator::EscapingSymbolizer
+    class TextIterator::EscapingSequenceToChar
     {
+    private:
+        extra_symbols_t extraSymbols;
+        TextIterator &textIterator;
+
     public:
+        EscapingSequenceToChar() = delete;
+        EscapingSequenceToChar(EscapingSequenceToChar &&) = delete;
+        EscapingSequenceToChar(const EscapingSequenceToChar &) = delete;
+
+        [[nodiscard]] explicit EscapingSequenceToChar(
+            TextIterator &text_iterator,
+            extra_symbols_t extra_symbols) noexcept;
+
+        ~EscapingSequenceToChar() = default;
+
+        auto operator=(EscapingSequenceToChar &&) -> void = delete;
+        auto operator=(const EscapingSequenceToChar &) -> void = delete;
+
         [[nodiscard]] auto getExtraSymbols() const noexcept -> const extra_symbols_t &
         {
             return extraSymbols;
@@ -154,50 +171,38 @@ namespace ccl::text
 
         [[nodiscard]] auto matchNextChar() -> char32_t;
 
-        auto operator=(EscapingSymbolizer &&) -> void = delete;
-        auto operator=(const EscapingSymbolizer &) -> void = delete;
-
-        EscapingSymbolizer() = delete;
-        EscapingSymbolizer(EscapingSymbolizer &&) = delete;
-        EscapingSymbolizer(const EscapingSymbolizer &) = delete;
-
-        explicit EscapingSymbolizer(
-            TextIterator &text_iterator,
-            extra_symbols_t extra_symbols) noexcept
-          : extraSymbols{std::move(extra_symbols)}
-          , textIterator{text_iterator}
-        {}
-
-        ~EscapingSymbolizer() = default;
-
     private:
         auto searchInExtraSymbols(char32_t chr) -> char32_t;
-        auto throwMatchException() -> void;
-
-        extra_symbols_t extraSymbols;
-        TextIterator &textIterator;
+        auto throwUnableToMatchEscapingSymbol() -> void;
     };
 
-    class TextIterator::NotationEscapingSymbolizer
+    class TextIterator::NotationEscapingSequenceToChar
     {
+    private:
+        TextIterator &textIterator;
+        char32_t result{};
+        u16 maximumSymbols;
+        u16 notationPower;
+        bool areAllCharsRequired;
+
     public:
+        NotationEscapingSequenceToChar(
+            TextIterator &text_iterator, u16 maximum_symbols, u16 notation_power,
+            bool are_all_chars_required);
+
+        NotationEscapingSequenceToChar() = delete;
+        NotationEscapingSequenceToChar(NotationEscapingSequenceToChar &&) = delete;
+        NotationEscapingSequenceToChar(const NotationEscapingSequenceToChar &) = delete;
+
+        ~NotationEscapingSequenceToChar() = default;
+
+        auto operator=(NotationEscapingSequenceToChar &&) -> void = delete;
+        auto operator=(const NotationEscapingSequenceToChar &) -> void = delete;
+
         CCL_DECL auto get() const noexcept -> char32_t
         {
             return result;
         }
-
-        auto operator=(NotationEscapingSymbolizer &&) -> void = delete;
-        auto operator=(const NotationEscapingSymbolizer &) -> void = delete;
-
-        NotationEscapingSymbolizer() = delete;
-        NotationEscapingSymbolizer(NotationEscapingSymbolizer &&) = delete;
-        NotationEscapingSymbolizer(const NotationEscapingSymbolizer &) = delete;
-
-        NotationEscapingSymbolizer(
-            TextIterator &text_iterator, u16 maximum_symbols, u16 notation_power,
-            bool are_all_chars_required);
-
-        ~NotationEscapingSymbolizer() = default;
 
     private:
         auto calculateResult() -> void;
@@ -213,13 +218,9 @@ namespace ccl::text
 
         auto insertExtraZerosToNotEnoughMessage(size_t chars_count, std::string &message) const
             -> void;
-
-        TextIterator &textIterator;
-        char32_t result{};
-        u16 maximumSymbols;
-        u16 notationPower;
-        bool areAllCharsRequired;
     };
+
+    extern template class CrtpBasicTextIterator<TextIterator>;
 }// namespace ccl::text
 
 #endif /* CCL_PROJECT_TEXT_ITERATOR_HPP */
