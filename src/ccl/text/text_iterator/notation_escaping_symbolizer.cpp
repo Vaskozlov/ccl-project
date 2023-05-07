@@ -2,9 +2,9 @@
 
 namespace ccl::text
 {
-    using NotationEscapingSymbolizer = TextIterator::NotationEscapingSymbolizer;
+    using NotationEscapingSymbolizer = TextIterator::NotationEscapingSequenceToChar;
 
-    NotationEscapingSymbolizer::NotationEscapingSymbolizer(
+    NotationEscapingSymbolizer::NotationEscapingSequenceToChar(
         TextIterator &text_iterator,
         u16 maximum_symbols,
         u16 notation_power,

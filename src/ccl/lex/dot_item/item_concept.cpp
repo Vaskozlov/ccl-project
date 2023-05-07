@@ -27,19 +27,15 @@ namespace ccl::lex::dot_item
         auto times = as<size_t>(0);
         auto totally_skipped = as<size_t>(0);
 
-        while (times < repetition.to) {
-            if (text_iterator.isEOI()) {
-                break;
-            }
-
+        while (!text_iterator.isEOI() && times < repetition.to) {
             auto chars_to_skip = scanIteration(text_iterator);
 
-            if (chars_to_skip == 0) {
+            if (!chars_to_skip.has_value()) {
                 break;
             }
 
-            text_iterator.skip(chars_to_skip);
-            totally_skipped += chars_to_skip;
+            text_iterator.skip(*chars_to_skip);
+            totally_skipped += *chars_to_skip;
             ++times;
         }
 

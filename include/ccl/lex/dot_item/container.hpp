@@ -51,7 +51,7 @@ namespace ccl::lex::dot_item
             ScanningType special_scan = ScanningType::BASIC) const -> bool;
 
         [[nodiscard]] auto scanIteration(const ForkedGenerator &text_iterator) const
-            -> size_t override;
+            -> Optional<size_t> override;
 
         [[nodiscard]] auto operator==(const Container &other) const noexcept -> bool
         {

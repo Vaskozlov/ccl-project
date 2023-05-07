@@ -30,7 +30,7 @@ namespace ccl::lex::dot_item
             bool isPrefix = false;
             bool isPostfix = false;
             bool sequenceIsMultiline = false;
-            bool sequenceNoEscapingSymbols = false;
+            bool noEscapingSymbols = false;
         };
 
     private:
@@ -61,42 +61,42 @@ namespace ccl::lex::dot_item
             return repetition;
         }
 
-        [[nodiscard]] CCL_INLINE auto getFlags() const noexcept -> Flags
+        [[nodiscard]] auto getFlags() const noexcept -> Flags
         {
             return flags;
         }
 
-        [[nodiscard]] CCL_INLINE auto isReversed() const noexcept -> bool
+        [[nodiscard]] auto isReversed() const noexcept -> bool
         {
             return flags.reversed;
         }
 
-        [[nodiscard]] CCL_INLINE auto hasPrefix() const noexcept -> bool
+        [[nodiscard]] auto hasPrefix() const noexcept -> bool
         {
             return flags.isPrefix;
         }
 
-        [[nodiscard]] CCL_INLINE auto hasPostfix() const noexcept -> bool
+        [[nodiscard]] auto hasPostfix() const noexcept -> bool
         {
             return flags.isPostfix;
         }
 
-        CCL_INLINE void setPrefix() noexcept
+        void setPrefix() noexcept
         {
             flags.isPrefix = true;
         }
 
-        CCL_INLINE void setPostfix() noexcept
+        void setPostfix() noexcept
         {
             flags.isPostfix = true;
         }
 
-        CCL_INLINE auto reverse() noexcept -> void
+        auto reverse() noexcept -> void
         {
             flags.reversed = !flags.reversed;
         }
 
-        CCL_INLINE auto setRepetition(Repetition new_repetition) noexcept -> void
+        auto setRepetition(Repetition new_repetition) noexcept -> void
         {
             repetition = new_repetition;
         }
@@ -106,7 +106,7 @@ namespace ccl::lex::dot_item
             return (!isReversed() && (0 == repetition.from)) && empty();
         }
 
-        [[nodiscard]] CCL_INLINE auto getId() const noexcept -> Id
+        [[nodiscard]] auto getId() const noexcept -> Id
         {
             return id;
         }
@@ -119,7 +119,7 @@ namespace ccl::lex::dot_item
 
     private:
         [[nodiscard]] virtual auto scanIteration(const ForkedGenerator &text_iterator) const
-            -> size_t = 0;
+            -> Optional<size_t> = 0;
     };
 
     class DotItem

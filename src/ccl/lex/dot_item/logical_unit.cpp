@@ -15,7 +15,7 @@ namespace ccl::lex::dot_item
         return rhsItem->empty() && lhsItem->empty();
     }
 
-    auto LogicalUnit::scanIteration(const ForkedGenerator &text_iterator) const -> size_t
+    auto LogicalUnit::scanIteration(const ForkedGenerator &text_iterator) const -> Optional<size_t>
     {
         switch (logicalOperation) {
         [[likely]] case LogicalOperation::OR:
@@ -29,7 +29,7 @@ namespace ccl::lex::dot_item
         }
     }
 
-    auto LogicalUnit::orIteration(const ForkedGenerator &text_iterator) const -> size_t
+    auto LogicalUnit::orIteration(const ForkedGenerator &text_iterator) const -> Optional<size_t>
     {
         const auto lhs_scan_result = lhsItem->scan(text_iterator);
 
@@ -37,15 +37,15 @@ namespace ccl::lex::dot_item
             return *lhs_scan_result;
         }
 
-        return rhsItem->scan(text_iterator).value_or(0);
+        return rhsItem->scan(text_iterator);
     }
 
-    auto LogicalUnit::andIteration(const ForkedGenerator &text_iterator) const -> size_t
+    auto LogicalUnit::andIteration(const ForkedGenerator &text_iterator) const -> Optional<size_t>
     {
         const auto lhs = rhsItem->scan(text_iterator);
 
         if (!lhs.has_value()) [[likely]] {
-            return 0;
+            return std::nullopt;
         }
 
         const auto rhs = lhsItem->scan(text_iterator);
@@ -54,6 +54,6 @@ namespace ccl::lex::dot_item
             return *lhs;
         }
 
-        return 0;
+        return std::nullopt;
     }
 }// namespace ccl::lex::dot_item

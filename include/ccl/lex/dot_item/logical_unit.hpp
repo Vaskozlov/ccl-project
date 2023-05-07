@@ -29,10 +29,13 @@ namespace ccl::lex::dot_item
 
     private:
         [[nodiscard]] auto scanIteration(const ForkedGenerator &text_iterator) const
-            -> size_t override;
+            -> Optional<size_t> override;
 
-        [[nodiscard]] auto orIteration(const ForkedGenerator &text_iterator) const -> size_t;
-        [[nodiscard]] auto andIteration(const ForkedGenerator &text_iterator) const -> size_t;
+        [[nodiscard]] auto orIteration(const ForkedGenerator &text_iterator) const
+            -> Optional<size_t>;
+
+        [[nodiscard]] auto andIteration(const ForkedGenerator &text_iterator) const
+            -> Optional<size_t>;
     };
 }// namespace ccl::lex::dot_item
 

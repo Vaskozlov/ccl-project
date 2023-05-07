@@ -2,9 +2,9 @@
 
 namespace ccl::text
 {
-    using EscapingSymbolizer = TextIterator::EscapingSymbolizer;
+    using EscapingSymbolizer = TextIterator::EscapingSequenceToChar;
 
-    EscapingSymbolizer::EscapingSymbolizer(
+    EscapingSymbolizer::EscapingSequenceToChar(
         TextIterator &text_iterator,
         extra_symbols_t extra_symbols) noexcept
       : extraSymbols{std::move(extra_symbols)}
@@ -72,14 +72,14 @@ namespace ccl::text
         });
 
         if (it == extraSymbols.end()) [[unlikely]] {
-            throwMatchException();
+            throwUnableToMatchEscapingSymbol();
             return U'?';
         }
 
         return it->second;
     }
 
-    auto EscapingSymbolizer::throwMatchException() -> void
+    auto EscapingSymbolizer::throwUnableToMatchEscapingSymbol() -> void
     {
         textIterator.throwUncriticalError(
             AnalysisStage::LEXICAL_ANALYSIS, "unable to matchNextChar any escaping symbol");

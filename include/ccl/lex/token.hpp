@@ -128,17 +128,17 @@ namespace ccl::lex
     private:
         auto clear(Id new_id) noexcept -> void;
 
-        CCL_INLINE auto setReprLength(size_t length) noexcept -> void
+        auto setReprLength(size_t length) noexcept -> void
         {
             repr.setLength<UNSAFE>(length);
         }
 
-        CCL_INLINE auto addPrefix(string_view prefix) -> void
+        auto addPrefix(string_view prefix) -> void
         {
             prefixes.push_back(prefix);
         }
 
-        CCL_INLINE auto addPostfix(string_view postfix) -> void
+        auto addPostfix(string_view postfix) -> void
         {
             postfixes.push_back(postfix);
         }
