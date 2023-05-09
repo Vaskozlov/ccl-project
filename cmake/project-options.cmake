@@ -6,6 +6,12 @@ option(CCL_THREAD_SANITIZER "Use thread sanitizers" OFF)
 option(CCL_STATIC_LIBRARY "Create static version of library " OFF)
 option(CCL_WSHADOW "Enable shadow warning " ON)
 
+if (MSVC)
+    option(CCL_STATIC_LIBRARY "Create static version of library " ON)
+else ()
+    option(CCL_STATIC_LIBRARY "Create static version of library " OFF)
+endif ()
+
 message(STATUS "CC " ${CMAKE_C_COMPILER})
 message(STATUS "CXX " ${CMAKE_CXX_COMPILER})
 message(STATUS "Build type: " ${CMAKE_BUILD_TYPE})
