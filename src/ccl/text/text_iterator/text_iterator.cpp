@@ -5,7 +5,7 @@ namespace ccl::text
     TextIterator::TextIterator(
         string_view input,
         ExceptionHandler &exception_handler,
-        string_view filename)
+        std::string_view filename)
       : CrtpBasicTextIterator{input}
       , location{filename}
       , lineTracker{input}

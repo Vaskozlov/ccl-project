@@ -29,21 +29,22 @@ namespace ccl::lex
 
         [[nodiscard]] LexicalAnalyzer(
             ExceptionHandler &exception_handler, InitializerList<Rule> rules,
-            string_view filename = {}, Vector<Id> ignored_ids = {});
+            std::string_view filename = {}, Vector<Id> ignored_ids = {});
 
         [[nodiscard]] auto getIgnoredIds() const -> const Vector<Id> &
         {
             return ignoredIds;
         }
 
-        [[nodiscard]] auto getTokenizer(string_view text, string_view filename = {}) -> Tokenizer;
+        [[nodiscard]] auto getTokenizer(string_view text, std::string_view filename = {})
+            -> Tokenizer;
 
         [[nodiscard]] auto
-            getTokenizer(string_view text, string_view filename, ExceptionHandler &handler)
+            getTokenizer(string_view text, std::string_view filename, ExceptionHandler &handler)
                 -> Tokenizer;
 
     private:
-        auto createContainer(string_view rule, Id id, string_view filename) -> void;
+        auto createContainer(string_view rule, Id id, std::string_view filename) -> void;
     };
 }// namespace ccl::lex
 
