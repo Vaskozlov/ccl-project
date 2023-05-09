@@ -10,7 +10,7 @@ auto testConstString(string_view input) -> bool
 
     REQUIRE(String.empty() == test_string.empty());
     REQUIRE(String.size() == test_string.size());
-    REQUIRE(as<string_view>(String) == test_string);
+    REQUIRE(String == test_string);
 
     REQUIRE(std::equal(String.cbegin(), String.cend(), test_string.cbegin(), test_string.cend()));
     REQUIRE(std::equal(String.begin(), String.end(), test_string.begin()));
