@@ -35,7 +35,7 @@ namespace ccl::handler
 
     auto Cmd::CmdFormatter::formatMessage() -> void
     {
-        format_to(std::back_inserter(formattingBuffer), "{}\n", message);
+        format_to(std::back_inserter(formattingBuffer), "{}\n", as<std::string_view>(message));
     }
 
     auto Cmd::CmdFormatter::formatLineNumber() -> void

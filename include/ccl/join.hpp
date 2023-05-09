@@ -7,8 +7,9 @@ namespace ccl
 {
 
     template<Iterable Container, typename Function, StringLike<char> Separator>
-    CCL_DECL auto join(const Container &container, Function &&function, const Separator &separator)
-        -> std::string
+    [[nodiscard]] auto
+        join(const Container &container, Function &&function, const Separator &separator)
+            -> std::string
     {
         auto result = std::string{};
         auto begin = std::begin(container);
@@ -30,8 +31,8 @@ namespace ccl
     }
 
     template<Iterable Container, typename Function, size_t N>
-    CCL_DECL auto join(Container &&container, Function &&function, const char (&separator)[N])
-        -> std::string
+    [[nodiscard]] CCL_INLINE auto
+        join(Container &&container, Function &&function, const char (&separator)[N]) -> std::string
     {
         return join(
             std::forward<Container>(container), std::forward<Function>(function),
@@ -39,7 +40,7 @@ namespace ccl
     }
 
     template<Iterable Container, StringLike<char> Separator>
-    CCL_DECL auto join(Container &&container, Separator &&separator) -> std::string
+    [[nodiscard]] auto join(Container &&container, Separator &&separator) -> std::string
     {
         if constexpr (StringLike<decltype(*container.begin()), char>) {
             return join(
@@ -59,7 +60,7 @@ namespace ccl
     }
 
     template<Iterable Container>
-    CCL_DECL auto join(Container &&container, string_view separator) -> std::string
+    [[nodiscard]] CCL_INLINE auto join(Container &&container, string_view separator) -> std::string
     {
         return join(std::forward<Container>(container), as<std::string_view>(separator));
     }
