@@ -1,9 +1,6 @@
 name: Code style check
 
-on:
-  pull_request:
-    branches: [ main ]
-    paths: [ '**.c', '**.cpp', '**.h', '**.hpp' ]
+on: [ push, workflow_dispatch ]
 
 jobs:
   check:
