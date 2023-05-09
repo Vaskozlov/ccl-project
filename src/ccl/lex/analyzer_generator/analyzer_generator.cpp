@@ -31,7 +31,7 @@ namespace ccl::lex
         return generateStaticVersion(filename, file_content);
     }
 
-    auto AnalyzerGenerator::generateStaticVersion(string_view filename, string_view text)
+    auto AnalyzerGenerator::generateStaticVersion(std::string_view filename, string_view text)
         -> std::string
     {
         auto tokenizer = ccll::CcllAnalyzer.getTokenizer(text, filename);

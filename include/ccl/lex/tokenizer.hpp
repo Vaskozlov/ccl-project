@@ -15,10 +15,10 @@ namespace ccl::lex
 
     public:
         [[nodiscard]] Tokenizer(
-            LexicalAnalyzer &lexical_analyzer, string_view text, string_view filename = {});
+            LexicalAnalyzer &lexical_analyzer, string_view text, std::string_view filename = {});
 
         [[nodiscard]] Tokenizer(
-            LexicalAnalyzer &lexical_analyzer, string_view text, string_view filename,
+            LexicalAnalyzer &lexical_analyzer, string_view text, std::string_view filename,
             ExceptionHandler &exception_handler);
 
         [[nodiscard]] auto getIterator() const -> const TextIterator &

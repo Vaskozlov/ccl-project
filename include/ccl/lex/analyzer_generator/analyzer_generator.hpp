@@ -11,7 +11,8 @@ namespace ccl::lex
     {
     public:
         static auto generateStaticVersion(const std::filesystem::path &path) -> std::string;
-        static auto generateStaticVersion(string_view filename, string_view text) -> std::string;
+        static auto generateStaticVersion(std::string_view filename, string_view text)
+            -> std::string;
     };
 }// namespace ccl::lex
 

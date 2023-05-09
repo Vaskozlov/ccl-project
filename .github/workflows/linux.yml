@@ -1,53 +1,50 @@
-name: Linux
-
-on:
-  pull_request:
-    branches: [ main ]
-    paths: [ '**.c', '**.cpp', '**.h', '**.hpp' ]
+name: hosted-ninja-vcpkg-cacheoff
+on: [ push, workflow_dispatch ]
 
 jobs:
-  build:
+  job:
+    name: ${{ matrix.os }}-${{ github.workflow }}
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        config:
-          - name: Linux arm64 gcc
-            key: linux-gcc-arm64
-            os: [ self-hosted, linux, ARM64 ]
-            cmake_params: ''
-            threads_count: 4
-
-    name: CMake (${{ matrix.config.name }})
-    runs-on: ${{ matrix.config.os }}
+        os: [ ubuntu-latest, macos-latest, windows-latest ]
+        include:
+          - os: windows-latest
+            vcpkgCommitId: 'ea222747b888b8d63df56240b262db38b095c68f'
+          - os: ubuntu-latest
+            vcpkgCommitId: 'ea222747b888b8d63df56240b262db38b095c68f'
+          - os: macos-latest
+            vcpkgCommitId: 'ea222747b888b8d63df56240b262db38b095c68f'
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Cache build
-        uses: actions/cache@v3
-        id: cache-build
+      - uses: actions/checkout@v3
         with:
-          path: ${{github.workspace}}/${{github.actor}}-${{ github.head_ref }}/${{ matrix.config.key }}
-          key: ${{github.actor}}-${{ github.head_ref }}-${{ matrix.config.key }}
+          submodules: true
 
-      - name: Create build dir
-        if: steps.cache-build.outputs.cache-hit != 'true'
-        run: |
-          mkdir -p ${{github.workspace}}/${{github.actor}}-${{ github.head_ref }}/${{ matrix.config.key }}
+      - uses: lukka/get-cmake@latest
+      - name: Dump the content of $RUNNER_TEMP
+        run: find $RUNNER_TEMP
+        shell: bash
+      - name: Dump the content of $RUNNER_WORKSPACE
+        run: find $RUNNER_WORKSPACE
+        shell: bash
 
-      - name: Build
-        run: |
-          VCPKG_FORCE_SYSTEM_BINARIES=arm cmake ${{ matrix.config.cmake_params }} -G Ninja \
-            -B ${{github.workspace}}/${{github.actor}}-${{ github.head_ref }}/${{ matrix.config.key }} \
-            -DCMAKE_BUILD_TYPE=Debug -DCCL_STRICT_COMPILATION=ON -DCCL_LIBCPP=OFF -DCCL_ADDRESS_SANITIZER=ON \
-            -DCCL_PRECOMPILED_HEADERS=ON -DCMAKE_CXX_COMPILER=/usr/bin/g++ \
-            -DCMAKE_TOOLCHAIN_FILE=/home/cerberus-project_2/vcpkg/scripts/buildsystems/vcpkg.cmake
-          
-          cmake --build ${{github.workspace}}/${{github.actor}}-${{ github.head_ref }}/${{ matrix.config.key }} -j ${{ matrix.config.threads_count }}
+      - name: Setup vcpkg
+        uses: lukka/run-vcpkg@main
+        id: runvcpkg
+        with:
+          vcpkgDirectory: '${{ runner.workspace }}/b/vcpkg'
+          vcpkgGitCommitId: '${{ matrix.vcpkgCommitId}}'
+          vcpkgJsonGlob: '**/vcpkg.json'
 
-      - name: Test
-        run: |
-          cd ${{github.workspace}}/${{github.actor}}-${{ github.head_ref }}/${{ matrix.config.key }}
-          ctest -j ${{ matrix.config.threads_count }}
-          cd ..
+      - name: Prints output of run-vcpkg's action
+        run: echo "root='${{ steps.runvcpkg.outputs.RUNVCPKG_VCPKG_ROOT_OUT }}', triplet='${{ steps.runvcpkg.outputs.RUNVCPKG_VCPKG_DEFAULT_TRIPLET_OUT }}'"
+
+      - name: Run CMake with vcpkg.json manifest
+        uses: lukka/run-cmake@v10
+        with:
+          cmakeListsTxtPath: '${{ github.workspace }}/CMakeLists.txt'
+          configurePreset: ninja-multi-vcpkg
+          buildPreset: ninja-multi-vcpkg
+          testPreset: ninja-multi-vcpkg

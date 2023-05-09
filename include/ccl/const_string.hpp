@@ -46,10 +46,14 @@ namespace ccl
             return 0 == size();
         }
 
-        template<StringLike<value_type> StringT>
-        CCL_DECL operator StringT() const noexcept// NOLINT implicit conversion
+        CCL_DECL operator ccl::string_view() const noexcept// NOLINT implicit conversion
         {
             return {string.data(), size()};
+        }
+
+        CCL_DECL operator std::string_view() const noexcept// NOLINT implicit conversion
+        {
+            return {string.begin(), string.begin() + size()};
         }
 
         CCL_DECL auto at(size_t index) const -> char

@@ -2,16 +2,16 @@
 
 namespace ccl::text
 {
-    using EscapingSymbolizer = TextIterator::EscapingSequenceToChar;
+    using EscapingSequenceToChar = TextIterator::EscapingSequenceToChar;
 
-    EscapingSymbolizer::EscapingSequenceToChar(
+    EscapingSequenceToChar::EscapingSequenceToChar(
         TextIterator &text_iterator,
         extra_symbols_t extra_symbols) noexcept
       : extraSymbols{std::move(extra_symbols)}
       , textIterator{text_iterator}
     {}
 
-    auto EscapingSymbolizer::matchNextChar() -> char32_t
+    auto EscapingSequenceToChar::matchNextChar() -> char32_t
     {
         CCL_ASSERT_MSG(textIterator.getCurrentChar() == '\\', "called without preceding `\\`");
 
@@ -65,7 +65,7 @@ namespace ccl::text
         }
     }
 
-    auto EscapingSymbolizer::searchInExtraSymbols(char32_t chr) -> char32_t
+    auto EscapingSequenceToChar::searchInExtraSymbols(char32_t chr) -> char32_t
     {
         auto it = std::find_if(extraSymbols.cbegin(), extraSymbols.cend(), [chr](auto elem) {
             return elem.first == chr;
@@ -79,7 +79,7 @@ namespace ccl::text
         return it->second;
     }
 
-    auto EscapingSymbolizer::throwUnableToMatchEscapingSymbol() -> void
+    auto EscapingSequenceToChar::throwUnableToMatchEscapingSymbol() -> void
     {
         textIterator.throwUncriticalError(
             AnalysisStage::LEXICAL_ANALYSIS, "unable to matchNextChar any escaping symbol");

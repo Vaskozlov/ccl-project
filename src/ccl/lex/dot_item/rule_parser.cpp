@@ -322,8 +322,7 @@ namespace ccl::lex::dot_item
             specialItems.cbegin(),
             specialItems.cend(),
             [&text_iterator](const Container &special_item) {
-                auto scan_result = special_item.scan(text_iterator);
-                return scan_result != std::nullopt;
+                return special_item.scan(text_iterator) != std::nullopt;
             });
     }
 

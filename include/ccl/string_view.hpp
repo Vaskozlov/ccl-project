@@ -350,10 +350,7 @@ namespace ccl
 template<>
 struct fmt::formatter<ccl::string_view> : fmt::formatter<std::string_view>
 {
-    auto format(const ccl::string_view &str, format_context &ctx) const
-    {
-        return formatter<std::string_view>::format(ccl::as<std::string_view>(str), ctx);
-    }
+    auto format(const ccl::string_view &str, format_context &ctx) const -> decltype(ctx.out());
 };
 
 #endif /* CCL_PROJECT_STRING_VIEW_HPP*/
