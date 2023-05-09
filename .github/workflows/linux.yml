@@ -13,7 +13,7 @@ jobs:
           - os: windows-latest
             vcpkgCommitId: 'ea222747b888b8d63df56240b262db38b095c68f'
           - os: ubuntu-latest
-            vcpkgCommitId: 'master'
+            vcpkgCommitId: 'ea222747b888b8d63df56240b262db38b095c68f'
           - os: macos-latest
             vcpkgCommitId: 'ea222747b888b8d63df56240b262db38b095c68f'
 
