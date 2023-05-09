@@ -50,4 +50,4 @@ jobs:
           cmakeListsTxtPath: '${{ github.workspace }}/CMakeLists.txt'
           configurePreset: ninja-multi-vcpkg
           buildPreset: ninja-multi-vcpkg
-          testPresets: ninja-multi-vcpkg
+          testPreset: ninja-multi-vcpkg
