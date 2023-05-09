@@ -75,7 +75,8 @@ namespace ccl::text
         }
     }
 
-    auto NotationEscapingSequenceToChar::throwNotEnoughCharsException(size_t chars_count) const -> void
+    auto NotationEscapingSequenceToChar::throwNotEnoughCharsException(size_t chars_count) const
+        -> void
     {
         auto exception_message = fmt::format(
             "expected {} characters, but only {} of them were provided", maximumSymbols,
