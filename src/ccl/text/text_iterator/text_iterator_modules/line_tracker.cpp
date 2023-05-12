@@ -15,7 +15,6 @@ namespace ccl::text
     {
         if (newLinePassed) [[unlikely]] {
             updateLine();
-            newLinePassed = false;
         }
 
         newLinePassed = '\n' == chr;
