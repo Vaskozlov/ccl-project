@@ -18,7 +18,7 @@ auto main(int argc, char *argv[]) -> int
         "l,lexical-analyzer-rules",
         "file with rules for lexical analyzer",
         cxxopts::value(source_file))("o,output", "output header name", cxxopts::value(output_file))(
-        "t,time", "measure lexical analysis time");
+        "t,time", "measure lexical analyzer creation time");
 
     options.parse_positional({"l", "o"});
 
