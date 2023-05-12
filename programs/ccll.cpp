@@ -1,19 +1,24 @@
 #include <ccl/lex/analyzer_generator/analyzer_generator.hpp>
+#include <chrono>
 #include <cxxopts.hpp>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
 
+using namespace std::chrono_literals;
+
 auto main(int argc, char *argv[]) -> int
 {
-    auto source_file = std::string{};
-    auto output_file = std::string{};
+    auto measure_time = false;
+    auto source_file = std::filesystem::path{};
+    auto output_file = std::filesystem::path{};
     auto options = cxxopts::Options("ccll", "Lexical analyzer generator for ccl");
 
     options.add_options()("h,help", "produce help message")(
         "l,lexical-analyzer-rules",
         "file with rules for lexical analyzer",
-        cxxopts::value(source_file))("o,output", "output header name", cxxopts::value(output_file));
+        cxxopts::value(source_file))("o,output", "output header name", cxxopts::value(output_file))(
+        "t,time", "measure lexical analysis time");
 
     options.parse_positional({"l", "o"});
 
@@ -35,6 +40,9 @@ auto main(int argc, char *argv[]) -> int
         fmt::print("Source file {} does not exist\n", source_file);
     }
 
+    measure_time = result.count("time") != 0;
+
+    auto begin = std::chrono::high_resolution_clock::now();
     auto generated_header = ccl::lex::AnalyzerGenerator::generateStaticVersion(source_file);
 
     auto file_stream = std::fstream{};
@@ -47,6 +55,13 @@ auto main(int argc, char *argv[]) -> int
 
     file_stream << generated_header;
     file_stream.close();
+
+    auto end = std::chrono::high_resolution_clock::now();
+    auto elapsed = end - begin;
+
+    if (measure_time) {
+        std::cout << elapsed / 1us << "us" << std::endl;
+    }
 
     return 0;
 }
