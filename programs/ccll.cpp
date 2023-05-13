@@ -9,7 +9,6 @@ using namespace std::chrono_literals;
 
 auto main(int argc, char *argv[]) -> int
 {
-    auto measure_time = false;
     auto source_file = std::filesystem::path{};
     auto output_file = std::filesystem::path{};
     auto options = cxxopts::Options("ccll", "Lexical analyzer generator for ccl");
@@ -40,7 +39,7 @@ auto main(int argc, char *argv[]) -> int
         fmt::print("Source file {} does not exist\n", source_file);
     }
 
-    measure_time = result.count("time") != 0;
+    auto print_generation_time = result.count("time") != 0;
 
     auto begin = std::chrono::high_resolution_clock::now();
     auto generated_header = ccl::lex::AnalyzerGenerator::generateStaticVersion(source_file);
@@ -59,8 +58,8 @@ auto main(int argc, char *argv[]) -> int
     auto end = std::chrono::high_resolution_clock::now();
     auto elapsed = end - begin;
 
-    if (measure_time) {
-        std::cout << elapsed / 1us << "us" << std::endl;
+    if (print_generation_time) {
+        fmt::print("{} us\n", elapsed / 1us);
     }
 
     return 0;
