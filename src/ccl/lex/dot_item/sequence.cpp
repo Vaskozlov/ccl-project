@@ -36,8 +36,8 @@ namespace ccl::lex::dot_item
             if (getFlags().noEscapingSymbols) {
                 chr = rule_iterator.next();
             } else {
-                auto [escaping, character] =
-                    rule_iterator.nextCharWithEscapingSymbols(special_symbols_for_sequence);
+                auto [escaping, character] = rule_iterator.nextCharWithEscapingSymbols(std::span{
+                    special_symbols_for_sequence.begin(), special_symbols_for_sequence.end()});
                 is_escaping = escaping;
                 chr = character;
             }

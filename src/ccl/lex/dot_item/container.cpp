@@ -9,8 +9,10 @@ namespace ccl::lex::dot_item
             -> void
     {
         if (repr.empty()) [[unlikely]] {
-            // empty repr should not be a postfix
-        } else if (item->hasPrefix()) [[unlikely]] {
+            return;
+        }
+
+        if (item->hasPrefix()) [[unlikely]] {
             token.addPrefix(repr);
         } else if (item->hasPostfix()) [[unlikely]] {
             token.addPostfix(repr);

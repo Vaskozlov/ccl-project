@@ -17,7 +17,8 @@ namespace ccl::lex::dot_item
         checkUnionBegin(rule_iterator);
 
         while (true) {
-            auto [is_escaping, chr] = rule_iterator.nextCharWithEscapingSymbols(special_symbols);
+            auto [is_escaping, chr] = rule_iterator.nextCharWithEscapingSymbols(
+                std::span{special_symbols.begin(), special_symbols.end()});
 
             checkForUnexpectedEnd(begin_iterator_state, is_escaping, chr);
 

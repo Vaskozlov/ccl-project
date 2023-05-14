@@ -1,5 +1,4 @@
 #include "ccl/codegen/basic_codegen.hpp"
-#include "ccl/flatmap.hpp"
 #include <stdexcept>
 
 namespace ccl::codegen
