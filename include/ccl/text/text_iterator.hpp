@@ -14,7 +14,7 @@ namespace ccl::text
     class TextIterator : public CrtpBasicTextIterator<TextIterator>
     {
     private:
-        using extra_symbols_t = std::basic_string<Pair<char32_t, char32_t>>;
+        using extra_symbols_t = std::span<const Pair<char32_t, char32_t>>;
 
         Location location{};
         TsTracker tsTracker{};

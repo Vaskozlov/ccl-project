@@ -41,9 +41,7 @@ namespace ccl::lex::parser
         size_t lastBlockId{1};
 
     public:
-        explicit CcllParser(Tokenizer &input_tokenizer)
-          : tokenizer{input_tokenizer}
-        {}
+        explicit CcllParser(Tokenizer &input_tokenizer);
 
         [[nodiscard]] auto getRules() const -> const Vector<Rule> &
         {

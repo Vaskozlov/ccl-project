@@ -11,6 +11,10 @@ namespace ccl::lex::parser
       , id{block_info.lastId++}
     {}
 
+    CcllParser::CcllParser(Tokenizer &input_tokenizer)
+      : tokenizer{input_tokenizer}
+    {}
+
     auto CcllParser::parse() -> bool
     {
         using namespace ccll;

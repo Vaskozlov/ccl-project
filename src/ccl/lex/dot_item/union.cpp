@@ -7,8 +7,9 @@ namespace ccl::lex::dot_item
     Union::Union(TextIterator &rule_iterator, Id rule_id)
       : DotItemConcept{rule_id}
     {
-        static const std::basic_string<Pair<char32_t, char32_t>> special_symbols = {
-            {U'[', U'['}, {U']', U']'}, {U'-', U'-'}};
+        static constexpr std::array special_symbols = {
+            Pair<char32_t, char32_t>{U'[', U'['}, Pair<char32_t, char32_t>{U']', U']'},
+            Pair<char32_t, char32_t>{U'-', U'-'}};
 
         auto is_range = false;
         auto previous_chr = U'\0';

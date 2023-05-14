@@ -7,7 +7,7 @@ namespace ccl::text
     EscapingSequenceToChar::EscapingSequenceToChar(
         TextIterator &text_iterator,
         extra_symbols_t extra_symbols) noexcept
-      : extraSymbols{std::move(extra_symbols)}
+      : extraSymbols{extra_symbols}
       , textIterator{text_iterator}
     {}
 
@@ -67,7 +67,7 @@ namespace ccl::text
 
     auto EscapingSequenceToChar::searchInExtraSymbols(char32_t chr) -> char32_t
     {
-        auto it = std::find_if(extraSymbols.cbegin(), extraSymbols.cend(), [chr](auto elem) {
+        auto it = std::find_if(extraSymbols.begin(), extraSymbols.end(), [chr](auto elem) {
             return elem.first == chr;
         });
 
