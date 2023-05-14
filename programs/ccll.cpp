@@ -36,7 +36,7 @@ auto main(int argc, char *argv[]) -> int
     }
 
     if (!std::filesystem::exists(source_file)) {
-        fmt::print("Source file {} does not exist\n", source_file);
+        fmt::print("Source file {} does not exist\n", source_file.string());
     }
 
     auto print_generation_time = result.count("time") != 0;
@@ -48,7 +48,7 @@ auto main(int argc, char *argv[]) -> int
     file_stream.open(output_file, std::ios::out);
 
     if (!file_stream.is_open()) {
-        fmt::print("Error: cannot open file {}\n", output_file);
+        fmt::print("Error: cannot open file {}\n", output_file.string());
         return 1;
     }
 

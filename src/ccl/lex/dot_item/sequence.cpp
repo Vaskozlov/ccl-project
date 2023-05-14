@@ -21,8 +21,8 @@ namespace ccl::lex::dot_item
       , starter{sequence_starter}
       , ender{sequence_ender}
     {
-        static constexpr std::array special_symbols_for_sequence{
-            Pair<char32_t, char32_t>{U'[', U'['}, Pair<char32_t, char32_t>{U']', U']'}};
+        static constexpr StaticFlatmap<char32_t, char32_t, 2> special_symbols_for_sequence{
+            {U'[', U'['}, {U']', U']'}};
 
         auto begin_iterator_state = rule_iterator;
 

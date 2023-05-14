@@ -35,29 +35,30 @@ namespace ccl
     template<typename T>
     using Optional = std::optional<T>;
 
-    template<typename T>
-    using Vector = std::vector<T>;
+    template<typename T, typename Alloc = std::allocator<T>>
+    using Vector = std::vector<T, Alloc>;
 
     template<size_t N>
     using SmallBitset = std::bitset<N>;
 
-    template<typename T>
-    using Set = std::set<T>;
+    template<typename T, typename Compare = std::less<T>, typename Alloc = std::allocator<T>>
+    using Set = std::set<T, Compare, Alloc>;
 
-    template<typename Key, typename Value>
-    using Map = std::map<Key, Value>;
+    template<
+        typename Key, typename Value, typename Compare = std::less<Key>,
+        typename Alloc = std::allocator<std::pair<const Key, Value>>>
+    using Map = std::map<Key, Value, Compare, Alloc>;
 
-    template<typename T>
-    using UnorderedSet = std::unordered_set<T>;
+    template<
+        typename T, typename Hash = std::hash<T>, typename Pred = std::equal_to<T>,
+        typename Alloc = std::allocator<T>>
+    using UnorderedSet = std::unordered_set<T, Hash, Pred, Alloc>;
 
-    template<typename Key, typename Value>
-    using UnorderedMap = std::unordered_map<Key, Value>;
-
-    template<typename T>
-    using FlatSet = std::set<T>;
-
-    template<typename Key, typename Value>
-    using Flatmap = std::map<Key, Value>;
+    template<
+        typename Key, typename Value, typename Hash = std::hash<Key>,
+        typename Pred = std::equal_to<Key>,
+        typename Alloc = std::allocator<std::pair<const Key, Value>>>
+    using UnorderedMap = std::unordered_map<Key, Value, Hash, Pred, Alloc>;
 
     template<typename T>
     using InitializerList = const std::initializer_list<T> &;
