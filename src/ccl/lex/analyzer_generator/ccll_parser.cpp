@@ -11,6 +11,10 @@ namespace ccl::lex::parser
       , id{block_info.lastId++}
     {}
 
+    CcllParser::CcllParser(Tokenizer &input_tokenizer)
+      : tokenizer{input_tokenizer}
+    {}
+
     auto CcllParser::parse() -> bool
     {
         using namespace ccll;
@@ -120,6 +124,7 @@ namespace ccl::lex::parser
                 location.getFilename(), location.getLine(), location.getColumn() - 1,
                 location.getRealColumn() - 1}};
 
+        // NOLINTNEXTLINE : is guaranteed by lexical analyzer rule
         text_iterator.skip(line_repr.find(':').value() + 1);
 
         [[maybe_unused]] auto just_checking_rule =

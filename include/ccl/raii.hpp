@@ -6,7 +6,7 @@
 
 namespace ccl
 {
-    template<Invocable Constructor, Invocable Deleter>
+    template<Invocable Deleter, Invocable Constructor = void (*)()>
     class Raii
     {
     private:
@@ -14,6 +14,10 @@ namespace ccl
         Optional<Deleter> deleter;
 
     public:
+        [[nodiscard]] explicit constexpr Raii(Deleter &&t_deleter)
+          : deleter{std::move(t_deleter)}
+        {}
+
         [[nodiscard]] constexpr Raii(Constructor &&t_constructor, Deleter &&t_deleter)
           : constructor{std::move(t_constructor)}
           , deleter{std::move(t_deleter)}
@@ -22,12 +26,9 @@ namespace ccl
         }
 
         [[nodiscard]] constexpr Raii(Raii &&other) noexcept
-          : constructor{std::move(other.constructor)}
-          , deleter{std::move(other.deleter)}
-        {
-            other.constructor = std::nullopt;
-            other.deleter = std::nullopt;
-        }
+          : constructor{std::exchange(other.constructor, std::nullopt)}
+          , deleter{std::exchange(other.deleter, std::nullopt)}
+        {}
 
         Raii(const Raii &) = delete;
 

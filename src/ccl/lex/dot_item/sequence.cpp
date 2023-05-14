@@ -21,7 +21,7 @@ namespace ccl::lex::dot_item
       , starter{sequence_starter}
       , ender{sequence_ender}
     {
-        static const std::basic_string<Pair<char32_t, char32_t>> special_symbols_for_sequence{
+        static constexpr StaticFlatmap<char32_t, char32_t, 2> special_symbols_for_sequence{
             {U'[', U'['}, {U']', U']'}};
 
         auto begin_iterator_state = rule_iterator;
@@ -36,8 +36,8 @@ namespace ccl::lex::dot_item
             if (getFlags().noEscapingSymbols) {
                 chr = rule_iterator.next();
             } else {
-                auto [escaping, character] =
-                    rule_iterator.nextCharWithEscapingSymbols(special_symbols_for_sequence);
+                auto [escaping, character] = rule_iterator.nextCharWithEscapingSymbols(std::span{
+                    special_symbols_for_sequence.begin(), special_symbols_for_sequence.end()});
                 is_escaping = escaping;
                 chr = character;
             }

@@ -7,7 +7,7 @@ namespace ccl::lex::dot_item
     Union::Union(TextIterator &rule_iterator, Id rule_id)
       : DotItemConcept{rule_id}
     {
-        static const std::basic_string<Pair<char32_t, char32_t>> special_symbols = {
+        static constexpr StaticFlatmap<char32_t, char32_t, 3> special_symbols = {
             {U'[', U'['}, {U']', U']'}, {U'-', U'-'}};
 
         auto is_range = false;
@@ -17,7 +17,8 @@ namespace ccl::lex::dot_item
         checkUnionBegin(rule_iterator);
 
         while (true) {
-            auto [is_escaping, chr] = rule_iterator.nextCharWithEscapingSymbols(special_symbols);
+            auto [is_escaping, chr] = rule_iterator.nextCharWithEscapingSymbols(
+                std::span{special_symbols.begin(), special_symbols.end()});
 
             checkForUnexpectedEnd(begin_iterator_state, is_escaping, chr);
 
