@@ -77,7 +77,7 @@ namespace ccl::codegen
         }
 
         template<size_t N>// NOLINTNEXTLINE
-        auto operator<<(const char (&character_array)[N]) -> BasicCodeGenerator &
+        auto operator<<(const CArray<char, N> &character_array) -> BasicCodeGenerator &
         {
             return *this << std::string_view{character_array};// NOLINT
         }

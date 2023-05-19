@@ -75,6 +75,9 @@ namespace ccl
     template<typename T, size_t Size>
     using CArray = T[Size];
 
+    template<typename T, size_t Size>
+    using FixedSizeArray = std::array<T, Size>;
+
     template<typename T, typename... Ts>
     constexpr auto makeUnique(Ts &&...args) -> UniquePtr<T>
         requires std::constructible_from<T, Ts...>

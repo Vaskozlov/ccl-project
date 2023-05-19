@@ -11,10 +11,14 @@ namespace ccl
         static_assert(Trivial<T1> && Trivial<T2>);
 
     public:
-        T1 first;
-        T2 second;
+        T1 first{};
+        T2 second{};
 
         TrivialPair() = default;
+
+        constexpr TrivialPair(T1 first_elem) noexcept
+          : first{first_elem}
+        {}
 
         constexpr TrivialPair(T1 first_elem, T2 second_elem) noexcept
           : first{first_elem}
