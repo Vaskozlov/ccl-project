@@ -32,7 +32,8 @@ namespace ccl
 
     template<Iterable Container, typename Function, size_t N>
     [[nodiscard]] CCL_INLINE auto
-        join(Container &&container, Function &&function, const char (&separator)[N]) -> std::string
+        join(Container &&container, Function &&function, const CArray<char, N> &separator)
+            -> std::string
     {
         return join(
             std::forward<Container>(container), std::forward<Function>(function),
@@ -59,8 +60,9 @@ namespace ccl
         }
     }
 
-    template<Iterable Container>
-    [[nodiscard]] CCL_INLINE auto join(Container &&container, string_view separator) -> std::string
+    template<Iterable Container, size_t N>
+    [[nodiscard]] CCL_INLINE auto join(Container &&container, const CArray<char, N> &separator)
+        -> std::string
     {
         return join(std::forward<Container>(container), as<std::string_view>(separator));
     }

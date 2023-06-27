@@ -9,8 +9,8 @@
 
 namespace ccl
 {
-    template<std::equality_comparable Key, typename Value, size_t Size>
-    class StaticFlatmap : public AutoIterator<StaticFlatmap<Key, Value, Size>>
+    template<typename Key, typename Value, size_t Size, typename Pred = std::equal_to<>>
+    class StaticFlatmap : public AutoIterator<StaticFlatmap<Key, Value, Size, Pred>>
     {
     public:
         using key_type = Key;
@@ -55,38 +55,22 @@ namespace ccl
             return storage.begin() + occupied;
         }
 
-        constexpr auto insert(const Key &key, Value &&value) -> iterator
-        {
-            return emplace(key, std::move(value));
-        }
-
-        constexpr auto insert(const Key &key, const Value &value) -> iterator
-        {
-            return emplace(key, value);
-        }
-
-        constexpr auto insert(const value_type &value) -> iterator
-        {
-            return emplace(value);
-        }
-
-        constexpr auto insert(value_type &&value) -> iterator
-        {
-            return emplace(std::move(value));
-        }
-
-        template<typename... Ts>
-        constexpr auto emplace(Ts &&...args) -> iterator
-            requires std::constructible_from<value_type, Ts...>
+        template<typename K, typename... Ts>
+        constexpr auto tryEmplace(K &&key, Ts &&...args) -> Pair<iterator, bool>
+            requires std::constructible_from<value_type, Key, Ts...>
         {
             if (occupied == capacity()) {
                 throw std::out_of_range("flatmap is full");
             }
 
-            auto result = end();
-            storage[occupied++] = value_type(std::forward<Ts>(args)...);
+            auto result = find(key);
 
-            return result;
+            if (result != end()) {
+                return {result, false};
+            }
+
+            storage[occupied++] = value_type(std::forward<K>(key), std::forward<Ts>(args)...);
+            return {result, true};
         }
 
         CCL_DECL auto at(const Key &key) -> Value &
@@ -101,7 +85,7 @@ namespace ccl
 
         CCL_DECL auto operator[](const Key &key) -> Value &
         {
-            return at(key);
+            return tryEmplace(key).first->second;
         }
 
         CCL_DECL auto operator[](const Key &key) const -> const Value &
@@ -129,7 +113,11 @@ namespace ccl
         constexpr StaticFlatmap(InitializerList<value_type> initial_data)
         {
             for (const auto &value : initial_data) {
-                insert(value);
+                if (occupied == capacity()) {
+                    throw std::runtime_error{"StaticFlatmap capacity limit reached"};
+                }
+
+                storage[occupied++] = value;
             }
         }
 
@@ -137,10 +125,9 @@ namespace ccl
         template<typename Self>
         CCL_DECL static auto staticFind(Self &self, const Key &key) noexcept -> auto
         {
-            return std::find_if(
-                std::cbegin(self), std::cend(self), [&key](const value_type &value) {
-                    return value.first == key;
-                });
+            return std::find_if(std::begin(self), std::end(self), [&key](const value_type &value) {
+                return Pred{}(key, value.first);
+            });
         }
 
         template<typename Self>

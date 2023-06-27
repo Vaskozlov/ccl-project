@@ -23,9 +23,6 @@ namespace ccl
         LEXICAL_ANALYSIS,
         PARSING
     };
-
-    auto exceptionCriticalityDescription(ExceptionCriticality criticality) noexcept
-        -> std::string_view;
 }// namespace ccl
 
 namespace ccl::text
@@ -92,11 +89,6 @@ namespace ccl::text
         [[nodiscard]] auto getCriticality() const noexcept -> ExceptionCriticality
         {
             return criticality;
-        }
-
-        [[nodiscard]] auto getCriticalityDescription() const noexcept -> string_view
-        {
-            return exceptionCriticalityDescription(criticality);
         }
 
         [[nodiscard]] auto getStage() const noexcept -> AnalysisStage

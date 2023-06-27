@@ -12,7 +12,7 @@ TEST_CASE("FlatmapOverflow", "[Flatmap]")
                                                {60, 70}, {70, 80}, {80, 80}, {90, 100}, {100, 110}};
 
     REQUIRE(flatmap.size() == flatmap.capacity());
-    REQUIRE_THROWS_AS(flatmap.insert(110, 120), std::out_of_range);
+    REQUIRE_THROWS_AS(flatmap.tryEmplace(110, 120), std::out_of_range);
 }
 
 // NOLINTEND

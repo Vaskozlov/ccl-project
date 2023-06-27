@@ -1,24 +1,6 @@
 #include <ccl/flatmap.hpp>
 #include <ccl/text/iterator_exception.hpp>
 
-namespace ccl
-{
-    static constexpr auto ExceptionDescription =
-        StaticFlatmap<ExceptionCriticality, std::string_view, 5>{
-            {ExceptionCriticality::SUGGESTION, "just a suggestion"},
-            {ExceptionCriticality::WARNING, "something, that should be fixed"},
-            {ExceptionCriticality::UNCRITICAL, "recoverable error"},
-            {ExceptionCriticality::CRITICAL,
-             "critical error, but continuation of scanning stage is possible"},
-            {ExceptionCriticality::PANIC, "critical error, no possible recovery"}};
-
-    auto exceptionCriticalityDescription(ExceptionCriticality criticality) noexcept
-        -> std::string_view
-    {
-        return ExceptionDescription.at(criticality);
-    }
-}// namespace ccl
-
 namespace ccl::text
 {
     using namespace ccl::string_view_literals;
