@@ -6,6 +6,6 @@ using namespace string_view_literals;
 
 TEST_CASE("StringViewOpenCloseFind", "[StringView]")
 {
-    DEBUG_VAR cerb_string = "(Hello(, )World)!"_sv;
-    REQUIRE(cerb_string.openCloseFind('(', ')').value() == cerb_string.rfind(')'));
+    DEBUG_VAR own_string = "(Hello(, )World)!"_sv;
+    REQUIRE(own_string.openCloseFind('(', ')').value() == own_string.rfind(')'));
 }

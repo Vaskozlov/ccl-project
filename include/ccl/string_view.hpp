@@ -168,6 +168,11 @@ namespace ccl
             return result;
         }
 
+        CCL_DECL auto contains(CharT chr) const noexcept -> bool
+        {
+            return find<SAFE>(chr).has_value();
+        }
+
         /**
          * @brief returns index of the element, which closes range opened with starter
          * @param starter character, that starts range
@@ -232,6 +237,27 @@ namespace ccl
             }
 
             return result;
+        }
+
+        constexpr auto leftStrip(BasicStringView characters_to_strip) -> void
+        {
+            while (length != 0 && characters_to_strip.contains(*string)) {
+                --length;
+                ++string;
+            }
+        }
+
+        constexpr auto rightStrip(BasicStringView characters_to_strip) -> void
+        {
+            while (length != 0 && characters_to_strip.contains(*(end() - 1))) {
+                --length;
+            }
+        }
+
+        constexpr auto strip(BasicStringView characters_to_strip) -> void
+        {
+            leftStrip(characters_to_strip);
+            rightStrip(characters_to_strip);
         }
 
         CCL_UNSAFE_VERSION
