@@ -8,11 +8,11 @@ using namespace std::string_view_literals;
 TEST_CASE("StringViewContains", "[StringView]")
 {
     DEBUG_VAR std_string = "Hello, World!"sv;
-    DEBUG_VAR cerb_string = "Hello, World!"_sv;
+    DEBUG_VAR own_string = "Hello, World!"_sv;
 
     for (auto chr: std_string)
     {
         auto std_string_contains_chr = std_string.find(chr) != std::string::npos;
-        REQUIRE(std_string_contains_chr == cerb_string.contains(chr));
+        REQUIRE(std_string_contains_chr == own_string.contains(chr));
     }
 }
