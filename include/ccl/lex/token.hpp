@@ -130,7 +130,7 @@ namespace ccl::lex
 
         auto setReprLength(size_t length) noexcept -> void
         {
-            repr.setLength<UNSAFE>(length);
+            repr = repr.changeLength<UNSAFE>(length);
         }
 
         auto addPrefix(string_view prefix) -> void

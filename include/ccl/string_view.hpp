@@ -261,19 +261,21 @@ namespace ccl
         }
 
         CCL_UNSAFE_VERSION
-        constexpr auto setLength(size_t new_length) -> void
+        constexpr auto changeLength(size_t new_length) const noexcept-> BasicStringView
         {
-            length = new_length;
+            auto new_string = *this;
+            new_string.length = new_length;
+            return new_string;
         }
 
         CCL_SAFE_VERSION
-        constexpr auto setLength(size_t new_length) -> void
+        constexpr auto changeLength(size_t new_length) const -> BasicStringView
         {
             if (new_length > length) {
                 throw std::invalid_argument{"New length is greater than the old one"};
             }
 
-            setLength<UNSAFE>(new_length);
+            return changeLength<UNSAFE>(new_length);
         }
 
         CCL_DECL auto startsWith(const StringLike<CharT> auto &str) const noexcept -> bool
@@ -281,9 +283,9 @@ namespace ccl
             return substr(0, str.size()).operator==(str);
         }
 
-        CCL_DECL auto operator[](size_t index) const noexcept -> CharT
+        CCL_DECL auto operator[](size_t index) const -> CharT
         {
-            return string[index];
+            return at(index);
         }
 
         CCL_DECL auto at(size_t index) const -> CharT
