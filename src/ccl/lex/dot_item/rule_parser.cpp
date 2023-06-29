@@ -256,7 +256,7 @@ namespace ccl::lex::dot_item
 
     auto Container::RuleParser::findContainerEnd(string_view repr) -> size_t
     {
-        const auto closing_bracket_index = repr.openCloseFind('(', ')');
+        const auto closing_bracket_index = repr.findMatchingPair('(', ')');
 
         if (closing_bracket_index.has_value()) {
             return *closing_bracket_index;
