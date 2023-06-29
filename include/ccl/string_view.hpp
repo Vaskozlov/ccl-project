@@ -239,29 +239,47 @@ namespace ccl
             return result;
         }
 
-        constexpr auto leftStrip(BasicStringView characters_to_strip) -> void
+        CCL_DECL auto leftStrip(BasicStringView characters_to_strip) const noexcept
+            -> BasicStringView
         {
-            while (length != 0 && characters_to_strip.contains(*string)) {
-                --length;
-                ++string;
+            auto stripped_string = *this;
+            auto has_characters_to_strip = [&stripped_string, &characters_to_strip]() {
+                const auto first_character = *stripped_string.begin();
+                return characters_to_strip.contains(first_character);
+            };
+
+            while (!stripped_string.empty() && has_characters_to_strip()) {
+                --stripped_string.length;
+                ++stripped_string.string;
             }
+
+            return stripped_string;
         }
 
-        constexpr auto rightStrip(BasicStringView characters_to_strip) -> void
+        CCL_DECL auto rightStrip(BasicStringView characters_to_strip) const noexcept
+            -> BasicStringView
         {
-            while (length != 0 && characters_to_strip.contains(*(end() - 1))) {
-                --length;
+            auto stripped_string = *this;
+            auto has_characters_to_strip = [&stripped_string, &characters_to_strip]() {
+                const auto last_character = *(stripped_string.end() - 1);
+                return characters_to_strip.contains(last_character);
+            };
+
+            while (!stripped_string.empty() && has_characters_to_strip()) {
+                --stripped_string.length;
             }
+
+            return stripped_string;
         }
 
-        constexpr auto strip(BasicStringView characters_to_strip) -> void
+        CCL_DECL auto strip(BasicStringView characters_to_strip) const noexcept -> BasicStringView
         {
-            leftStrip(characters_to_strip);
-            rightStrip(characters_to_strip);
+            const auto left_stripped = leftStrip(characters_to_strip);
+            return left_stripped.rightStrip(characters_to_strip);
         }
 
         CCL_UNSAFE_VERSION
-        constexpr auto changeLength(size_t new_length) const noexcept-> BasicStringView
+        constexpr auto changeLength(size_t new_length) const noexcept -> BasicStringView
         {
             auto new_string = *this;
             new_string.length = new_length;
