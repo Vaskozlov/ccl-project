@@ -122,6 +122,18 @@ namespace ccl
             return {begin() + first, begin() + last};
         }
 
+        CCL_DECL auto removeLastCharacter() const noexcept -> BasicStringView
+        {
+            if (empty()) {
+                return *this;
+            }
+
+            auto truncated = *this;
+            --truncated.length;
+
+            return truncated;
+        }
+
         CCL_UNSAFE_VERSION
         CCL_DECL auto find(CharT chr, size_t offset = 0) const noexcept -> size_t
         {
