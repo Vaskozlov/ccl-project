@@ -279,7 +279,7 @@ namespace ccl
         }
 
         CCL_UNSAFE_VERSION
-        constexpr auto changeLength(size_t new_length) const noexcept -> BasicStringView
+        CCL_DECL auto changeLength(size_t new_length) const noexcept -> BasicStringView
         {
             auto new_string = *this;
             new_string.length = new_length;
@@ -287,7 +287,7 @@ namespace ccl
         }
 
         CCL_SAFE_VERSION
-        constexpr auto changeLength(size_t new_length) const -> BasicStringView
+        CCL_DECL auto changeLength(size_t new_length) const -> BasicStringView
         {
             if (new_length > length) {
                 throw std::invalid_argument{"New length is greater than the old one"};
