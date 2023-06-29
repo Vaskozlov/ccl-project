@@ -122,6 +122,18 @@ namespace ccl
             return {begin() + first, begin() + last};
         }
 
+        CCL_DECL auto removeLastCharacter() const noexcept -> BasicStringView
+        {
+            if (empty()) {
+                return *this;
+            }
+
+            auto truncated = *this;
+            --truncated.length;
+
+            return truncated;
+        }
+
         CCL_UNSAFE_VERSION
         CCL_DECL auto find(CharT chr, size_t offset = 0) const noexcept -> size_t
         {
@@ -239,41 +251,61 @@ namespace ccl
             return result;
         }
 
-        constexpr auto leftStrip(BasicStringView characters_to_strip) -> void
+        CCL_DECL auto leftStrip(BasicStringView characters_to_strip) const noexcept
+            -> BasicStringView
         {
-            while (length != 0 && characters_to_strip.contains(*string)) {
-                --length;
-                ++string;
+            auto stripped_string = *this;
+            auto has_characters_to_strip = [&stripped_string, &characters_to_strip]() {
+                const auto first_character = *stripped_string.begin();
+                return characters_to_strip.contains(first_character);
+            };
+
+            while (!stripped_string.empty() && has_characters_to_strip()) {
+                --stripped_string.length;
+                ++stripped_string.string;
             }
+
+            return stripped_string;
         }
 
-        constexpr auto rightStrip(BasicStringView characters_to_strip) -> void
+        CCL_DECL auto rightStrip(BasicStringView characters_to_strip) const noexcept
+            -> BasicStringView
         {
-            while (length != 0 && characters_to_strip.contains(*(end() - 1))) {
-                --length;
+            auto stripped_string = *this;
+            auto has_characters_to_strip = [&stripped_string, &characters_to_strip]() {
+                const auto last_character = *(stripped_string.end() - 1);
+                return characters_to_strip.contains(last_character);
+            };
+
+            while (!stripped_string.empty() && has_characters_to_strip()) {
+                --stripped_string.length;
             }
+
+            return stripped_string;
         }
 
-        constexpr auto strip(BasicStringView characters_to_strip) -> void
+        CCL_DECL auto strip(BasicStringView characters_to_strip) const noexcept -> BasicStringView
         {
-            leftStrip(characters_to_strip);
-            rightStrip(characters_to_strip);
+            const auto left_stripped = leftStrip(characters_to_strip);
+            return left_stripped.rightStrip(characters_to_strip);
         }
 
         CCL_UNSAFE_VERSION
-        constexpr auto setLength(size_t new_length) -> void
+        CCL_DECL auto changeLength(size_t new_length) const noexcept -> BasicStringView
         {
-            length = new_length;
+            auto new_string = *this;
+            new_string.length = new_length;
+            return new_string;
         }
 
         CCL_SAFE_VERSION
-        constexpr auto setLength(size_t new_length) -> void
+        CCL_DECL auto changeLength(size_t new_length) const -> BasicStringView
         {
             if (new_length > length) {
                 throw std::invalid_argument{"New length is greater than the old one"};
             }
 
-            setLength<UNSAFE>(new_length);
+            return changeLength<UNSAFE>(new_length);
         }
 
         CCL_DECL auto startsWith(const StringLike<CharT> auto &str) const noexcept -> bool
@@ -281,9 +313,9 @@ namespace ccl
             return substr(0, str.size()).operator==(str);
         }
 
-        CCL_DECL auto operator[](size_t index) const noexcept -> CharT
+        CCL_DECL auto operator[](size_t index) const -> CharT
         {
-            return string[index];
+            return at(index);
         }
 
         CCL_DECL auto at(size_t index) const -> CharT
