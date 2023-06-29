@@ -256,7 +256,7 @@ namespace ccl
         {
             auto stripped_string = *this;
             auto has_characters_to_strip = [&stripped_string, &characters_to_strip]() {
-                const auto first_character = *stripped_string.begin();
+                const auto first_character = stripped_string.template front<UNSAFE>();
                 return characters_to_strip.contains(first_character);
             };
 
@@ -273,7 +273,7 @@ namespace ccl
         {
             auto stripped_string = *this;
             auto has_characters_to_strip = [&stripped_string, &characters_to_strip]() {
-                const auto last_character = *(stripped_string.end() - 1);
+                const auto last_character = stripped_string.template back<UNSAFE>();
                 return characters_to_strip.contains(last_character);
             };
 
@@ -311,6 +311,38 @@ namespace ccl
         CCL_DECL auto startsWith(const StringLike<CharT> auto &str) const noexcept -> bool
         {
             return substr(0, str.size()).operator==(str);
+        }
+
+        CCL_SAFE_VERSION
+        CCL_DECL auto front() const noexcept -> Optional<CharT>
+        {
+            if (empty()) {
+                return std::nullopt;
+            }
+
+            return *begin();
+        }
+
+        CCL_UNSAFE_VERSION
+        CCL_DECL auto front() const noexcept -> CharT
+        {
+            return *begin();
+        }
+
+        CCL_SAFE_VERSION
+        CCL_DECL auto back() const noexcept -> Optional<CharT>
+        {
+            if (empty()) {
+                return std::nullopt;
+            }
+
+            return *(end() - 1);
+        }
+
+        CCL_UNSAFE_VERSION
+        CCL_DECL auto back() const noexcept -> CharT
+        {
+            return *(end() - 1);
         }
 
         CCL_DECL auto operator[](size_t index) const -> CharT
