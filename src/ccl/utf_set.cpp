@@ -25,10 +25,10 @@ namespace ccl
         }
     }
 
-    auto UtfSet::set(char32_t from, char32_t to, bool value) -> void
+    auto UtfSet::set(Range<char32_t> range, bool value) -> void
     {
         CCL_UNROLL_N(4)
-        for (auto chr = from; chr <= to; ++chr) {
+        for (auto chr : range) {
             set(chr, value);
         }
     }

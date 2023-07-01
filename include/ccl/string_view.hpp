@@ -2,7 +2,6 @@
 #define CCL_PROJECT_STRING_VIEW_HPP
 
 #include <ccl/ccl.hpp>
-#include <ccl/iterator.hpp>
 #include <numeric>
 
 namespace ccl
@@ -192,22 +191,22 @@ namespace ccl
          * @return index on success or npos on failure
          */
         CCL_UNSAFE_VERSION
-        CCL_DECL auto openCloseFind(CharT starter, CharT ender) const noexcept -> size_t
+        CCL_DECL auto findMatchingPair(CharT starter, CharT ender) const noexcept -> size_t
         {
-            auto passed_pairs = as<size_t>(0);
+            auto pairs_count = as<size_t>(0);
 
-            const auto it_to_elem =
-                std::find_if(begin(), end(), [&passed_pairs, starter, ender](CharT chr) {
-                    passed_pairs += (chr == starter);
-                    passed_pairs -= (chr == ender);
-                    return 0 == passed_pairs;
+            const auto matched_pair_iterator =
+                std::find_if(begin(), end(), [&pairs_count, starter, ender](CharT chr) {
+                    pairs_count += (chr == starter);
+                    pairs_count -= (chr == ender);
+                    return 0 == pairs_count;
                 });
 
-            if (it_to_elem == end()) {
+            if (matched_pair_iterator == end()) {
                 return npos;
             }
 
-            return distance(begin(), it_to_elem);
+            return distance(begin(), matched_pair_iterator);
         }
 
         /**
@@ -217,9 +216,10 @@ namespace ccl
          * @return index on success or std::nullopt failure
          */
         CCL_SAFE_VERSION
-        CCL_DECL auto openCloseFind(CharT open, CharT close) const noexcept -> Optional<size_t>
+        CCL_DECL auto findMatchingPair(CharT starter, CharT ender) const noexcept
+            -> Optional<size_t>
         {
-            auto result = openCloseFind<UNSAFE>(open, close);
+            auto result = findMatchingPair<UNSAFE>(starter, ender);
 
             if (result == npos) {
                 return std::nullopt;

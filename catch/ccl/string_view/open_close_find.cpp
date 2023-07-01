@@ -7,5 +7,5 @@ using namespace string_view_literals;
 TEST_CASE("StringViewOpenCloseFind", "[StringView]")
 {
     DEBUG_VAR own_string = "(Hello(, )World)!"_sv;
-    REQUIRE(own_string.openCloseFind('(', ')').value() == own_string.rfind(')'));
+    REQUIRE(own_string.findMatchingPair('(', ')').value() == own_string.rfind(')'));
 }

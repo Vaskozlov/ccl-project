@@ -65,7 +65,7 @@ namespace ccl::lex::dot_item
         Union::addCharactersToTheBitset(bool &is_range, char32_t previous_chr, char32_t chr) -> void
     {
         if (is_range) {
-            bitset.set(previous_chr, chr, true);
+            bitset.set({previous_chr, chr + 1}, true);
             is_range = false;
         } else {
             bitset.set(chr, true);
