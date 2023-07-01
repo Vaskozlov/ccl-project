@@ -19,7 +19,7 @@ namespace ccl
         [[nodiscard]] auto at(char32_t chr) const noexcept -> bool;
 
         auto set(char32_t chr, bool value = true) -> void;
-        auto set(char32_t from, char32_t to, bool value = true) -> void;
+        auto set(Range<char32_t> range, bool value = true) -> void;
 
     private:
         auto setBigChar(char32_t chr, bool value) -> void;

@@ -2,7 +2,6 @@
 #define CCL_PROJECT_FLATMAP_HPP
 
 #include <ccl/ccl.hpp>
-#include <ccl/iterator.hpp>
 #include <range/v3/range.hpp>
 #include <range/v3/view.hpp>
 #include <utility>

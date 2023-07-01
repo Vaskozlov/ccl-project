@@ -1,7 +1,7 @@
 #ifndef CCL_PROJECT_ITERATOR_HPP
 #define CCL_PROJECT_ITERATOR_HPP
 
-#include <ccl/ccl.hpp>
+#include <ccl/core/defines.hpp>
 #include <iterator>
 
 namespace ccl
