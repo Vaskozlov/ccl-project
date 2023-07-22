@@ -225,7 +225,7 @@ namespace ccl::text
         {
             CCL_PREFETCH(carriage);
 
-            if ((carriage + 1) >= end) [[unlikely]] {
+            if ((carriage + as<size_t>(isInitialized())) >= end) [[unlikely]] {
                 carriage = end;
                 currentChar = 0;
                 return 0;
