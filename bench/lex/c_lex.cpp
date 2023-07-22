@@ -38,7 +38,7 @@ static auto lexicalAnalyzerInitialization(benchmark::State &state) -> void
                 {CLexerToken::ANGLE_OPENING, R"( ! [\[] )"},
                 {CLexerToken::ANGLE_CLOSING, R"( ! [\]] )"},
                 {CLexerToken::COMMA, R"( ! [,] )"},
-                {CLexerToken::COLUMN, R"( ! [;] )"},
+                {CLexerToken::SEMI_COLON, R"( ! [;] )"},
                 {CLexerToken::PREPROCESSOR, R"( ! [#] )"},
                 {CLexerToken::QUESTION_MARK, R"( ! [?] )"},
                 {CLexerToken::ADD, R"( ! [+] )"},

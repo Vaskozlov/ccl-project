@@ -23,9 +23,10 @@ namespace ccl
         ANGLE_OPENING = 4294967300,
         ANGLE_CLOSING = 4294967301,
         COMMA = 4294967302,
-        COLUMN = 4294967303,
-        PREPROCESSOR = 4294967304,
-        QUESTION_MARK = 4294967305,
+        COLON = 4294967303,
+        SEMI_COLON = 4294967304,
+        PREPROCESSOR = 4294967305,
+        QUESTION_MARK = 4294967306,
         ADD = 8589934592,
         SUB = 8589934593,
         MUL = 8589934594,
@@ -79,7 +80,8 @@ namespace ccl
             {CLexerToken::ANGLE_OPENING, R"( ! [\[] )"},
             {CLexerToken::ANGLE_CLOSING, R"( ! [\]] )"},
             {CLexerToken::COMMA, R"( ! [,] )"},
-            {CLexerToken::COLUMN, R"( ! [;] )"},
+            {CLexerToken::COLON, R"( ! [:] )"},
+            {CLexerToken::SEMI_COLON, R"( ! [;] )"},
             {CLexerToken::PREPROCESSOR, R"( ! [#] )"},
             {CLexerToken::QUESTION_MARK, R"( ! [?] )"},
             {CLexerToken::ADD, R"( ! [+] )"},
@@ -122,7 +124,7 @@ namespace ccl
             {CLexerToken::STRING, R"( ! "\"" (["]^ | "\\\"")* "\"" )"},
         }};
 
-    inline constexpr ccl::StaticFlatmap<ccl::Id, ccl::string_view, 52> ToStringCLexerToken{
+    inline constexpr ccl::StaticFlatmap<ccl::Id, ccl::string_view, 53> ToStringCLexerToken{
         {CLexerToken::EOI, "EOI"},
         {CLexerToken::BAD_TOKEN, "BAD_TOKEN"},
         {CLexerToken::COMMENT, "COMMENT"},
@@ -133,7 +135,8 @@ namespace ccl
         {CLexerToken::ANGLE_OPENING, "ANGLE_OPENING"},
         {CLexerToken::ANGLE_CLOSING, "ANGLE_CLOSING"},
         {CLexerToken::COMMA, "COMMA"},
-        {CLexerToken::COLUMN, "COLUMN"},
+        {CLexerToken::COLON, "COLON"},
+        {CLexerToken::SEMI_COLON, "SEMI_COLON"},
         {CLexerToken::PREPROCESSOR, "PREPROCESSOR"},
         {CLexerToken::QUESTION_MARK, "QUESTION_MARK"},
         {CLexerToken::ADD, "ADD"},
