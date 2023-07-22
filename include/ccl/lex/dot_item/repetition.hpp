@@ -5,10 +5,16 @@
 
 namespace ccl::lex::dot_item
 {
-    class CCL_TRIVIAL_ABI Repetition : public Range<size_t>
+    class CCL_TRIVIAL_ABI Repetition
     {
     public:
-        using Range::Range;
+        size_t from{};
+        size_t to{};
+
+        [[nodiscard]] constexpr Repetition(size_t repetition_begin, size_t repetition_end) noexcept
+          : from{repetition_begin}
+          , to{repetition_end}
+        {}
 
         [[nodiscard]] explicit Repetition(text::TextIterator &text_iterator);
 
@@ -37,19 +43,13 @@ namespace ccl::lex::dot_item
             return std::numeric_limits<size_t>::max();
         }
 
-        CCL_DECL auto operator==(const Repetition &other) const noexcept -> bool
+        [[nodiscard]] auto inRange(size_t value) const noexcept
         {
-            return from == other.from && to == other.to;
+            return land(value >= from, value <= to);
         }
 
-        CCL_DECL auto operator<=>(const Repetition &other) const noexcept -> std::weak_ordering
-        {
-            if (from == other.from) {
-                return to <=> other.to;
-            }
-
-            return from <=> other.from;
-        }
+        [[nodiscard]] auto operator<=>(const Repetition &) const noexcept
+            -> std::weak_ordering = default;
 
     private:
         [[nodiscard]] static auto
