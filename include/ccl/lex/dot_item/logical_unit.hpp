@@ -27,6 +27,16 @@ namespace ccl::lex::dot_item
         [[nodiscard]] LogicalUnit(
             DotItem lhs, DotItem rhs, LogicalOperation logical_operation, Id item_id);
 
+        [[nodiscard]] auto getLhs() const -> const DotItem &
+        {
+            return lhsItem;
+        }
+
+        [[nodiscard]] auto getRhs() const -> const DotItem &
+        {
+            return rhsItem;
+        }
+
     private:
         [[nodiscard]] auto scanIteration(const ForkedGenerator &text_iterator) const
             -> Optional<size_t> override;
