@@ -34,7 +34,8 @@ TEST_CASE("BinaryExpressionWith3Elements", "[BinaryExpression]")
 
     REQUIRE(first_binary_operation != nullptr);
 
-    const auto *second_binary_operation = ccl::as<const BinaryExpression *>(first_binary_operation->getLhs().get());
+    const auto *second_binary_operation =
+        ccl::as<const BinaryExpression *>(first_binary_operation->getLhs().get());
     const auto *rhs_item = ccl::as<const Union *>(first_binary_operation->getRhs().get());
 
     REQUIRE(second_binary_operation != nullptr);
