@@ -17,7 +17,7 @@ TEST_CASE("BinaryExpressionWith2Elements", "[BinaryExpression]")
     REQUIRE(binary_operation != nullptr);
 
     const auto *lhs_item = ccl::as<const Union *>(binary_operation->getLhs().get());
-    const auto *rhs_item = ccl::as<const Union *>(binary_operation->getRhs().get());
+    const auto *rhs_item = ccl::as<const Sequence *>(binary_operation->getRhs().get());
 
     REQUIRE(lhs_item != nullptr);
     REQUIRE(rhs_item != nullptr);
