@@ -73,11 +73,11 @@ namespace ccl::lex::dot_item
             break;
 
         case U'&':
-            startLogicalOperator(LogicalOperation::AND);
+            startBinaryExpression(BinaryOperator::AND);
             break;
 
         case U'|':
-            startLogicalOperator(LogicalOperation::OR);
+            startBinaryExpression(BinaryOperator::OR);
             break;
 
         default:
@@ -85,44 +85,47 @@ namespace ccl::lex::dot_item
         }
     }
 
-    auto Container::RuleParser::startLogicalOperator(LogicalOperation type) -> void
+    auto Container::RuleParser::startBinaryExpression(BinaryOperator type) -> void
     {
+        tryToFinishBinaryExpression();
+
         checkThereIsLhsItem();
-        logicalOperation = type;
+        binaryOperator = type;
 
         constructedLhs = std::move(items.back());
         items.pop_back();
     }
 
-    auto Container::RuleParser::tryToFinishLogicalOperation() -> void
+    auto Container::RuleParser::tryToFinishBinaryExpression() -> void
     {
         if (constructedLhs.has_value() && !rhsItemConstructed) {
             rhsItemConstructed = true;
         } else if (constructedLhs.has_value() && rhsItemConstructed) {
-            emplaceItem(constructLogicalUnit());
-            logicalOperation = LogicalOperation::NONE;
+            emplaceItem(constructBinaryExpression());
+            rhsItemConstructed = false;
+            binaryOperator = BinaryOperator::NONE;
         }
     }
 
-    auto Container::RuleParser::constructLogicalUnit() -> LogicalUnit
+    auto Container::RuleParser::constructBinaryExpression() -> BinaryExpression
     {
         auto rhs = std::move(items.back());
         items.pop_back();
 
-        return LogicalUnit{
-            std::move(constructedLhs.value()), std::move(rhs), logicalOperation, getId()};
+        return BinaryExpression{
+            std::move(constructedLhs.value()), std::move(rhs), binaryOperator, getId()};
     }
 
     auto Container::RuleParser::constructNewSequence() -> Sequence
     {
-        tryToFinishLogicalOperation();
+        tryToFinishBinaryExpression();
 
         return Sequence{Sequence::SequenceFlags{}, "\"", ruleIterator, getId()};
     }
 
     auto Container::RuleParser::constructNewUnion() -> Union
     {
-        tryToFinishLogicalOperation();
+        tryToFinishBinaryExpression();
 
         return Union{ruleIterator, getId()};
     }
@@ -130,7 +133,7 @@ namespace ccl::lex::dot_item
     // NOLINTNEXTLINE (recursive function)
     auto Container::RuleParser::constructNewContainer() -> Container
     {
-        tryToFinishLogicalOperation();
+        tryToFinishBinaryExpression();
 
         auto text = ruleIterator.getRemainingWithCurrent();
         const auto *saved_end = ruleIterator.getEnd();
@@ -143,6 +146,15 @@ namespace ccl::lex::dot_item
         ruleIterator.setEnd(saved_end);
 
         return new_container;
+    }
+
+    template<std::derived_from<DotItemConcept> T>
+    auto Container::RuleParser::emplaceItem(T item) -> void
+    {
+        if (!item.canBeOptimized()) {
+            finishPreviousItemInitialization();
+            items.emplace_back(std::move(item));
+        }
     }
 
     auto Container::RuleParser::finishPreviousItemInitialization() -> void
@@ -245,7 +257,7 @@ namespace ccl::lex::dot_item
         }
 
         if (constructedLhs.has_value() && rhsItemConstructed) {
-            tryToFinishLogicalOperation();
+            tryToFinishBinaryExpression();
             return;
         }
 

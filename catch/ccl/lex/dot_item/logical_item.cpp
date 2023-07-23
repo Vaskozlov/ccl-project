@@ -5,38 +5,38 @@ using namespace ccl;
 using namespace text;
 using namespace lex::dot_item;
 
-TEST_CASE("LogicalItemWith2Elements", "[LogicalItem]")
+TEST_CASE("BinaryExpressionWith2Elements", "[BinaryExpression]")
 {
     auto text_iterator = TextIterator{"[1] | \"2\""};
     auto special_items = lex::SpecialItems{};
 
     auto container = Container(text_iterator, special_items, 2);
     const auto &items = container.getItems();
-    const auto *logical_unit = ccl::as<const LogicalUnit *>(items[0].get());
+    const auto *binary_operation = ccl::as<const BinaryExpression *>(items[0].get());
 
-    REQUIRE(logical_unit != nullptr);
+    REQUIRE(binary_operation != nullptr);
 
-    const auto *lhs_item = ccl::as<const Union *>(logical_unit->getLhs().get());
-    const auto *rhs_item = ccl::as<const Union *>(logical_unit->getRhs().get());
+    const auto *lhs_item = ccl::as<const Union *>(binary_operation->getLhs().get());
+    const auto *rhs_item = ccl::as<const Union *>(binary_operation->getRhs().get());
 
     REQUIRE(lhs_item != nullptr);
     REQUIRE(rhs_item != nullptr);
 }
 
-TEST_CASE("LogicalItemWith3Elements", "[LogicalItem]")
+TEST_CASE("BinaryExpressionWith3Elements", "[BinaryExpression]")
 {
-    auto text_iterator = TextIterator{"([1] | [2]) | [3]"};
+    auto text_iterator = TextIterator{"[1] | [2] | [3]"};
     auto special_items = lex::SpecialItems{};
 
     auto container = Container(text_iterator, special_items, 2);
     const auto &items = container.getItems();
-    const auto *logical_unit = ccl::as<const LogicalUnit *>(items[0].get());
+    const auto *first_binary_operation = ccl::as<const BinaryExpression *>(items[0].get());
 
-    REQUIRE(logical_unit != nullptr);
+    REQUIRE(first_binary_operation != nullptr);
 
-    const auto *lhs_item = ccl::as<const Container *>(logical_unit->getLhs().get());
-    const auto *rhs_item = ccl::as<const Union *>(logical_unit->getRhs().get());
+    const auto *second_binary_operation = ccl::as<const BinaryExpression *>(first_binary_operation->getLhs().get());
+    const auto *rhs_item = ccl::as<const Union *>(first_binary_operation->getRhs().get());
 
-    REQUIRE(lhs_item != nullptr);
+    REQUIRE(second_binary_operation != nullptr);
     REQUIRE(rhs_item != nullptr);
 }

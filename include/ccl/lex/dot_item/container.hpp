@@ -1,8 +1,8 @@
 #ifndef CCL_PROJECT_CONTAINER_HPP
 #define CCL_PROJECT_CONTAINER_HPP
 
+#include <ccl/lex/dot_item/binary_expression.hpp>
 #include <ccl/lex/dot_item/item_concept.hpp>
-#include <ccl/lex/dot_item/logical_unit.hpp>
 #include <ccl/lex/dot_item/repetition.hpp>
 #include <ccl/lex/dot_item/sequence.hpp>
 #include <ccl/lex/dot_item/union.hpp>
@@ -94,7 +94,7 @@ namespace ccl::lex::dot_item
         DotItemsStorage &items{container.items};           // NOLINT
         SpecialItems &specialItems{container.specialItems};// NOLINT
         Optional<DotItem> constructedLhs{std::nullopt};
-        LogicalOperation logicalOperation{};
+        BinaryOperator binaryOperator{};
         bool rhsItemConstructed{false};
 
     public:
@@ -115,13 +115,13 @@ namespace ccl::lex::dot_item
 
         auto recognizeAction() -> void;
 
-        auto startLogicalOperator(LogicalOperation type) -> void;
+        auto startBinaryExpression(BinaryOperator type) -> void;
 
-        auto tryToFinishLogicalOperation() -> void;
+        auto tryToFinishBinaryExpression() -> void;
 
         [[nodiscard]] auto hasMovedToTheNextChar() -> bool;
 
-        [[nodiscard]] auto constructLogicalUnit() -> LogicalUnit;
+        [[nodiscard]] auto constructBinaryExpression() -> BinaryExpression;
 
         [[nodiscard]] auto constructNewSequence() -> Sequence;
 
@@ -130,13 +130,7 @@ namespace ccl::lex::dot_item
         [[nodiscard]] auto constructNewContainer() -> Container;
 
         template<std::derived_from<DotItemConcept> T>
-        auto emplaceItem(T item) -> void
-        {
-            if (!item.canBeOptimized()) {
-                finishPreviousItemInitialization();
-                items.emplace_back(std::move(item));
-            }
-        }
+        auto emplaceItem(T item) -> void;
 
         auto finishPreviousItemInitialization() -> void;
 

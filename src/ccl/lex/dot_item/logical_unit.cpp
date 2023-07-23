@@ -1,27 +1,28 @@
-#include <ccl/lex/dot_item/logical_unit.hpp>
+#include <ccl/lex/dot_item/binary_expression.hpp>
 
 namespace ccl::lex::dot_item
 {
-    LogicalUnit::LogicalUnit(
-        DotItem lhs, DotItem rhs, LogicalOperation logical_operation, Id item_id)
+    BinaryExpression::BinaryExpression(
+        DotItem lhs, DotItem rhs, BinaryOperator binary_operator, Id item_id)
       : DotItemConcept{item_id}
       , rhsItem{std::move(rhs)}
       , lhsItem{std::move(lhs)}
-      , logicalOperation{logical_operation}
+      , binaryOperator{binary_operator}
     {}
 
-    auto LogicalUnit::empty() const noexcept -> bool
+    auto BinaryExpression::empty() const noexcept -> bool
     {
         return rhsItem->empty() && lhsItem->empty();
     }
 
-    auto LogicalUnit::scanIteration(const ForkedGenerator &text_iterator) const -> Optional<size_t>
+    auto BinaryExpression::scanIteration(const ForkedGenerator &text_iterator) const
+        -> Optional<size_t>
     {
-        switch (logicalOperation) {
-        [[likely]] case LogicalOperation::OR:
+        switch (binaryOperator) {
+        [[likely]] case BinaryOperator::OR:
             return orIteration(text_iterator);
 
-        case LogicalOperation::AND:
+        case BinaryOperator::AND:
             return andIteration(text_iterator);
 
         default:
@@ -29,7 +30,8 @@ namespace ccl::lex::dot_item
         }
     }
 
-    auto LogicalUnit::orIteration(const ForkedGenerator &text_iterator) const -> Optional<size_t>
+    auto BinaryExpression::orIteration(const ForkedGenerator &text_iterator) const
+        -> Optional<size_t>
     {
         const auto lhs_scan_result = lhsItem->scan(text_iterator);
 
@@ -40,7 +42,8 @@ namespace ccl::lex::dot_item
         return rhsItem->scan(text_iterator);
     }
 
-    auto LogicalUnit::andIteration(const ForkedGenerator &text_iterator) const -> Optional<size_t>
+    auto BinaryExpression::andIteration(const ForkedGenerator &text_iterator) const
+        -> Optional<size_t>
     {
         const auto lhs = rhsItem->scan(text_iterator);
 
