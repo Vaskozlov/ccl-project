@@ -20,7 +20,7 @@ install(TARGETS ccl ccl-lexer
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
         INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-        )
+)
 
 install(DIRECTORY include/ccl
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
@@ -30,7 +30,7 @@ install(EXPORT cclTargets
         FILE cclTargets.cmake
         NAMESPACE ccl::
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/ccl
-        )
+)
 
 include(CMakePackageConfigHelpers)
 
@@ -45,15 +45,15 @@ write_basic_package_version_file(
 configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/Config.cmake.in
         "${CMAKE_CURRENT_BINARY_DIR}/cclConfig.cmake"
         INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/ccl
-        )
+)
 
 install(FILES
         "${CMAKE_CURRENT_BINARY_DIR}/cclConfig.cmake"
         "${CMAKE_CURRENT_BINARY_DIR}/cclConfigVersion.cmake"
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/ccl
-        )
+)
 
 export(EXPORT cclTargets
         FILE "${CMAKE_CURRENT_BINARY_DIR}/cmake/cclTargets.cmake"
         NAMESPACE ccl::
-        )
+)

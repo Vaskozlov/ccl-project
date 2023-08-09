@@ -10,6 +10,17 @@ else ()
     add_library(ccl SHARED ${CCL_OBJECTS})
 endif ()
 
+ccl_set_project_warnings(
+        ccl
+        ${CCL_STRICT_COMPILATION}
+        ""
+        ""
+        ""
+        ""
+        ${CCL_HARDENING}
+        ${CCL_LIBCPP}
+)
+
 if (CCL_LIBCPP)
     add_dependencies(ccl fmt::fmt-header-only)
 
@@ -38,4 +49,4 @@ target_include_directories(ccl
         PUBLIC
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
         "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
-        )
+)
