@@ -21,7 +21,7 @@ ccl_set_project_warnings(
         ${CCL_LIBCPP}
 )
 
-if (CCL_LIBCPP)
+if (CCL_LIBCPP AND LINUX)
     add_dependencies(ccl fmt::fmt-header-only)
 
     target_link_libraries(

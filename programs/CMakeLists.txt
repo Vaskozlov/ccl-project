@@ -20,13 +20,6 @@ ccl_set_project_warnings(
         ${CCL_LIBCPP}
 )
 
-target_link_libraries(
-        ccl-lexer
-        ccl
-        fmt::fmt
-        cxxopts::cxxopts
-)
-
 if (PRECOMPILED_HEADER)
     target_precompile_headers(
             ccl-lexer
@@ -34,3 +27,10 @@ if (PRECOMPILED_HEADER)
             "pch.hpp"
     )
 endif ()
+
+target_link_libraries(
+        ccl-lexer
+        ccl
+        fmt::fmt
+        cxxopts::cxxopts
+)

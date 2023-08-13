@@ -9,10 +9,10 @@ include(cmake/ProjectOptions.cmake)
 include(cmake/CompilerOptions.cmake)
 include(cmake/Libraries.cmake)
 
+include(programs/CMakeLists.txt)
 include(src/CMakeLists.txt)
 include(catch/CMakeLists.txt)
 include(bench/CMakeLists.txt)
-include(programs/CMakeLists.txt)
 
 install(TARGETS ccl ccl-lexer
         EXPORT cclTargets
