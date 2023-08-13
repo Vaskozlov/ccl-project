@@ -9,6 +9,17 @@ add_executable(
         ${CCL_BENCH_OBJECTS}
 )
 
+ccl_set_project_warnings(
+        ccl-bench
+        ${CCL_STRICT_COMPILATION}
+        ""
+        ""
+        ""
+        ""
+        ${CCL_HARDENING}
+        ${CCL_LIBCPP}
+)
+
 add_dependencies(ccl-bench fmt::fmt)
 add_dependencies(ccl-bench benchmark::benchmark)
 

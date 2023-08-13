@@ -5,9 +5,9 @@ project(ccl-project VERSION 0.0.2.1 LANGUAGES CXX)
 include(GNUInstallDirs)
 include(CPack)
 
-include(cmake/project-options.cmake)
-include(cmake/compile-options.cmake)
-include(cmake/libraries.cmake)
+include(cmake/ProjectOptions.cmake)
+include(cmake/CompilerOptions.cmake)
+include(cmake/Libraries.cmake)
 
 include(src/CMakeLists.txt)
 include(catch/CMakeLists.txt)

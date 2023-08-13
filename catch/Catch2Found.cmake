@@ -11,6 +11,17 @@
           ${CCL_CATCH_OBJECTS}
   )
 
+  ccl_set_project_warnings(
+          ccl-catch
+          ${CCL_STRICT_COMPILATION}
+          ""
+          ""
+          ""
+          ""
+          ${CCL_HARDENING}
+          ${CCL_LIBCPP}
+  )
+
   target_link_libraries(
           ccl-catch
           ccl

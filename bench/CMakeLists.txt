@@ -1,5 +1,5 @@
 if (benchmark_FOUND)
-    include(bench/benchmark_found.cmake)
+    include(bench/BenchmarkFound.cmake)
 else ()
     message(WARNING "Disabling benchmark, because google benchmark has not been found. You can install it via vcpkg")
 endif ()
