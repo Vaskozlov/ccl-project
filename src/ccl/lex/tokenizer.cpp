@@ -1,5 +1,4 @@
 #include <ccl/lex/tokenizer.hpp>
-#include <execution>
 
 using namespace std::string_literals;
 
@@ -22,9 +21,9 @@ namespace ccl::lex
 
     auto Tokenizer::shouldIgnoreToken(const Token &token) const -> bool
     {
-        const auto &ignoring_list = lexicalAnalyzer.ignoredIds;
-        return std::find(ignoring_list.begin(), ignoring_list.end(), token.getId()) !=
-               ignoring_list.end();
+        const auto &ignored_ids = lexicalAnalyzer.ignoredIds;
+        return std::find(ignored_ids.begin(), ignored_ids.end(), token.getId()) !=
+               ignored_ids.end();
     }
 
     // NOLINTNEXTLINE (recursive function)
