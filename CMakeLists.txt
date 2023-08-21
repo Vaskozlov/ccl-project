@@ -5,6 +5,7 @@ project(ccl-project VERSION 0.0.2.1 LANGUAGES CXX)
 include(GNUInstallDirs)
 include(CPack)
 
+include(cmake/InterproceduralOptimization.cmake)
 include(cmake/ProjectOptions.cmake)
 include(cmake/CompilerOptions.cmake)
 include(cmake/Libraries.cmake)
