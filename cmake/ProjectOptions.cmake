@@ -5,7 +5,7 @@ option(CCL_ADDRESS_SANITIZER "Use sanitizers" OFF)
 option(CCL_THREAD_SANITIZER "Use thread sanitizers" OFF)
 option(CCL_ENABLE_IPO "Enable IPO/LTO" OFF)
 option(CCL_HARDENING "Enable hardening" OFF)
-option(CCL_STATIC_LIBRARY "Create static version of library " MSVC)
+option(CCL_STATIC_LIBRARY "Create static version of library " ${MSVC})
 
 message(STATUS "CC " ${CMAKE_C_COMPILER})
 message(STATUS "CXX " ${CMAKE_CXX_COMPILER})
