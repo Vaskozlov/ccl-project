@@ -21,7 +21,7 @@ namespace ccl
     }
 
     template<typename T, typename U>
-    CCL_DECL auto as(U &value) -> T
+    CCL_DECL auto as(U &value) noexcept(false) -> T
         requires std::is_reference_v<T> && (!std::derived_from<U, std::remove_reference_t<T>>)
     {
         return dynamic_cast<T>(value);
