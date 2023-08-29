@@ -72,22 +72,22 @@ namespace ccl
             return {result, true};
         }
 
-        CCL_DECL auto at(const Key &key) -> Value &
+        CCL_DECL auto at(const Key &key) CCL_LIFETIMEBOUND->Value &
         {
             return staticAt(*this, key);
         }
 
-        CCL_DECL auto at(const Key &key) const -> const Value &
+        CCL_DECL auto at(const Key &key) const CCL_LIFETIMEBOUND->const Value &
         {
             return staticAt(*this, key);
         }
 
-        CCL_DECL auto operator[](const Key &key) -> Value &
+        CCL_DECL auto operator[](const Key &key) CCL_LIFETIMEBOUND->Value &
         {
             return tryEmplace(key).first->second;
         }
 
-        CCL_DECL auto operator[](const Key &key) const -> const Value &
+        CCL_DECL auto operator[](const Key &key) const CCL_LIFETIMEBOUND->const Value &
         {
             return at(key);
         }

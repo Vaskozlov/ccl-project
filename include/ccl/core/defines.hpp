@@ -79,6 +79,16 @@
 #    define CCL_PREFETCH(ADDR)
 #endif
 
+#if defined(_MSC_VER) && !defined(__clang__)
+#    define CCL_LIFETIMEBOUND [[msvc::lifetimebound]]
+#elif defined(__clang__)
+#    define CCL_LIFETIMEBOUND [[clang::lifetimebound]]
+#elif defined(__GNUC__)
+#    define CCL_LIFETIMEBOUND__attribute__((lifetimebound))
+#else
+#    define CCL_LIFETIMEBOUND
+#endif
+
 #define CCL_NOEXCEPT_IF(EXPR) noexcept(noexcept(EXPR))
 
 namespace ccl

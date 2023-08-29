@@ -27,12 +27,12 @@ namespace ccl::lex::dot_item
         [[nodiscard]] BinaryExpression(
             DotItem lhs, DotItem rhs, BinaryOperator binary_operator, Id item_id);
 
-        [[nodiscard]] auto getLhs() const -> const DotItem &
+        [[nodiscard]] auto getLhs() const CCL_LIFETIMEBOUND->const DotItem &
         {
             return lhsItem;
         }
 
-        [[nodiscard]] auto getRhs() const -> const DotItem &
+        [[nodiscard]] auto getRhs() const CCL_LIFETIMEBOUND->const DotItem &
         {
             return rhsItem;
         }

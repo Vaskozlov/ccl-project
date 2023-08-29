@@ -30,7 +30,7 @@ namespace ccl
           : lazyObject{std::forward<Func>(function)}
         {}
 
-        CCL_DECL auto get() -> T &
+        CCL_DECL auto get() CCL_LIFETIMEBOUND->T &
         {
             compute();
             return std::get<1>(lazyObject);

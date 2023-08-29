@@ -43,7 +43,7 @@ namespace ccl::text
             ExceptionHandler &exception_handler,
             const Location &iterator_location);
 
-        [[nodiscard]] auto getLocation() const noexcept -> const Location &
+        [[nodiscard]] auto getLocation() const noexcept CCL_LIFETIMEBOUND->const Location &
         {
             return location;
         }
@@ -164,7 +164,8 @@ namespace ccl::text
         auto operator=(EscapingSequenceToChar &&) -> void = delete;
         auto operator=(const EscapingSequenceToChar &) -> void = delete;
 
-        [[nodiscard]] auto getExtraSymbols() const noexcept -> const extra_symbols_t &
+        [[nodiscard]] auto
+            getExtraSymbols() const noexcept CCL_LIFETIMEBOUND->const extra_symbols_t &
         {
             return extraSymbols;
         }

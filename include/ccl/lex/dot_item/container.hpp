@@ -73,7 +73,7 @@ namespace ccl::lex::dot_item
             return flags.isSpecial;
         }
 
-        [[nodiscard]] auto getItems() const noexcept -> const DotItemsStorage &
+        [[nodiscard]] auto getItems() const noexcept CCL_LIFETIMEBOUND->const DotItemsStorage &
         {
             return items;
         }

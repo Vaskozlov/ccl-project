@@ -16,7 +16,7 @@ namespace ccl::lex::dot_item
 
         [[nodiscard]] explicit Union(TextIterator &rule_iterator, Id rule_id = 0);
 
-        [[nodiscard]] auto getBitset() const noexcept -> const UtfSet &
+        [[nodiscard]] auto getBitset() const noexcept CCL_LIFETIMEBOUND->const UtfSet &
         {
             return bitset;
         }

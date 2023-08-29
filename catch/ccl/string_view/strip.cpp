@@ -22,4 +22,3 @@ TEST_CASE("StringViewStrip", "[StringView]")
     DEBUG_VAR own_string = "1152233611"_sv;
     REQUIRE(own_string.strip("156") == "2233"_sv);
 }
-
