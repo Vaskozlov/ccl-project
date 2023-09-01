@@ -47,44 +47,45 @@ namespace ccl::codegen
 
         auto reserve(size_t size) -> void;
 
-        auto operator<<(ScopeSize scope_size) -> BasicCodeGenerator &;
-        auto operator<<(PushScope /* unused */) -> BasicCodeGenerator &;
-        auto operator<<(PopScope /* unused */) -> BasicCodeGenerator &;
-        auto operator<<(StreamId stream_id) -> BasicCodeGenerator &;
+        auto operator<<(ScopeSize scope_size) CCL_LIFETIMEBOUND->BasicCodeGenerator &;
+        auto operator<<(PushScope /* unused */) CCL_LIFETIMEBOUND->BasicCodeGenerator &;
+        auto operator<<(PopScope /* unused */) CCL_LIFETIMEBOUND->BasicCodeGenerator &;
+        auto operator<<(StreamId stream_id) CCL_LIFETIMEBOUND->BasicCodeGenerator &;
 
-        auto operator<<(char character) -> BasicCodeGenerator &;
-        auto operator<<(string_view string) -> BasicCodeGenerator &;
-        auto operator<<(std::string_view string) -> BasicCodeGenerator &;
-        auto operator<<(const std::string &string) -> BasicCodeGenerator &;
+        auto operator<<(char character) CCL_LIFETIMEBOUND->BasicCodeGenerator &;
+        auto operator<<(string_view string) CCL_LIFETIMEBOUND->BasicCodeGenerator &;
+        auto operator<<(std::string_view string) CCL_LIFETIMEBOUND->BasicCodeGenerator &;
+        auto operator<<(const std::string &string) CCL_LIFETIMEBOUND->BasicCodeGenerator &;
 
         template<typename Numeric>
-        auto operator<<(Numeric value) -> BasicCodeGenerator &
+        auto operator<<(Numeric value) CCL_LIFETIMEBOUND->BasicCodeGenerator &
             requires FloatingPoint<Numeric> || Integral<Numeric>
         {
             return *this << std::string_view{fmt::to_string(value)};
         }
 
-        auto operator<<(Endl /* unused */) -> BasicCodeGenerator &
+        auto operator<<(Endl /* unused */) CCL_LIFETIMEBOUND->BasicCodeGenerator &
         {
             newLine();
             return *this;
         }
 
         template<size_t Size>
-        auto operator<<(const ConstString<Size> &string) -> BasicCodeGenerator &
+        auto operator<<(const ConstString<Size> &string) CCL_LIFETIMEBOUND->BasicCodeGenerator &
         {
             return *this << as<string_view>(string);
         }
 
         template<size_t N>// NOLINTNEXTLINE
-        auto operator<<(const CArray<char, N> &character_array) -> BasicCodeGenerator &
+        auto operator<<(const CArray<char, N> &character_array)
+            CCL_LIFETIMEBOUND->BasicCodeGenerator &
         {
             return *this << std::string_view{character_array};// NOLINT
         }
 
     private:
-        [[nodiscard]] auto getCurrentStream() noexcept -> std::string &;
-        [[nodiscard]] auto getCurrentStream() const noexcept -> const std::string &;
+        [[nodiscard]] auto getCurrentStream() noexcept CCL_LIFETIMEBOUND->std::string &;
+        [[nodiscard]] auto getCurrentStream() const noexcept CCL_LIFETIMEBOUND->const std::string &;
 
         auto newLine() -> void;
         auto addScope(size_t scopes_count) -> void;

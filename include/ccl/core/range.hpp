@@ -25,13 +25,13 @@ namespace ccl
                 return value;
             }
 
-            constexpr auto operator++() noexcept -> iterator &
+            constexpr auto operator++() noexcept CCL_LIFETIMEBOUND->iterator &
             {
                 ++value;
                 return *this;
             }
 
-            constexpr auto operator++(int) noexcept -> iterator &
+            constexpr auto operator++(int) noexcept CCL_LIFETIMEBOUND->iterator &
             {
                 auto old = *this;
                 ++value;

@@ -9,7 +9,7 @@ namespace ccl
     template<typename T>
     class AutoIterator
     {
-        CCL_DECL auto toParent() const noexcept -> const T &
+        CCL_DECL auto toParent() const noexcept CCL_LIFETIMEBOUND-> const T &
         {
             return static_cast<const T &>(*this);
         }

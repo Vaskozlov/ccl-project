@@ -195,12 +195,12 @@ namespace ccl::text
         }
 
     private:
-        CCL_DECL auto toParent() noexcept -> CRTP &
+        CCL_DECL auto toParent() noexcept CCL_LIFETIMEBOUND->CRTP &
         {
             return static_cast<CRTP &>(*this);
         }
 
-        CCL_DECL auto toParent() const noexcept -> const CRTP &
+        CCL_DECL auto toParent() const noexcept CCL_LIFETIMEBOUND->const CRTP &
         {
             return static_cast<const CRTP &>(*this);
         }
@@ -256,8 +256,6 @@ namespace ccl::text
                 newCharacterMove(chr);
             }
 
-            --remainingBytesToFinishSymbol;
-
             if (0 == remainingBytesToFinishSymbol) {
                 onNextCharacter(currentChar);
             }
@@ -271,18 +269,24 @@ namespace ccl::text
 
             currentChar <<= utf8::TrailingSize;
             currentChar |= as<char32_t>(as<std::byte>(chr) & ~utf8::ContinuationMask);
+
+            if (remainingBytesToFinishSymbol > 0) {
+                --remainingBytesToFinishSymbol;
+            }
         }
 
         constexpr auto newCharacterMove(char chr) CCL_NOEXCEPT_IF(onUtfError(chr)) -> void
         {
             remainingBytesToFinishSymbol = utf8::size(chr);
 
-            if (0 == remainingBytesToFinishSymbol) [[unlikely]] {
+            if (remainingBytesToFinishSymbol == 0) [[unlikely]] {
                 onUtfError(chr);
             }
 
             currentChar =
                 as<char32_t>(as<std::byte>(chr) & ~utf8::getMask(remainingBytesToFinishSymbol));
+
+            --remainingBytesToFinishSymbol;
         }
 
         iterator carriage{};
