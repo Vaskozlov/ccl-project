@@ -157,6 +157,7 @@ function(
     endif ()
 
     if (MSVC)
+        list(APPEND MSVC_WARNINGS /utf-8)
         set(PROJECT_WARNINGS_CXX ${MSVC_WARNINGS})
     elseif (CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
         set(PROJECT_WARNINGS_CXX ${CLANG_WARNINGS})
