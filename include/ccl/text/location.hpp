@@ -76,7 +76,7 @@ public:
     template<typename FmtContext>
     constexpr auto format(const ccl::text::Location &location, FmtContext &ctx) const
     {
-        return format_to(
+        return fmt::format_to(
             ctx.out(), "{}, line: {}, column: {}", location.getFilename(), location.getLine(),
             location.getColumn());
     }

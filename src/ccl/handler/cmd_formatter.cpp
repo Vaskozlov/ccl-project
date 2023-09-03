@@ -26,28 +26,28 @@ namespace ccl::handler
 
     auto Cmd::CmdFormatter::formatFilename() -> void
     {
-        format_to(
+        fmt::format_to(
             std::back_inserter(formattingBuffer), emphasis::underline | fg(color::cornflower_blue),
             "{}:{}:{}", filename, line, column);
 
-        format_to(std::back_inserter(formattingBuffer), fg(color::cornflower_blue), ":");
+        fmt::format_to(std::back_inserter(formattingBuffer), fg(color::cornflower_blue), ":");
     }
 
     auto Cmd::CmdFormatter::formatMessage() -> void
     {
-        format_to(std::back_inserter(formattingBuffer), "{}\n", as<std::string_view>(message));
+        fmt::format_to(std::back_inserter(formattingBuffer), "{}\n", as<std::string_view>(message));
     }
 
     auto Cmd::CmdFormatter::formatLineNumber() -> void
     {
-        format_to(std::back_inserter(formattingBuffer), "{:>4} {:<6}", line, '|');
+        fmt::format_to(std::back_inserter(formattingBuffer), "{:>4} {:<6}", line, '|');
     }
 
     auto Cmd::CmdFormatter::formatWorkingLine() -> size_t
     {
         auto [tabs_number, line_to_print] = replaceTabWithSpaces(workingLine);
 
-        format_to(std::back_inserter(formattingBuffer), emphasis::italic, "{}\n", line_to_print);
+        fmt::format_to(std::back_inserter(formattingBuffer), emphasis::italic, "{}\n", line_to_print);
         return tabs_number;
     }
 
@@ -57,9 +57,9 @@ namespace ccl::handler
         auto arrow_position =
             (column - 1) + length + tabs_number * (4 - 1) + total_line_number_width - 1;
 
-        format_to(std::back_inserter(formattingBuffer), "{:>6}", '|');
+        fmt::format_to(std::back_inserter(formattingBuffer), "{:>6}", '|');
 
-        format_to(
+        fmt::format_to(
             std::back_inserter(formattingBuffer), fg(color::light_green), "{:>{}}\n",
             std::string(length, '^'), arrow_position);
 
@@ -69,8 +69,8 @@ namespace ccl::handler
     auto Cmd::CmdFormatter::formatSuggestion(size_t arrow_position) -> void
     {
         if (!suggestion.empty()) {
-            format_to(std::back_inserter(formattingBuffer), "{:>6}", '|');
-            format_to(
+            fmt::format_to(std::back_inserter(formattingBuffer), "{:>6}", '|');
+            fmt::format_to(
                 std::back_inserter(formattingBuffer), "{1:>{0}} {2}\n",
                 std::max<size_t>(1, arrow_position),
                 "Suggestion: ", as<std::string_view>(suggestion));

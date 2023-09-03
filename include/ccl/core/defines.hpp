@@ -83,8 +83,6 @@
 #    define CCL_LIFETIMEBOUND [[msvc::lifetimebound]]
 #elif defined(__clang__)
 #    define CCL_LIFETIMEBOUND [[clang::lifetimebound]]
-#elif defined(__GNUC__)
-#    define CCL_LIFETIMEBOUND__attribute__((lifetimebound))
 #else
 #    define CCL_LIFETIMEBOUND
 #endif
