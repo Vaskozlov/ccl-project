@@ -27,7 +27,7 @@ namespace ccl
         std::basic_string<CharT>>;
 
     template<CharacterLiteral CharT>
-    class BasicStringView : public AutoIterator<BasicStringView<CharT>>
+    class BasicStringView : public AutoIteratorMethods<BasicStringView<CharT>>
     {
     public:
         using pointer = const CharT *;

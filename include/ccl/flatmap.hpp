@@ -9,7 +9,7 @@
 namespace ccl
 {
     template<typename Key, typename Value, size_t Size, typename Pred = std::equal_to<>>
-    class StaticFlatmap : public AutoIterator<StaticFlatmap<Key, Value, Size, Pred>>
+    class StaticFlatmap : public AutoIteratorMethods<StaticFlatmap<Key, Value, Size, Pred>>
     {
     public:
         using key_type = Key;

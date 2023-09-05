@@ -7,7 +7,7 @@
 namespace ccl
 {
     template<typename T>
-    class AutoIterator
+    class AutoIteratorMethods
     {
         CCL_DECL auto toParent() const noexcept CCL_LIFETIMEBOUND->const T &
         {

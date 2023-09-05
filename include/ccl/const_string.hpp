@@ -6,7 +6,7 @@
 namespace ccl
 {
     template<size_t Size>
-    class ConstString : public AutoIterator<ConstString<Size>>
+    class ConstString : public AutoIteratorMethods<ConstString<Size>>
     {
     public:
         using value_type = char;

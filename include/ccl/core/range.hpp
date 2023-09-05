@@ -7,7 +7,7 @@
 namespace ccl
 {
     template<std::unsigned_integral T = size_t>
-    class Range : public AutoIterator<Range<T>>
+    class Range : public AutoIteratorMethods<Range<T>>
     {
     public:
         class iterator
