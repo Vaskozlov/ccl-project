@@ -18,7 +18,7 @@ jobs:
             vcpkgCommitId: 'ea222747b888b8d63df56240b262db38b095c68f'
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: true
 
