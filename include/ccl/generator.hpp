@@ -2,10 +2,26 @@
 #define CCL_PROJECT_GENERATOR_HPP
 
 #include <ccl/ccl.hpp>
-#include <coroutine>
+
+#if __has_include(<coroutine>)
+#    include <coroutine>
+#    define CCL_EXPERIMENTAL_COROUTINE false
+#else
+#    include <experimental/coroutine>
+#    define CCL_EXPERIMENTAL_COROUTINE true
+#endif
 
 namespace ccl
 {
+    namespace detail
+    {
+#if CCL_EXPERIMENTAL_COROUTINE
+        namespace coroutine = std::experimental;
+#else
+        namespace coroutine = std;
+#endif /* CCL_EXPERIMENTAL_COROUTINE */
+    }  // namespace detail
+
     template<typename T>
     class Generator
     {
@@ -15,7 +31,7 @@ namespace ccl
 
         friend iterator;
         friend promise_type;
-        using coro_handle = std::coroutine_handle<promise_type>;
+        using coro_handle = detail::coroutine::coroutine_handle<promise_type>;
 
         coro_handle handle;
 
@@ -84,8 +100,8 @@ namespace ccl
     class Generator<T>::promise_type
     {
     public:
-        using suspend_always = std::suspend_always;
-        using suspend_never = std::suspend_never;
+        using suspend_always = detail::coroutine::suspend_always;
+        using suspend_never = detail::coroutine::suspend_never;
 
     private:
         T *value;
