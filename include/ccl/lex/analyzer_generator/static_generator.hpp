@@ -8,7 +8,7 @@
 #include <map>
 #include <stack>
 
-namespace ccl::lex::gen
+namespace ccl::lexer::gen
 {
     class StaticGenerator
     {

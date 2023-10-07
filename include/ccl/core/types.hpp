@@ -33,22 +33,10 @@ namespace ccl
     using f64 = std::double_t;
 
     template<typename T>
-    using Optional = std::optional<T>;
-
-    template<typename T, typename Alloc = std::allocator<T>>
-    using Vector = std::vector<T, Alloc>;
-
-    template<size_t N>
-    using SmallBitset = std::bitset<N>;
-
-    template<typename T>
     using InitializerList = const std::initializer_list<T> &;
 
     template<typename T, size_t Size>
     using CArray = T[Size];
-
-    template<typename T, size_t Size>
-    using FixedSizeArray = std::array<T, Size>;
 
     template<typename T, typename... Ts>
     constexpr auto makeUnique(Ts &&...args) -> std::unique_ptr<T>
@@ -82,31 +70,6 @@ namespace ccl
 
     namespace integral_literals
     {
-        constexpr auto operator"" _U8(unsigned long long value) -> u8
-        {
-            return as<u8>(value);
-        }
-
-        constexpr auto operator"" _U16(unsigned long long value) -> u16
-        {
-            return as<u16>(value);
-        }
-
-        constexpr auto operator"" _U32(unsigned long long value) -> u32
-        {
-            return as<u32>(value);
-        }
-
-        constexpr auto operator"" _U64(unsigned long long value) -> u64
-        {
-            return as<u64>(value);
-        }
-
-        constexpr auto operator"" _ZU(unsigned long long value) -> size_t
-        {
-            return as<size_t>(value);
-        }
-
         constexpr auto operator"" _B(unsigned long long value) -> std::byte
         {
             return as<std::byte>(value);

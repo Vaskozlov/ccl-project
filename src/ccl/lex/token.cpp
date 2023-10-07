@@ -1,6 +1,6 @@
 #include <ccl/lex/token.hpp>
 
-namespace ccl::lex
+namespace ccl::lexer
 {
     TokenAttributes::TokenAttributes(const text::TextIterator &text_iterator)
       : tabsAndSpaces{text_iterator.getTabsAndSpaces()}

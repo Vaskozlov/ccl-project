@@ -1,6 +1,6 @@
 #include <ccl/lex/dot_item/repetition.hpp>
 
-namespace ccl::lex::dot_item
+namespace ccl::lexer::dot_item
 {
     using namespace text;
     using namespace ccl::string_view_literals;

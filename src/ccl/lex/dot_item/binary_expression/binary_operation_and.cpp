@@ -1,8 +1,9 @@
-#include <ccl/lex/dot_item/binary_expression/binary_and.hpp>
+#include <ccl/lex/dot_item/binary_expression/binary_operation_and.hpp>
 
-namespace ccl::lex::dot_item
+namespace ccl::lexer::dot_item
 {
-    auto BinaryAnd::scanIteration(const ForkedGenerator &text_iterator) const -> Optional<size_t>
+    auto BinaryOperationAnd::scanIteration(const ForkedGenerator &text_iterator) const
+        -> std::optional<size_t>
     {
         const auto lhs = rhsItem->scan(text_iterator);
 

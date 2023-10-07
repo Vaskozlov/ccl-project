@@ -2,7 +2,7 @@
 
 using namespace ccl::integral_literals;
 
-namespace ccl::lex::dot_item
+namespace ccl::lexer::dot_item
 {
     auto DotItemConcept::alwaysRecognizedSuggestion(TextIterator &text_iterator, bool condition)
         -> void
@@ -22,7 +22,7 @@ namespace ccl::lex::dot_item
         }
     }
 
-    auto DotItemConcept::scan(ForkedGenerator text_iterator) const -> Optional<size_t>
+    auto DotItemConcept::scan(ForkedGenerator text_iterator) const -> std::optional<size_t>
     {
         auto times = as<size_t>(0);
         auto totally_skipped = as<size_t>(0);

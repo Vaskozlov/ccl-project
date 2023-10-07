@@ -48,7 +48,7 @@ namespace ccl::text
 
         constexpr auto intermediateNext(char chr) noexcept -> void
         {
-            if (land(!isEoF(chr), '\n' != chr)) {
+            if (land(!isEoF(chr), chr != '\n')) {
                 ++realColumn;
             }
         }

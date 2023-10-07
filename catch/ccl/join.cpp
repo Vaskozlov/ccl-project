@@ -7,7 +7,7 @@ using namespace std::string_view_literals;
 
 TEST_CASE("JoinInts", "[Join]")
 {
-    DEBUG_VAR vector_of_int = Vector<int>{10, 20, 30};// NOLINT
+    DEBUG_VAR vector_of_int = std::vector<int>{10, 20, 30};// NOLINT
 
     REQUIRE(
         ccl::join(

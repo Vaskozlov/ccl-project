@@ -59,7 +59,7 @@ namespace ccl
             requires std::constructible_from<value_type, Key, Ts...>
         {
             if (occupied == capacity()) {
-                throw std::out_of_range("flatmap is full");
+                throw std::out_of_range("StaticFlatmap is full. Unable to emplace.");
             }
 
             auto result = find(key);
@@ -113,7 +113,8 @@ namespace ccl
         {
             for (const value_type &value : initial_data) {
                 if (occupied == capacity()) {
-                    throw std::runtime_error{"StaticFlatmap capacity limit reached"};
+                    throw std::runtime_error{
+                        "StaticFlatmap capacity limit reached during initialization"};
                 }
 
                 storage[occupied++] = value;
@@ -135,7 +136,7 @@ namespace ccl
             auto elem = self.find(key);
 
             if (elem == self.end()) {
-                throw std::out_of_range("key not found");
+                throw std::out_of_range("Key not found in StaticFlatmap at() method.");
             }
 
             return elem->second;

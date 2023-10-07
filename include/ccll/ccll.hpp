@@ -28,7 +28,7 @@ namespace ccll
     };
 
     // NOLINTNEXTLINE
-    inline auto CcllAnalyzer = ccl::lex::LexicalAnalyzer{
+    inline auto CcllAnalyzer = ccl::lexer::LexicalAnalyzer{
         ccl::handler::Cmd::instance(),
         {
             {CcllAnalyzerToken::GROUP_DECLARATION, R"( [\[]p ( [a-zA-Z_][a-zA-Z_0-9]* )p [\]]p )"},

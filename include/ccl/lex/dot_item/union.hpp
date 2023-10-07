@@ -4,7 +4,7 @@
 #include <ccl/lex/dot_item/item_concept.hpp>
 #include <ccl/utf_set.hpp>
 
-namespace ccl::lex::dot_item
+namespace ccl::lexer::dot_item
 {
     class Union final : public DotItemConcept
     {
@@ -28,7 +28,7 @@ namespace ccl::lex::dot_item
 
     private:
         [[nodiscard]] auto scanIteration(const ForkedGenerator &text_iterator) const
-            -> Optional<size_t> override;
+            -> std::optional<size_t> override;
 
         [[nodiscard]] static auto isRange(bool is_escaping, char32_t chr) noexcept -> bool;
 

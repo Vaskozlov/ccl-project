@@ -1,6 +1,6 @@
 #include <ccl/lex/dot_item/sequence.hpp>
 
-namespace ccl::lex::dot_item
+namespace ccl::lexer::dot_item
 {
     using namespace ccl::string_view_literals;
 
@@ -53,7 +53,8 @@ namespace ccl::lex::dot_item
         }
     }
 
-    auto Sequence::scanIteration(const ForkedGenerator &text_iterator) const -> Optional<size_t>
+    auto Sequence::scanIteration(const ForkedGenerator &text_iterator) const
+        -> std::optional<size_t>
     {
         string_view future_text = text_iterator.getRemainingText();
 

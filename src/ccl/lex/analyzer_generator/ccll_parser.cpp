@@ -1,7 +1,7 @@
 #include <ccl/lex/analyzer_generator/ccll_parser.hpp>
 #include <ccll/ccll.hpp>
 
-namespace ccl::lex::parser
+namespace ccl::lexer::parser
 {
     CcllParser::Rule::Rule(
         BlockInfo &block_info, string_view rule_name, string_view rule_definition)

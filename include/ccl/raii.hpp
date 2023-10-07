@@ -6,36 +6,37 @@
 
 namespace ccl
 {
-    template<Invocable Deleter, Invocable Constructor = void (*)()>
+    template<Invocable DeleterFunction, Invocable ConstructorFunction = void(*)()>
     class Raii
     {
     private:
-        Optional<Constructor> constructor;
-        Optional<Deleter> deleter;
+        std::optional<ConstructorFunction> constructorFunction;
+        std::optional<DeleterFunction> deleterFunction;
 
     public:
-        [[nodiscard]] explicit constexpr Raii(Deleter &&t_deleter)
-          : deleter{std::move(t_deleter)}
+        [[nodiscard]] explicit constexpr Raii(DeleterFunction &&t_deleter)
+          : deleterFunction{std::move(t_deleter)}
         {}
 
-        [[nodiscard]] constexpr Raii(Constructor &&t_constructor, Deleter &&t_deleter)
-          : constructor{std::move(t_constructor)}
-          , deleter{std::move(t_deleter)}
+        [[nodiscard]] constexpr Raii(
+            ConstructorFunction &&t_constructor, DeleterFunction &&t_deleter)
+          : constructorFunction{std::move(t_constructor)}
+          , deleterFunction{std::move(t_deleter)}
         {
-            (*constructor)();
+            (*constructorFunction)();
         }
 
         [[nodiscard]] constexpr Raii(Raii &&other) noexcept
-          : constructor{std::exchange(other.constructor, std::nullopt)}
-          , deleter{std::exchange(other.deleter, std::nullopt)}
+          : constructorFunction{std::exchange(other.constructorFunction, std::nullopt)}
+          , deleterFunction{std::exchange(other.deleterFunction, std::nullopt)}
         {}
 
         Raii(const Raii &) = delete;
 
         constexpr ~Raii()
         {
-            if (deleter.has_value()) {
-                (*deleter)();
+            if (deleterFunction.has_value()) {
+                (*deleterFunction)();
             }
         }
 
@@ -43,8 +44,8 @@ namespace ccl
 
         constexpr auto operator=(Raii &&other) noexcept -> Raii &
         {
-            std::swap(constructor, other.constructor);
-            std::swap(deleter, other.deleter);
+            std::swap(constructorFunction, other.constructorFunction);
+            std::swap(deleterFunction, other.deleterFunction);
         }
     };
 }// namespace ccl

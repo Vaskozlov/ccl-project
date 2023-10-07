@@ -3,7 +3,7 @@
 #include <ccl/lex/tokenizer.hpp>
 
 using namespace ccl;
-using namespace lex;
+using namespace lexer;
 using namespace text;
 using namespace string_view_literals;
 

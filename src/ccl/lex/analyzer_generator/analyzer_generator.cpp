@@ -5,7 +5,7 @@
 #include <fstream>
 #include <sstream>
 
-namespace ccl::lex
+namespace ccl::lexer
 {
     static auto readFile(const std::filesystem::path &path) -> std::string
     {

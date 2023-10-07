@@ -3,7 +3,7 @@
 #include <ccl/lex/dot_item/sequence.hpp>
 
 using namespace ccl;
-using namespace lex;
+using namespace lexer;
 using namespace text;
 using namespace dot_item;
 

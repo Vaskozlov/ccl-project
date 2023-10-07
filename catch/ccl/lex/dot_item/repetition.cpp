@@ -3,7 +3,7 @@
 
 using namespace ccl;
 using namespace text;
-using namespace lex::dot_item;
+using namespace lexer::dot_item;
 
 TEST_CASE("RepetitionBasicCase", "[ContainerRepetition]")
 {

@@ -3,7 +3,7 @@
 
 #include <ccl/text/text_iterator.hpp>
 
-namespace ccl::lex::dot_item
+namespace ccl::lexer::dot_item
 {
     class CCL_TRIVIAL_ABI Repetition
     {

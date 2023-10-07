@@ -42,7 +42,7 @@ auto main(int argc, char *argv[]) -> int
     auto print_generation_time = result.count("time") != 0;
 
     auto begin = std::chrono::high_resolution_clock::now();
-    auto generated_header = ccl::lex::AnalyzerGenerator::generateStaticVersion(source_file);
+    auto generated_header = ccl::lexer::AnalyzerGenerator::generateStaticVersion(source_file);
 
     auto file_stream = std::fstream{};
     file_stream.open(output_file, std::ios::out);

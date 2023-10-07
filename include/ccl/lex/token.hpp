@@ -3,7 +3,7 @@
 
 #include <ccl/text/text_iterator.hpp>
 
-namespace ccl::lex
+namespace ccl::lexer
 {
     // NOLINTNEXTLINE
     enum struct ReservedTokenType : Id
@@ -35,8 +35,8 @@ namespace ccl::lex
         friend class LexicalAnalyzer;
         friend class dot_item::Container;
 
-        Vector<string_view> prefixes{};
-        Vector<string_view> postfixes{};
+        std::vector<string_view> prefixes{};
+        std::vector<string_view> postfixes{};
         TokenAttributes attributes{};
         string_view repr{};
         Id id{};
@@ -105,12 +105,14 @@ namespace ccl::lex
             return repr;
         }
 
-        [[nodiscard]] CCL_INLINE auto getPrefixes() const noexcept -> const Vector<string_view> &
+        [[nodiscard]] CCL_INLINE auto getPrefixes() const noexcept
+            -> const std::vector<string_view> &
         {
             return prefixes;
         }
 
-        [[nodiscard]] CCL_INLINE auto getPostfixes() const noexcept -> const Vector<string_view> &
+        [[nodiscard]] CCL_INLINE auto getPostfixes() const noexcept
+            -> const std::vector<string_view> &
         {
             return postfixes;
         }

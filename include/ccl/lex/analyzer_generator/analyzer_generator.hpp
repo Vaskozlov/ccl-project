@@ -5,7 +5,7 @@
 #include <ccl/string_view.hpp>
 #include <filesystem>
 
-namespace ccl::lex
+namespace ccl::lexer
 {
     class AnalyzerGenerator
     {

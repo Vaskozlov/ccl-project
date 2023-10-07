@@ -2,7 +2,7 @@
 
 using namespace std::string_literals;
 
-namespace ccl::lex
+namespace ccl::lexer
 {
     using Tokenizer = LexicalAnalyzer::Tokenizer;
 

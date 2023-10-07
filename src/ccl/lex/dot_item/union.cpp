@@ -1,6 +1,6 @@
 #include <ccl/lex/dot_item/union.hpp>
 
-namespace ccl::lex::dot_item
+namespace ccl::lexer::dot_item
 {
     using namespace ccl::string_view_literals;
 
@@ -38,7 +38,7 @@ namespace ccl::lex::dot_item
         checkForClosedRange(rule_iterator, is_range);
     }
 
-    auto Union::scanIteration(const ForkedGenerator &text_iterator) const -> Optional<size_t>
+    auto Union::scanIteration(const ForkedGenerator &text_iterator) const -> std::optional<size_t>
     {
         if (bitset.at(text_iterator.futureChar()) != isReversed()) [[unlikely]] {
             return utf8::size(text_iterator.getNextCarriageValue());

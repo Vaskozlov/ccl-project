@@ -61,7 +61,7 @@ namespace ccl::text
             return length;
         }
 
-        [[nodiscard]] auto getFilename() const noexcept -> const std::string_view &
+        [[nodiscard]] auto getFilename() const noexcept -> std::string_view
         {
             return location.getFilename();
         }

@@ -39,6 +39,7 @@ namespace ccl::text
     {
         auto column_pos = location.getColumn();
         auto new_message_size = full_message.size() + (column_pos > 0 ? column_pos - 1 : 0);
+
         full_message.resize(new_message_size, ' ');
         full_message.push_back('^');
     }

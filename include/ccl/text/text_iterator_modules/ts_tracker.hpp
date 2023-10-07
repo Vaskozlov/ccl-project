@@ -22,7 +22,7 @@ namespace ccl::text
             return tabsAnsSpaces.empty();
         }
 
-        [[nodiscard]] auto get() const noexcept -> const std::string &
+        [[nodiscard]] auto get() const noexcept CCL_LIFETIMEBOUND->const std::string &
         {
             return tabsAnsSpaces;
         }

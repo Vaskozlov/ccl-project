@@ -68,7 +68,7 @@ namespace ccl
     };
 
     // NOLINTNEXTLINE
-    inline auto CLexer = ccl::lex::LexicalAnalyzer{
+    inline auto CLexer = ccl::lexer::LexicalAnalyzer{
         ccl::handler::Cmd::instance(),
         {
             {CLexerToken::COMMENT, R"( ! "//"[\n]*^ )"},

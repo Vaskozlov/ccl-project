@@ -3,7 +3,7 @@
 #include <ccl/lex/dot_item/union.hpp>
 
 using namespace ccl;
-using namespace lex;
+using namespace lexer;
 using namespace text;
 using namespace dot_item;
 

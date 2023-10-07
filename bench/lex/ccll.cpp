@@ -5,7 +5,7 @@
 static auto ccllParsing(benchmark::State &state)
 {
     for (auto _ : state) {
-        ccl::lex::AnalyzerGenerator::generateStaticVersion("builtin", ccl::debug::C_RULE);
+        ccl::lexer::AnalyzerGenerator::generateStaticVersion("builtin", ccl::debug::C_RULE);
     }
 }
 

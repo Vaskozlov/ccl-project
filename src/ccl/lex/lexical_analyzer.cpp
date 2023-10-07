@@ -1,13 +1,13 @@
 #include <ccl/lex/lexical_analyzer.hpp>
 #include <ccl/lex/tokenizer.hpp>
 
-namespace ccl::lex
+namespace ccl::lexer
 {
     using namespace std::string_literals;
 
     LexicalAnalyzer::LexicalAnalyzer(
         ExceptionHandler &exception_handler, InitializerList<Rule> rules, std::string_view filename,
-        Vector<size_t> ignored_ids)
+        std::vector<size_t> ignored_ids)
       : ignoredIds{std::move(ignored_ids)}
       , exceptionHandler{exception_handler}
     {

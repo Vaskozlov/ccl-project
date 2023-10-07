@@ -2,7 +2,7 @@
 #include <ccl/lex/tokenizer.hpp>
 
 using namespace ccl;
-using namespace lex;
+using namespace lexer;
 using namespace text;
 
 TEST_CASE("LexicalAnalyzerSequence", "[ContainerSequence]")

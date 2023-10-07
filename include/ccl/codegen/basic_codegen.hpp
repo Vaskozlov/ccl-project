@@ -43,7 +43,7 @@ namespace ccl::codegen
 
         [[nodiscard]] auto getCode() const noexcept -> std::string;
 
-        auto getBackInserter() noexcept -> std::back_insert_iterator<std::string>;
+        auto getBackInserter() noexcept CCL_LIFETIMEBOUND->std::back_insert_iterator<std::string>;
 
         auto reserve(size_t size) -> void;
 
@@ -91,12 +91,12 @@ namespace ccl::codegen
         auto addScope(size_t scopes_count) -> void;
     };
 
-    inline auto setScopeSize(size_t size) noexcept -> BasicCodeGenerator::ScopeSize
+    constexpr auto setScopeSize(size_t size) noexcept -> BasicCodeGenerator::ScopeSize
     {
         return {.size = size};
     }
 
-    inline auto setStream(Id stream_id) noexcept -> BasicCodeGenerator::StreamId
+    constexpr auto setStream(Id stream_id) noexcept -> BasicCodeGenerator::StreamId
     {
         return {.streamId = stream_id};
     }

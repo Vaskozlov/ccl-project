@@ -2,7 +2,7 @@
 #include <ccl/lex/dot_item/container.hpp>
 
 using namespace ccl;
-using namespace lex;
+using namespace lexer;
 using namespace text;
 using namespace dot_item;
 

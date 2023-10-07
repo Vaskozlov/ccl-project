@@ -145,7 +145,7 @@ namespace ccl
         }
 
         CCL_SAFE_VERSION
-        CCL_DECL auto find(CharT chr, size_t offset = 0) const noexcept -> Optional<size_t>
+        CCL_DECL auto find(CharT chr, size_t offset = 0) const noexcept -> std::optional<size_t>
         {
             auto result = find<UNSAFE>(chr, offset);
 
@@ -168,7 +168,7 @@ namespace ccl
         }
 
         CCL_SAFE_VERSION
-        CCL_DECL auto find(CharT chr, iterator from) const noexcept -> Optional<size_t>
+        CCL_DECL auto find(CharT chr, iterator from) const noexcept -> std::optional<size_t>
         {
             auto result = find<UNSAFE>(chr, from);
 
@@ -217,7 +217,7 @@ namespace ccl
          */
         CCL_SAFE_VERSION
         CCL_DECL auto findMatchingPair(CharT starter, CharT ender) const noexcept
-            -> Optional<size_t>
+            -> std::optional<size_t>
         {
             auto result = findMatchingPair<UNSAFE>(starter, ender);
 
@@ -240,7 +240,7 @@ namespace ccl
         }
 
         CCL_SAFE_VERSION
-        CCL_DECL auto rfind(CharT chr, size_t offset = 0) const noexcept -> Optional<size_t>
+        CCL_DECL auto rfind(CharT chr, size_t offset = 0) const noexcept -> std::optional<size_t>
         {
             auto result = rfind<UNSAFE>(chr, offset);
 
@@ -314,7 +314,7 @@ namespace ccl
         }
 
         CCL_SAFE_VERSION
-        CCL_DECL auto front() const noexcept -> Optional<CharT>
+        CCL_DECL auto front() const noexcept -> std::optional<CharT>
         {
             if (empty()) {
                 return std::nullopt;
@@ -330,7 +330,7 @@ namespace ccl
         }
 
         CCL_SAFE_VERSION
-        CCL_DECL auto back() const noexcept -> Optional<CharT>
+        CCL_DECL auto back() const noexcept -> std::optional<CharT>
         {
             if (empty()) {
                 return std::nullopt;

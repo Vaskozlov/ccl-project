@@ -18,18 +18,18 @@ namespace ccl
         using std::variant<std::function<T()>, T>::index;
         using std::variant<std::function<T()>, T>::variant;
 
-        CCL_DECL auto get() CCL_LIFETIMEBOUND->T &
-        {
-            compute();
-            return std::get<1>(*this);
-        }
-
         CCL_DECL auto get() const -> T
         {
             if (this->index() == 0) {
                 return std::get<0>(*this)();
             }
 
+            return std::get<1>(*this);
+        }
+
+        CCL_DECL auto get() CCL_LIFETIMEBOUND->T &
+        {
+            compute();
             return std::get<1>(*this);
         }
 
@@ -51,7 +51,7 @@ namespace ccl
 
     template<Invocable Func>
     CCL_DECL auto toLazy(Func &&function) -> Lazy<decltype(function())>
-        requires(LazyStorable<decltype(function())>)
+        requires(LazyStorable<std::invoke_result_t<Func>>)
     {
         return Lazy<decltype(function())>(std::forward<Func>(function));
     }

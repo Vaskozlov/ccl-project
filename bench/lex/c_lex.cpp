@@ -12,7 +12,7 @@ static auto lexicalAnalysisOfC(benchmark::State &state) -> void
     for (auto _ : state) {
         auto tokenizer = CLexer.getTokenizer(debug::C_RULE);
 
-        while (const lex::Token &token = tokenizer.yield()) {
+        while (const lexer::Token &token = tokenizer.yield()) {
             benchmark::DoNotOptimize(token);
             benchmark::DoNotOptimize(token.getRepr());
             benchmark::DoNotOptimize(token.getLine());
@@ -26,7 +26,7 @@ BENCHMARK(lexicalAnalysisOfC);
 static auto lexicalAnalyzerInitialization(benchmark::State &state) -> void
 {
     for (auto _ : state) {
-        [[maybe_unused]] auto c_lexer = lex::LexicalAnalyzer(
+        [[maybe_unused]] auto c_lexer = lexer::LexicalAnalyzer(
             handler::Cmd::instance(),
             {
                 {CLexerToken::COMMENT, R"( ! "//"[\n]*^ )"},

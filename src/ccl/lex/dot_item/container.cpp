@@ -1,6 +1,6 @@
 #include <ccl/lex/dot_item/container.hpp>
 
-namespace ccl::lex::dot_item
+namespace ccl::lexer::dot_item
 {
     using namespace ccl::string_view_literals;
 
@@ -85,7 +85,8 @@ namespace ccl::lex::dot_item
             specialItems.checkForSpecial(text_iterator));
     }
 
-    auto Container::scanIteration(const ForkedGenerator &text_iterator) const -> Optional<size_t>
+    auto Container::scanIteration(const ForkedGenerator &text_iterator) const
+        -> std::optional<size_t>
     {
         auto totally_skipped = as<size_t>(0);
         auto local_iterator = text_iterator;

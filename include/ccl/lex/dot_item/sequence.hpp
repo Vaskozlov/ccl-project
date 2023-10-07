@@ -3,7 +3,7 @@
 
 #include <ccl/lex/dot_item/item_concept.hpp>
 
-namespace ccl::lex::dot_item
+namespace ccl::lexer::dot_item
 {
     class Sequence final : public DotItemConcept
     {
@@ -47,7 +47,7 @@ namespace ccl::lex::dot_item
 
     private:
         [[nodiscard]] auto scanIteration(const ForkedGenerator &text_iterator) const
-            -> Optional<size_t> override;
+            -> std::optional<size_t> override;
 
         [[nodiscard]] auto isStringEnd(const TextIterator &rule_iterator, bool is_escaping) const
             -> bool;

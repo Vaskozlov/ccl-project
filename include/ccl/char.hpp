@@ -12,7 +12,7 @@ namespace ccl
 
     CCL_DECL auto isEoF(CharacterLiteral auto chr) noexcept -> bool
     {
-        return '\0' == chr;
+        return chr == '\0';
     }
 
     CCL_DECL auto isLayout(CharacterLiteral auto chr) noexcept -> bool

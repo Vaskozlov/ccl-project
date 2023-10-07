@@ -3,7 +3,7 @@
 #include <ccl/lex/dot_item/sequence.hpp>
 #include <ccl/lex/dot_item/union.hpp>
 
-namespace ccl::lex::dot_item
+namespace ccl::lexer::dot_item
 {
     using namespace ccl::string_view_literals;
 
@@ -113,11 +113,13 @@ namespace ccl::lex::dot_item
         items.pop_back();
 
         if (binaryOperator == BinaryOperator::AND) {
-            return DotItem{BinaryAnd(std::move(constructedLhs.value()), std::move(rhs), getId())};
+            return DotItem{
+                BinaryOperationAnd(std::move(constructedLhs.value()), std::move(rhs), getId())};
         }
 
         if (binaryOperator == BinaryOperator::OR) {
-            return DotItem{BinaryOr(std::move(constructedLhs.value()), std::move(rhs), getId())};
+            return DotItem{
+                BinaryOperationOr(std::move(constructedLhs.value()), std::move(rhs), getId())};
         }
 
         unreachable();

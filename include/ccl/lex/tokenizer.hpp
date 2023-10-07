@@ -3,7 +3,7 @@
 
 #include <ccl/lex/lexical_analyzer.hpp>
 
-namespace ccl::lex
+namespace ccl::lexer
 {
     class LexicalAnalyzer::Tokenizer
     {

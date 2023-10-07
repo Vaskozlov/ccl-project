@@ -3,7 +3,7 @@
 
 #include <ccl/lex/dot_item/container.hpp>
 
-namespace ccl::lex
+namespace ccl::lexer
 {
     class LexicalAnalyzer
     {
@@ -18,9 +18,9 @@ namespace ccl::lex
             string_view repr{};
         };
 
-        Vector<Container> items{};
+        std::vector<Container> items{};
         SpecialItems specialItems{};
-        Vector<Id> ignoredIds{};
+        std::vector<Id> ignoredIds{};
         std::string skippedCharacters{};
         ExceptionHandler &exceptionHandler;// NOLINT
 
@@ -29,9 +29,9 @@ namespace ccl::lex
 
         [[nodiscard]] LexicalAnalyzer(
             ExceptionHandler &exception_handler, InitializerList<Rule> rules,
-            std::string_view filename = {}, Vector<Id> ignored_ids = {});
+            std::string_view filename = {}, std::vector<Id> ignored_ids = {});
 
-        [[nodiscard]] auto getIgnoredIds() const -> const Vector<Id> &
+        [[nodiscard]] auto getIgnoredIds() const -> const std::vector<Id> &
         {
             return ignoredIds;
         }

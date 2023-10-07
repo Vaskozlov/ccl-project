@@ -4,7 +4,7 @@
 #include <ccl/lex/analyzer_generator/analyzer_generator.hpp>
 #include <stack>
 
-namespace ccl::lex::parser
+namespace ccl::lexer::parser
 {
     class CcllParser
     {
@@ -31,7 +31,7 @@ namespace ccl::lex::parser
         };
 
     private:
-        Vector<Rule> rules{};
+        std::vector<Rule> rules{};
         std::stack<Token> tokenStack{};
         std::map<string_view, std::string> directives{};
         std::map<string_view, BlockInfo> blocks{{"NONE", {0, 2}}};
@@ -43,17 +43,19 @@ namespace ccl::lex::parser
     public:
         explicit CcllParser(Tokenizer &input_tokenizer);
 
-        [[nodiscard]] auto getRules() const -> const Vector<Rule> &
+        [[nodiscard]] auto getRules() const CCL_LIFETIMEBOUND->const std::vector<Rule> &
         {
             return rules;
         }
 
-        [[nodiscard]] auto getBlocks() const -> const std::map<string_view, BlockInfo> &
+        [[nodiscard]] auto
+            getBlocks() const CCL_LIFETIMEBOUND->const std::map<string_view, BlockInfo> &
         {
             return blocks;
         }
 
-        [[nodiscard]] auto getDirectives() const -> const std::map<string_view, std::string> &
+        [[nodiscard]] auto
+            getDirectives() const CCL_LIFETIMEBOUND->const std::map<string_view, std::string> &
         {
             return directives;
         }
@@ -69,6 +71,6 @@ namespace ccl::lex::parser
 
         auto parsingError(string_view message, string_view suggestion = {}) -> void;
     };
-}// namespace ccl::lex::parser
+}// namespace ccl::lexer::parser
 
 #endif /* CCL_PROJECT_CCLL_PARSER_HPP */

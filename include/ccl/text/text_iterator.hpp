@@ -73,7 +73,7 @@ namespace ccl::text
             return lineTracker.get();
         }
 
-        [[nodiscard]] auto getTabsAndSpaces() const noexcept -> const std::string &
+        [[nodiscard]] auto getTabsAndSpaces() const noexcept CCL_LIFETIMEBOUND->const std::string &
         {
             return tsTracker.get();
         }

@@ -3,7 +3,7 @@
 #include <ccl/raii.hpp>
 #include <range/v3/view.hpp>
 
-namespace ccl::lex::gen
+namespace ccl::lexer::gen
 {
     using codegen::endl;
     using codegen::pop_scope;

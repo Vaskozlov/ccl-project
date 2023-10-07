@@ -1,12 +1,12 @@
-#ifndef CCL_PROJECT_BINARY_EXPRESSION_HPP
-#define CCL_PROJECT_BINARY_EXPRESSION_HPP
+#ifndef CCL_PROJECT_BINARY_EXPRESSION_BASE_HPP
+#define CCL_PROJECT_BINARY_EXPRESSION_BASE_HPP
 
 #include "ccl/lex/dot_item/item_concept.hpp"
 
-namespace ccl::lex::dot_item
+namespace ccl::lexer::dot_item
 {
-    class BinaryOr;
-    class BinaryAnd;
+    class BinaryOperationOr;
+    class BinaryOperationAnd;
 
     enum struct BinaryOperator : u16
     {
@@ -15,18 +15,18 @@ namespace ccl::lex::dot_item
         OR
     };
 
-    class BinaryExpression : public DotItemConcept
+    class BinaryExpressionBase : public DotItemConcept
     {
     private:
-        friend BinaryOr;
-        friend BinaryAnd;
+        friend BinaryOperationOr;
+        friend BinaryOperationAnd;
         using typename DotItemConcept::TextIterator;
 
         DotItem rhsItem;
         DotItem lhsItem;
 
     public:
-        [[nodiscard]] BinaryExpression(DotItem lhs, DotItem rhs, Id item_id);
+        [[nodiscard]] BinaryExpressionBase(DotItem lhs, DotItem rhs, Id item_id);
 
         [[nodiscard]] auto empty() const noexcept -> bool override;
 
@@ -40,6 +40,6 @@ namespace ccl::lex::dot_item
             return rhsItem;
         }
     };
-}// namespace ccl::lex::dot_item
+}// namespace ccl::lexer::dot_item
 
-#endif /* CCL_PROJECT_BINARY_EXPRESSION_HPP */
+#endif /* CCL_PROJECT_BINARY_EXPRESSION_BASE_HPP */

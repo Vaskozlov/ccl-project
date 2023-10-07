@@ -5,7 +5,7 @@
 #include <ccl/lex/token.hpp>
 #include <ccl/text/text_iterator.hpp>
 
-namespace ccl::lex::dot_item
+namespace ccl::lexer::dot_item
 {
     enum struct ScanType : u16
     {
@@ -115,11 +115,11 @@ namespace ccl::lex::dot_item
         static auto neverRecognizedSuggestion(TextIterator &text_iterator, bool condition) -> void;
 
         [[nodiscard]] virtual auto empty() const noexcept -> bool = 0;
-        [[nodiscard]] auto scan(ForkedGenerator text_iterator) const -> Optional<size_t>;
+        [[nodiscard]] auto scan(ForkedGenerator text_iterator) const -> std::optional<size_t>;
 
     private:
         [[nodiscard]] virtual auto scanIteration(const ForkedGenerator &text_iterator) const
-            -> Optional<size_t> = 0;
+            -> std::optional<size_t> = 0;
     };
 
     class DotItem : public std::unique_ptr<DotItemConcept>
@@ -132,9 +132,9 @@ namespace ccl::lex::dot_item
           : std::unique_ptr<DotItemConcept>::unique_ptr(makeUnique<T>(std::move(dot_item)))
         {}
     };
-}// namespace ccl::lex::dot_item
+}// namespace ccl::lexer::dot_item
 
-namespace ccl::lex
+namespace ccl::lexer
 {
     using SpecialItems = dot_item::DotItemConcept::SpecialItems;
 }

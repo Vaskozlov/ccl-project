@@ -63,9 +63,9 @@ namespace ccl::text
           , end{input.end()}
         {}
 
-        template<typename T>
+        template<typename Source>
         [[nodiscard]] constexpr explicit CrtpBasicTextIterator(
-            CrtpForkType /* unused */, T &from) noexcept
+            CrtpForkType /* unused */, Source &from) noexcept
           : carriage{from.getCarriage()}
           , end{from.getEnd()}
           , currentChar{from.getCurrentChar()}

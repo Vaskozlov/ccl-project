@@ -1,14 +1,14 @@
 #ifndef CCL_PROJECT_CONTAINER_HPP
 #define CCL_PROJECT_CONTAINER_HPP
 
-#include <ccl/lex/dot_item/binary_expression/binary_and.hpp>
-#include <ccl/lex/dot_item/binary_expression/binary_or.hpp>
+#include <ccl/lex/dot_item/binary_expression/binary_operation_and.hpp>
+#include <ccl/lex/dot_item/binary_expression/binary_operation_or.hpp>
 #include <ccl/lex/dot_item/item_concept.hpp>
 #include <ccl/lex/dot_item/repetition.hpp>
 #include <ccl/lex/dot_item/sequence.hpp>
 #include <ccl/lex/dot_item/union.hpp>
 
-namespace ccl::lex::dot_item
+namespace ccl::lexer::dot_item
 {
     enum struct ScanningType : Id
     {
@@ -24,7 +24,7 @@ namespace ccl::lex::dot_item
     {
         using DotItemConcept::canBeOptimized;
         using typename DotItemConcept::TextIterator;
-        using DotItemsStorage = Vector<DotItem>;
+        using DotItemsStorage = std::vector<DotItem>;
 
         class RuleParser;
 
@@ -52,7 +52,7 @@ namespace ccl::lex::dot_item
             ScanningType special_scan = ScanningType::BASIC) const -> bool;
 
         [[nodiscard]] auto scanIteration(const ForkedGenerator &text_iterator) const
-            -> Optional<size_t> override;
+            -> std::optional<size_t> override;
 
         [[nodiscard]] auto operator==(const Container &other) const noexcept -> bool
         {
@@ -94,7 +94,7 @@ namespace ccl::lex::dot_item
         TextIterator &ruleIterator;                        // NOLINT
         DotItemsStorage &items{container.items};           // NOLINT
         SpecialItems &specialItems{container.specialItems};// NOLINT
-        Optional<DotItem> constructedLhs{std::nullopt};
+        std::optional<DotItem> constructedLhs{std::nullopt};
         BinaryOperator binaryOperator{};
         bool rhsItemConstructed{false};
 
@@ -162,7 +162,7 @@ namespace ccl::lex::dot_item
     class DotItemConcept::SpecialItems
     {
     public:
-        Vector<Container> specialItems;
+        std::vector<Container> specialItems;
 
         [[nodiscard]] auto specialScan(TextIterator &text_iterator, Token &token) const -> bool;
         [[nodiscard]] auto checkForSpecial(const ForkedGenerator &text_iterator) const -> bool;
