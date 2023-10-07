@@ -94,7 +94,7 @@ namespace ccl::lex::gen
 
     auto StaticGenerator::generateRuleNames() -> void
     {
-        auto generated_rules = Set<string_view>{};
+        auto generated_rules = std::set<string_view>{};
 
         auto output_rule = [this](string_view value) {
             codeGenerator << endl << '{' << enumName << "::" << value;
@@ -145,8 +145,8 @@ namespace ccl::lex::gen
 
     auto StaticGenerator::generateEnumCases() -> void
     {
-        auto generated_blocks = Set<string_view>{};
-        auto generated_enum_cases = Set<string_view>{};
+        auto generated_blocks = std::set<string_view>{};
+        auto generated_enum_cases = std::set<string_view>{};
         const auto &blocks = ccllParser.getBlocks();
         const auto &rules = ccllParser.getRules();
 

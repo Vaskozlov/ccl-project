@@ -41,36 +41,8 @@ namespace ccl
     template<size_t N>
     using SmallBitset = std::bitset<N>;
 
-    template<typename T, typename Compare = std::less<T>, typename Alloc = std::allocator<T>>
-    using Set = std::set<T, Compare, Alloc>;
-
-    template<
-        typename Key, typename Value, typename Compare = std::less<Key>,
-        typename Alloc = std::allocator<std::pair<const Key, Value>>>
-    using Map = std::map<Key, Value, Compare, Alloc>;
-
-    template<
-        typename T, typename Hash = std::hash<T>, typename Pred = std::equal_to<T>,
-        typename Alloc = std::allocator<T>>
-    using UnorderedSet = std::unordered_set<T, Hash, Pred, Alloc>;
-
-    template<
-        typename Key, typename Value, typename Hash = std::hash<Key>,
-        typename Pred = std::equal_to<Key>,
-        typename Alloc = std::allocator<std::pair<const Key, Value>>>
-    using UnorderedMap = std::unordered_map<Key, Value, Hash, Pred, Alloc>;
-
     template<typename T>
     using InitializerList = const std::initializer_list<T> &;
-
-    template<typename T>
-    using UniquePtr = std::unique_ptr<T>;
-
-    template<typename T>
-    using SharedPtr = std::shared_ptr<T>;
-
-    template<typename T>
-    using WeakPtr = std::weak_ptr<T>;
 
     template<typename T, size_t Size>
     using CArray = T[Size];
@@ -79,33 +51,33 @@ namespace ccl
     using FixedSizeArray = std::array<T, Size>;
 
     template<typename T, typename... Ts>
-    constexpr auto makeUnique(Ts &&...args) -> UniquePtr<T>
+    constexpr auto makeUnique(Ts &&...args) -> std::unique_ptr<T>
         requires std::constructible_from<T, Ts...>
     {
         return std::make_unique<T>(std::forward<Ts>(args)...);
     }
 
     template<typename Target, typename Constructed, typename... Ts>
-    constexpr auto makeUnique(Ts &&...args) -> UniquePtr<Target>
+    constexpr auto makeUnique(Ts &&...args) -> std::unique_ptr<Target>
         requires std::derived_from<Constructed, Target> &&
                  std::constructible_from<Constructed, Ts...>
     {
-        return UniquePtr<Target>{as<Target *>(new Constructed(std::forward<Ts>(args)...))};
+        return std::unique_ptr<Target>{as<Target *>(new Constructed(std::forward<Ts>(args)...))};
     }
 
     template<typename T, typename... Ts>
-    constexpr auto makeShared(Ts &&...args) -> SharedPtr<T>
+    constexpr auto makeShared(Ts &&...args) -> std::shared_ptr<T>
         requires std::constructible_from<T, Ts...>
     {
         return std::make_shared<T>(std::forward<Ts>(args)...);
     }
 
     template<typename Target, typename Constructed, typename... Ts>
-    constexpr auto makeShared(Ts &&...args) -> SharedPtr<Target>
+    constexpr auto makeShared(Ts &&...args) -> std::shared_ptr<Target>
         requires std::derived_from<Constructed, Target> &&
                  std::constructible_from<Constructed, Ts...>
     {
-        return SharedPtr<Target>{as<Target *>(new Constructed(std::forward<Ts>(args)...))};
+        return std::shared_ptr<Target>{as<Target *>(new Constructed(std::forward<Ts>(args)...))};
     }
 
     namespace integral_literals

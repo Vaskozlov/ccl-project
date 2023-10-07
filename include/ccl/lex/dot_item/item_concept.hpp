@@ -122,38 +122,15 @@ namespace ccl::lex::dot_item
             -> Optional<size_t> = 0;
     };
 
-    class DotItem
+    class DotItem : public std::unique_ptr<DotItemConcept>
     {
-    private:
-        UniquePtr<DotItemConcept> item{};
-
     public:
-        DotItem() = default;
+        using std::unique_ptr<DotItemConcept>::unique_ptr;
 
         template<std::derived_from<DotItemConcept> T>
         explicit DotItem(T dot_item)
-          : item{makeUnique<T>(std::move(dot_item))}
+          : std::unique_ptr<DotItemConcept>::unique_ptr(makeUnique<T>(std::move(dot_item)))
         {}
-
-        CCL_INLINE auto operator->() -> DotItemConcept *
-        {
-            return get();
-        }
-
-        CCL_INLINE auto operator->() const -> const DotItemConcept *
-        {
-            return get();
-        }
-
-        [[nodiscard]] CCL_INLINE auto get() -> DotItemConcept *
-        {
-            return item.get();
-        }
-
-        [[nodiscard]] CCL_INLINE auto get() const -> const DotItemConcept *
-        {
-            return item.get();
-        }
     };
 }// namespace ccl::lex::dot_item
 

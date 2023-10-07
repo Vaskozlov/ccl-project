@@ -33,8 +33,8 @@ namespace ccl::lex::parser
     private:
         Vector<Rule> rules{};
         std::stack<Token> tokenStack{};
-        Map<string_view, std::string> directives{};
-        Map<string_view, BlockInfo> blocks{{"NONE", {0, 2}}};
+        std::map<string_view, std::string> directives{};
+        std::map<string_view, BlockInfo> blocks{{"NONE", {0, 2}}};
         SpecialItems specialItems{};
         string_view currentBlock = "NONE";
         Tokenizer &tokenizer;
@@ -48,12 +48,12 @@ namespace ccl::lex::parser
             return rules;
         }
 
-        [[nodiscard]] auto getBlocks() const -> const Map<string_view, BlockInfo> &
+        [[nodiscard]] auto getBlocks() const -> const std::map<string_view, BlockInfo> &
         {
             return blocks;
         }
 
-        [[nodiscard]] auto getDirectives() const -> const Map<string_view, std::string> &
+        [[nodiscard]] auto getDirectives() const -> const std::map<string_view, std::string> &
         {
             return directives;
         }

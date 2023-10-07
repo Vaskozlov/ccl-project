@@ -10,7 +10,7 @@ namespace ccl
         static constexpr auto smallStorageSize = as<size_t>(128);
 
         SmallBitset<smallStorageSize> smallStorage{};
-        UnorderedSet<char32_t> storage{};
+        std::unordered_set<char32_t> storage{};
 
     public:
         UtfSet() = default;

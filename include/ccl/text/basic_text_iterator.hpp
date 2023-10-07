@@ -23,9 +23,7 @@ namespace ccl::text
           : public CrtpBasicTextIterator<ForkedTextIterator>
         {
         public:
-            constexpr explicit ForkedTextIterator(string_view input) noexcept
-              : CrtpBasicTextIterator<ForkedTextIterator>(input)
-            {}
+            using CrtpBasicTextIterator<ForkedTextIterator>::CrtpBasicTextIterator;
 
             template<typename T>
             constexpr explicit ForkedTextIterator(CrtpForkType /* unused */, T &other) noexcept
@@ -299,11 +297,7 @@ namespace ccl::text
     class CCL_TRIVIAL_ABI BasicTextIterator final : public CrtpBasicTextIterator<BasicTextIterator>
     {
     public:
-        BasicTextIterator() noexcept = default;
-
-        [[nodiscard]] constexpr explicit BasicTextIterator(string_view input) noexcept
-          : CrtpBasicTextIterator<BasicTextIterator>(input)
-        {}
+        using CrtpBasicTextIterator<BasicTextIterator>::CrtpBasicTextIterator;
 
         constexpr static auto onMove(char /* chr */) noexcept -> void
         {
