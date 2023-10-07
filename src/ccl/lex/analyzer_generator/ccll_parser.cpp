@@ -84,7 +84,7 @@ namespace ccl::lex::parser
             const auto block_id = as<u16>(lastBlockId);
             ++lastBlockId;
 
-            blocks.try_emplace(currentBlock, BlockInfo{block_id, 0});
+            blocks.try_emplace(blocks.end(), currentBlock, BlockInfo{block_id, 0});
         }
     }
 
