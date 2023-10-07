@@ -267,8 +267,8 @@ namespace ccl::text
                 onUtfError(chr);
             }
 
-            currentChar <<= utf8::TrailingSize;
-            currentChar |= as<char32_t>(as<std::byte>(chr) & ~utf8::ContinuationMask);
+            currentChar <<= utf8::constants::TrailingSize;
+            currentChar |= as<char32_t>(as<std::byte>(chr) & ~utf8::constants::ContinuationMask);
 
             if (remainingBytesToFinishSymbol > 0) {
                 --remainingBytesToFinishSymbol;

@@ -13,53 +13,66 @@ namespace ccl::utf8
     template<typename T>
     concept ValueTypeUtf8 = IsSameToAny<typename T::value_type, char, char8_t>;
 
-    constexpr u32 OneByteMax = 127;
-    constexpr u32 TwoBytesMax = 2047;
-    constexpr u32 TreeBytesMax = 65535;
-    constexpr u32 FourBytesMax = 1114111;
+    namespace constants
+    {
+        constexpr u32 OneByteMax = 127;
+        constexpr u32 TwoBytesMax = 2047;
+        constexpr u32 TreeBytesMax = 65535;
+        constexpr u32 FourBytesMax = 1114111;
 
-    constexpr auto OneByteMask = 0b1000'0000_B;
-    constexpr auto TwoBytesMask = 0b1110'0000_B;
-    constexpr auto TwoBytesSignature = 0b1100'0000_B;
-    constexpr auto TreeBytesMask = 0b1111'0000_B;
-    constexpr auto TreeBytesSignature = 0b1110'0000_B;
-    constexpr auto FourBytesMask = 0b1111'1000_B;
-    constexpr auto FourBytesSignature = 0b1111'0000_B;
-    constexpr auto ContinuationMask = 0b1100'0000_B;
-    constexpr auto ContinuationSignature = 0b1000'0000_B;
-    constexpr u8 TrailingSize = 6;
+        constexpr auto OneByteMask = 0b1000'0000_B;
+        constexpr auto TwoBytesMask = 0b1110'0000_B;
+        constexpr auto TwoBytesSignature = 0b1100'0000_B;
+        constexpr auto TreeBytesMask = 0b1111'0000_B;
+        constexpr auto TreeBytesSignature = 0b1110'0000_B;
+        constexpr auto FourBytesMask = 0b1111'1000_B;
+        constexpr auto FourBytesSignature = 0b1111'0000_B;
+        constexpr auto ContinuationMask = 0b1100'0000_B;
+        constexpr auto ContinuationSignature = 0b1000'0000_B;
+        constexpr u8 TrailingSize = 6;
 
-    constexpr std::array<std::byte, 5> UtfMasks{
-        0_B, OneByteMask, TwoBytesMask, TreeBytesMask, FourBytesMask};
+        constexpr std::array<std::byte, 5> UtfMasks{
+            0_B, OneByteMask, TwoBytesMask, TreeBytesMask, FourBytesMask};
+    }// namespace constants
 
     CCL_DECL auto isTrailingCharacter(char chr) noexcept -> bool
     {
+        using namespace constants;
+
         return (as<std::byte>(chr) & ContinuationMask) == ContinuationSignature;
     }
 
     CCL_DECL auto isOneByteSize(char chr) noexcept -> bool
     {
+        using namespace constants;
+
         return (as<std::byte>(chr) & OneByteMask) == as<std::byte>(0);
     }
 
     CCL_DECL auto isTwoBytesSize(char chr) noexcept -> bool
     {
+        using namespace constants;
+
         return (as<std::byte>(chr) & TwoBytesMask) == TwoBytesSignature;
     }
 
     CCL_DECL auto isThreeBytesSize(char chr) noexcept -> bool
     {
+        using namespace constants;
+
         return (as<std::byte>(chr) & TreeBytesMask) == TreeBytesSignature;
     }
 
     CCL_DECL auto isFourBytesSize(char chr) noexcept -> bool
     {
+        using namespace constants;
+
         return (as<std::byte>(chr) & FourBytesMask) == FourBytesSignature;
     }
 
     CCL_DECL auto getMask(u16 size) -> std::byte
     {
-        return UtfMasks.at(size);
+        return constants::UtfMasks.at(size);
     }
 
     CCL_DECL auto size(char chr) noexcept -> u16
@@ -86,6 +99,7 @@ namespace ccl::utf8
     template<ValueTypeUtf8 T>
     constexpr auto appendUtf32ToUtf8Container(T &string, char32_t chr) -> void
     {
+        using namespace constants;
         using namespace std::string_view_literals;
 
         constexpr auto non_continuation_mask = ~ContinuationMask;
