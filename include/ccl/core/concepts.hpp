@@ -35,6 +35,19 @@ namespace ccl
 
     template<typename T>
     concept FloatingPoint = std::is_floating_point_v<T>;
+
+    template<typename Target, typename T>
+    concept Stores = std::same_as<typename Target::value_type, T>;
+
+    template<typename ContainerLike, typename T>
+    concept ContainerOf = Stores<ContainerLike, T> && requires(const ContainerLike &value) {
+        {
+            std::size(value)
+        } -> std::convertible_to<std::size_t>;
+        {
+            std::begin(value) == std::end(value)
+        } -> std::same_as<bool>;
+    };
 }// namespace ccl
 
 #endif /* CCL_PROJECT_CONCEPTS_HPP */

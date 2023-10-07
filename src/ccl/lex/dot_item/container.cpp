@@ -50,12 +50,12 @@ namespace ccl::lex::dot_item
 
         for (const DotItem &item : items) {
             auto chars_to_skip = item->scan(local_iterator);
+            const bool has_moved = chars_to_skip.has_value();
+            const bool succeed_as_reversed = !has_moved && isReversed();
 
-            if ((!chars_to_skip.has_value()) && isReversed()) {
+            if (succeed_as_reversed) {
                 chars_to_skip = utf8::size(local_iterator.getNextCarriageValue());
-            }
-
-            if (!chars_to_skip.has_value()) {
+            } else if (!has_moved) {
                 return false;
             }
 
@@ -68,11 +68,9 @@ namespace ccl::lex::dot_item
             local_iterator.skip(*chars_to_skip);
         }
 
-        if (ScanningType::BASIC == special_scan) {
-            if (failedToEndItem(local_iterator)) [[unlikely]] {
-                return false;
-            }
-        } else if (ScanningType::CHECK == special_scan) {
+        if (special_scan == ScanningType::BASIC && failedToEndItem(local_iterator)) [[unlikely]] {
+            return false;
+        } else if (special_scan == ScanningType::CHECK) {
             return true;
         }
 

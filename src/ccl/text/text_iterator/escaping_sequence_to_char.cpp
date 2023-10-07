@@ -15,7 +15,7 @@ namespace ccl::text
     {
         CCL_ASSERT_MSG(textIterator.getCurrentChar() == '\\', "called without preceding `\\`");
 
-        auto chr = textIterator.next();
+        char32_t chr = textIterator.advance();
 
         switch (chr) {
         case U'\\':

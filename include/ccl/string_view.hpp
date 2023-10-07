@@ -273,7 +273,7 @@ namespace ccl
         {
             auto stripped_string = *this;
             auto has_characters_to_strip = [&stripped_string, &characters_to_strip]() {
-                const auto last_character = stripped_string.template back<UNSAFE>();
+                const CharT last_character = stripped_string.template back<UNSAFE>();
                 return characters_to_strip.contains(last_character);
             };
 

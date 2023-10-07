@@ -19,6 +19,14 @@ namespace ccl::text
     public:
         using iterator = typename string_view::iterator;
 
+    private:
+        iterator carriage{};
+        iterator end{};
+        char32_t currentChar{};
+        u16 remainingBytesToFinishSymbol{};
+        bool initialized{};
+
+    public:
         class CCL_TRIVIAL_ABI ForkedTextIterator final
           : public CrtpBasicTextIterator<ForkedTextIterator>
         {
@@ -162,14 +170,14 @@ namespace ccl::text
             }
         }
 
-        constexpr auto moveToCleanChar() CCL_NOEXCEPT_IF(next()) -> void
+        constexpr auto moveToCleanChar() CCL_NOEXCEPT_IF(advance()) -> void
         {
             while (isLayout(futureChar())) {
-                next();
+                advance();
             }
         }
 
-        constexpr auto next() CCL_NOEXCEPT_IF(moveCarriageToTheNextByte()) -> char32_t
+        constexpr auto advance() CCL_NOEXCEPT_IF(moveCarriageToTheNextByte()) -> char32_t
         {
             moveCarriageToTheNextByte();
 
@@ -183,7 +191,7 @@ namespace ccl::text
         CCL_DECL auto futureChar() const noexcept -> char32_t
         {
             auto fork = ForkedTextIterator{CrtpFork, *this};
-            fork.next();
+            fork.advance();
 
             if (fork.errorDetected) [[unlikely]] {
                 return {};
@@ -245,7 +253,7 @@ namespace ccl::text
         {
             using namespace std::string_view_literals;
 
-            auto chr = *carriage;
+            char chr = *carriage;
             onCarriageMove(chr);
 
             if (remainingBytesToFinishSymbol != 0) {
@@ -286,12 +294,6 @@ namespace ccl::text
 
             --remainingBytesToFinishSymbol;
         }
-
-        iterator carriage{};
-        iterator end{};
-        char32_t currentChar{};
-        u16 remainingBytesToFinishSymbol{};
-        bool initialized{};
     };
 
     class CCL_TRIVIAL_ABI BasicTextIterator final : public CrtpBasicTextIterator<BasicTextIterator>

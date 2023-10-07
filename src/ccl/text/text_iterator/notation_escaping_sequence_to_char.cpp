@@ -23,7 +23,7 @@ namespace ccl::text
         auto chars_count = as<size_t>(0);
 
         for (; chars_count != maximumSymbols; ++chars_count) {
-            auto chr = textIterator.futureChar();
+            char32_t chr = textIterator.futureChar();
 
             if (isEoF(chr) || isOutOfNotation(chr)) [[unlikely]] {
                 break;
@@ -32,7 +32,7 @@ namespace ccl::text
             result = as<char32_t>(result << notationPower);
             result += as<char32_t>(HexadecimalCharsToInt.at(chr));
 
-            textIterator.next();
+            textIterator.advance();
         }
 
         checkAllCharsUsage(chars_count);

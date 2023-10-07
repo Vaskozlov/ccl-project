@@ -11,7 +11,7 @@ TEST_CASE("BinaryExpressionWith2Elements", "[BinaryExpression]")
     auto special_items = lex::SpecialItems{};
 
     auto container = Container(text_iterator, special_items, 2);
-    const auto &items = container.getItems();
+    const ContainerOf<DotItem> auto &items = container.getItems();
     const auto *binary_operation = ccl::as<const BinaryExpression *>(items[0].get());
 
     REQUIRE(binary_operation != nullptr);
@@ -29,7 +29,7 @@ TEST_CASE("BinaryExpressionWith3Elements", "[BinaryExpression]")
     auto special_items = lex::SpecialItems{};
 
     auto container = Container(text_iterator, special_items, 2);
-    const auto &items = container.getItems();
+    const ContainerOf<DotItem> auto &items = container.getItems();
     const auto *first_binary_operation = ccl::as<const BinaryExpression *>(items[0].get());
 
     REQUIRE(first_binary_operation != nullptr);

@@ -67,7 +67,7 @@ namespace ccl::lex::gen
     {
         codeGenerator << "#pragma once" << endl << endl;
 
-        for (const auto &header_name : IncludedHeaders) {
+        for (const string_view &header_name : IncludedHeaders) {
             codeGenerator << "#include " << header_name << endl;
         }
 
@@ -105,7 +105,7 @@ namespace ccl::lex::gen
             return !generated_rules.contains(rule.name);
         };
 
-        const auto &rules = ccllParser.getRules();
+        const ContainerOf<parser::CcllParser::Rule> auto &rules = ccllParser.getRules();
 
         codeGenerator << fmt::format(
             "inline constexpr ccl::StaticFlatmap<ccl::Id, ccl::string_view, {}> ToString{}Token\n",
@@ -212,9 +212,9 @@ namespace ccl::lex::gen
 
     auto StaticGenerator::generateRules() -> void
     {
-        const auto &rules = ccllParser.getRules();
+        const ContainerOf<parser::CcllParser::Rule> auto &rules = ccllParser.getRules();
 
-        for (const auto &rule : rules) {
+        for (const parser::CcllParser::Rule &rule : rules) {
             codeGenerator << endl << '{';
             codeGenerator << enumName << "::" << rule.name << ", ";
             codeGenerator << "R\"( ";

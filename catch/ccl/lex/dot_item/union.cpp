@@ -12,7 +12,7 @@ using namespace dot_item;
 TEST_CASE("UnionWithOneElem", "[ContainerUnion]")
 {
     auto text_iterator = TextIterator{"[a]"};
-    text_iterator.next();
+    text_iterator.advance();
 
     auto union_item = Union(text_iterator);
     DEBUG_VAR &&bitset = union_item.getBitset();
@@ -25,7 +25,7 @@ TEST_CASE("UnionWithOneElem", "[ContainerUnion]")
 TEST_CASE("UnionWithMultipleElems", "[ContainerUnion]")
 {
     auto text_iterator = TextIterator{"[a-z_]"};
-    text_iterator.next();
+    text_iterator.advance();
 
     auto union_item = Union(text_iterator);
     DEBUG_VAR &&bitset = union_item.getBitset();

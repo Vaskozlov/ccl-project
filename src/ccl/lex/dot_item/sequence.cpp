@@ -34,7 +34,7 @@ namespace ccl::lex::dot_item
             auto is_escaping = false;
 
             if (getFlags().noEscapingSymbols) {
-                chr = rule_iterator.next();
+                chr = rule_iterator.advance();
             } else {
                 auto [escaping, character] = rule_iterator.nextCharWithEscapingSymbols(std::span{
                     special_symbols_for_sequence.begin(), special_symbols_for_sequence.end()});
@@ -55,7 +55,7 @@ namespace ccl::lex::dot_item
 
     auto Sequence::scanIteration(const ForkedGenerator &text_iterator) const -> Optional<size_t>
     {
-        auto future_text = text_iterator.getRemainingText();
+        string_view future_text = text_iterator.getRemainingText();
 
         if (future_text.startsWith(sequenceValue) != isReversed()) [[unlikely]] {
             return isReversed() ? utf8::size(future_text[0]) : sequenceValue.size();

@@ -21,7 +21,7 @@ namespace ccl::lex
 
     auto Tokenizer::shouldIgnoreToken(const Token &token) const -> bool
     {
-        const auto &ignored_ids = lexicalAnalyzer.ignoredIds;
+        const ContainerOf<Id> auto &ignored_ids = lexicalAnalyzer.ignoredIds;
         return std::find(ignored_ids.begin(), ignored_ids.end(), token.getId()) !=
                ignored_ids.end();
     }
@@ -52,7 +52,7 @@ namespace ccl::lex
             return returnIfNotInIgnored(token);
         }
 
-        auto next_carriage_value = textIterator.getNextCarriageValue();
+        char next_carriage_value = textIterator.getNextCarriageValue();
 
         if (isLayout(next_carriage_value)) {
             chars_to_skip.push_back(next_carriage_value);
@@ -114,7 +114,7 @@ namespace ccl::lex
         token = {textIterator, static_cast<Id>(ReservedTokenType::BAD_TOKEN)};
 
         while (!isLayoutOrEoF(textIterator.getNextCarriageValue())) {
-            textIterator.next();
+            textIterator.advance();
         }
 
         token.setEnd(textIterator.getRemainingAsCarriage());

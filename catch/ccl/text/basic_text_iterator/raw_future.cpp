@@ -16,6 +16,6 @@ TEST_CASE("BasicTextIteratorRawFuture", "[TextIterator]")
     for (DEBUG_VAR &&chr : expected) {
         REQUIRE(text_iterator.futureChar() == chr);
         ++index;
-        text_iterator.next();
+        text_iterator.advance();
     }
 }

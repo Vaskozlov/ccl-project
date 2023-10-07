@@ -111,7 +111,7 @@ namespace ccl
 
         constexpr StaticFlatmap(InitializerList<value_type> initial_data)
         {
-            for (const auto &value : initial_data) {
+            for (const value_type &value : initial_data) {
                 if (occupied == capacity()) {
                     throw std::runtime_error{"StaticFlatmap capacity limit reached"};
                 }

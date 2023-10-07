@@ -75,7 +75,7 @@ namespace ccl::lex::parser
 
     auto CcllParser::completeGroup(const Token &token) -> void
     {
-        const auto &prefixes = token.getPrefixes();
+        const ContainerOf<string_view> auto &prefixes = token.getPrefixes();
         auto group_name = prefixes.at(1);
 
         currentBlock = group_name;
@@ -90,8 +90,8 @@ namespace ccl::lex::parser
 
     auto CcllParser::completeRule(const Token &token) -> void
     {
-        const auto &prefixes = token.getPrefixes();
-        const auto &postfixes = token.getPostfixes();
+        const ContainerOf<string_view> auto &prefixes = token.getPrefixes();
+        const ContainerOf<string_view> auto &postfixes = token.getPostfixes();
 
         auto name = prefixes.at(0);
         auto rule = postfixes.at(0);
@@ -102,8 +102,8 @@ namespace ccl::lex::parser
 
     auto CcllParser::completeDirective(const Token &token) -> void
     {
-        const auto &prefixes = token.getPrefixes();
-        const auto &postfixes = token.getPostfixes();
+        const ContainerOf<string_view> auto &prefixes = token.getPrefixes();
+        const ContainerOf<string_view> auto &postfixes = token.getPostfixes();
 
         auto name = prefixes.at(0);
         auto value = postfixes.at(0);
@@ -115,8 +115,8 @@ namespace ccl::lex::parser
 
     auto CcllParser::checkRule(const Token &token) -> void
     {
-        auto line_repr = token.getInlineRepr();
-        auto const &location = token.getLocation();
+        const string_view line_repr = token.getInlineRepr();
+        const text::Location &location = token.getLocation();
 
         auto text_iterator = text::TextIterator{
             line_repr, tokenizer.getHandler(),

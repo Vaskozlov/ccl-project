@@ -12,7 +12,7 @@ TEST_CASE("BasicTextIteratorRawIteration", "[TextIterator]")
     auto text_iterator = BasicTextIterator{input};
 
     for (DEBUG_VAR &&chr : expected) {
-        DEBUG_VAR sym = text_iterator.next();
+        DEBUG_VAR sym = text_iterator.advance();
 
         REQUIRE(sym == chr);
         REQUIRE(text_iterator.getCurrentChar() == chr);

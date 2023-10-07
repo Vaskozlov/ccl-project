@@ -12,7 +12,7 @@ namespace ccl::handler
         auto replaced_tabs = as<size_t>(0);
 
         CCL_UNROLL_N(4)
-        for (auto chr : string) {
+        for (char chr : string) {
             if ('\t' == chr) {
                 ++replaced_tabs;
                 result.append("    "sv);

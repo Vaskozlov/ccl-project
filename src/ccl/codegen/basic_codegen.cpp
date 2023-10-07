@@ -105,7 +105,7 @@ namespace ccl::codegen
     {
         getCurrentStream().reserve(generatedCode.size() + string.size());
 
-        for (auto character : string) {
+        for (char character : string) {
             *this << character;
         }
 

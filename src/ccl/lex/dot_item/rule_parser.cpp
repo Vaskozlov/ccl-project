@@ -25,7 +25,7 @@ namespace ccl::lex::dot_item
 
     auto Container::RuleParser::hasMovedToTheNextChar() -> bool
     {
-        return !isEoF(ruleIterator.next());
+        return !isEoF(ruleIterator.advance());
     }
 
     // NOLINTNEXTLINE recursive function
@@ -178,7 +178,7 @@ namespace ccl::lex::dot_item
             return;
         }
 
-        const auto &item = items.back();
+        const DotItem &item = items.back();
         auto item_repetition = item->getRepetition();
 
         neverRecognizedSuggestion(
@@ -258,7 +258,7 @@ namespace ccl::lex::dot_item
                 return elem->hasPostfix();
             });
 
-        const auto postfixes_correct =
+        const bool postfixes_correct =
             std::all_of(postfix_elem, items.cend(), [](const DotItem &elem) {
                 return elem->hasPostfix();
             });

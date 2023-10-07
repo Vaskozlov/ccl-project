@@ -26,7 +26,7 @@ namespace ccl::text
         -> Pair<bool, char32_t>
     {
         auto escaping = false;
-        auto chr = next();
+        char32_t chr = advance();
 
         if (U'\\' == chr) {
             escaping = true;

@@ -12,7 +12,7 @@ static auto lexicalAnalysisOfC(benchmark::State &state) -> void
     for (auto _ : state) {
         auto tokenizer = CLexer.getTokenizer(debug::C_RULE);
 
-        while (const auto &token = tokenizer.yield()) {
+        while (const lex::Token &token = tokenizer.yield()) {
             benchmark::DoNotOptimize(token);
             benchmark::DoNotOptimize(token.getRepr());
             benchmark::DoNotOptimize(token.getLine());

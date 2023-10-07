@@ -23,8 +23,8 @@ namespace ccl::lex::dot_item
         auto result = as<size_t>(0);
         text_iterator.moveToCleanChar();
 
-        while (text_iterator.next() != terminator) {
-            auto chr = text_iterator.getCurrentChar();
+        while (text_iterator.advance() != terminator) {
+            char32_t chr = text_iterator.getCurrentChar();
 
             if (isDigit(chr)) {
                 result = result * decimal_base + as<size_t>(chr - '0');
