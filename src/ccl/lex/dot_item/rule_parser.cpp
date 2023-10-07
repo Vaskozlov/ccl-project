@@ -107,13 +107,20 @@ namespace ccl::lex::dot_item
         }
     }
 
-    auto Container::RuleParser::constructBinaryExpression() -> BinaryExpression
+    auto Container::RuleParser::constructBinaryExpression() -> DotItem
     {
         auto rhs = std::move(items.back());
         items.pop_back();
 
-        return BinaryExpression{
-            std::move(constructedLhs.value()), std::move(rhs), binaryOperator, getId()};
+        if (binaryOperator == BinaryOperator::AND) {
+            return DotItem{BinaryAnd(std::move(constructedLhs.value()), std::move(rhs), getId())};
+        }
+
+        if (binaryOperator == BinaryOperator::OR) {
+            return DotItem{BinaryOr(std::move(constructedLhs.value()), std::move(rhs), getId())};
+        }
+
+        unreachable();
     }
 
     auto Container::RuleParser::constructNewSequence() -> Sequence
@@ -152,6 +159,14 @@ namespace ccl::lex::dot_item
     auto Container::RuleParser::emplaceItem(T item) -> void
     {
         if (!item.canBeOptimized()) {
+            finishPreviousItemInitialization();
+            items.emplace_back(std::move(item));
+        }
+    }
+
+    auto Container::RuleParser::emplaceItem(DotItem item) -> void
+    {
+        if (!item->canBeOptimized()) {
             finishPreviousItemInitialization();
             items.emplace_back(std::move(item));
         }

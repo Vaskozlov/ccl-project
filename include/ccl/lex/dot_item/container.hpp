@@ -1,7 +1,8 @@
 #ifndef CCL_PROJECT_CONTAINER_HPP
 #define CCL_PROJECT_CONTAINER_HPP
 
-#include <ccl/lex/dot_item/binary_expression.hpp>
+#include <ccl/lex/dot_item/binary_expression/binary_and.hpp>
+#include <ccl/lex/dot_item/binary_expression/binary_or.hpp>
 #include <ccl/lex/dot_item/item_concept.hpp>
 #include <ccl/lex/dot_item/repetition.hpp>
 #include <ccl/lex/dot_item/sequence.hpp>
@@ -121,7 +122,7 @@ namespace ccl::lex::dot_item
 
         [[nodiscard]] auto hasMovedToTheNextChar() -> bool;
 
-        [[nodiscard]] auto constructBinaryExpression() -> BinaryExpression;
+        [[nodiscard]] auto constructBinaryExpression() -> DotItem;
 
         [[nodiscard]] auto constructNewSequence() -> Sequence;
 
@@ -131,6 +132,8 @@ namespace ccl::lex::dot_item
 
         template<std::derived_from<DotItemConcept> T>
         auto emplaceItem(T item) -> void;
+
+        auto emplaceItem(DotItem item) -> void;
 
         auto finishPreviousItemInitialization() -> void;
 
