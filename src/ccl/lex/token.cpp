@@ -47,4 +47,4 @@ namespace ccl::lexer
         setReprLength(totally_skipped);
         text_iterator.skip(totally_skipped - 1);
     }
-}// namespace ccl::lex
+}// namespace ccl::lexer

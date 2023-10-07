@@ -19,4 +19,4 @@ namespace ccl::lexer::dot_item
 
         return std::nullopt;
     }
-}// namespace ccl::lex::dot_item
+}// namespace ccl::lexer::dot_item

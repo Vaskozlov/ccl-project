@@ -135,4 +135,4 @@ namespace ccl::lexer::parser
     {
         tokenizer.throwExceptionToHandler(ExceptionCriticality::PANIC, message, suggestion);
     }
-}// namespace ccl::lex::parser
+}// namespace ccl::lexer::parser

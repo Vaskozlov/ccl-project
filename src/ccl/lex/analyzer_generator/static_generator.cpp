@@ -223,4 +223,4 @@ namespace ccl::lexer::gen
             codeGenerator << "},";
         }
     }
-}// namespace ccl::lex::gen
+}// namespace ccl::lexer::gen

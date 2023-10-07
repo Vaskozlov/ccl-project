@@ -79,4 +79,4 @@ namespace ccl::lexer::dot_item
             "expected '{' at the beginning of repetition range"_sv);
         throw UnrecoverableError{"unrecoverable error in Repetition"};
     }
-}// namespace ccl::lex::dot_item
+}// namespace ccl::lexer::dot_item

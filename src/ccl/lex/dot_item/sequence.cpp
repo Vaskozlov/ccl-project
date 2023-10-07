@@ -149,4 +149,4 @@ namespace ccl::lexer::dot_item
         rule_iterator.throwPanicError(AnalysisStage::LEXICAL_ANALYSIS, message);
         throw UnrecoverableError{"unrecoverable error in SequenceType"};
     }
-}// namespace ccl::lex::dot_item
+}// namespace ccl::lexer::dot_item

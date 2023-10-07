@@ -13,4 +13,4 @@ namespace ccl::lexer::dot_item
 
         return rhsItem->scan(text_iterator);
     }
-}// namespace ccl::lex::dot_item
+}// namespace ccl::lexer::dot_item

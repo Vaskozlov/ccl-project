@@ -109,4 +109,4 @@ namespace ccl::lexer::dot_item
     {
         RuleParser{*this, rule_iterator};
     }
-}// namespace ccl::lex::dot_item
+}// namespace ccl::lexer::dot_item

@@ -39,4 +39,4 @@ namespace ccl::lexer
 
         return static_generator.getCode();
     }
-}// namespace ccl::lex
+}// namespace ccl::lexer

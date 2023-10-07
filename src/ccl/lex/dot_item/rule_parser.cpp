@@ -365,4 +365,4 @@ namespace ccl::lexer::dot_item
                 return special_item.beginScan(text_iterator, token, ScanningType::SPECIAL);
             });
     }
-}// namespace ccl::lex::dot_item
+}// namespace ccl::lexer::dot_item

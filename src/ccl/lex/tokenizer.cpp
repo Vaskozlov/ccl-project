@@ -119,4 +119,4 @@ namespace ccl::lexer
 
         token.setEnd(textIterator.getRemainingAsCarriage());
     }
-}// namespace ccl::lex
+}// namespace ccl::lexer

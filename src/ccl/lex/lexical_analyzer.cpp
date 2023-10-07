@@ -39,4 +39,4 @@ namespace ccl::lexer
     {
         return {*this, text, filename, handler};
     }
-}// namespace ccl::lex
+}// namespace ccl::lexer
