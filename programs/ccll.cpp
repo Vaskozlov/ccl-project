@@ -1,4 +1,4 @@
-#include <ccl/lex/analyzer_generator/analyzer_generator.hpp>
+#include <ccl/lexer/analyzer_generator/analyzer_generator.hpp>
 #include <chrono>
 #include <cxxopts.hpp>
 #include <filesystem>

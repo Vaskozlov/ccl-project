@@ -1,6 +1,6 @@
 #include <ccl/debug/debug_file.hpp>
 #include <ccl/handler/cmd.hpp>
-#include <ccl/lex/tokenizer.hpp>
+#include <ccl/lexer/tokenizer.hpp>
 
 using namespace ccl;
 using namespace lexer;

@@ -2,7 +2,7 @@
 
 #include <ccl/flatmap.hpp>
 #include <ccl/handler/cmd.hpp>
-#include <ccl/lex/tokenizer.hpp>
+#include <ccl/lexer/tokenizer.hpp>
 
 namespace ccl
 {

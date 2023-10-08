@@ -1,5 +1,5 @@
 #include <ccl/debug/debug_file.hpp>
-#include <ccl/lex/dot_item/container.hpp>
+#include <ccl/lexer/dot_item/container.hpp>
 
 using namespace ccl;
 using namespace lexer;

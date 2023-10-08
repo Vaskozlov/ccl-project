@@ -2,7 +2,7 @@
 #include <benchmark/benchmark.h>
 #include <ccl/debug/c_rule.hpp>
 #include <ccl/handler/cmd.hpp>
-#include <ccl/lex/tokenizer.hpp>
+#include <ccl/lexer/tokenizer.hpp>
 
 using namespace ccl;
 using namespace std::string_view_literals;

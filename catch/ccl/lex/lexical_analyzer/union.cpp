@@ -1,5 +1,5 @@
 #include <ccl/debug/debug_file.hpp>
-#include <ccl/lex/tokenizer.hpp>
+#include <ccl/lexer/tokenizer.hpp>
 
 using namespace ccl;
 using namespace lexer;
