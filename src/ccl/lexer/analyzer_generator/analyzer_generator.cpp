@@ -12,7 +12,7 @@ namespace ccl::lexer
         auto stream = std::ifstream(path);
 
         if (!stream.is_open()) {
-            fmt::print("Error: cannot open file {}\n", path.string());
+            fmt::println("Error: cannot open file {}", path.string());
             std::cout.flush();
             throw std::invalid_argument("Failed to open file");
         }

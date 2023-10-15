@@ -39,7 +39,7 @@ namespace ccl::lexer::gen
             } else if ("NAMESPACE" == name) {
                 nameSpace = value;
             } else {
-                fmt::print("unrecognizable directive: {}\n", name);
+                fmt::println("unrecognizable directive: {}", name);
             }
         }
 
