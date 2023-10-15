@@ -20,23 +20,25 @@ namespace ccl::lexer::parser
         class Rule
         {
         public:
-            string_view name;
-            string_view definition;
+            isl::string_view name;
+            isl::string_view definition;
             u16 blockId{};
             u16 id{};
 
             Rule() = default;
 
-            Rule(BlockInfo &block_info, string_view rule_name, string_view rule_definition);
+            Rule(
+                BlockInfo &block_info, isl::string_view rule_name,
+                isl::string_view rule_definition);
         };
 
     private:
         std::vector<Rule> rules{};
         std::stack<Token> tokenStack{};
-        std::map<string_view, std::string> directives{};
-        std::map<string_view, BlockInfo> blocks{{"NONE", {0, 2}}};
+        std::map<isl::string_view, std::string> directives{};
+        std::map<isl::string_view, BlockInfo> blocks{{"NONE", {0, 2}}};
         SpecialItems specialItems{};
-        string_view currentBlock = "NONE";
+        isl::string_view currentBlock = "NONE";
         Tokenizer &tokenizer;
         size_t lastBlockId{1};
 
@@ -49,13 +51,13 @@ namespace ccl::lexer::parser
         }
 
         [[nodiscard]] auto
-            getBlocks() const CCL_LIFETIMEBOUND->const std::map<string_view, BlockInfo> &
+            getBlocks() const CCL_LIFETIMEBOUND->const std::map<isl::string_view, BlockInfo> &
         {
             return blocks;
         }
 
         [[nodiscard]] auto
-            getDirectives() const CCL_LIFETIMEBOUND->const std::map<string_view, std::string> &
+            getDirectives() const CCL_LIFETIMEBOUND->const std::map<isl::string_view, std::string> &
         {
             return directives;
         }
@@ -69,7 +71,7 @@ namespace ccl::lexer::parser
 
         auto checkRule(const Token &token) -> void;
 
-        auto parsingError(string_view message, string_view suggestion = {}) -> void;
+        auto parsingError(isl::string_view message, isl::string_view suggestion = {}) -> void;
     };
 }// namespace ccl::lexer::parser
 

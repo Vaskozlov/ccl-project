@@ -7,13 +7,13 @@ namespace ccl::lexer
     using Tokenizer = LexicalAnalyzer::Tokenizer;
 
     Tokenizer::Tokenizer(
-        LexicalAnalyzer &lexical_analyzer, string_view text, std::string_view filename)
+        LexicalAnalyzer &lexical_analyzer, isl::string_view text, std::string_view filename)
       : lexicalAnalyzer{lexical_analyzer}
       , textIterator{text, lexical_analyzer.exceptionHandler, filename}
     {}
 
     Tokenizer::Tokenizer(
-        LexicalAnalyzer &lexical_analyzer, string_view text, std::string_view filename,
+        LexicalAnalyzer &lexical_analyzer, isl::string_view text, std::string_view filename,
         ExceptionHandler &exception_handler)
       : lexicalAnalyzer{lexical_analyzer}
       , textIterator{text, exception_handler, filename}
@@ -21,7 +21,7 @@ namespace ccl::lexer
 
     auto Tokenizer::shouldIgnoreToken(const Token &token) const -> bool
     {
-        const ContainerOf<Id> auto &ignored_ids = lexicalAnalyzer.ignoredIds;
+        const std::vector<Id> &ignored_ids = lexicalAnalyzer.ignoredIds;
         return std::find(ignored_ids.begin(), ignored_ids.end(), token.getId()) !=
                ignored_ids.end();
     }
@@ -76,7 +76,8 @@ namespace ccl::lexer
     }
 
     auto Tokenizer::throwExceptionToHandler(
-        ExceptionCriticality criticality, string_view message, string_view suggestion) -> void
+        ExceptionCriticality criticality, isl::string_view message, isl::string_view suggestion)
+        -> void
     {
         textIterator.throwToHandle(
             textIterator, criticality, AnalysisStage::LEXICAL_ANALYSIS, message, suggestion);

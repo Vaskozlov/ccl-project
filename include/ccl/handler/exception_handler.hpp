@@ -44,7 +44,7 @@ namespace ccl
         template<std::derived_from<ExceptionT> T>
         auto handle(const T &error)
         {
-            handle(as<const ExceptionT *>(&error));
+            handle(isl::as<const ExceptionT *>(&error));
         }
 
     private:

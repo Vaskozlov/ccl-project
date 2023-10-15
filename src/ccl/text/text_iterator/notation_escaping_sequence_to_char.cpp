@@ -20,7 +20,7 @@ namespace ccl::text
 
     auto NotationEscapingSequenceToChar::calculateResult() -> void
     {
-        auto chars_count = as<size_t>(0);
+        auto chars_count = isl::as<size_t>(0);
 
         for (; chars_count != maximumSymbols; ++chars_count) {
             char32_t chr = textIterator.futureChar();
@@ -29,8 +29,8 @@ namespace ccl::text
                 break;
             }
 
-            result = as<char32_t>(result << notationPower);
-            result += as<char32_t>(HexadecimalCharsToInt.at(chr));
+            result = isl::as<char32_t>(result << notationPower);
+            result += isl::as<char32_t>(HexadecimalCharsToInt.at(chr));
 
             textIterator.advance();
         }
@@ -51,7 +51,7 @@ namespace ccl::text
         std::string &message) const -> void
     {
         auto column = textIterator.getColumn();
-        auto insertion_size = as<size_t>(maximumSymbols - chars_count);
+        auto insertion_size = isl::as<size_t>(maximumSymbols - chars_count);
         auto insertion_position = column - chars_count;
 
         message.insert(insertion_position, insertion_size, '0');
@@ -59,13 +59,13 @@ namespace ccl::text
 
     auto NotationEscapingSequenceToChar::checkNotation() const -> void
     {
-        CCL_ASSERT(notationPower > 0 && notationPower <= 4);
+        ISL_ASSERT(notationPower > 0 && notationPower <= 4);
     }
 
     auto NotationEscapingSequenceToChar::isOutOfNotation(char32_t chr) const -> bool
     {
         return !HexadecimalCharsToInt.contains(chr) ||
-               HexadecimalCharsToInt.at(chr) >= pow2(notationPower);
+               HexadecimalCharsToInt.at(chr) >= (1U << notationPower);
     }
 
     auto NotationEscapingSequenceToChar::checkAllCharsUsage(size_t chars_count) const -> void

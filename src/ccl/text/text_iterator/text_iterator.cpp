@@ -3,7 +3,7 @@
 namespace ccl::text
 {
     TextIterator::TextIterator(
-        string_view input,
+        isl::string_view input,
         ExceptionHandler &exception_handler,
         std::string_view filename)
       : CrtpBasicTextIterator{input}
@@ -13,7 +13,7 @@ namespace ccl::text
     {}
 
     TextIterator::TextIterator(
-        string_view input,
+        isl::string_view input,
         ExceptionHandler &exception_handler,
         const Location &iterator_location)
       : CrtpBasicTextIterator{input}
@@ -23,7 +23,7 @@ namespace ccl::text
     {}
 
     auto TextIterator::nextCharWithEscapingSymbols(const extra_symbols_t &extra_symbols)
-        -> Pair<bool, char32_t>
+        -> isl::Pair<bool, char32_t>
     {
         auto escaping = false;
         char32_t chr = advance();

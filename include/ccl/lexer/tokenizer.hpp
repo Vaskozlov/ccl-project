@@ -15,10 +15,11 @@ namespace ccl::lexer
 
     public:
         [[nodiscard]] Tokenizer(
-            LexicalAnalyzer &lexical_analyzer, string_view text, std::string_view filename = {});
+            LexicalAnalyzer &lexical_analyzer, isl::string_view text,
+            std::string_view filename = {});
 
         [[nodiscard]] Tokenizer(
-            LexicalAnalyzer &lexical_analyzer, string_view text, std::string_view filename,
+            LexicalAnalyzer &lexical_analyzer, isl::string_view text, std::string_view filename,
             ExceptionHandler &exception_handler);
 
         [[nodiscard]] auto getIterator() const CCL_LIFETIMEBOUND->const TextIterator &
@@ -37,8 +38,8 @@ namespace ccl::lexer
         }
 
         auto throwExceptionToHandler(
-            ExceptionCriticality criticality, string_view message, string_view suggestion = {})
-            -> void;
+            ExceptionCriticality criticality, isl::string_view message,
+            isl::string_view suggestion = {}) -> void;
 
         auto yield() CCL_LIFETIMEBOUND->const Token &;
         auto yieldFutureToken() CCL_LIFETIMEBOUND->const Token &;
@@ -52,6 +53,6 @@ namespace ccl::lexer
         auto constructBadToken(Token &token) -> void;
         auto constructEoiToken(Token &token) const -> void;
     };
-}// namespace ccl::lex
+}// namespace ccl::lexer
 
 #endif /* CCL_PROJECT_TOKENIZER_HPP */

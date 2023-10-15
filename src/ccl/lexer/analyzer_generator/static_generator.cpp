@@ -1,6 +1,6 @@
 #include <ccl/codegen/basic_codegen.hpp>
 #include <ccl/lexer/analyzer_generator/static_generator.hpp>
-#include <ccl/raii.hpp>
+#include <isl/raii.hpp>
 #include <range/v3/view.hpp>
 
 namespace ccl::lexer::gen
@@ -12,15 +12,15 @@ namespace ccl::lexer::gen
     constexpr static auto ShiftSize = sizeof(size_t) * 8 / 2;
 
     constexpr static auto IncludedHeaders = []() {
-        std::array<string_view, 3> result = {
-            "<ccl/handler/cmd.hpp>", "<ccl/lexer/tokenizer.hpp>", "<ccl/flatmap.hpp>"};
+        std::array<isl::string_view, 3> result = {
+            "<ccl/handler/cmd.hpp>", "<ccl/lexer/tokenizer.hpp>", "<isl/flatmap.hpp>"};
 
         std::sort(result.begin(), result.end());
         return result;
     }();
 
     constexpr static auto BuiltinRules =
-        StaticFlatmap<string_view, Id, 2>{{"EOI", 0}, {"BAD_TOKEN", 1}};
+        isl::StaticFlatmap<isl::string_view, Id, 2>{{"EOI", 0}, {"BAD_TOKEN", 1}};
 
     StaticGenerator::StaticGenerator(Tokenizer &input_tokenizer)
       : tokenizer{input_tokenizer}
@@ -67,7 +67,7 @@ namespace ccl::lexer::gen
     {
         codeGenerator << "#pragma once" << endl << endl;
 
-        for (const string_view &header_name : IncludedHeaders) {
+        for (const isl::string_view &header_name : IncludedHeaders) {
             codeGenerator << "#include " << header_name << endl;
         }
 
@@ -94,9 +94,9 @@ namespace ccl::lexer::gen
 
     auto StaticGenerator::generateRuleNames() -> void
     {
-        auto generated_rules = std::set<string_view>{};
+        auto generated_rules = std::set<isl::string_view>{};
 
-        auto output_rule = [this](string_view value) {
+        auto output_rule = [this](isl::string_view value) {
             codeGenerator << endl << '{' << enumName << "::" << value;
             codeGenerator << ", " << '\"' << value << "\"},";
         };
@@ -105,10 +105,10 @@ namespace ccl::lexer::gen
             return !generated_rules.contains(rule.name);
         };
 
-        const ContainerOf<parser::CcllParser::Rule> auto &rules = ccllParser.getRules();
+        const std::vector<parser::CcllParser::Rule> &rules = ccllParser.getRules();
 
         codeGenerator << fmt::format(
-            "inline constexpr ccl::StaticFlatmap<ccl::Id, ccl::string_view, {}> ToString{}Token\n",
+            "inline constexpr isl::StaticFlatmap<ccl::Id, isl::string_view, {}> ToString{}Token\n",
             BuiltinRules.size() + rules.size(), variableName);
         codeGenerator << '{' << push_scope;
 
@@ -130,7 +130,7 @@ namespace ccl::lexer::gen
 
     auto StaticGenerator::generateEnum() -> void
     {
-        auto enum_definition = Raii{
+        auto enum_definition = isl::Raii{
             [this]() {
                 codeGenerator << "enum " << enumName << " : ccl::Id {";
                 codeGenerator << push_scope;
@@ -145,8 +145,8 @@ namespace ccl::lexer::gen
 
     auto StaticGenerator::generateEnumCases() -> void
     {
-        auto generated_blocks = std::set<string_view>{};
-        auto generated_enum_cases = std::set<string_view>{};
+        auto generated_blocks = std::set<isl::string_view>{};
+        auto generated_enum_cases = std::set<isl::string_view>{};
         const auto &blocks = ccllParser.getBlocks();
         const auto &rules = ccllParser.getRules();
 
@@ -156,16 +156,16 @@ namespace ccl::lexer::gen
         };
 
         auto undefined_enum_cases = [&generated_enum_cases](const parser::CcllParser::Rule &rule) {
-            return !generated_enum_cases.contains(string_view{rule.name});
+            return !generated_enum_cases.contains(isl::string_view{rule.name});
         };
 
-        auto output_enum_case = [this](string_view name, Id id) {
+        auto output_enum_case = [this](isl::string_view name, Id id) {
             codeGenerator << endl << name << " = " << fmt::to_string(id) << ',';
         };
 
         for (const auto &[block_name, block_info] :
              blocks | ranges::views::filter(undefined_blocks)) {
-            auto block_id = as<Id>(block_info.blockId) << ShiftSize;
+            auto block_id = isl::as<Id>(block_info.blockId) << ShiftSize;
 
             generated_blocks.emplace(block_name);
             output_enum_case(block_name, block_id);
@@ -177,7 +177,7 @@ namespace ccl::lexer::gen
         }
 
         for (const auto &rule : rules | ranges::views::filter(undefined_enum_cases)) {
-            auto id = (as<Id>(rule.blockId) << ShiftSize) + rule.id;
+            auto id = (isl::as<Id>(rule.blockId) << ShiftSize) + rule.id;
 
             generated_enum_cases.emplace(rule.name);
             output_enum_case(rule.name, id);
@@ -192,27 +192,25 @@ namespace ccl::lexer::gen
 
     auto StaticGenerator::generateLexicalAnalyzer() -> void
     {
-        auto generator_definition = Raii{
-            [this]() {
-                codeGenerator << "// NOLINTNEXTLINE" << endl;
-                codeGenerator << "inline auto " << variableName << " = ccl::lex::LexicalAnalyzer{";
-                codeGenerator << push_scope << endl;
-                codeGenerator << handler << ',' << endl;
-                codeGenerator << '{' << push_scope;
-            },
-            [this]() {
-                codeGenerator << pop_scope << endl;
-                codeGenerator << '}';
-                codeGenerator << pop_scope << endl;
-                codeGenerator << "};" << endl << endl;
-            }};
+        codeGenerator << "// NOLINTNEXTLINE" << endl;
+        codeGenerator << "inline auto " << variableName << " = ccl::lex::LexicalAnalyzer{";
+        codeGenerator << push_scope << endl;
+        codeGenerator << handler << ',' << endl;
+        codeGenerator << '{' << push_scope;
+
+        auto generator_definition = isl::Raii{[this]() {
+            codeGenerator << pop_scope << endl;
+            codeGenerator << '}';
+            codeGenerator << pop_scope << endl;
+            codeGenerator << "};" << endl << endl;
+        }};
 
         generateRules();
     }
 
     auto StaticGenerator::generateRules() -> void
     {
-        const ContainerOf<parser::CcllParser::Rule> auto &rules = ccllParser.getRules();
+        const std::vector<parser::CcllParser::Rule> &rules = ccllParser.getRules();
 
         for (const parser::CcllParser::Rule &rule : rules) {
             codeGenerator << endl << '{';

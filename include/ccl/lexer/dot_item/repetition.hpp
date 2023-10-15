@@ -45,7 +45,7 @@ namespace ccl::lexer::dot_item
 
         [[nodiscard]] auto inRange(size_t value) const noexcept
         {
-            return land(value >= from, value <= to);
+            return value >= from && value <= to;
         }
 
         [[nodiscard]] auto operator<=>(const Repetition &) const noexcept
@@ -66,6 +66,6 @@ namespace ccl::lexer::dot_item
         [[noreturn]] static auto
             throwUnexpectedCharacter(text::TextIterator &text_iterator, char32_t chr) -> void;
     };
-}// namespace ccl::lex::dot_item
+}// namespace ccl::lexer::dot_item
 
 #endif /* CCL_PROJECT_REPETITION_HPP */

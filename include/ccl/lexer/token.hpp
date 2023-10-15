@@ -22,7 +22,7 @@ namespace ccl::lexer
     public:
         std::string tabsAndSpaces{};
         text::Location location{};
-        string_view workingLine{};
+        isl::string_view workingLine{};
 
         TokenAttributes() = default;
 
@@ -35,10 +35,10 @@ namespace ccl::lexer
         friend class LexicalAnalyzer;
         friend class dot_item::Container;
 
-        std::vector<string_view> prefixes{};
-        std::vector<string_view> postfixes{};
+        std::vector<isl::string_view> prefixes{};
+        std::vector<isl::string_view> postfixes{};
         TokenAttributes attributes{};
-        string_view repr{};
+        isl::string_view repr{};
         Id id{};
 
     public:
@@ -47,10 +47,10 @@ namespace ccl::lexer
         [[nodiscard]] explicit Token(Id token_id);
 
         [[nodiscard]] Token(
-            TokenAttributes &&token_attributes, string_view token_repr, Id token_id);
+            TokenAttributes &&token_attributes, isl::string_view token_repr, Id token_id);
 
         [[nodiscard]] Token(
-            TokenAttributes &&token_attributes, typename string_view::iterator text_begin,
+            TokenAttributes &&token_attributes, typename isl::string_view::iterator text_begin,
             Id token_id);
 
         [[nodiscard]] Token(const text::TextIterator &text_iterator, Id token_id);
@@ -95,29 +95,29 @@ namespace ccl::lexer
             return attributes.location.getRealColumn();
         }
 
-        [[nodiscard]] CCL_INLINE auto getFilename() const noexcept -> string_view
+        [[nodiscard]] CCL_INLINE auto getFilename() const noexcept -> isl::string_view
         {
             return attributes.location.getFilename();
         }
 
-        [[nodiscard]] CCL_INLINE auto getRepr() const noexcept -> string_view
+        [[nodiscard]] CCL_INLINE auto getRepr() const noexcept -> isl::string_view
         {
             return repr;
         }
 
         [[nodiscard]] CCL_INLINE auto getPrefixes() const noexcept
-            -> const std::vector<string_view> &
+            -> const std::vector<isl::string_view> &
         {
             return prefixes;
         }
 
         [[nodiscard]] CCL_INLINE auto getPostfixes() const noexcept
-            -> const std::vector<string_view> &
+            -> const std::vector<isl::string_view> &
         {
             return postfixes;
         }
 
-        [[nodiscard]] CCL_INLINE auto getInlineRepr() const noexcept -> string_view
+        [[nodiscard]] CCL_INLINE auto getInlineRepr() const noexcept -> isl::string_view
         {
             return attributes.workingLine;
         }
@@ -132,20 +132,20 @@ namespace ccl::lexer
 
         auto setReprLength(size_t length) noexcept -> void
         {
-            repr = repr.changeLength<UNSAFE>(length);
+            repr = repr.changeLength<isl::FunctionAPI::UNSAFE>(length);
         }
 
-        auto addPrefix(string_view prefix) -> void
+        auto addPrefix(isl::string_view prefix) -> void
         {
             prefixes.push_back(prefix);
         }
 
-        auto addPostfix(string_view postfix) -> void
+        auto addPostfix(isl::string_view postfix) -> void
         {
             postfixes.push_back(postfix);
         }
 
-        CCL_INLINE auto setEnd(typename string_view::iterator end_of_repr) noexcept -> void
+        CCL_INLINE auto setEnd(typename isl::string_view::iterator end_of_repr) noexcept -> void
         {
             repr = {repr.begin(), end_of_repr};
         }
@@ -153,6 +153,6 @@ namespace ccl::lexer
         auto finishInitialization(text::TextIterator &text_iterator, size_t totally_skipped)
             -> void;
     };
-}// namespace ccl::lex
+}// namespace ccl::lexer
 
 #endif /* CCL_PROJECT_TOKEN_HPP */

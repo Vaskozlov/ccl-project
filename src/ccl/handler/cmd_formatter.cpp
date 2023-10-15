@@ -6,12 +6,12 @@ namespace ccl::handler
 {
     using namespace std::string_view_literals;
 
-    static auto replaceTabWithSpaces(string_view string) -> Pair<size_t, std::string>
+    static auto replaceTabWithSpaces(isl::string_view string) -> isl::Pair<size_t, std::string>
     {
         auto result = std::string{};
-        auto replaced_tabs = as<size_t>(0);
+        auto replaced_tabs = isl::as<size_t>(0);
 
-        CCL_UNROLL_N(4)
+        ISL_UNROLL_N(4)
         for (char chr : string) {
             if ('\t' == chr) {
                 ++replaced_tabs;

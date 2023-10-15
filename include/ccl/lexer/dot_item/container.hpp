@@ -84,8 +84,9 @@ namespace ccl::lexer::dot_item
 
         [[nodiscard]] auto failedToEndItem(const ForkedGenerator &text_iterator) const -> bool;
 
-        static auto addPrefixOrPostfix(const DotItemConcept *item, Token &token, string_view repr)
-            -> void;
+        static auto
+            addPrefixOrPostfix(const DotItemConcept *item, Token &token, isl::string_view repr)
+                -> void;
     };
 
     class Container::RuleParser
@@ -147,14 +148,14 @@ namespace ccl::lexer::dot_item
 
         auto postCreationCheck() -> void;
 
-        [[nodiscard]] auto findContainerEnd(string_view repr) -> size_t;
+        [[nodiscard]] auto findContainerEnd(isl::string_view repr) -> size_t;
 
         auto checkThereIsLhsItem() -> void;
 
         auto checkAbilityToCreatePrefixPostfix() -> void;
 
-        [[noreturn]] auto throwUnableToApply(string_view reason, string_view suggestion = {})
-            -> void;
+        [[noreturn]] auto
+            throwUnableToApply(isl::string_view reason, isl::string_view suggestion = {}) -> void;
 
         [[noreturn]] auto throwUndefinedAction() -> void;
     };
@@ -167,6 +168,6 @@ namespace ccl::lexer::dot_item
         [[nodiscard]] auto specialScan(TextIterator &text_iterator, Token &token) const -> bool;
         [[nodiscard]] auto checkForSpecial(const ForkedGenerator &text_iterator) const -> bool;
     };
-}// namespace ccl::lex::dot_item
+}// namespace ccl::lexer::dot_item
 
 #endif /* CCL_PROJECT_CONTAINER_HPP */

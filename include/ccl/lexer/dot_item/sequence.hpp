@@ -18,16 +18,16 @@ namespace ccl::lexer::dot_item
         using typename DotItemConcept::TextIterator;
 
         std::string sequenceValue{};
-        string_view starter{};
-        string_view ender{};
+        isl::string_view starter{};
+        isl::string_view ender{};
 
     public:
         [[nodiscard]] Sequence(
-            SequenceFlags sequence_flags, string_view sequence_starter, string_view sequence_ender,
-            TextIterator &rule_iterator, Id item_id = 0);
+            SequenceFlags sequence_flags, isl::string_view sequence_starter,
+            isl::string_view sequence_ender, TextIterator &rule_iterator, Id item_id = 0);
 
         [[nodiscard]] Sequence(
-            SequenceFlags sequence_flags, string_view sequence_begin_and_end,
+            SequenceFlags sequence_flags, isl::string_view sequence_begin_and_end,
             TextIterator &rule_iterator, Id item_id = 0);
 
         [[nodiscard]] auto getValue() noexcept -> std::string &
@@ -68,9 +68,9 @@ namespace ccl::lexer::dot_item
 
         [[noreturn]] static auto throwUnterminatedString(
             TextIterator &rule_iterator,
-            string_view message,
-            string_view suggestion = {}) -> void;
+            isl::string_view message,
+            isl::string_view suggestion = {}) -> void;
     };
-}// namespace ccl::lex::dot_item
+}// namespace ccl::lexer::dot_item
 
 #endif /* CCL_PROJECT_SEQUENCE_HPP */

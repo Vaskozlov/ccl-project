@@ -4,7 +4,7 @@ namespace ccl::text
 {
     CCL_INLINE static auto isTabOrSpace(char32_t chr) noexcept -> bool
     {
-        return lor('\t' == chr, ' ' == chr);
+        return '\t' == chr || ' ' == chr;
     }
 
     auto TsTracker::next(char32_t chr) -> void
@@ -12,7 +12,7 @@ namespace ccl::text
         clearIfNeed();
 
         if (isTabOrSpace(chr)) {
-            tabsAnsSpaces.push_back(as<char>(chr));
+            tabsAnsSpaces.push_back(isl::as<char>(chr));
         } else {
             needToClear = true;
         }

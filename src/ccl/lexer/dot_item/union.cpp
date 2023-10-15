@@ -2,12 +2,12 @@
 
 namespace ccl::lexer::dot_item
 {
-    using namespace ccl::string_view_literals;
+    using namespace isl::string_view_literals;
 
     Union::Union(TextIterator &rule_iterator, Id rule_id)
       : DotItemConcept{rule_id}
     {
-        static constexpr StaticFlatmap<char32_t, char32_t, 3> special_symbols = {
+        static constexpr isl::StaticFlatmap<char32_t, char32_t, 3> special_symbols = {
             {U'[', U'['}, {U']', U']'}, {U'-', U'-'}};
 
         auto is_range = false;
@@ -41,7 +41,7 @@ namespace ccl::lexer::dot_item
     auto Union::scanIteration(const ForkedGenerator &text_iterator) const -> std::optional<size_t>
     {
         if (bitset.at(text_iterator.futureChar()) != isReversed()) [[unlikely]] {
-            return utf8::size(text_iterator.getNextCarriageValue());
+            return isl::utf8::size(text_iterator.getNextCarriageValue());
         }
 
         return std::nullopt;
@@ -58,7 +58,7 @@ namespace ccl::lexer::dot_item
 
     CCL_INLINE auto Union::isUnionEnd(bool is_escaping, char32_t chr) noexcept -> bool
     {
-        return land(!is_escaping, chr == U']');
+        return !is_escaping && chr == U']';
     }
 
     CCL_INLINE auto
@@ -76,7 +76,7 @@ namespace ccl::lexer::dot_item
         Union::checkForUnexpectedEnd(TextIterator &rule_iterator, bool is_escaping, char32_t chr)
             -> void
     {
-        if (land(!is_escaping, isEoF(chr))) {
+        if (!is_escaping && isEoF(chr)) {
             throwUnterminatedUnion(rule_iterator);
         }
     }
@@ -112,7 +112,7 @@ namespace ccl::lexer::dot_item
     CCL_INLINE auto Union::throwUnionBeginException(TextIterator &rule_iterator) -> void
     {
         auto buffer = std::string{};
-        utf8::appendUtf32ToUtf8Container(buffer, rule_iterator.getCurrentChar());
+        isl::utf8::appendUtf32ToUtf8Container(buffer, rule_iterator.getCurrentChar());
 
         auto message =
             fmt::format("expected `[` at the beginning of union item declaration, got {}", buffer);

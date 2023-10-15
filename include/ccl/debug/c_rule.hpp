@@ -1,11 +1,11 @@
 #ifndef CCL_PROJECT_C_RULE_HPP
 #define CCL_PROJECT_C_RULE_HPP
 
-#include <ccl/string_view.hpp>
+#include <isl/string_view.hpp>
 
 namespace ccl::debug
 {
-    constexpr inline ccl::string_view C_RULE = R"(
+    constexpr inline isl::string_view C_RULE = R"(
 VAR_NAME = "CLexer"
 
 COMMENT: ! "//"[\n]*^

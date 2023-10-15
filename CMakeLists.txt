@@ -3,7 +3,8 @@ cmake_minimum_required(VERSION 3.20.0)
 project(ccl-project VERSION 0.0.2.1 LANGUAGES CXX)
 
 include(GNUInstallDirs)
-include(CPack)
+
+add_subdirectory(ISL EXCLUDE_FROM_ALL SYSTEM)
 
 include(cmake/InterproceduralOptimization.cmake)
 include(cmake/ProjectOptions.cmake)
@@ -23,7 +24,7 @@ install(TARGETS ccl ccl-lexer
         INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
-install(DIRECTORY include/ccl
+install(DIRECTORY include/ccl ISL/include
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
         FILES_MATCHING PATTERN "*.hpp")
 

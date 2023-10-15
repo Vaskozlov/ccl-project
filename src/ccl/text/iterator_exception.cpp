@@ -1,13 +1,12 @@
-#include <ccl/flatmap.hpp>
 #include <ccl/text/iterator_exception.hpp>
 
 namespace ccl::text
 {
-    using namespace ccl::string_view_literals;
+    using namespace isl::string_view_literals;
 
     TextIteratorException::TextIteratorException(
         ExceptionCriticality exception_criticality, AnalysisStage analysis_stage,
-        const Location &exception_location, size_t exception_length, string_view working_line,
+        const Location &exception_location, size_t exception_length, isl::string_view working_line,
         std::string exception_message, std::string exception_suggestion)
       : location{exception_location}
       , message{std::move(exception_message)}
@@ -26,8 +25,8 @@ namespace ccl::text
     auto TextIteratorException::createFullMessage() const -> std::string
     {
         auto full_message = fmt::format(
-            "Error occurred at: {}, message: {}\n{}\n", location, as<std::string_view>(message),
-            as<std::string_view>(workingLine));
+            "Error occurred at: {}, message: {}\n{}\n", location,
+            isl::as<std::string_view>(message), as<std::string_view>(workingLine));
 
         addArrowToError(full_message);
         addSuggestion(full_message);

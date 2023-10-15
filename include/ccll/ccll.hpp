@@ -1,8 +1,8 @@
 #pragma once
 
-#include <ccl/flatmap.hpp>
 #include <ccl/handler/cmd.hpp>
 #include <ccl/lexer/tokenizer.hpp>
+#include <isl/flatmap.hpp>
 
 namespace ccll
 {
@@ -51,7 +51,7 @@ namespace ccll
             {CcllAnalyzerToken::COMMENT, R"( ! [#] [\n]*^ )"},
         }};
 
-    inline constexpr ccl::StaticFlatmap<ccl::Id, ccl::string_view, 13> ToStringCcllAnalyzerToken{
+    inline constexpr isl::StaticFlatmap<ccl::Id, isl::string_view, 13> ToStringCcllAnalyzerToken{
         {CcllAnalyzerToken::EOI, "EOI"},
         {CcllAnalyzerToken::BAD_TOKEN, "BAD_TOKEN"},
         {CcllAnalyzerToken::GROUP_DECLARATION, "GROUP_DECLARATION"},

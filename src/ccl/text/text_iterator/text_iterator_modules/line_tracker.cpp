@@ -2,7 +2,7 @@
 
 namespace ccl::text
 {
-    LineTracker::LineTracker(string_view text_to_track) noexcept
+    LineTracker::LineTracker(isl::string_view text_to_track) noexcept
       : text{text_to_track}
     {
         const auto new_line_index = text.find('\n');

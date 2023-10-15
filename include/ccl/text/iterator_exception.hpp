@@ -5,7 +5,7 @@
 
 namespace ccl
 {
-    CCL_EXCEPTION(BasicTextIteratorException, std::exception);
+    ISL_EXCEPTION(BasicTextIteratorException, std::exception, exception);
 
     enum struct ExceptionCriticality : u32
     {
@@ -33,7 +33,7 @@ namespace ccl::text
         Location location{};
         std::string message{};
         std::string suggestion{};
-        string_view workingLine{};
+        isl::string_view workingLine{};
         size_t length{1};
         ExceptionCriticality criticality{};
         AnalysisStage stage{};
@@ -43,8 +43,9 @@ namespace ccl::text
 
         [[nodiscard]] TextIteratorException(
             ExceptionCriticality exception_criticality, AnalysisStage analysis_stage,
-            const Location &exception_location, size_t exception_length, string_view working_line,
-            std::string exception_message, std::string exception_suggestion = std::string{});
+            const Location &exception_location, size_t exception_length,
+            isl::string_view working_line, std::string exception_message,
+            std::string exception_suggestion = std::string{});
 
         [[nodiscard]] auto getLine() const noexcept -> size_t
         {
@@ -71,17 +72,18 @@ namespace ccl::text
             return location;
         }
 
-        [[nodiscard]] auto getWorkingLine() const noexcept CCL_LIFETIMEBOUND->const string_view &
+        [[nodiscard]] auto
+            getWorkingLine() const noexcept CCL_LIFETIMEBOUND->const isl::string_view &
         {
             return workingLine;
         }
 
-        [[nodiscard]] auto getMessage() const noexcept -> string_view
+        [[nodiscard]] auto getMessage() const noexcept -> isl::string_view
         {
             return message;
         }
 
-        [[nodiscard]] auto getSuggestion() const noexcept -> string_view
+        [[nodiscard]] auto getSuggestion() const noexcept -> isl::string_view
         {
             return suggestion;
         }

@@ -4,7 +4,7 @@
 namespace ccl::lexer::parser
 {
     CcllParser::Rule::Rule(
-        BlockInfo &block_info, string_view rule_name, string_view rule_definition)
+        BlockInfo &block_info, isl::string_view rule_name, isl::string_view rule_definition)
       : name{rule_name}
       , definition{rule_definition}
       , blockId{block_info.blockId}
@@ -75,13 +75,13 @@ namespace ccl::lexer::parser
 
     auto CcllParser::completeGroup(const Token &token) -> void
     {
-        const ContainerOf<string_view> auto &prefixes = token.getPrefixes();
+        const std::vector<isl::string_view> &prefixes = token.getPrefixes();
         auto group_name = prefixes.at(1);
 
         currentBlock = group_name;
 
         if (!blocks.contains(currentBlock)) {
-            const auto block_id = as<u16>(lastBlockId);
+            const auto block_id = isl::as<u16>(lastBlockId);
             ++lastBlockId;
 
             blocks.try_emplace(blocks.end(), currentBlock, BlockInfo{block_id, 0});
@@ -90,8 +90,8 @@ namespace ccl::lexer::parser
 
     auto CcllParser::completeRule(const Token &token) -> void
     {
-        const ContainerOf<string_view> auto &prefixes = token.getPrefixes();
-        const ContainerOf<string_view> auto &postfixes = token.getPostfixes();
+        const std::vector<isl::string_view> &prefixes = token.getPrefixes();
+        const std::vector<isl::string_view> &postfixes = token.getPostfixes();
 
         auto name = prefixes.at(0);
         auto rule = postfixes.at(0);
@@ -102,8 +102,8 @@ namespace ccl::lexer::parser
 
     auto CcllParser::completeDirective(const Token &token) -> void
     {
-        const ContainerOf<string_view> auto &prefixes = token.getPrefixes();
-        const ContainerOf<string_view> auto &postfixes = token.getPostfixes();
+        const std::vector<isl::string_view> &prefixes = token.getPrefixes();
+        const std::vector<isl::string_view> &postfixes = token.getPostfixes();
 
         auto name = prefixes.at(0);
         auto value = postfixes.at(0);
@@ -115,7 +115,7 @@ namespace ccl::lexer::parser
 
     auto CcllParser::checkRule(const Token &token) -> void
     {
-        const string_view line_repr = token.getInlineRepr();
+        const isl::string_view line_repr = token.getInlineRepr();
         const text::Location &location = token.getLocation();
 
         auto text_iterator = text::TextIterator{
@@ -131,7 +131,7 @@ namespace ccl::lexer::parser
             dot_item::Container{text_iterator, specialItems, 2, true};
     }
 
-    auto CcllParser::parsingError(string_view message, string_view suggestion) -> void
+    auto CcllParser::parsingError(isl::string_view message, isl::string_view suggestion) -> void
     {
         tokenizer.throwExceptionToHandler(ExceptionCriticality::PANIC, message, suggestion);
     }

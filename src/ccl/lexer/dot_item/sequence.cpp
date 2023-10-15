@@ -2,18 +2,18 @@
 
 namespace ccl::lexer::dot_item
 {
-    using namespace ccl::string_view_literals;
+    using namespace isl::string_view_literals;
 
     Sequence::Sequence(
-        SequenceFlags sequence_flags, string_view sequence_begin_and_end,
+        SequenceFlags sequence_flags, isl::string_view sequence_begin_and_end,
         TextIterator &rule_iterator, Id item_id)
       : Sequence{
             sequence_flags, sequence_begin_and_end, sequence_begin_and_end, rule_iterator, item_id}
     {}
 
     Sequence::Sequence(
-        SequenceFlags sequence_flags, string_view sequence_starter,
-        string_view sequence_ender, TextIterator &rule_iterator, Id item_id)
+        SequenceFlags sequence_flags, isl::string_view sequence_starter,
+        isl::string_view sequence_ender, TextIterator &rule_iterator, Id item_id)
       : DotItemConcept{item_id, Flags{
                                .sequenceIsMultiline=sequence_flags.multiline,
                                .noEscapingSymbols=sequence_flags.noEscaping
@@ -21,7 +21,7 @@ namespace ccl::lexer::dot_item
       , starter{sequence_starter}
       , ender{sequence_ender}
     {
-        static constexpr StaticFlatmap<char32_t, char32_t, 2> special_symbols_for_sequence{
+        static constexpr isl::StaticFlatmap<char32_t, char32_t, 2> special_symbols_for_sequence{
             {U'[', U'['}, {U']', U']'}};
 
         auto begin_iterator_state = rule_iterator;
@@ -49,17 +49,17 @@ namespace ccl::lexer::dot_item
                 break;
             }
 
-            utf8::appendUtf32ToUtf8Container(sequenceValue, chr);
+            isl::utf8::appendUtf32ToUtf8Container(sequenceValue, chr);
         }
     }
 
     auto Sequence::scanIteration(const ForkedGenerator &text_iterator) const
         -> std::optional<size_t>
     {
-        string_view future_text = text_iterator.getRemainingText();
+        isl::string_view future_text = text_iterator.getRemainingText();
 
         if (future_text.startsWith(sequenceValue) != isReversed()) [[unlikely]] {
-            return isReversed() ? utf8::size(future_text[0]) : sequenceValue.size();
+            return isReversed() ? isl::utf8::size(future_text[0]) : sequenceValue.size();
         }
 
         return std::nullopt;
@@ -73,7 +73,7 @@ namespace ccl::lexer::dot_item
         }
 
         auto text = rule_iterator.getRemainingWithCurrent();
-        return text.startsWith(as<string_view>(ender));
+        return text.startsWith(isl::as<isl::string_view>(ender));
     }
 
     CCL_INLINE auto Sequence::checkForUnexpectedEnd(
@@ -135,8 +135,8 @@ namespace ccl::lexer::dot_item
 
     CCL_INLINE auto Sequence::throwUnterminatedString(
         TextIterator &rule_iterator,
-        string_view message,
-        string_view suggestion) -> void
+        isl::string_view message,
+        isl::string_view suggestion) -> void
     {
         rule_iterator.throwPanicError(AnalysisStage::LEXICAL_ANALYSIS, message, suggestion);
         throw UnrecoverableError{"unrecoverable error in SequenceType"};

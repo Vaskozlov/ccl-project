@@ -3,7 +3,7 @@
 
 using namespace ccl;
 using namespace text;
-using namespace string_view_literals;
+using namespace isl::string_view_literals;
 
 TEST_CASE("TextIteratorLocationTrackingOnEmptyInput", "[TextIterator]")
 {

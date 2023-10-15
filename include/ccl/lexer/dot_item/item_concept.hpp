@@ -4,6 +4,7 @@
 #include <ccl/lexer/dot_item/repetition.hpp>
 #include <ccl/lexer/token.hpp>
 #include <ccl/text/text_iterator.hpp>
+#include <isl/memory.hpp>
 
 namespace ccl::lexer::dot_item
 {
@@ -129,7 +130,7 @@ namespace ccl::lexer::dot_item
 
         template<std::derived_from<DotItemConcept> T>
         explicit DotItem(T dot_item)
-          : std::unique_ptr<DotItemConcept>::unique_ptr(makeUnique<T>(std::move(dot_item)))
+          : std::unique_ptr<DotItemConcept>::unique_ptr(isl::makeUnique<T>(std::move(dot_item)))
         {}
     };
 }// namespace ccl::lexer::dot_item

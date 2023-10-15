@@ -12,15 +12,16 @@ namespace ccl::lexer
       : id{token_id}
     {}
 
-    Token::Token(TokenAttributes &&token_attributes, string_view token_repr, Id token_id)
+    Token::Token(TokenAttributes &&token_attributes, isl::string_view token_repr, Id token_id)
       : attributes{std::move(token_attributes)}
       , repr{token_repr}
       , id{token_id}
     {}
 
     Token::Token(
-        TokenAttributes &&token_attributes, typename string_view::iterator text_begin, Id token_id)
-      : Token{std::move(token_attributes), {text_begin, as<size_t>(0)}, token_id}
+        TokenAttributes &&token_attributes, typename isl::string_view::iterator text_begin,
+        Id token_id)
+      : Token{std::move(token_attributes), {text_begin, isl::as<size_t>(0)}, token_id}
     {}
 
     Token::Token(const text::TextIterator &text_iterator, Id token_id)

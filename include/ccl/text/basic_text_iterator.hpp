@@ -2,8 +2,8 @@
 #define CCL_PROJECT_BASIC_TEXT_ITERATOR_HPP
 
 #include <ccl/char.hpp>
-#include <ccl/string_view.hpp>
-#include <ccl/utf8.hpp>
+#include <isl/string_view.hpp>
+#include <isl/utf8.hpp>
 
 namespace ccl::text
 {
@@ -17,7 +17,7 @@ namespace ccl::text
     class CCL_TRIVIAL_ABI CrtpBasicTextIterator
     {
     public:
-        using iterator = typename string_view::iterator;
+        using iterator = typename isl::string_view::iterator;
 
     private:
         iterator carriage{};
@@ -58,7 +58,7 @@ namespace ccl::text
 
         CrtpBasicTextIterator() noexcept = default;
 
-        [[nodiscard]] constexpr explicit CrtpBasicTextIterator(string_view input) noexcept
+        [[nodiscard]] constexpr explicit CrtpBasicTextIterator(isl::string_view input) noexcept
           : carriage{input.begin()}
           , end{input.end()}
         {}
@@ -109,7 +109,7 @@ namespace ccl::text
 
         CCL_DECL auto getNextCarriageValue() const noexcept -> char
         {
-            CCL_PREFETCH(carriage);
+            ISL_PREFETCH(carriage);
             const auto *it = getRemainingAsCarriage();
 
             if (it == end) [[unlikely]] {
@@ -119,12 +119,12 @@ namespace ccl::text
             return *it;
         }
 
-        CCL_DECL auto getRemaining() const noexcept -> string_view
+        CCL_DECL auto getRemaining() const noexcept -> isl::string_view
         {
             return {getRemainingAsCarriage(), end};
         }
 
-        CCL_DECL auto getRemainingWithCurrent() const noexcept -> string_view
+        CCL_DECL auto getRemainingWithCurrent() const noexcept -> isl::string_view
         {
             return {carriage, end};
         }
@@ -134,10 +134,10 @@ namespace ccl::text
             return getRemainingAsCarriage() == end;
         }
 
-        CCL_DECL auto getRemainingText() const noexcept -> string_view
+        CCL_DECL auto getRemainingText() const noexcept -> isl::string_view
         {
             if (isInitialized()) [[likely]] {
-                return {carriage + utf8::size(getNextCarriageValue()), end};
+                return {carriage + isl::utf8::size(getNextCarriageValue()), end};
             }
 
             return {carriage, end};
@@ -164,8 +164,8 @@ namespace ccl::text
 
         constexpr auto skip(size_t n) CCL_NOEXCEPT_IF(moveCarriageToTheNextByte()) -> void
         {
-            CCL_UNROLL_N(4)
-            for (auto i = as<size_t>(0); i != n; ++i) {
+            ISL_UNROLL_N(4)
+            for (auto i = isl::as<size_t>(0); i != n; ++i) {
                 moveCarriageToTheNextByte();
             }
         }
@@ -229,9 +229,7 @@ namespace ccl::text
 
         constexpr auto moveCarriageToTheNextByte() CCL_NOEXCEPT_IF(modifyCurrentChar()) -> char
         {
-            CCL_PREFETCH(carriage);
-
-            if ((carriage + as<size_t>(isInitialized())) >= end) [[unlikely]] {
+            if ((carriage + isl::as<size_t>(isInitialized())) >= end) [[unlikely]] {
                 carriage = end;
                 currentChar = 0;
                 return 0;
@@ -269,12 +267,13 @@ namespace ccl::text
 
         constexpr auto trailingCharacterMove(char chr) CCL_NOEXCEPT_IF(onUtfError(chr)) -> void
         {
-            if (!utf8::isTrailingCharacter(chr)) [[unlikely]] {
+            if (!isl::utf8::isTrailingCharacter(chr)) [[unlikely]] {
                 onUtfError(chr);
             }
 
-            currentChar <<= utf8::constants::TrailingSize;
-            currentChar |= as<char32_t>(as<std::byte>(chr) & ~utf8::constants::ContinuationMask);
+            currentChar <<= isl::utf8::constants::TrailingSize;
+            currentChar |= isl::as<char32_t>(
+                isl::as<std::byte>(chr) & ~isl::utf8::constants::ContinuationMask);
 
             if (remainingBytesToFinishSymbol > 0) {
                 --remainingBytesToFinishSymbol;
@@ -283,14 +282,14 @@ namespace ccl::text
 
         constexpr auto newCharacterMove(char chr) CCL_NOEXCEPT_IF(onUtfError(chr)) -> void
         {
-            remainingBytesToFinishSymbol = utf8::size(chr);
+            remainingBytesToFinishSymbol = isl::utf8::size(chr);
 
             if (remainingBytesToFinishSymbol == 0) [[unlikely]] {
                 onUtfError(chr);
             }
 
-            currentChar =
-                as<char32_t>(as<std::byte>(chr) & ~utf8::getMask(remainingBytesToFinishSymbol));
+            currentChar = isl::as<char32_t>(
+                isl::as<std::byte>(chr) & ~isl::utf8::getMask(remainingBytesToFinishSymbol));
 
             --remainingBytesToFinishSymbol;
         }

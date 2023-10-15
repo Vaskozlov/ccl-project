@@ -1,8 +1,9 @@
 #ifndef CCL_PROJECT_BASIC_CODEGEN_HPP
 #define CCL_PROJECT_BASIC_CODEGEN_HPP
 
-#include <ccl/const_string.hpp>
-#include <ccl/string_view.hpp>
+#include <ccl/ccl.hpp>
+#include <isl/const_string.hpp>
+#include <isl/string_view.hpp>
 #include <map>
 
 namespace ccl::codegen
@@ -53,13 +54,13 @@ namespace ccl::codegen
         auto operator<<(StreamId stream_id) CCL_LIFETIMEBOUND->BasicCodeGenerator &;
 
         auto operator<<(char character) CCL_LIFETIMEBOUND->BasicCodeGenerator &;
-        auto operator<<(string_view string) CCL_LIFETIMEBOUND->BasicCodeGenerator &;
+        auto operator<<(isl::string_view string) CCL_LIFETIMEBOUND->BasicCodeGenerator &;
         auto operator<<(std::string_view string) CCL_LIFETIMEBOUND->BasicCodeGenerator &;
         auto operator<<(const std::string &string) CCL_LIFETIMEBOUND->BasicCodeGenerator &;
 
         template<typename Numeric>
         auto operator<<(Numeric value) CCL_LIFETIMEBOUND->BasicCodeGenerator &
-            requires FloatingPoint<Numeric> || Integral<Numeric>
+            requires std::floating_point<Numeric> || std::integral<Numeric>
         {
             return *this << std::string_view{fmt::to_string(value)};
         }
@@ -71,13 +72,14 @@ namespace ccl::codegen
         }
 
         template<size_t Size>
-        auto operator<<(const ConstString<Size> &string) CCL_LIFETIMEBOUND->BasicCodeGenerator &
+        auto
+            operator<<(const isl::ConstString<Size> &string) CCL_LIFETIMEBOUND->BasicCodeGenerator &
         {
-            return *this << as<string_view>(string);
+            return *this << as<isl::string_view>(string);
         }
 
         template<size_t N>// NOLINTNEXTLINE
-        auto operator<<(const CArray<char, N> &character_array)
+        auto operator<<(const isl::CArray<char, N> &character_array)
             CCL_LIFETIMEBOUND->BasicCodeGenerator &
         {
             return *this << std::string_view{character_array};// NOLINT

@@ -1,7 +1,5 @@
 #include <ccl/lexer/dot_item/item_concept.hpp>
 
-using namespace ccl::integral_literals;
-
 namespace ccl::lexer::dot_item
 {
     auto DotItemConcept::alwaysRecognizedSuggestion(TextIterator &text_iterator, bool condition)
@@ -24,8 +22,8 @@ namespace ccl::lexer::dot_item
 
     auto DotItemConcept::scan(ForkedGenerator text_iterator) const -> std::optional<size_t>
     {
-        auto times = as<size_t>(0);
-        auto totally_skipped = as<size_t>(0);
+        auto times = isl::as<size_t>(0);
+        auto totally_skipped = isl::as<size_t>(0);
 
         while (!text_iterator.isEOI() && times < repetition.to) {
             auto chars_to_skip = scanIteration(text_iterator);

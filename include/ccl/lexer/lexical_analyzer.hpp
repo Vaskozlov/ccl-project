@@ -15,7 +15,7 @@ namespace ccl::lexer
         struct CCL_TRIVIAL_ABI Rule
         {
             Id id{};
-            string_view repr{};
+            isl::string_view repr{};
         };
 
         std::vector<Container> items{};
@@ -28,7 +28,7 @@ namespace ccl::lexer
         class Tokenizer;
 
         [[nodiscard]] LexicalAnalyzer(
-            ExceptionHandler &exception_handler, InitializerList<Rule> rules,
+            ExceptionHandler &exception_handler, const std::initializer_list<Rule> &rules,
             std::string_view filename = {}, std::vector<Id> ignored_ids = {});
 
         [[nodiscard]] auto getIgnoredIds() const -> const std::vector<Id> &
@@ -36,16 +36,16 @@ namespace ccl::lexer
             return ignoredIds;
         }
 
-        [[nodiscard]] auto getTokenizer(string_view text, std::string_view filename = {})
+        [[nodiscard]] auto getTokenizer(isl::string_view text, std::string_view filename = {})
             -> Tokenizer;
 
-        [[nodiscard]] auto
-            getTokenizer(string_view text, std::string_view filename, ExceptionHandler &handler)
-                -> Tokenizer;
+        [[nodiscard]] auto getTokenizer(
+            isl::string_view text, std::string_view filename, ExceptionHandler &handler)
+            -> Tokenizer;
 
     private:
-        auto createContainer(string_view rule, Id id, std::string_view filename) -> void;
+        auto createContainer(isl::string_view rule, Id id, std::string_view filename) -> void;
     };
-}// namespace ccl::lex
+}// namespace ccl::lexer
 
 #endif /* CCL_PROJECT_LEXICAL_ANALYZER_HPP */

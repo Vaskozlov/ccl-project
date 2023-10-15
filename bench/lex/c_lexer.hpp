@@ -1,8 +1,8 @@
 #pragma once
 
-#include <ccl/flatmap.hpp>
 #include <ccl/handler/cmd.hpp>
 #include <ccl/lexer/tokenizer.hpp>
+#include <isl/flatmap.hpp>
 
 namespace ccl
 {
@@ -124,7 +124,7 @@ namespace ccl
             {CLexerToken::STRING, R"( ! "\"" (["]^ | "\\\"")* "\"" )"},
         }};
 
-    inline constexpr ccl::StaticFlatmap<ccl::Id, ccl::string_view, 53> ToStringCLexerToken{
+    inline constexpr isl::StaticFlatmap<ccl::Id, isl::string_view, 53> ToStringCLexerToken{
         {CLexerToken::EOI, "EOI"},
         {CLexerToken::BAD_TOKEN, "BAD_TOKEN"},
         {CLexerToken::COMMENT, "COMMENT"},

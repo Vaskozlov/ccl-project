@@ -37,7 +37,7 @@ namespace ccl
             break;
 
         default:
-            unreachable();
+            isl::unreachable();
         }
 
         onHandle(error);

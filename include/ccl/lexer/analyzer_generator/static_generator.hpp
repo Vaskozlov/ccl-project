@@ -55,6 +55,6 @@ namespace ccl::lexer::gen
 
         auto generateRules() -> void;
     };
-}// namespace ccl::lex::gen
+}// namespace ccl::lexer::gen
 
 #endif /* CCL_PROJECT_STATIC_GENERATOR_HPP */

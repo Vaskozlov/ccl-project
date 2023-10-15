@@ -2,21 +2,21 @@
 #define CCL_PROJECT_UNION_HPP
 
 #include <ccl/lexer/dot_item/item_concept.hpp>
-#include <ccl/utf_set.hpp>
+#include <isl/utf_set.hpp>
 
 namespace ccl::lexer::dot_item
 {
     class Union final : public DotItemConcept
     {
     private:
-        UtfSet bitset{};
+        isl::UtfSet bitset{};
 
     public:
         using typename DotItemConcept::TextIterator;
 
         [[nodiscard]] explicit Union(TextIterator &rule_iterator, Id rule_id = 0);
 
-        [[nodiscard]] auto getBitset() const noexcept CCL_LIFETIMEBOUND->const UtfSet &
+        [[nodiscard]] auto getBitset() const noexcept CCL_LIFETIMEBOUND->const isl::UtfSet &
         {
             return bitset;
         }
@@ -48,6 +48,6 @@ namespace ccl::lexer::dot_item
         [[noreturn]] static auto throwUnterminatedRangeException(TextIterator &rule_iterator)
             -> void;
     };
-}// namespace ccl::lex::dot_item
+}// namespace ccl::lexer::dot_item
 
 #endif /* CCL_PROJECT_UNION_HPP */

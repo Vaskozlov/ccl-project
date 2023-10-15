@@ -13,7 +13,7 @@ namespace ccl::text
 
     auto EscapingSequenceToChar::matchNextChar() -> char32_t
     {
-        CCL_ASSERT_MSG(textIterator.getCurrentChar() == '\\', "called without preceding `\\`");
+        ISL_ASSERT_MSG(textIterator.getCurrentChar() == '\\', "called without preceding `\\`");
 
         char32_t chr = textIterator.advance();
 

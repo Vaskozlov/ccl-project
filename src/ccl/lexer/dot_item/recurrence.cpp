@@ -3,7 +3,7 @@
 namespace ccl::lexer::dot_item
 {
     using namespace text;
-    using namespace ccl::string_view_literals;
+    using namespace isl::string_view_literals;
 
     Repetition::Repetition(TextIterator &text_iterator)
     {
@@ -18,16 +18,16 @@ namespace ccl::lexer::dot_item
 
     auto Repetition::parseNumber(TextIterator &text_iterator, char32_t terminator) -> size_t
     {
-        constexpr auto decimal_base = as<size_t>(10);
+        constexpr auto decimal_base = isl::as<size_t>(10);
 
-        auto result = as<size_t>(0);
+        auto result = isl::as<size_t>(0);
         text_iterator.moveToCleanChar();
 
         while (text_iterator.advance() != terminator) {
-            char32_t chr = text_iterator.getCurrentChar();
+            const char32_t chr = text_iterator.getCurrentChar();
 
             if (isDigit(chr)) {
-                result = result * decimal_base + as<size_t>(chr - '0');
+                result = result * decimal_base + isl::as<size_t>(chr - '0');
                 continue;
             }
 
@@ -64,7 +64,7 @@ namespace ccl::lexer::dot_item
     auto Repetition::throwUnexpectedCharacter(TextIterator &text_iterator, char32_t chr) -> void
     {
         auto buffer = std::string{};
-        utf8::appendUtf32ToUtf8Container(buffer, chr);
+        isl::utf8::appendUtf32ToUtf8Container(buffer, chr);
 
         auto message = fmt::format("expected a number, but found `{}`", buffer);
 

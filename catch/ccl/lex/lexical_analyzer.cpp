@@ -5,7 +5,7 @@
 using namespace ccl;
 using namespace lexer;
 using namespace text;
-using namespace string_view_literals;
+using namespace isl::string_view_literals;
 
 TEST_CASE("LexTest", "[LexicalAnalyzer]")
 {

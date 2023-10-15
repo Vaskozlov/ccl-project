@@ -5,7 +5,7 @@
 
 namespace ccl::lexer::dot_item
 {
-    using namespace ccl::string_view_literals;
+    using namespace isl::string_view_literals;
 
     Container::RuleParser::RuleParser(Container &target_container, TextIterator &text_iterator)
       : container{target_container}
@@ -122,7 +122,7 @@ namespace ccl::lexer::dot_item
                 BinaryOperationOr(std::move(constructedLhs.value()), std::move(rhs), getId())};
         }
 
-        unreachable();
+        isl::unreachable();
     }
 
     auto Container::RuleParser::constructNewSequence() -> Sequence
@@ -283,7 +283,7 @@ namespace ccl::lexer::dot_item
         DotItemConcept::alwaysRecognizedSuggestion(ruleIterator, items.empty() && isReversed());
     }
 
-    auto Container::RuleParser::findContainerEnd(string_view repr) -> size_t
+    auto Container::RuleParser::findContainerEnd(isl::string_view repr) -> size_t
     {
         const auto closing_bracket_index = repr.findMatchingPair('(', ')');
 
@@ -324,8 +324,9 @@ namespace ccl::lexer::dot_item
         }
     }
 
-    auto Container::RuleParser::throwUnableToApply(string_view reason, string_view suggestion)
-        -> void
+    auto Container::RuleParser::throwUnableToApply(
+        isl::string_view reason,
+        isl::string_view suggestion) -> void
     {
         auto message = fmt::format("unable to apply: {}", reason);
 

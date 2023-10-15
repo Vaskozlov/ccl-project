@@ -14,7 +14,7 @@ namespace ccl::text
     class TextIterator : public CrtpBasicTextIterator<TextIterator>
     {
     private:
-        using extra_symbols_t = std::span<const Pair<char32_t, char32_t>>;
+        using extra_symbols_t = std::span<const isl::Pair<char32_t, char32_t>>;
 
         Location location{};
         TsTracker tsTracker{};
@@ -34,12 +34,12 @@ namespace ccl::text
             -> char32_t;
 
         [[nodiscard]] explicit TextIterator(
-            string_view input,
+            isl::string_view input,
             ExceptionHandler &exception_handler = ExceptionHandler::instance(),
             std::string_view filename = {});
 
         [[nodiscard]] explicit TextIterator(
-            string_view input,
+            isl::string_view input,
             ExceptionHandler &exception_handler,
             const Location &iterator_location);
 
@@ -63,12 +63,12 @@ namespace ccl::text
             return location.getRealColumn();
         }
 
-        [[nodiscard]] auto getFilename() const noexcept -> string_view
+        [[nodiscard]] auto getFilename() const noexcept -> isl::string_view
         {
             return location.getFilename();
         }
 
-        [[nodiscard]] auto getWorkingLine() const noexcept -> string_view
+        [[nodiscard]] auto getWorkingLine() const noexcept -> isl::string_view
         {
             return lineTracker.get();
         }
@@ -84,7 +84,7 @@ namespace ccl::text
         }
 
         auto nextCharWithEscapingSymbols(const extra_symbols_t &extra_symbols = {})
-            -> Pair<bool, char32_t>;
+            -> isl::Pair<bool, char32_t>;
 
         CCL_INLINE auto onMove(char chr) -> void
         {
@@ -105,43 +105,49 @@ namespace ccl::text
         }
 
         auto throwSuggestion(
-            AnalysisStage stage, const TextIterator &iterator_location, string_view message,
-            string_view suggestion = {}) -> void;
+            AnalysisStage stage, const TextIterator &iterator_location, isl::string_view message,
+            isl::string_view suggestion = {}) -> void;
 
         auto throwWarning(
-            AnalysisStage stage, const TextIterator &iterator_location, string_view message,
-            string_view suggestion = {}) -> void;
+            AnalysisStage stage, const TextIterator &iterator_location, isl::string_view message,
+            isl::string_view suggestion = {}) -> void;
 
         auto throwUncriticalError(
-            AnalysisStage stage, const TextIterator &iterator_location, string_view message,
-            string_view suggestion = {}) -> void;
+            AnalysisStage stage, const TextIterator &iterator_location, isl::string_view message,
+            isl::string_view suggestion = {}) -> void;
 
         auto throwCriticalError(
-            AnalysisStage stage, const TextIterator &iterator_location, string_view message,
-            string_view suggestion = {}) -> void;
+            AnalysisStage stage, const TextIterator &iterator_location, isl::string_view message,
+            isl::string_view suggestion = {}) -> void;
 
         auto throwPanicError(
-            AnalysisStage stage, const TextIterator &iterator_location, string_view message,
-            string_view suggestion = {}) -> void;
+            AnalysisStage stage, const TextIterator &iterator_location, isl::string_view message,
+            isl::string_view suggestion = {}) -> void;
 
-        auto throwSuggestion(AnalysisStage stage, string_view message, string_view suggestion = {})
+        auto throwSuggestion(
+            AnalysisStage stage, isl::string_view message, isl::string_view suggestion = {})
             -> void;
 
-        auto throwWarning(AnalysisStage stage, string_view message, string_view suggestion = {})
+        auto throwWarning(
+            AnalysisStage stage, isl::string_view message, isl::string_view suggestion = {})
             -> void;
 
         auto throwUncriticalError(
-            AnalysisStage stage, string_view message, string_view suggestion = {}) -> void;
+            AnalysisStage stage, isl::string_view message, isl::string_view suggestion = {})
+            -> void;
 
         auto throwCriticalError(
-            AnalysisStage stage, string_view message, string_view suggestion = {}) -> void;
+            AnalysisStage stage, isl::string_view message, isl::string_view suggestion = {})
+            -> void;
 
-        auto throwPanicError(AnalysisStage stage, string_view message, string_view suggestion = {})
+        auto throwPanicError(
+            AnalysisStage stage, isl::string_view message, isl::string_view suggestion = {})
             -> void;
 
         auto throwToHandle(
             const TextIterator &iterator_location, ExceptionCriticality criticality,
-            AnalysisStage stage, string_view message, string_view suggestion = {}) -> void;
+            AnalysisStage stage, isl::string_view message, isl::string_view suggestion = {})
+            -> void;
     };
 
     class TextIterator::EscapingSequenceToChar

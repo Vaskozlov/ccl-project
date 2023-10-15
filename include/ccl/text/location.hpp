@@ -2,8 +2,8 @@
 #define CCL_PROJECT_LOCATION_HPP
 
 #include <ccl/char.hpp>
-#include <ccl/string_view.hpp>
-#include <ccl/utf8.hpp>
+#include <isl/string_view.hpp>
+#include <isl/utf8.hpp>
 
 namespace ccl::text
 {
@@ -48,7 +48,7 @@ namespace ccl::text
 
         constexpr auto intermediateNext(char chr) noexcept -> void
         {
-            if (land(!isEoF(chr), chr != '\n')) {
+            if (!isEoF(chr) && chr != '\n') {
                 ++realColumn;
             }
         }

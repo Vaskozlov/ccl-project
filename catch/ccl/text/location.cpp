@@ -27,13 +27,13 @@ TEST_CASE("LocationTracking", "[Location]")
     REQUIRE(location.getColumn() == 0U);
     REQUIRE(location.getRealColumn() == 0U);
 
-    location.intermediateNext(as<char>(0b1100'0010));// NOLINT utf8 2 byte character
+    location.intermediateNext(isl::as<char>(0b1100'0010));// NOLINT utf8 2 byte character
 
     REQUIRE(location.getLine() == 2U);
     REQUIRE(location.getColumn() == 0U);
     REQUIRE(location.getRealColumn() == 1U);
 
-    location.intermediateNext(as<char>(0b1000'0000));// NOLINT utf8 2 byte character end
+    location.intermediateNext(isl::as<char>(0b1000'0000));// NOLINT utf8 2 byte character end
     location.next(U'a');
 
     REQUIRE(location.getLine() == 2U);

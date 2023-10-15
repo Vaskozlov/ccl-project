@@ -96,7 +96,7 @@ namespace ccl::codegen
         return *this;
     }
 
-    auto BasicCodeGenerator::operator<<(string_view string) -> BasicCodeGenerator &
+    auto BasicCodeGenerator::operator<<(isl::string_view string) -> BasicCodeGenerator &
     {
         return *this << as<std::string_view>(string);
     }
@@ -114,6 +114,6 @@ namespace ccl::codegen
 
     auto BasicCodeGenerator::operator<<(const std::string &string) -> BasicCodeGenerator &
     {
-        return *this << as<std::string_view>(string);
+        return *this << isl::as<std::string_view>(string);
     }
 }// namespace ccl::codegen

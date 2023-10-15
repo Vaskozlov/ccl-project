@@ -2,11 +2,10 @@
 
 namespace ccl::lexer::dot_item
 {
-    using namespace ccl::string_view_literals;
+    using namespace isl::string_view_literals;
 
-    CCL_INLINE auto
-        Container::addPrefixOrPostfix(const DotItemConcept *item, Token &token, string_view repr)
-            -> void
+    CCL_INLINE auto Container::addPrefixOrPostfix(
+        const DotItemConcept *item, Token &token, isl::string_view repr) -> void
     {
         if (repr.empty()) [[unlikely]] {
             return;
@@ -43,7 +42,7 @@ namespace ccl::lexer::dot_item
     auto Container::beginScan(
         TextIterator &text_iterator, Token &token, ScanningType special_scan) const -> bool
     {
-        auto totally_skipped = as<size_t>(0);
+        auto totally_skipped = isl::as<size_t>(0);
         auto local_iterator = text_iterator.fork();
 
         token.clear(getId());
@@ -54,13 +53,13 @@ namespace ccl::lexer::dot_item
             const bool succeed_as_reversed = !has_moved && isReversed();
 
             if (succeed_as_reversed) {
-                chars_to_skip = utf8::size(local_iterator.getNextCarriageValue());
+                chars_to_skip = isl::utf8::size(local_iterator.getNextCarriageValue());
             } else if (!has_moved) {
                 return false;
             }
 
             auto prefix_or_postfix_repr =
-                string_view{local_iterator.getRemainingAsCarriage(), *chars_to_skip};
+                isl::string_view{local_iterator.getRemainingAsCarriage(), *chars_to_skip};
 
             addPrefixOrPostfix(item.get(), token, prefix_or_postfix_repr);
 
@@ -88,7 +87,7 @@ namespace ccl::lexer::dot_item
     auto Container::scanIteration(const ForkedGenerator &text_iterator) const
         -> std::optional<size_t>
     {
-        auto totally_skipped = as<size_t>(0);
+        auto totally_skipped = isl::as<size_t>(0);
         auto local_iterator = text_iterator;
 
         for (const DotItem &item : items) {
