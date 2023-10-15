@@ -6,9 +6,7 @@ include(GNUInstallDirs)
 
 add_subdirectory(ISL EXCLUDE_FROM_ALL SYSTEM)
 
-include(cmake/InterproceduralOptimization.cmake)
 include(cmake/ProjectOptions.cmake)
-include(cmake/CompilerOptions.cmake)
 include(cmake/Libraries.cmake)
 
 include(programs/CMakeLists.txt)

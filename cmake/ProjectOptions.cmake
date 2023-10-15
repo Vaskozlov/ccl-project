@@ -16,3 +16,6 @@ message(STATUS "Static version? " ${CCL_STATIC_LIBRARY})
 message(STATUS "Enable hardening?" ${CCL_HARDENING})
 message(STATUS "Address sanitizer? " ${CCL_ADDRESS_SANITIZER})
 message(STATUS "Thread sanitizer? " ${CCL_THREAD_SANITIZER})
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)

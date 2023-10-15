@@ -9,7 +9,7 @@ add_executable(
         ${CCL_BENCH_OBJECTS}
 )
 
-ccl_set_project_warnings(
+isl_set_project_warnings(
         ccl-bench
         ${CCL_STRICT_COMPILATION}
         ""

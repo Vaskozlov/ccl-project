@@ -10,7 +10,7 @@ else ()
     add_library(ccl SHARED ${CCL_OBJECTS})
 endif ()
 
-ccl_set_project_warnings(
+isl_set_project_warnings(
         ccl
         ${CCL_STRICT_COMPILATION}
         ""

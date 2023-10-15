@@ -11,7 +11,7 @@
           ${CCL_CATCH_OBJECTS}
   )
 
-  ccl_set_project_warnings(
+  isl_set_project_warnings(
           ccl-catch
           ${CCL_STRICT_COMPILATION}
           ""

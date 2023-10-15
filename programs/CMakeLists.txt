@@ -9,7 +9,7 @@ add_executable(
         ${FSC_LEX_GENERATOR_OBJECTS}
 )
 
-ccl_set_project_warnings(
+isl_set_project_warnings(
         ccl-lexer
         ${CCL_STRICT_COMPILATION}
         ""
