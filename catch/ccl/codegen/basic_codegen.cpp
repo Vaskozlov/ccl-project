@@ -14,7 +14,7 @@ TEST_CASE("BasicCodegen", "[Codegen]")
     generator << setScopeSize(9) << push_scope << "Text in scope\n(9)" << pop_scope << endl;
     generator << "Test end" << endl;
 
-    generator << setStream(0) << "Writing at the begin" << endl;
+    generator << setStream(0) << "Writing at the begin\n";
 
     DEBUG_VAR generated_code = generator.getCode();
 

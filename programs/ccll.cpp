@@ -24,19 +24,19 @@ auto main(int argc, char *argv[]) -> int
     auto result = options.parse(argc, argv);
 
     if (result.count("help") == 1) {
-        fmt::println("{}", options.help());
+        fmt::print("{}\n", options.help());
         return 1;
     }
 
     if (output_file.empty()) {
-        fmt::println(
+        fmt::print(
             "File with rules for lexical analyzer was not specified.\n"
-            "Type --help to see how to use ccll");
+            "Type --help to see how to use ccll\n");
         return 1;
     }
 
     if (!std::filesystem::exists(source_file)) {
-        fmt::println("Source file {} does not exist", source_file.string());
+        fmt::print("Source file {} does not exist\n", source_file.string());
     }
 
     auto print_generation_time = result.count("time") != 0;
@@ -48,7 +48,7 @@ auto main(int argc, char *argv[]) -> int
     file_stream.open(output_file, std::ios::out);
 
     if (!file_stream.is_open()) {
-        fmt::println("Error: cannot open file {}", output_file.string());
+        fmt::print("Error: cannot open file {}\n", output_file.string());
         return 1;
     }
 
@@ -59,7 +59,7 @@ auto main(int argc, char *argv[]) -> int
     auto elapsed = end - begin;
 
     if (print_generation_time) {
-        fmt::println("{} us", elapsed / 1us);
+        fmt::print("{} us\n", elapsed / 1us);
     }
 
     return 0;
