@@ -5,7 +5,6 @@
     "fmt",
     "cxxopts",
     "catch2",
-    "benchmark",
-    "range-v3"
+    "benchmark"
   ]
 }

@@ -1,7 +1,6 @@
 #include <ccl/codegen/basic_codegen.hpp>
 #include <ccl/lexer/analyzer_generator/static_generator.hpp>
 #include <isl/raii.hpp>
-#include <range/v3/view.hpp>
 
 namespace ccl::lexer::gen
 {
@@ -101,8 +100,8 @@ namespace ccl::lexer::gen
             codeGenerator << ", " << '\"' << value << "\"},";
         };
 
-        auto undefined_rules = [&generated_rules](const parser::CcllParser::Rule &rule) {
-            return !generated_rules.contains(rule.name);
+        auto rule_defined = [&generated_rules](const parser::CcllParser::Rule &rule) {
+            return generated_rules.contains(rule.name);
         };
 
         const std::vector<parser::CcllParser::Rule> &rules = ccllParser.getRules();
@@ -116,7 +115,11 @@ namespace ccl::lexer::gen
             output_rule(rule);
         }
 
-        for (const auto &rule : rules | ranges::views::filter(undefined_rules)) {
+        for (const auto &rule : rules) {
+            if (rule_defined(rule)) {
+                continue;
+            }
+
             generated_rules.emplace(rule.name);
             output_rule(rule.name);
         }
@@ -148,21 +151,15 @@ namespace ccl::lexer::gen
         const auto &blocks = ccllParser.getBlocks();
         const auto &rules = ccllParser.getRules();
 
-        auto undefined_blocks = [&generated_blocks](const auto &block) {
-            auto &[block_name, _] = block;
-            return !generated_blocks.contains(block_name);
-        };
-
-        auto undefined_enum_cases = [&generated_enum_cases](const parser::CcllParser::Rule &rule) {
-            return !generated_enum_cases.contains(isl::string_view{rule.name});
-        };
-
         auto output_enum_case = [this](isl::string_view name, Id id) {
             codeGenerator << endl << name << " = " << fmt::to_string(id) << ',';
         };
 
-        for (const auto &[block_name, block_info] :
-             blocks | ranges::views::filter(undefined_blocks)) {
+        for (const auto &[block_name, block_info] : blocks) {
+            if (generated_blocks.contains(block_name)) {
+                continue;
+            }
+
             auto block_id = isl::as<Id>(block_info.blockId) << ShiftSize;
 
             generated_blocks.emplace(block_name);
@@ -174,7 +171,11 @@ namespace ccl::lexer::gen
             output_enum_case(rule_name, rule_id);
         }
 
-        for (const auto &rule : rules | ranges::views::filter(undefined_enum_cases)) {
+        for (const parser::CcllParser::Rule &rule : rules) {
+            if (generated_enum_cases.contains(rule.name)) {
+                continue;
+            }
+
             auto id = (isl::as<Id>(rule.blockId) << ShiftSize) + rule.id;
 
             generated_enum_cases.emplace(rule.name);
@@ -191,7 +192,7 @@ namespace ccl::lexer::gen
     auto StaticGenerator::generateLexicalAnalyzer() -> void
     {
         codeGenerator << "// NOLINTNEXTLINE" << endl;
-        codeGenerator << "inline auto " << variableName << " = ccl::lex::LexicalAnalyzer{";
+        codeGenerator << "inline auto " << variableName << " = ccl::lexer::LexicalAnalyzer{";
         codeGenerator << push_scope << endl;
         codeGenerator << handler << ',' << endl;
         codeGenerator << '{' << push_scope;

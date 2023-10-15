@@ -7,6 +7,7 @@
 #include <ccl/text/location.hpp>
 #include <ccl/text/text_iterator_modules/line_tracker.hpp>
 #include <ccl/text/text_iterator_modules/ts_tracker.hpp>
+#include <span>
 #include <utility>
 
 namespace ccl::text
