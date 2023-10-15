@@ -130,15 +130,13 @@ namespace ccl::lexer::gen
 
     auto StaticGenerator::generateEnum() -> void
     {
-        auto enum_definition = isl::Raii{
-            [this]() {
-                codeGenerator << "enum " << enumName << " : ccl::Id {";
-                codeGenerator << push_scope;
-            },
-            [this]() {
-                codeGenerator << pop_scope << endl;
-                codeGenerator << "};" << endl << endl;
-            }};
+        codeGenerator << "enum " << enumName << " : ccl::Id {";
+        codeGenerator << push_scope;
+
+        auto enum_definition = isl::Raii{[this]() {
+            codeGenerator << pop_scope << endl;
+            codeGenerator << "};" << endl << endl;
+        }};
 
         generateEnumCases();
     }
