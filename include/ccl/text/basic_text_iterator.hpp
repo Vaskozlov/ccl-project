@@ -202,12 +202,12 @@ namespace ccl::text
         }
 
     private:
-        CCL_DECL auto toParent() noexcept CCL_LIFETIMEBOUND -> CRTP &
+        CCL_DECL auto toParent() noexcept CCL_LIFETIMEBOUND->CRTP &
         {
             return static_cast<CRTP &>(*this);
         }
 
-        CCL_DECL auto toParent() const noexcept CCL_LIFETIMEBOUND -> const CRTP &
+        CCL_DECL auto toParent() const noexcept CCL_LIFETIMEBOUND->const CRTP &
         {
             return static_cast<const CRTP &>(*this);
         }
