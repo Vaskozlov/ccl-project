@@ -36,7 +36,7 @@ namespace ccl::lexer::parser
         class CompareTokenAsString
         {
         public:
-            constexpr auto operator()(const Token &lhs, const Token &rhs) const -> bool
+            [[nodiscard]] auto operator()(const Token &lhs, const Token &rhs) const -> bool
             {
                 return lhs.getRepr() < rhs.getRepr();
             }
