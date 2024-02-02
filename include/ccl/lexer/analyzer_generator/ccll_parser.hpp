@@ -33,31 +33,40 @@ namespace ccl::lexer::parser
         };
 
     private:
-        std::vector<Rule> rules{};
-        std::stack<Token> tokenStack{};
-        std::map<isl::string_view, std::string> directives{};
-        std::map<isl::string_view, BlockInfo> blocks{{"NONE", {0, 2}}};
+        class CompareTokenAsString
+        {
+        public:
+            constexpr auto operator()(const Token &lhs, const Token &rhs) const -> bool
+            {
+                return lhs.getRepr() < rhs.getRepr();
+            }
+        };
+
+        std::vector<Rule> rules;
+        std::stack<Token> tokenStack;
+        std::map<Token, isl::string_view, CompareTokenAsString> directives;
+        std::map<isl::string_view, BlockInfo> blocks{{"NONE", {0, ReservedTokenMaxValue + 1}}};
         SpecialItems specialItems{};
         isl::string_view currentBlock = "NONE";
         Tokenizer &tokenizer;
-        size_t lastBlockId{1};
+        size_t previousBlockId{1};
 
     public:
         explicit CcllParser(Tokenizer &input_tokenizer);
 
-        [[nodiscard]] auto getRules() const CCL_LIFETIMEBOUND->const std::vector<Rule> &
+        [[nodiscard]] auto getRules() const CCL_LIFETIMEBOUND -> const std::vector<Rule> &
         {
             return rules;
         }
 
-        [[nodiscard]] auto
-            getBlocks() const CCL_LIFETIMEBOUND->const std::map<isl::string_view, BlockInfo> &
+        [[nodiscard]] auto getBlocks() const CCL_LIFETIMEBOUND
+            -> const std::map<isl::string_view, BlockInfo> &
         {
             return blocks;
         }
 
-        [[nodiscard]] auto
-            getDirectives() const CCL_LIFETIMEBOUND->const std::map<isl::string_view, std::string> &
+        [[nodiscard]] auto getDirectives() const CCL_LIFETIMEBOUND
+            -> const std::map<Token, isl::string_view, CompareTokenAsString> &
         {
             return directives;
         }

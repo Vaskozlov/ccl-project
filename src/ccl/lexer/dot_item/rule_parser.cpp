@@ -231,10 +231,9 @@ namespace ccl::lexer::dot_item
 
     CCL_INLINE auto Container::RuleParser::checkId() const -> void
     {
-        if (ReservedTokenType(getId()) == ReservedTokenType::BAD_TOKEN ||
-            ReservedTokenType(getId()) == ReservedTokenType::EOI) {
+        if (getId() <= ReservedTokenMaxValue) {
             throw UnrecoverableError{
-                "reserved token type (0 and 1 are reserved for EOI and BAD TOKEN)"};
+                fmt::format("tokens' ids from 0 to {} are reserved", ReservedTokenMaxValue)};
         }
     }
 

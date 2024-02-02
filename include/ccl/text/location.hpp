@@ -9,7 +9,7 @@ namespace ccl::text
 {
     class Location
     {
-        std::string_view filename{};
+        isl::string_view filename;
         size_t line{1};
         size_t column{0};
         size_t realColumn{0};
@@ -18,7 +18,7 @@ namespace ccl::text
         Location() noexcept = default;
 
         [[nodiscard]] constexpr explicit Location(
-            std::string_view name_of_file, size_t line_in_file = 1, size_t column_in_file = 0,
+            isl::string_view name_of_file, size_t line_in_file = 1, size_t column_in_file = 0,
             size_t real_column = 0) noexcept
           : filename{name_of_file}
           , line{line_in_file}
@@ -41,7 +41,7 @@ namespace ccl::text
             return realColumn;
         }
 
-        CCL_DECL auto getFilename() const noexcept -> const std::string_view &
+        CCL_DECL auto getFilename() const noexcept -> isl::string_view
         {
             return filename;
         }

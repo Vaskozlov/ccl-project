@@ -14,11 +14,11 @@ namespace ccl
     private:
         static ExceptionHandler defaultExceptionHandler;// NOLINT
 
-        std::atomic<size_t> suggestionsCounter{};
-        std::atomic<size_t> warningsCounter{};
-        std::atomic<size_t> uncriticalErrorsCounter{};
-        std::atomic<size_t> criticalErrorsCounter{};
-        std::atomic<size_t> panicErrorsCounter{};
+        std::atomic<size_t> suggestionsCounter;
+        std::atomic<size_t> warningsCounter;
+        std::atomic<size_t> uncriticalErrorsCounter;
+        std::atomic<size_t> criticalErrorsCounter;
+        std::atomic<size_t> panicErrorsCounter;
 
     public:
         ExceptionHandler() noexcept = default;
@@ -36,13 +36,13 @@ namespace ccl
         auto handle(const ExceptionT *error) -> void;
 
         template<std::derived_from<ExceptionT> T>
-        auto handle(const T *error)
+        auto handle(const T *error) -> void
         {
             handle(as<const ExceptionT *>(error));
         }
 
         template<std::derived_from<ExceptionT> T>
-        auto handle(const T &error)
+        auto handle(const T &error) -> void
         {
             handle(isl::as<const ExceptionT *>(&error));
         }

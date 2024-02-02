@@ -9,24 +9,25 @@ namespace ccl::lexer
     enum struct ReservedTokenType : Id
     {
         EOI = 0,
-        BAD_TOKEN = 1
+        BAD_TOKEN = 1,
+        CUT = 2
     };
+
+    constexpr inline size_t ReservedTokenMaxValue = 2;
 
     namespace dot_item
     {
         class Container;
     }
 
-    class TokenAttributes
+    struct TokenEnvironment
     {
-    public:
-        std::string tabsAndSpaces{};
-        text::Location location{};
-        isl::string_view workingLine{};
+        std::string tabsAndSpaces;
+        text::Location location;
+        isl::string_view workingLine;
 
-        TokenAttributes() = default;
-
-        explicit TokenAttributes(const text::TextIterator &text_iterator);
+        TokenEnvironment() = default;
+        explicit TokenEnvironment(const text::TextIterator &text_iterator);
     };
 
     class Token
@@ -35,10 +36,10 @@ namespace ccl::lexer
         friend class LexicalAnalyzer;
         friend class dot_item::Container;
 
-        std::vector<isl::string_view> prefixes{};
-        std::vector<isl::string_view> postfixes{};
-        TokenAttributes attributes{};
-        isl::string_view repr{};
+        std::vector<isl::string_view> prefixes;
+        std::vector<isl::string_view> postfixes;
+        TokenEnvironment environment;
+        isl::string_view repr;
         Id id{};
 
     public:
@@ -47,10 +48,10 @@ namespace ccl::lexer
         [[nodiscard]] explicit Token(Id token_id);
 
         [[nodiscard]] Token(
-            TokenAttributes &&token_attributes, isl::string_view token_repr, Id token_id);
+            TokenEnvironment &&token_environment, isl::string_view token_repr, Id token_id);
 
         [[nodiscard]] Token(
-            TokenAttributes &&token_attributes, typename isl::string_view::iterator text_begin,
+            TokenEnvironment &&token_environment, typename isl::string_view::iterator text_begin,
             Id token_id);
 
         [[nodiscard]] Token(const text::TextIterator &text_iterator, Id token_id);
@@ -75,29 +76,35 @@ namespace ccl::lexer
             return repr.size();
         }
 
+        [[nodiscard]] CCL_INLINE auto getTokenEnvironment() const noexcept
+            -> const TokenEnvironment &
+        {
+            return environment;
+        }
+
         [[nodiscard]] CCL_INLINE auto getLocation() const noexcept -> const text::Location &
         {
-            return attributes.location;
+            return environment.location;
         }
 
         [[nodiscard]] CCL_INLINE auto getLine() const noexcept -> size_t
         {
-            return attributes.location.getLine();
+            return environment.location.getLine();
         }
 
         [[nodiscard]] CCL_INLINE auto getColumn() const noexcept -> size_t
         {
-            return attributes.location.getColumn();
+            return environment.location.getColumn();
         }
 
         [[nodiscard]] CCL_INLINE auto getRealColumn() const noexcept -> size_t
         {
-            return attributes.location.getRealColumn();
+            return environment.location.getRealColumn();
         }
 
         [[nodiscard]] CCL_INLINE auto getFilename() const noexcept -> isl::string_view
         {
-            return attributes.location.getFilename();
+            return environment.location.getFilename();
         }
 
         [[nodiscard]] CCL_INLINE auto getRepr() const noexcept -> isl::string_view
@@ -119,13 +126,15 @@ namespace ccl::lexer
 
         [[nodiscard]] CCL_INLINE auto getInlineRepr() const noexcept -> isl::string_view
         {
-            return attributes.workingLine;
+            return environment.workingLine;
         }
 
         [[nodiscard]] CCL_INLINE auto getTabsAndSpaces() const noexcept -> std::string_view
         {
-            return attributes.tabsAndSpaces;
+            return environment.tabsAndSpaces;
         }
+
+        [[nodiscard]] auto cut(size_t first, size_t length) const -> Token;
 
     private:
         auto clear(Id new_id) noexcept -> void;
@@ -145,7 +154,7 @@ namespace ccl::lexer
             postfixes.push_back(postfix);
         }
 
-        CCL_INLINE auto setEnd(typename isl::string_view::iterator end_of_repr) noexcept -> void
+        CCL_INLINE auto setEnd(isl::string_view::iterator end_of_repr) noexcept -> void
         {
             repr = {repr.begin(), end_of_repr};
         }

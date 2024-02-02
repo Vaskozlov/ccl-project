@@ -14,6 +14,7 @@ namespace ccll
         SUCCESS = 4294967296,
         EOI = 0,
         BAD_TOKEN = 1,
+        CUT = 2,
         GROUP_DECLARATION = 4294967296,
         RULE = 4294967297,
         DIRECTIVE = 4294967298,
@@ -51,9 +52,10 @@ namespace ccll
             {CcllAnalyzerToken::COMMENT, R"( ! [#] [\n]*^ )"},
         }};
 
-    inline constexpr isl::StaticFlatmap<ccl::Id, isl::string_view, 13> ToStringCcllAnalyzerToken{
+    inline constexpr isl::StaticFlatmap<ccl::Id, isl::string_view, 14> ToStringCcllAnalyzerToken{
         {CcllAnalyzerToken::EOI, "EOI"},
         {CcllAnalyzerToken::BAD_TOKEN, "BAD_TOKEN"},
+        {CcllAnalyzerToken::CUT, "CUT"},
         {CcllAnalyzerToken::GROUP_DECLARATION, "GROUP_DECLARATION"},
         {CcllAnalyzerToken::RULE, "RULE"},
         {CcllAnalyzerToken::DIRECTIVE, "DIRECTIVE"},

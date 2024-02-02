@@ -4,7 +4,9 @@
 namespace ccl::lexer::parser
 {
     CcllParser::Rule::Rule(
-        BlockInfo &block_info, isl::string_view rule_name, isl::string_view rule_definition)
+        BlockInfo &block_info,
+        isl::string_view rule_name,
+        isl::string_view rule_definition)
       : name{rule_name}
       , definition{rule_definition}
       , blockId{block_info.blockId}
@@ -81,8 +83,8 @@ namespace ccl::lexer::parser
         currentBlock = group_name;
 
         if (!blocks.contains(currentBlock)) {
-            const auto block_id = isl::as<u16>(lastBlockId);
-            ++lastBlockId;
+            const auto block_id = isl::as<u16>(previousBlockId);
+            ++previousBlockId;
 
             blocks.try_emplace(blocks.end(), currentBlock, BlockInfo{block_id, 0});
         }
@@ -105,12 +107,12 @@ namespace ccl::lexer::parser
         const std::vector<isl::string_view> &prefixes = token.getPrefixes();
         const std::vector<isl::string_view> &postfixes = token.getPostfixes();
 
-        auto name = prefixes.at(0);
-        auto value = postfixes.at(0);
+        const isl::string_view name = prefixes.at(0);
+        isl::string_view value = postfixes.at(0);
 
         // value is represented as string, so we need to remove " from both sides
         value = value.substr(1, value.size() - 2);
-        directives.try_emplace(name, value);
+        directives.try_emplace(token.cut(0, name.size()), value);
     }
 
     auto CcllParser::checkRule(const Token &token) -> void
@@ -127,8 +129,8 @@ namespace ccl::lexer::parser
         // NOLINTNEXTLINE : is guaranteed by lexical analyzer rule
         text_iterator.skip(line_repr.find(':').value() + 1);
 
-        [[maybe_unused]] auto just_checking_rule =
-            dot_item::Container{text_iterator, specialItems, 2, true};
+        [[maybe_unused]] auto run_rule_scan_to_check_correctness =
+            dot_item::Container{text_iterator, specialItems, ReservedTokenMaxValue + 1, true};
     }
 
     auto CcllParser::parsingError(isl::string_view message, isl::string_view suggestion) -> void

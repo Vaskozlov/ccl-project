@@ -2,12 +2,13 @@
 #include <ccl/lexer/tokenizer.hpp>
 
 using namespace ccl;
+using namespace debug;
 using namespace lexer;
 using namespace text;
 
 TEST_CASE("LexicalAnalyzerUnrecognizableTokenError", "[ContainerUnion]")
 {
-    auto analyzer = LexicalAnalyzer{ExceptionHandler::instance(), {{2, "[a-z]+"}}};
+    auto analyzer = LexicalAnalyzer{ExceptionHandler::instance(), {{FirstUsableToken, "[a-z]+"}}};
     auto tokenizer = analyzer.getTokenizer(R"(20)");
     const Token &token = tokenizer.yield();
 

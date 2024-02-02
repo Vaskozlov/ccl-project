@@ -3,6 +3,7 @@
 
 using namespace ccl;
 using namespace text;
+using namespace debug;
 using namespace lexer::dot_item;
 
 TEST_CASE("BinaryExpressionWith2Elements", "[BinaryExpression]")
@@ -10,7 +11,7 @@ TEST_CASE("BinaryExpressionWith2Elements", "[BinaryExpression]")
     auto text_iterator = TextIterator{"[1] | \"2\""};
     auto special_items = lexer::SpecialItems{};
 
-    auto container = Container(text_iterator, special_items, 2);
+    auto container = Container(text_iterator, special_items, FirstUsableToken);
     const std::vector<DotItem> &items = container.getItems();
     const auto *binary_operation = isl::as<const BinaryExpressionBase *>(items[0].get());
 
@@ -28,7 +29,7 @@ TEST_CASE("BinaryExpressionWith3Elements", "[BinaryExpression]")
     auto text_iterator = TextIterator{"[1] | [2] | [3]"};
     auto special_items = lexer::SpecialItems{};
 
-    auto container = Container(text_iterator, special_items, 2);
+    auto container = Container(text_iterator, special_items, FirstUsableToken);
     const std::vector<DotItem> &items = container.getItems();
     const auto *first_binary_operation = isl::as<const BinaryExpressionBase *>(items[0].get());
 

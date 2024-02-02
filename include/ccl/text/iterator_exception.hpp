@@ -30,13 +30,13 @@ namespace ccl::text
     class TextIteratorException : public BasicTextIteratorException
     {
     private:
-        Location location{};
-        std::string message{};
-        std::string suggestion{};
-        isl::string_view workingLine{};
+        Location location;
+        std::string message;
+        std::string suggestion;
+        isl::string_view workingLine;
         size_t length{1};
-        ExceptionCriticality criticality{};
-        AnalysisStage stage{};
+        ExceptionCriticality criticality{ExceptionCriticality::NONE};
+        AnalysisStage stage{AnalysisStage::NONE};
 
     public:
         TextIteratorException() = default;
@@ -62,7 +62,7 @@ namespace ccl::text
             return length;
         }
 
-        [[nodiscard]] auto getFilename() const noexcept -> std::string_view
+        [[nodiscard]] auto getFilename() const noexcept -> isl::string_view
         {
             return location.getFilename();
         }

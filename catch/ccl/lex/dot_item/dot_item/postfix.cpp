@@ -9,7 +9,11 @@ using namespace dot_item;
 TEST_CASE("TwoPostfixes", "[Container]")
 {
     auto special_items = SpecialItems{};
-    auto container = Container(TextIterator{R"([a-z]+[_]p"test"p)"}, special_items, 2, true);
+    auto container = Container(
+        TextIterator{R"([a-z]+[_]p"test"p)"},
+        special_items,
+        lexer::ReservedTokenMaxValue + 1,
+        true);
     DEBUG_VAR &items = container.getItems();
 
     REQUIRE(!items[0]->hasPrefix());
@@ -24,6 +28,10 @@ TEST_CASE("WrongPostfixCreation", "[Container]")
     auto special_items = SpecialItems{};
 
     REQUIRE_THROWS_AS(
-        Container(TextIterator{R"([a-z]+[_]p"test")"}, special_items, 2, true),
+        Container(
+            TextIterator{R"([a-z]+[_]p"test")"},
+            special_items,
+            lexer::ReservedTokenMaxValue + 1,
+            true),
         text::TextIteratorException);
 }

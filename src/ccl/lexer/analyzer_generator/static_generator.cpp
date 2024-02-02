@@ -1,5 +1,6 @@
 #include <ccl/codegen/basic_codegen.hpp>
 #include <ccl/lexer/analyzer_generator/static_generator.hpp>
+#include <ccl/lexer/tokenizer.hpp>
 #include <isl/raii.hpp>
 
 namespace ccl::lexer::gen
@@ -19,7 +20,10 @@ namespace ccl::lexer::gen
     }();
 
     constexpr static auto BuiltinRules =
-        isl::StaticFlatmap<isl::string_view, Id, 2>{{"EOI", 0}, {"BAD_TOKEN", 1}};
+        isl::StaticFlatmap<isl::string_view, Id, ReservedTokenMaxValue + 1>{
+            {"EOI", 0},
+            {"BAD_TOKEN", 1},
+            {"CUT", 2}};
 
     StaticGenerator::StaticGenerator(Tokenizer &input_tokenizer)
       : tokenizer{input_tokenizer}
@@ -31,14 +35,20 @@ namespace ccl::lexer::gen
     auto StaticGenerator::loadDirectives() -> void
     {
         for (const auto &[name, value] : ccllParser.getDirectives()) {
-            if ("VAR_NAME" == name) {
-                variableName = value;
-            } else if ("HANDLER" == name) {
-                handler = value;
-            } else if ("NAMESPACE" == name) {
-                nameSpace = value;
+            const auto name_str = name.getRepr();
+            auto value_str = isl::as<std::string>(value);
+
+            if ("VAR_NAME" == name_str) {
+                variableName = std::move(value_str);
+            } else if ("HANDLER" == name_str) {
+                handler = std::move(value_str);
+            } else if ("NAMESPACE" == name_str) {
+                nameSpace = std::move(value_str);
             } else {
-                fmt::print("unrecognizable directive: {}\n", name);
+                auto excpetion = text::TextIteratorException(
+                    ExceptionCriticality::CRITICAL, AnalysisStage::PARSING, name.getLocation(),
+                    name_str.size(), name.getInlineRepr(), "unrecognizable directive");
+                tokenizer.getHandler().handle(excpetion);
             }
         }
 

@@ -65,7 +65,8 @@ namespace ccl::text
 
         template<typename Source>
         [[nodiscard]] constexpr explicit CrtpBasicTextIterator(
-            CrtpForkType /* unused */, Source &from) noexcept
+            CrtpForkType /* unused */,
+            Source &from) noexcept
           : carriage{from.getCarriage()}
           , end{from.getEnd()}
           , currentChar{from.getCurrentChar()}
@@ -245,9 +246,9 @@ namespace ccl::text
             return *carriage;
         }
 
-        constexpr auto modifyCurrentChar() noexcept(noexcept(onNextCharacter(
-            char32_t{})) && noexcept(onCarriageMove(char{})) && noexcept(onUtfError(char{})))
-            -> void
+        constexpr auto modifyCurrentChar() noexcept(
+            noexcept(onNextCharacter(char32_t{})) && noexcept(onCarriageMove(char{})) &&
+            noexcept(onUtfError(char{}))) -> void
         {
             using namespace std::string_view_literals;
 

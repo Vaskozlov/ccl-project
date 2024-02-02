@@ -17,8 +17,8 @@ namespace ccl::text
     private:
         using extra_symbols_t = std::span<const isl::Pair<char32_t, char32_t>>;
 
-        Location location{};
-        TsTracker tsTracker{};
+        Location location;
+        TsTracker tsTracker;
         LineTracker lineTracker;
         ExceptionHandler *exceptionHandler{};
 
