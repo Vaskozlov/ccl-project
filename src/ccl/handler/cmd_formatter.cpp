@@ -47,7 +47,7 @@ namespace ccl::handler
         auto [tabs_number, line_to_print] = replaceTabWithSpaces(workingLine);
 
         fmt::format_to(
-            std::back_inserter(formattingBuffer), emphasis::italic, "{}\n", line_to_print);
+            std::back_inserter(formattingBuffer), fmt::emphasis::italic, "{}\n", line_to_print);
         return tabs_number;
     }
 
@@ -60,7 +60,7 @@ namespace ccl::handler
         fmt::format_to(std::back_inserter(formattingBuffer), "{:>6}", '|');
 
         fmt::format_to(
-            std::back_inserter(formattingBuffer), fg(color::light_green), "{:>{}}\n",
+            std::back_inserter(formattingBuffer), fmt::fg(fmt::color::light_green), "{:>{}}\n",
             std::string(length, '^'), arrow_position);
 
         return arrow_position;
