@@ -2,8 +2,6 @@
 
 namespace ccl::text
 {
-    using namespace isl::string_view_literals;
-
     TextIteratorException::TextIteratorException(
         ExceptionCriticality exception_criticality, AnalysisStage analysis_stage,
         const Location &exception_location, size_t exception_length, isl::string_view working_line,

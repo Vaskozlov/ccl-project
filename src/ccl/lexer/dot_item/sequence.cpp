@@ -2,8 +2,6 @@
 
 namespace ccl::lexer::dot_item
 {
-    using namespace isl::string_view_literals;
-
     Sequence::Sequence(
         SequenceFlags sequence_flags, isl::string_view sequence_begin_and_end,
         TextIterator &rule_iterator, Id item_id)
@@ -90,7 +88,7 @@ namespace ccl::lexer::dot_item
         }
 
         if ('\n' == chr && !getFlags().sequenceIsMultiline) [[unlikely]] {
-            constexpr auto message = "new line is reached, but sequence has not been terminated"_sv;
+            constexpr auto message = "new line is reached, but sequence has not been terminated";
             auto suggestion = fmt::format("use multiline sequence or close it with `{}`", ender);
 
             throwUnterminatedString(rule_iterator, message, suggestion);
@@ -122,14 +120,14 @@ namespace ccl::lexer::dot_item
     CCL_INLINE auto Sequence::throwEmptyStringBegin(TextIterator &rule_iterator) -> void
     {
         rule_iterator.throwPanicError(
-            AnalysisStage::LEXICAL_ANALYSIS, "sequence item begin cannot be empty"_sv);
+            AnalysisStage::LEXICAL_ANALYSIS, "sequence item begin cannot be empty");
         throw UnrecoverableError{"unrecoverable error in SequenceType"};
     }
 
     CCL_INLINE auto Sequence::throwEmptyStringEnd(TextIterator &rule_iterator) -> void
     {
         rule_iterator.throwPanicError(
-            AnalysisStage::LEXICAL_ANALYSIS, "sequence item end cannot be empty"_sv);
+            AnalysisStage::LEXICAL_ANALYSIS, "sequence item end cannot be empty");
         throw UnrecoverableError{"unrecoverable error in SequenceType"};
     }
 

@@ -1,13 +1,11 @@
 #include <ccl/handler/cmd.hpp>
 
-using namespace fmt;
-
 namespace ccl::handler
 {
-    using namespace std::string_view_literals;
-
     static auto replaceTabWithSpaces(isl::string_view string) -> isl::Pair<size_t, std::string>
     {
+        using namespace std::string_view_literals;
+
         auto result = std::string{};
         auto replaced_tabs = isl::as<size_t>(0);
 
@@ -27,10 +25,11 @@ namespace ccl::handler
     auto Cmd::CmdFormatter::formatFilename() -> void
     {
         fmt::format_to(
-            std::back_inserter(formattingBuffer), emphasis::underline | fg(color::cornflower_blue),
-            "{}:{}:{}", filename, line, column);
+            std::back_inserter(formattingBuffer),
+            fmt::emphasis::underline | fg(fmt::color::cornflower_blue), "{}:{}:{}", filename, line,
+            column);
 
-        fmt::format_to(std::back_inserter(formattingBuffer), fg(color::cornflower_blue), ":");
+        fmt::format_to(std::back_inserter(formattingBuffer), fg(fmt::color::cornflower_blue), ":");
     }
 
     auto Cmd::CmdFormatter::formatMessage() -> void

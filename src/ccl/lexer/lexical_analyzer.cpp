@@ -3,8 +3,6 @@
 
 namespace ccl::lexer
 {
-    using namespace std::string_literals;
-
     LexicalAnalyzer::LexicalAnalyzer(
         ExceptionHandler &exception_handler, const std::initializer_list<Rule> &rules,
         std::string_view filename, std::vector<size_t> ignored_ids)

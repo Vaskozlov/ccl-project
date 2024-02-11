@@ -2,10 +2,7 @@
 
 namespace ccl::lexer::dot_item
 {
-    using namespace text;
-    using namespace isl::string_view_literals;
-
-    Repetition::Repetition(TextIterator &text_iterator)
+    Repetition::Repetition(text::TextIterator &text_iterator)
     {
         checkRangeStart(text_iterator);
         auto iterator_copy = text_iterator;
@@ -16,7 +13,7 @@ namespace ccl::lexer::dot_item
         checkCorrectnessOfValues(iterator_copy);
     }
 
-    auto Repetition::parseNumber(TextIterator &text_iterator, char32_t terminator) -> size_t
+    auto Repetition::parseNumber(text::TextIterator &text_iterator, char32_t terminator) -> size_t
     {
         constexpr auto decimal_base = isl::as<size_t>(10);
 
@@ -37,21 +34,21 @@ namespace ccl::lexer::dot_item
         return result;
     }
 
-    auto Repetition::checkRangeStart(TextIterator &text_iterator) -> void
+    auto Repetition::checkRangeStart(text::TextIterator &text_iterator) -> void
     {
         if (text_iterator.getCurrentChar() != '{') {
             throwRangeBeginException(text_iterator);
         }
     }
 
-    auto Repetition::checkCorrectnessOfValues(TextIterator &text_iterator) const -> void
+    auto Repetition::checkCorrectnessOfValues(text::TextIterator &text_iterator) const -> void
     {
         if (from > to) {
             throwBadValues(text_iterator);
         }
     }
 
-    auto Repetition::throwBadValues(TextIterator &text_iterator) const -> void
+    auto Repetition::throwBadValues(text::TextIterator &text_iterator) const -> void
     {
         auto message = fmt::format(
             "the beginning of the repetition ({}) is greater than the end "
@@ -61,7 +58,8 @@ namespace ccl::lexer::dot_item
         text_iterator.throwCriticalError(AnalysisStage::LEXICAL_ANALYSIS, message);
     }
 
-    auto Repetition::throwUnexpectedCharacter(TextIterator &text_iterator, char32_t chr) -> void
+    auto Repetition::throwUnexpectedCharacter(text::TextIterator &text_iterator, char32_t chr)
+        -> void
     {
         auto buffer = std::string{};
         isl::utf8::appendUtf32ToUtf8Container(buffer, chr);
@@ -72,11 +70,10 @@ namespace ccl::lexer::dot_item
         throw UnrecoverableError{"unrecoverable error in Repetition"};
     }
 
-    auto Repetition::throwRangeBeginException(TextIterator &text_iterator) -> void
+    auto Repetition::throwRangeBeginException(text::TextIterator &text_iterator) -> void
     {
         text_iterator.throwPanicError(
-            AnalysisStage::LEXICAL_ANALYSIS,
-            "expected '{' at the beginning of repetition range"_sv);
+            AnalysisStage::LEXICAL_ANALYSIS, "expected '{' at the beginning of repetition range");
         throw UnrecoverableError{"unrecoverable error in Repetition"};
     }
 }// namespace ccl::lexer::dot_item

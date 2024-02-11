@@ -1,7 +1,5 @@
 #include <ccl/lexer/tokenizer.hpp>
 
-using namespace std::string_literals;
-
 namespace ccl::lexer
 {
     using Tokenizer = LexicalAnalyzer::Tokenizer;

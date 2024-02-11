@@ -2,8 +2,6 @@
 
 namespace ccl::lexer::dot_item
 {
-    using namespace isl::string_view_literals;
-
     Union::Union(TextIterator &rule_iterator, Id rule_id)
       : DotItemConcept{rule_id}
     {
@@ -72,9 +70,8 @@ namespace ccl::lexer::dot_item
         }
     }
 
-    CCL_INLINE auto
-        Union::checkForUnexpectedEnd(TextIterator &rule_iterator, bool is_escaping, char32_t chr)
-            -> void
+    CCL_INLINE auto Union::checkForUnexpectedEnd(
+        TextIterator &rule_iterator, bool is_escaping, char32_t chr) -> void
     {
         if (!is_escaping && isEoF(chr)) {
             throwUnterminatedUnion(rule_iterator);
@@ -88,8 +85,8 @@ namespace ccl::lexer::dot_item
         }
     }
 
-    CCL_INLINE auto Union::checkForClosedRange(TextIterator &rule_iterator, bool is_ranged_opened)
-        -> void
+    CCL_INLINE auto
+        Union::checkForClosedRange(TextIterator &rule_iterator, bool is_ranged_opened) -> void
     {
         if (is_ranged_opened) {
             throwUnterminatedRangeException(rule_iterator);
@@ -99,13 +96,13 @@ namespace ccl::lexer::dot_item
     CCL_INLINE auto Union::throwUnterminatedUnion(TextIterator &rule_iterator) -> void
     {
         rule_iterator.throwPanicError(
-            AnalysisStage::LEXICAL_ANALYSIS, "unterminated union item"_sv);
+            AnalysisStage::LEXICAL_ANALYSIS, "unterminated union item");
         throw UnrecoverableError{"unrecoverable error in Union"};
     }
 
     CCL_INLINE auto Union::throwUnterminatedRangeException(TextIterator &rule_iterator) -> void
     {
-        rule_iterator.throwPanicError(AnalysisStage::LEXICAL_ANALYSIS, "unterminated range"_sv);
+        rule_iterator.throwPanicError(AnalysisStage::LEXICAL_ANALYSIS, "unterminated range");
         throw UnrecoverableError{"unrecoverable error in Union"};
     }
 

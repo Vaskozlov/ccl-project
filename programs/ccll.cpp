@@ -5,10 +5,10 @@
 #include <fstream>
 #include <iostream>
 
-using namespace std::chrono_literals;
-
 auto main(int argc, char *argv[]) -> int
 {
+    using namespace std::chrono_literals;
+
     auto source_file = std::filesystem::path{};
     auto output_file = std::filesystem::path{};
     auto options = cxxopts::Options("ccll", "Lexical analyzer generator for ccl");

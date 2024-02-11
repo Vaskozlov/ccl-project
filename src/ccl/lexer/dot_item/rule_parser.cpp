@@ -5,8 +5,6 @@
 
 namespace ccl::lexer::dot_item
 {
-    using namespace isl::string_view_literals;
-
     Container::RuleParser::RuleParser(Container &target_container, TextIterator &text_iterator)
       : container{target_container}
       , ruleIterator{text_iterator}
@@ -335,6 +333,8 @@ namespace ccl::lexer::dot_item
 
     auto Container::RuleParser::throwUndefinedAction() -> void
     {
+        using namespace isl::string_view_literals;
+
         constexpr static auto message = "undefined action"_sv;
         constexpr static auto suggestion =
             "use `!` to declare special symbol, `\"` for string, `[` for unions, `(` for "

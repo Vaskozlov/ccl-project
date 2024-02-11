@@ -4,11 +4,10 @@
 #include <ccl/handler/cmd.hpp>
 #include <ccl/lexer/tokenizer.hpp>
 
-using namespace ccl;
-using namespace std::string_view_literals;
-
 static auto lexicalAnalysisOfC(benchmark::State &state) -> void
 {
+    using namespace ccl;
+
     for (auto _ : state) {
         auto tokenizer = CLexer.getTokenizer(debug::C_RULE);
 
@@ -25,6 +24,8 @@ BENCHMARK(lexicalAnalysisOfC);
 
 static auto lexicalAnalyzerInitialization(benchmark::State &state) -> void
 {
+    using namespace ccl;
+
     for (auto _ : state) {
         [[maybe_unused]] auto c_lexer = lexer::LexicalAnalyzer(
             handler::Cmd::instance(),

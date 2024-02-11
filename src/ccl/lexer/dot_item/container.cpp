@@ -2,8 +2,6 @@
 
 namespace ccl::lexer::dot_item
 {
-    using namespace isl::string_view_literals;
-
     CCL_INLINE auto Container::addPrefixOrPostfix(
         const DotItemConcept *item, Token &token, isl::string_view repr) -> void
     {
