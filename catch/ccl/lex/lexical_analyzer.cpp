@@ -2,13 +2,11 @@
 #include <ccl/handler/cmd.hpp>
 #include <ccl/lexer/tokenizer.hpp>
 
-using namespace ccl;
-using namespace lexer;
-using namespace text;
-using namespace isl::string_view_literals;
-
 TEST_CASE("LexTest", "[LexicalAnalyzer]")
 {
+    using namespace ccl;
+    using namespace isl::string_view_literals;
+
     auto text =
         R"(
         10.0f;
@@ -17,8 +15,8 @@ TEST_CASE("LexTest", "[LexicalAnalyzer]")
         auto _ = "Hello, World!" + "test\"")"_sv;
 
     // NOLINTBEGIN
-    auto token_id = ReservedTokenMaxValue + 1;
-    auto analyzer = LexicalAnalyzer(
+    auto token_id = lexer::ReservedTokenMaxValue + 1;
+    auto analyzer = lexer::LexicalAnalyzer(
         handler::Cmd::instance(),
         {{token_id++, R"( [0-9]+"."[0-9]* ( [a-zA-Z_]+ [a-zA-Z0-9_]* )?p )"},
          {token_id++, "[a-zA-Z_]+"},

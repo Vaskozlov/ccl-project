@@ -2,15 +2,14 @@
 #include <ccl/text/iterator_exception.hpp>
 #include <ccl/text/text_iterator.hpp>
 
-using namespace ccl;
-using namespace text;
-
 TEST_CASE("TextIteratorExceptionConstruction", "[TextIterator]")
 {
-    auto text_iterator =
-        TextIterator("Hello, World!\nIt's a test string!", ExceptionHandler::instance(), "builtin");
+    using namespace ccl;
 
-    auto exception = TextIteratorException(
+    auto text_iterator = text::TextIterator(
+        "Hello, World!\nIt's a test string!", ExceptionHandler::instance(), "builtin");
+
+    auto exception = text::TextIteratorException(
         ExceptionCriticality::UNCRITICAL, AnalysisStage::LEXICAL_ANALYSIS,
         text_iterator.getLocation(), 1, text_iterator.getWorkingLine(), "some message");
 

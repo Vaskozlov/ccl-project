@@ -1,17 +1,13 @@
 #include <ccl/debug/debug_file.hpp>
 #include <ccl/lexer/dot_item/container.hpp>
 
-using namespace ccl;
-using namespace debug;
-using namespace lexer;
-using namespace text;
-using namespace dot_item;
-
 TEST_CASE("ContainerPrefixAndPostfix", "[Container]")
 {
-    auto special_items = SpecialItems{};
-    auto container =
-        Container(TextIterator{R"([a-z]+p[_]"test"p)"}, special_items, FirstUsableToken, true);
+    using namespace ccl;
+
+    auto special_items = lexer::SpecialItems{};
+    auto container = lexer::dot_item::Container(
+        text::TextIterator{R"([a-z]+p[_]"test"p)"}, special_items, debug::FirstUsableToken, true);
     DEBUG_VAR &&items = container.getItems();
 
     REQUIRE(items.at(0)->hasPrefix());

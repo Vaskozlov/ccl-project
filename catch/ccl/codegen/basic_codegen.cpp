@@ -1,11 +1,10 @@
 #include "ccl/codegen/basic_codegen.hpp"
 #include "ccl/debug/debug_file.hpp"
 
-using namespace ccl;
-using namespace ccl::codegen;
-
 TEST_CASE("BasicCodegen", "[Codegen]")
 {
+    using namespace ccl::codegen;
+
     auto generator = BasicCodeGenerator{};
 
     generator << setStream(1);

@@ -1,20 +1,15 @@
 #include <ccl/debug/debug_file.hpp>
-#include <ccl/lexer/dot_item/container.hpp>
 #include <ccl/lexer/dot_item/union.hpp>
 
-using namespace ccl;
-using namespace lexer;
-using namespace text;
-using namespace dot_item;
-
-// NOLINTNEXTLINE
 
 TEST_CASE("UnionWithOneElem", "[ContainerUnion]")
 {
-    auto text_iterator = TextIterator{"[a]"};
+    using namespace ccl;
+
+    auto text_iterator = text::TextIterator{"[a]"};
     text_iterator.advance();
 
-    auto union_item = Union(text_iterator);
+    auto union_item = lexer::dot_item::Union(text_iterator);
     DEBUG_VAR &&bitset = union_item.getBitset();
 
     for (char32_t i = 0; i < 127; ++i) {// NOLINT
@@ -24,10 +19,12 @@ TEST_CASE("UnionWithOneElem", "[ContainerUnion]")
 
 TEST_CASE("UnionWithMultipleElems", "[ContainerUnion]")
 {
-    auto text_iterator = TextIterator{"[a-z_]"};
+    using namespace ccl;
+
+    auto text_iterator = text::TextIterator{"[a-z_]"};
     text_iterator.advance();
 
-    auto union_item = Union(text_iterator);
+    auto union_item = lexer::dot_item::Union(text_iterator);
     DEBUG_VAR &&bitset = union_item.getBitset();
 
     for (char32_t i = '\0'; i != '_'; ++i) {

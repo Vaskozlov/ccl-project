@@ -1,14 +1,12 @@
 #include <ccl/char.hpp>
 #include <ccl/debug/debug_file.hpp>
 
-using namespace ccl;
-
-static constexpr auto HCTI = HexadecimalCharsToInt;
-
 // NOLINTBEGIN
 
 TEST_CASE("BasicHexadecimalCharsToIntTest", "[HexadecimalChars]")
 {
+    static constexpr auto HCTI = ccl::HexadecimalCharsToInt;
+
     REQUIRE(HCTI.at('0') == 0);
     REQUIRE(HCTI.at('1') == 1);
     REQUIRE(HCTI.at('2') == 2);

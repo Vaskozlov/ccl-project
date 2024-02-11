@@ -1,13 +1,12 @@
 #include <ccl/debug/debug_file.hpp>
 #include <ccl/text/text_iterator.hpp>
 
-using namespace ccl;
-using namespace text;
-using namespace isl::string_view_literals;
-
 TEST_CASE("TextIteratorTabsAndSpaceTracking", "[TabsAndSpacesTracker]")
 {
-    auto text_iterator = TextIterator{"\t\t  H i\nWorld!"_sv};
+    using namespace ccl;
+    using namespace isl::string_view_literals;
+
+    auto text_iterator = text::TextIterator{"\t\t  H i\nWorld!"_sv};
 
     text_iterator.moveToCleanChar();
     text_iterator.advance();

@@ -1,30 +1,28 @@
 #include <ccl/debug/debug_file.hpp>
 #include <ccl/lexer/tokenizer.hpp>
 
-using namespace ccl;
-using namespace debug;
-using namespace lexer;
-using namespace text;
-
 TEST_CASE("LexicalAnalyzerUnion", "[ContainerUnion]")
 {
-    auto analyzer = LexicalAnalyzer{
+    using namespace ccl;
+
+    auto analyzer = lexer::LexicalAnalyzer{
         ExceptionHandler::instance(),
-        {{FirstUsableToken, R"([a-z]p+[0-9]+)"}, {FirstUsableToken + 1, R"([0-9]+[a-z]p*)"}},
+        {{debug::FirstUsableToken, R"([a-z]p+[0-9]+)"},
+         {debug::FirstUsableToken + 1, R"([0-9]+[a-z]p*)"}},
     };
 
     auto tokenizer = analyzer.getTokenizer(R"(20 abz10 10abz)");
 
     auto token = tokenizer.yield();
 
-    REQUIRE(token.getId() == FirstUsableToken + 1);
+    REQUIRE(token.getId() == debug::FirstUsableToken + 1);
     REQUIRE(token.getRepr() == "20");
     REQUIRE(token.getPrefixes().empty());
     REQUIRE(token.getPostfixes().empty());
 
     token = tokenizer.yield();
 
-    REQUIRE(token.getId() == FirstUsableToken);
+    REQUIRE(token.getId() == debug::FirstUsableToken);
     REQUIRE(token.getRepr() == R"(abz10)");
     REQUIRE(token.getPrefixes().size() == 1);
     REQUIRE(token.getPostfixes().empty());
@@ -33,7 +31,7 @@ TEST_CASE("LexicalAnalyzerUnion", "[ContainerUnion]")
 
     token = tokenizer.yield();
 
-    REQUIRE(token.getId() == FirstUsableToken + 1);
+    REQUIRE(token.getId() == debug::FirstUsableToken + 1);
     REQUIRE(token.getRepr() == "10abz");
     REQUIRE(token.getPrefixes().empty());
     REQUIRE(token.getPostfixes().size() == 1);

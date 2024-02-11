@@ -1,13 +1,12 @@
 #include <ccl/debug/debug_file.hpp>
 #include <ccl/text/text_iterator.hpp>
 
-using namespace ccl;
-using namespace text;
-using namespace isl::string_view_literals;
-
 TEST_CASE("TextIteratorLocationTrackingOnEmptyInput", "[TextIterator]")
 {
-    auto text_iterator = TextIterator{""_sv};
+    using namespace ccl;
+    using namespace isl::string_view_literals;
+
+    auto text_iterator = text::TextIterator{""_sv};
 
     REQUIRE(text_iterator.getLine() == 1);
     REQUIRE(text_iterator.getColumn() == 0);
@@ -25,7 +24,10 @@ TEST_CASE("TextIteratorLocationTrackingOnEmptyInput", "[TextIterator]")
 
 TEST_CASE("TextIteratorLocationTrackingWithUtfSymbols", "[TextIterator]")
 {
-    auto text_iterator = TextIterator{"Hi\n\U0001f000World!"_sv};
+    using namespace ccl;
+    using namespace isl::string_view_literals;
+
+    auto text_iterator = text::TextIterator{"Hi\n\U0001f000World!"_sv};
 
     REQUIRE(text_iterator.getLine() == 1);
     REQUIRE(text_iterator.getColumn() == 0);

@@ -1,12 +1,11 @@
 #include <ccl/debug/debug_file.hpp>
 #include <ccl/text/location.hpp>
 
-using namespace ccl;
-using namespace text;
-
 TEST_CASE("LocationTracking", "[Location]")
 {
-    auto location = Location{"none"};
+    using namespace ccl;
+
+    auto location = text::Location{"none"};
 
     REQUIRE(location.getLine() == 1U);
     REQUIRE(location.getColumn() == 0U);

@@ -1,16 +1,13 @@
 #include <ccl/debug/debug_file.hpp>
 #include <ccl/lexer/dot_item/container.hpp>
 
-using namespace ccl;
-using namespace lexer;
-using namespace text;
-using namespace dot_item;
-
 TEST_CASE("TwoPostfixes", "[Container]")
 {
-    auto special_items = SpecialItems{};
-    auto container = Container(
-        TextIterator{R"([a-z]+[_]p"test"p)"},
+    using namespace ccl;
+
+    auto special_items = lexer::SpecialItems{};
+    auto container = lexer::dot_item::Container(
+        text::TextIterator{R"([a-z]+[_]p"test"p)"},
         special_items,
         lexer::ReservedTokenMaxValue + 1,
         true);
@@ -25,11 +22,13 @@ TEST_CASE("TwoPostfixes", "[Container]")
 
 TEST_CASE("WrongPostfixCreation", "[Container]")
 {
-    auto special_items = SpecialItems{};
+    using namespace ccl;
+
+    auto special_items = lexer::SpecialItems{};
 
     REQUIRE_THROWS_AS(
-        Container(
-            TextIterator{R"([a-z]+[_]p"test")"},
+        lexer::dot_item::Container(
+            text::TextIterator{R"([a-z]+[_]p"test")"},
             special_items,
             lexer::ReservedTokenMaxValue + 1,
             true),
