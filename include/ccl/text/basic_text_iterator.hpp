@@ -7,7 +7,7 @@
 
 namespace ccl::text
 {
-    struct CCL_TRIVIAL_ABI CrtpForkType : public std::true_type
+    struct CCL_TRIVIAL_ABI CrtpForkType : private std::true_type
     {
     };
 
@@ -202,12 +202,12 @@ namespace ccl::text
         }
 
     private:
-        CCL_DECL auto toParent() noexcept CCL_LIFETIMEBOUND->CRTP &
+        CCL_DECL auto toParent() noexcept CCL_LIFETIMEBOUND -> CRTP &
         {
             return static_cast<CRTP &>(*this);
         }
 
-        CCL_DECL auto toParent() const noexcept CCL_LIFETIMEBOUND->const CRTP &
+        CCL_DECL auto toParent() const noexcept CCL_LIFETIMEBOUND -> const CRTP &
         {
             return static_cast<const CRTP &>(*this);
         }
@@ -217,8 +217,8 @@ namespace ccl::text
             toParent().onMove(chr);
         }
 
-        constexpr auto onNextCharacter(char32_t chr) CCL_NOEXCEPT_IF(toParent().onCharacter(chr))
-            -> void
+        constexpr auto onNextCharacter(char32_t chr)
+            CCL_NOEXCEPT_IF(toParent().onCharacter(chr)) -> void
         {
             toParent().onCharacter(chr);
         }
