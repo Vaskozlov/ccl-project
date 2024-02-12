@@ -12,7 +12,7 @@ TEST_CASE("BasicTextIteratorRawFuture", "[TextIterator]")
     DEBUG_VAR index = isl::as<size_t>(1);
     DEBUG_VAR text_iterator = text::BasicTextIterator{input};
 
-    for (DEBUG_VAR &&chr : expected) {
+    for (DEBUG_VAR chr : expected) {
         REQUIRE(text_iterator.futureChar() == chr);
         ++index;
         text_iterator.advance();

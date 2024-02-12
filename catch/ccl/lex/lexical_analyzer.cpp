@@ -31,7 +31,7 @@ TEST_CASE("LexTest", "[LexicalAnalyzer]")
     auto tokenizer = analyzer.getTokenizer(text);
     // NOLINTEND
 
-    while (DEBUG_VAR &&token = tokenizer.yield()) {
+    while (DEBUG_VAR token = tokenizer.yield()) {
         REQUIRE(token.getId() != 1);
     }
 }

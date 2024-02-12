@@ -8,7 +8,7 @@ TEST_CASE("ContainerTwoPrefixesCreation", "[Container]")
     auto special_items = lexer::SpecialItems{};
     auto container = lexer::dot_item::Container(
         text::TextIterator{R"([a-z]*p[_]p"test")"}, special_items, debug::FirstUsableToken, true);
-    DEBUG_VAR &&items = container.getItems();
+    DEBUG_VAR items = container.getItems();
 
     REQUIRE(items[0]->hasPrefix());
     REQUIRE(items[1]->hasPrefix());

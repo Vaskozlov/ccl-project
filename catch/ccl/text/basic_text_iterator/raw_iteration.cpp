@@ -10,10 +10,10 @@ TEST_CASE("BasicTextIteratorRawIteration", "[TextIterator]")
     auto expected = U"Hello, \t\nWorld! \u00FF \uFFFF \U000FFFFF"_sv;
     auto text_iterator = text::BasicTextIterator{input};
 
-    for (DEBUG_VAR &&chr : expected) {
-        DEBUG_VAR sym = text_iterator.advance();
+    for (DEBUG_VAR chr : expected) {
+        DEBUG_VAR symbol = text_iterator.advance();
 
-        REQUIRE(sym == chr);
+        REQUIRE(symbol == chr);
         REQUIRE(text_iterator.getCurrentChar() == chr);
     }
 }

@@ -5,7 +5,7 @@
 #include <ccl/ccl.hpp>
 #include <ccl/lexer/token.hpp>
 
-#define DEBUG_VAR [[maybe_unused]] auto
+#define DEBUG_VAR [[maybe_unused]] auto &&
 
 namespace ccl::debug
 {

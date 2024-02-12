@@ -11,7 +11,7 @@ TEST_CASE("TwoPostfixes", "[Container]")
         special_items,
         lexer::ReservedTokenMaxValue + 1,
         true);
-    DEBUG_VAR &items = container.getItems();
+    DEBUG_VAR items = container.getItems();
 
     REQUIRE(!items[0]->hasPrefix());
     REQUIRE(!items[0]->hasPostfix());

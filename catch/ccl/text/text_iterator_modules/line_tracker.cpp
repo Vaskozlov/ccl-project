@@ -1,7 +1,6 @@
 #include <ccl/debug/debug_file.hpp>
 #include <ccl/text/text_iterator_modules/line_tracker.hpp>
 
-
 [[maybe_unused]] constexpr static auto ExpectedLines = std::array<isl::string_view, 6>{
     "Hello, World!", "It's a ", "Test!",
     "Of line "

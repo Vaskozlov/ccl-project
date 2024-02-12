@@ -9,7 +9,7 @@ TEST_CASE("SequenceWithOneCharBegin", "[ContainerSequence]")
     text_iterator.advance();
 
     auto string_item = lexer::dot_item::Sequence({}, "\"", text_iterator);
-    DEBUG_VAR &&string = string_item.getValue();
+    DEBUG_VAR string = string_item.getValue();
 
     REQUIRE(string == R"(Hello, "World"!)");
     REQUIRE(ccl::isEoF(text_iterator.advance()));
@@ -23,7 +23,7 @@ TEST_CASE("SequenceWithTreeCharBegin", "[ContainerSequence]")
     text_iterator.advance();
 
     auto string_item = lexer::dot_item::Sequence({.multiline = true}, R"(""")", text_iterator);
-    DEBUG_VAR &&string = string_item.getValue();
+    DEBUG_VAR string = string_item.getValue();
 
     REQUIRE(string == "Hello,\n    \"World\"!");
     REQUIRE(ccl::isEoF(text_iterator.advance()));

@@ -11,8 +11,8 @@ TEST_CASE("LexicalAnalyzerSequence", "[ContainerSequence]")
          {debug::FirstUsableToken + 1, R"("10""abz"p)"}});
 
     auto tokenizer = analyzer.getTokenizer(R"(abz10 10abz)");
-    DEBUG_VAR &&future_token = tokenizer.yieldFutureToken();
-    DEBUG_VAR &&token = tokenizer.yield();
+    DEBUG_VAR future_token = tokenizer.yieldFutureToken();
+    DEBUG_VAR token = tokenizer.yield();
 
     REQUIRE(token.getId() == future_token.getId());
 
@@ -21,7 +21,7 @@ TEST_CASE("LexicalAnalyzerSequence", "[ContainerSequence]")
     REQUIRE(token.getPrefixes().size() == 1);
     REQUIRE(token.getPrefixes()[0] == "abz");
 
-    DEBUG_VAR &&token_2 = tokenizer.yield();
+    DEBUG_VAR token_2 = tokenizer.yield();
 
     REQUIRE(token_2.getId() == debug::FirstUsableToken + 1);
     REQUIRE(token_2.getRepr() == R"(10abz)");
