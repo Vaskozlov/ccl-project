@@ -20,6 +20,7 @@
           ""
           ${CCL_HARDENING}
           ${CCL_LIBCPP}
+          ${CCL_UNITY_BUILD}
   )
 
   target_link_libraries(

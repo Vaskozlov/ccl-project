@@ -19,6 +19,7 @@ isl_set_project_warnings(
         ""
         ${CCL_HARDENING}
         ${CCL_LIBCPP}
+        ${CCL_UNITY_BUILD}
 )
 
 if (CCL_LIBCPP AND LINUX)

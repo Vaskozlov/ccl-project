@@ -18,6 +18,7 @@ isl_set_project_warnings(
         ""
         ${CCL_HARDENING}
         ${CCL_LIBCPP}
+        ${CCL_UNITY_BUILD}
 )
 
 add_dependencies(ccl-bench fmt::fmt)
