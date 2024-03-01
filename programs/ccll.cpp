@@ -1,9 +1,5 @@
-#include <ccl/lexer/analyzer_generator/analyzer_generator.hpp>
-#include <chrono>
 #include <cxxopts.hpp>
-#include <filesystem>
-#include <fstream>
-#include <iostream>
+import ccl;
 
 auto main(int argc, char *argv[]) -> int
 {
@@ -24,19 +20,19 @@ auto main(int argc, char *argv[]) -> int
     auto result = options.parse(argc, argv);
 
     if (result.count("help") == 1) {
-        fmt::print("{}\n", options.help());
+        std::print("{}\n", options.help());
         return 1;
     }
 
     if (output_file.empty()) {
-        fmt::print(
+        std::print(
             "File with rules for lexical analyzer was not specified.\n"
             "Type --help to see how to use ccll\n");
         return 1;
     }
 
     if (!std::filesystem::exists(source_file)) {
-        fmt::print("Source file {} does not exist\n", source_file.string());
+        std::print("Source file {} does not exist\n", source_file.string());
     }
 
     auto print_generation_time = result.count("time") != 0;
@@ -48,7 +44,7 @@ auto main(int argc, char *argv[]) -> int
     file_stream.open(output_file, std::ios::out);
 
     if (!file_stream.is_open()) {
-        fmt::print("Error: cannot open file {}\n", output_file.string());
+        std::print("Error: cannot open file {}\n", output_file.string());
         return 1;
     }
 
@@ -59,7 +55,7 @@ auto main(int argc, char *argv[]) -> int
     auto elapsed = end - begin;
 
     if (print_generation_time) {
-        fmt::print("{} us\n", elapsed / 1us);
+        std::print("{} us\n", elapsed / 1us);
     }
 
     return 0;

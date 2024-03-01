@@ -1,6 +1,6 @@
 #include <ccl/debug/debug_file.hpp>
-#include <ccl/handler/cmd.hpp>
-#include <ccl/lexer/tokenizer.hpp>
+import ccl.lexer;
+import ccl.handler;
 
 TEST_CASE("LexTest", "[LexicalAnalyzer]")
 {

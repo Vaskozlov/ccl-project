@@ -1,0 +1,59 @@
+module ccl.handler:excpetion_handler_impl;
+
+import :cmd;
+import :excaption_handler;
+import ccl.text;
+
+namespace ccl::handler
+{
+    auto ExceptionHandler::instance() -> ExceptionHandler &
+    {
+        static auto default_instance = ExceptionHandler{};
+
+        return default_instance;
+    }
+
+    // NOLINTNEXTLINE
+    auto ExceptionHandler::handle(const ExceptionT *const error) -> void
+    {
+        switch (error->getCriticality()) {
+        case text::ExceptionCriticality::SUGGESTION:
+            std::atomic_fetch_add_explicit(&suggestionsCounter, 1UL, std::memory_order_relaxed);
+            break;
+
+        case text::ExceptionCriticality::WARNING:
+            std::atomic_fetch_add_explicit(&warningsCounter, 1UL, std::memory_order_relaxed);
+            break;
+
+        case text::ExceptionCriticality::UNCRITICAL:
+            std::atomic_fetch_add_explicit(
+                &uncriticalErrorsCounter, 1UL, std::memory_order_relaxed);
+            break;
+
+        case text::ExceptionCriticality::CRITICAL:
+            std::atomic_fetch_add_explicit(&criticalErrorsCounter, 1UL, std::memory_order_relaxed);
+            break;
+
+        case text::ExceptionCriticality::PANIC:
+            std::atomic_fetch_add_explicit(&panicErrorsCounter, 1UL, std::memory_order_relaxed);
+            break;
+
+        default:
+            std::unreachable();
+        }
+
+        onHandle(error);
+    }
+
+    // NOLINTNEXTLINE recursive call
+    auto ExceptionHandler::onHandle(const ExceptionT *const error) -> void
+    {
+        auto &cmd_handler = handler::Cmd::instance();
+
+        if (error->getCriticality() >= text::ExceptionCriticality::CRITICAL) {
+            throw ExceptionT(*error);
+        }
+
+        cmd_handler.handle(error);
+    }
+}// namespace ccl::handler

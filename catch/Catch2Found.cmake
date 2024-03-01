@@ -20,29 +20,23 @@
           ""
           ${CCL_HARDENING}
           ${CCL_LIBCPP}
-          ${CCL_UNITY_BUILD}
+          OFF
+  )
+
+  add_dependencies(
+          ccl-catch
+          ccl
+          fmt::fmt-header-only
+          Catch2::Catch2
+          Catch2::Catch2WithMain
   )
 
   target_link_libraries(
           ccl-catch
           ccl
-          fmt::fmt
+          fmt::fmt-header-only
           Catch2::Catch2
           Catch2::Catch2WithMain
   )
-
-  if (PRECOMPILED_HEADER)
-      target_precompile_headers(
-              ccl-catch
-              REUSE_FROM
-              ccl-lexer
-      )
-
-      target_precompile_headers(
-              ccl-catch
-              PRIVATE
-              <ccl/debug/debug_file.hpp>
-      )
-  endif ()
 
   add_test(ccl-catch-test ccl-catch)

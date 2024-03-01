@@ -1,5 +1,5 @@
 #include <ccl/debug/debug_file.hpp>
-#include <ccl/lexer/dot_item/container.hpp>
+import ccl.lexer;
 
 TEST_CASE("RepetitionBasicCase", "[ContainerRepetition]")
 {

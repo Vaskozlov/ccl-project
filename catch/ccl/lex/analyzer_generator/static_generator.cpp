@@ -1,6 +1,6 @@
-#include <ccl/debug/c_rule.hpp>
 #include <ccl/debug/debug_file.hpp>
-#include <ccl/lexer/analyzer_generator/analyzer_generator.hpp>
+import ccl.lexer.generator;
+import ccl.debug;
 
 TEST_CASE("StaticGeneration", "[StaticGenerator]")
 {

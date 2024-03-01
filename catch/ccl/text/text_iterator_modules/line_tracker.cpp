@@ -1,5 +1,6 @@
 #include <ccl/debug/debug_file.hpp>
-#include <ccl/text/text_iterator_modules/line_tracker.hpp>
+import ccl.text;
+import ccl.text.modules;
 
 [[maybe_unused]] constexpr static auto ExpectedLines = std::array<isl::string_view, 6>{
     "Hello, World!", "It's a ", "Test!",
@@ -14,8 +15,8 @@ TEST_CASE("LineTracking", "[LineTracker]")
 
     constexpr static auto Input = "Hello, World!\nIt's a \nTest!\nOf line tracker\n "_sv;
 
-    DEBUG_VAR current_line = isl::as<size_t>(0);
-    DEBUG_VAR line_tracker = text::LineTracker{Input};
+    DEBUG_VAR current_line = isl::as<std::size_t>(0);
+    DEBUG_VAR line_tracker = text::modules::LineTracker{Input};
 
     for (auto chr : Input) {
         line_tracker.next(isl::as<char32_t>(chr));

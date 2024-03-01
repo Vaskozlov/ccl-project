@@ -1,5 +1,5 @@
 #include <ccl/debug/debug_file.hpp>
-#include <ccl/lexer/dot_item/sequence.hpp>
+import ccl.lexer;
 
 TEST_CASE("SequenceWithOneCharBegin", "[ContainerSequence]")
 {
@@ -12,7 +12,7 @@ TEST_CASE("SequenceWithOneCharBegin", "[ContainerSequence]")
     DEBUG_VAR string = string_item.getValue();
 
     REQUIRE(string == R"(Hello, "World"!)");
-    REQUIRE(ccl::isEoF(text_iterator.advance()));
+    REQUIRE(ccl::text::isEoF(text_iterator.advance()));
 }
 
 TEST_CASE("SequenceWithTreeCharBegin", "[ContainerSequence]")
@@ -26,7 +26,7 @@ TEST_CASE("SequenceWithTreeCharBegin", "[ContainerSequence]")
     DEBUG_VAR string = string_item.getValue();
 
     REQUIRE(string == "Hello,\n    \"World\"!");
-    REQUIRE(ccl::isEoF(text_iterator.advance()));
+    REQUIRE(ccl::text::isEoF(text_iterator.advance()));
 }
 
 TEST_CASE("UnterminatedSequence", "[ContainerSequence]")

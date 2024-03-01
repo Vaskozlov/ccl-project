@@ -1,12 +1,13 @@
 #include <ccl/debug/debug_file.hpp>
-#include <ccl/lexer/dot_item/container.hpp>
+import ccl.lexer;
+import ccl.debug;
 
 TEST_CASE("BinaryExpressionWith2Elements", "[BinaryExpression]")
 {
     using namespace ccl;
 
     auto text_iterator = text::TextIterator{"[1] | \"2\""};
-    auto special_items = lexer::SpecialItems{};
+    auto special_items = lexer::dot_item::SpecialItems{};
 
     auto container =
         lexer::dot_item::Container(text_iterator, special_items, debug::FirstUsableToken);
@@ -33,7 +34,7 @@ TEST_CASE("BinaryExpressionWith3Elements", "[BinaryExpression]")
     using namespace ccl;
 
     auto text_iterator = text::TextIterator{"[1] | [2] | [3]"};
-    auto special_items = lexer::SpecialItems{};
+    auto special_items = lexer::dot_item::SpecialItems{};
 
     auto container =
         lexer::dot_item::Container(text_iterator, special_items, debug::FirstUsableToken);

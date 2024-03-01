@@ -1,8 +1,6 @@
 #include "c_lexer.hpp"
 #include <benchmark/benchmark.h>
-#include <ccl/debug/c_rule.hpp>
-#include <ccl/handler/cmd.hpp>
-#include <ccl/lexer/tokenizer.hpp>
+import ccl.lexer;
 
 static auto lexicalAnalysisOfC(benchmark::State &state) -> void
 {

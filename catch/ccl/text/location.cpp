@@ -1,5 +1,5 @@
 #include <ccl/debug/debug_file.hpp>
-#include <ccl/text/location.hpp>
+import ccl.text;
 
 TEST_CASE("LocationTracking", "[Location]")
 {

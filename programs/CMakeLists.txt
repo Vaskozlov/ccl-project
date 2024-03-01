@@ -18,7 +18,7 @@ isl_set_project_warnings(
         ""
         ${CCL_HARDENING}
         ${CCL_LIBCPP}
-        ${CCL_UNITY_BUILD}
+        OFF
 )
 
 if (PRECOMPILED_HEADER)
@@ -32,6 +32,6 @@ endif ()
 target_link_libraries(
         ccl-lexer
         ccl
-        fmt::fmt
+        fmt::fmt-header-only
         cxxopts::cxxopts
 )

@@ -1,14 +1,18 @@
+add_library(ccl)
+
 file(
         GLOB_RECURSE
         CCL_OBJECTS
-        "src/ccl/*.cpp"
+        "include/*.ixx"
+        "src/*.cxxm"
 )
 
-if (CCL_STATIC_LIBRARY)
-    add_library(ccl STATIC ${CCL_OBJECTS})
-else ()
-    add_library(ccl SHARED ${CCL_OBJECTS})
-endif ()
+target_sources(
+        ccl
+        PUBLIC
+        FILE_SET CXX_MODULES FILES
+        ${CCL_OBJECTS}
+)
 
 isl_set_project_warnings(
         ccl
@@ -19,32 +23,16 @@ isl_set_project_warnings(
         ""
         ${CCL_HARDENING}
         ${CCL_LIBCPP}
-        ${CCL_UNITY_BUILD}
+        OFF
 )
 
-if (CCL_LIBCPP AND LINUX)
-    add_dependencies(ccl fmt::fmt-header-only)
+add_dependencies(ccl isl fmt::fmt-header-only)
 
-    target_link_libraries(
-            ccl
-            fmt::fmt-header-only
-    )
-else ()
-    add_dependencies(ccl fmt::fmt)
-
-    target_link_libraries(
-            ccl
-            fmt::fmt
-    )
-endif ()
-
-if (CCL_PRECOMPILED_HEADERS)
-    target_precompile_headers(
-            ccl
-            PUBLIC
-            "pch.hpp"
-    )
-endif ()
+target_link_libraries(
+        ccl
+        isl
+        fmt::fmt-header-only
+)
 
 target_include_directories(ccl
         PUBLIC

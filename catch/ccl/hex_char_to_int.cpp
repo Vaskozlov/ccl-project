@@ -1,11 +1,11 @@
-#include <ccl/char.hpp>
 #include <ccl/debug/debug_file.hpp>
+import ccl.text;
 
 // NOLINTBEGIN
 
 TEST_CASE("BasicHexadecimalCharsToIntTest", "[HexadecimalChars]")
 {
-    static constexpr auto HCTI = ccl::HexadecimalCharsToInt;
+    static constexpr auto HCTI = ccl::text::HexadecimalCharsToInt;
 
     REQUIRE(HCTI.at('0') == 0);
     REQUIRE(HCTI.at('1') == 1);

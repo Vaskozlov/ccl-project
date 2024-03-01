@@ -1,5 +1,5 @@
 #include <ccl/debug/debug_file.hpp>
-#include <ccl/text/basic_text_iterator.hpp>
+import ccl.text;
 
 TEST_CASE("BasicTextIteratorRawIteration", "[TextIterator]")
 {

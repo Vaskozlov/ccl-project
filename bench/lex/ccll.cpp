@@ -1,6 +1,5 @@
 #include <benchmark/benchmark.h>
-#include <ccl/debug/c_rule.hpp>
-#include <ccl/lexer/analyzer_generator/static_generator.hpp>
+import ccl;
 
 static auto ccllParsing(benchmark::State &state)
 {

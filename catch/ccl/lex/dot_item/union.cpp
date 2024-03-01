@@ -1,6 +1,5 @@
 #include <ccl/debug/debug_file.hpp>
-#include <ccl/lexer/dot_item/union.hpp>
-
+import ccl.lexer;
 
 TEST_CASE("UnionWithOneElem", "[ContainerUnion]")
 {

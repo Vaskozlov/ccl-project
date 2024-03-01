@@ -18,10 +18,10 @@ isl_set_project_warnings(
         ""
         ${CCL_HARDENING}
         ${CCL_LIBCPP}
-        ${CCL_UNITY_BUILD}
+        OFF
 )
 
-add_dependencies(ccl-bench fmt::fmt)
+add_dependencies(ccl-bench fmt::fmt-header-only)
 add_dependencies(ccl-bench benchmark::benchmark)
 
 target_link_libraries(
@@ -36,7 +36,7 @@ target_link_libraries(
 
 target_link_libraries(
         ccl-bench
-        fmt::fmt
+        fmt::fmt-header-only
 )
 
 if (${PRECOMPILED_HEADER})

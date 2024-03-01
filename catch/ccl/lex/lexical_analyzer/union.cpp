@@ -1,12 +1,13 @@
 #include <ccl/debug/debug_file.hpp>
-#include <ccl/lexer/tokenizer.hpp>
+import ccl.lexer;
+import ccl.debug;
 
 TEST_CASE("LexicalAnalyzerUnion", "[ContainerUnion]")
 {
     using namespace ccl;
 
     auto analyzer = lexer::LexicalAnalyzer{
-        ExceptionHandler::instance(),
+        handler::ExceptionHandler::instance(),
         {{debug::FirstUsableToken, R"([a-z]p+[0-9]+)"},
          {debug::FirstUsableToken + 1, R"([0-9]+[a-z]p*)"}},
     };

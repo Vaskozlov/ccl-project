@@ -1,0 +1,13 @@
+#ifndef CCL_DEFINES_HPP
+#define CCL_DEFINES_HPP
+
+#include <cassert>
+#include <isl/core/defines.hpp>
+
+#define CCL_DECL ISL_DECL
+#define CCL_INLINE ISL_INLINE
+#define CCL_LIFETIMEBOUND ISL_LIFETIMEBOUND
+#define CCL_TRIVIAL_ABI ISL_TRIVIAL_ABI
+#define CCL_NOEXCEPT_IF(EXPR) ISL_NOEXCEPT_IF(EXPR)
+
+#endif /* CCL_DEFINES_HPP */
