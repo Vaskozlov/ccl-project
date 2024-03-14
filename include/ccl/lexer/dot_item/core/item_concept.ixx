@@ -1,5 +1,3 @@
-module;
-#include <ccl/defines.hpp>
 export module ccl.lexer.dot_item.core:item_concept;
 
 export import ccl.text;
@@ -20,7 +18,7 @@ export namespace ccl::lexer::dot_item
         using TextIterator = text::TextIterator;
         using ForkedGenerator = typename text::TextIterator::ForkedTextIterator;
 
-        struct CCL_TRIVIAL_ABI Flags
+        struct Flags
         {
             bool reversed = false;
             bool isPrefix = false;
@@ -107,15 +105,51 @@ export namespace ccl::lexer::dot_item
             return id;
         }
 
-        static auto alwaysRecognizedSuggestion(TextIterator &text_iterator, bool condition) -> void;
-        static auto neverRecognizedSuggestion(TextIterator &text_iterator, bool condition) -> void;
+        static auto alwaysRecognizedSuggestion(TextIterator &text_iterator, bool condition) -> void
+        {
+            if (condition) [[unlikely]] {
+                text_iterator.throwWarning(
+                    text::AnalysisStage::LEXICAL_ANALYSIS, "item will be always recognized");
+            }
+        }
+
+        static auto neverRecognizedSuggestion(TextIterator &text_iterator, bool condition) -> void
+        {
+            if (condition) [[unlikely]] {
+                text_iterator.throwWarning(
+                    text::AnalysisStage::LEXICAL_ANALYSIS, "item will never be recognized");
+            }
+        }
 
         [[nodiscard]] virtual auto empty() const noexcept -> bool = 0;
-        [[nodiscard]] auto scan(ForkedGenerator text_iterator) const -> std::optional<std::size_t>;
+
+        [[nodiscard]] auto scan(ForkedGenerator text_iterator) const -> std::optional<std::size_t>
+        {
+            auto times = 0ZU;
+            auto totally_skipped = 0ZU;
+
+            while (!text_iterator.isEOI() && times < repetition.to) {
+                auto chars_to_skip = scanIteration(text_iterator);
+
+                if (!chars_to_skip.has_value()) {
+                    break;
+                }
+
+                text_iterator.skip(*chars_to_skip);
+                totally_skipped += *chars_to_skip;
+                ++times;
+            }
+
+            if (repetition.inRange(times)) {
+                return totally_skipped;
+            }
+
+            return std::nullopt;
+        }
 
     private:
-        [[nodiscard]] virtual auto
-            scanIteration(const ForkedGenerator &text_iterator) const -> std::optional<std::size_t> = 0;
+        [[nodiscard]] virtual auto scanIteration(const ForkedGenerator &text_iterator) const
+            -> std::optional<std::size_t> = 0;
     };
 
     class DotItem : public std::unique_ptr<DotItemConcept>

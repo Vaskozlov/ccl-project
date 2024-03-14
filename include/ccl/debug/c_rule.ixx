@@ -1,5 +1,3 @@
-module;
-#include <ccl/defines.hpp>
 export module ccl.debug;
 
 export import isl;

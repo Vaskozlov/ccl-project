@@ -1,10 +1,8 @@
-module;
-module ccl.lexer.generator:ccll_parser_impl;
+module ccl.lexer.analyzer_generator:ccll_parser_impl;
 
-import ccll;
 import :ccll_parser;
 
-namespace ccl::lexer::parser
+namespace ccl::lexer::generator::parser
 {
     CcllParser::Rule::Rule(
         BlockInfo &block_info,

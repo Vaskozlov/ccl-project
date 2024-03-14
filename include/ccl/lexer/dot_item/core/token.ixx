@@ -1,5 +1,3 @@
-module;
-#include <ccl/defines.hpp>
 export module ccl.lexer.dot_item.core:token;
 
 export import isl;
@@ -7,6 +5,49 @@ export import ccl.text;
 
 export namespace ccl::lexer
 {
+    class TextIteratorWithSkippedChractersAccumulator
+        : public text::CrtpBasicTextIterator<TextIteratorWithSkippedChractersAccumulator>
+    {
+    private:
+        std::size_t skippedCharacters{};
+        std::size_t skippedBytes{};
+
+    public:
+        using CrtpBasicTextIterator<
+            TextIteratorWithSkippedChractersAccumulator>::CrtpBasicTextIterator;
+
+        auto clearAccumulator() noexcept -> void
+        {
+            skippedBytes = 0;
+            skippedCharacters = 0;
+        }
+
+        [[nodiscard]] constexpr auto getSkippedCharacters() const noexcept -> std::size_t
+        {
+            return skippedCharacters;
+        }
+
+        [[nodiscard]] constexpr auto getSkippedBytes() const noexcept -> std::size_t
+        {
+            return skippedBytes;
+        }
+
+        constexpr auto onMove(char /* chr */) noexcept -> void
+        {
+            ++skippedBytes;
+        }
+
+        constexpr auto onCharacter(char32_t /* chr */) noexcept -> void
+        {
+            ++skippedCharacters;
+        }
+
+        [[noreturn]] static auto utfError(char /* chr */) -> void
+        {
+            throw std::logic_error{"unable to decode utf8 symbol"};
+        }
+    };
+
     // NOLINTNEXTLINE
     enum struct ReservedTokenType : Id
     {
@@ -24,7 +65,12 @@ export namespace ccl::lexer
         isl::string_view workingLine;
 
         TokenEnvironment() = default;
-        explicit TokenEnvironment(const text::TextIterator &text_iterator);
+
+        explicit TokenEnvironment(const text::TextIterator &text_iterator)
+        : tabsAndSpaces{text_iterator.getTabsAndSpaces()}
+        , location{text_iterator.getLocation()}
+        , workingLine{text_iterator.getWorkingLine()}
+        {}
     };
 
     class Token
@@ -39,98 +85,132 @@ export namespace ccl::lexer
     public:
         Token() = default;
 
-        [[nodiscard]] explicit Token(Id token_id);
+        [[nodiscard]] explicit Token(Id token_id)
+          : id{token_id}
+        {}
 
         [[nodiscard]] Token(
-            TokenEnvironment &&token_environment, isl::string_view token_repr, Id token_id);
+            TokenEnvironment &&token_environment, isl::string_view token_repr, Id token_id)
+          : environment{std::move(token_environment)}
+          , repr{token_repr}
+          , id{token_id}
+        {}
 
         [[nodiscard]] Token(
             TokenEnvironment &&token_environment, typename isl::string_view::iterator text_begin,
-            Id token_id);
+            Id token_id)
+          : Token{std::move(token_environment), {text_begin, 0ZU}, token_id}
+        {}
 
-        [[nodiscard]] Token(const text::TextIterator &text_iterator, Id token_id);
+        [[nodiscard]] Token(const text::TextIterator &text_iterator, Id token_id)
+          : environment{text_iterator}
+          , repr{text_iterator.getRemaining()}
+          , id{token_id}
+        {}
 
-        [[nodiscard]] CCL_INLINE auto getId() const noexcept -> std::size_t
+        [[nodiscard]] auto getId() const noexcept -> std::size_t
         {
             return id;
         }
 
-        [[nodiscard]] CCL_INLINE auto emptyRepr() const noexcept -> bool
+        [[nodiscard]] auto emptyRepr() const noexcept -> bool
         {
             return repr.empty();
         }
 
-        [[nodiscard]] CCL_INLINE explicit operator bool() const noexcept
+        [[nodiscard]] explicit operator bool() const noexcept
         {
             return getId() != 0;
         }
 
-        [[nodiscard]] CCL_INLINE auto getReprSize() const noexcept -> std::size_t
+        [[nodiscard]] auto getReprSize() const noexcept -> std::size_t
         {
             return repr.size();
         }
 
-        [[nodiscard]] CCL_INLINE auto
-            getTokenEnvironment() const noexcept -> const TokenEnvironment &
+        [[nodiscard]] auto getTokenEnvironment() const noexcept -> const TokenEnvironment &
         {
             return environment;
         }
 
-        [[nodiscard]] CCL_INLINE auto getLocation() const noexcept -> const text::Location &
+        [[nodiscard]] auto getLocation() const noexcept -> const text::Location &
         {
             return environment.location;
         }
 
-        [[nodiscard]] CCL_INLINE auto getLine() const noexcept -> std::size_t
+        [[nodiscard]] auto getLine() const noexcept -> std::size_t
         {
             return environment.location.getLine();
         }
 
-        [[nodiscard]] CCL_INLINE auto getColumn() const noexcept -> std::size_t
+        [[nodiscard]] auto getColumn() const noexcept -> std::size_t
         {
             return environment.location.getColumn();
         }
 
-        [[nodiscard]] CCL_INLINE auto getRealColumn() const noexcept -> std::size_t
+        [[nodiscard]] auto getRealColumn() const noexcept -> std::size_t
         {
             return environment.location.getRealColumn();
         }
 
-        [[nodiscard]] CCL_INLINE auto getFilename() const noexcept -> isl::string_view
+        [[nodiscard]] auto getFilename() const noexcept -> isl::string_view
         {
             return environment.location.getFilename();
         }
 
-        [[nodiscard]] CCL_INLINE auto getRepr() const noexcept -> isl::string_view
+        [[nodiscard]] auto getRepr() const noexcept -> isl::string_view
         {
             return repr;
         }
 
-        [[nodiscard]] CCL_INLINE auto
-            getPrefixes() const noexcept -> const std::vector<isl::string_view> &
+        [[nodiscard]] auto getPrefixes() const noexcept -> const std::vector<isl::string_view> &
         {
             return prefixes;
         }
 
-        [[nodiscard]] CCL_INLINE auto
-            getPostfixes() const noexcept -> const std::vector<isl::string_view> &
+        [[nodiscard]] auto getPostfixes() const noexcept -> const std::vector<isl::string_view> &
         {
             return postfixes;
         }
 
-        [[nodiscard]] CCL_INLINE auto getInlineRepr() const noexcept -> isl::string_view
+        [[nodiscard]] auto getInlineRepr() const noexcept -> isl::string_view
         {
             return environment.workingLine;
         }
 
-        [[nodiscard]] CCL_INLINE auto getTabsAndSpaces() const noexcept -> std::string_view
+        [[nodiscard]] auto getTabsAndSpaces() const noexcept -> std::string_view
         {
             return environment.tabsAndSpaces;
         }
 
-        [[nodiscard]] auto cut(std::size_t first, std::size_t length) const -> Token;
+        [[nodiscard]] auto cut(std::size_t first, std::size_t length) const -> Token
+        {
+            auto new_token = *this;
+            new_token.clear(isl::as<std::size_t>(ReservedTokenType::CUT));
 
-        auto clear(Id new_id) noexcept -> void;
+            auto text_iterator = TextIteratorWithSkippedChractersAccumulator(repr);
+            text_iterator.skip(first);
+
+            new_token.repr = text_iterator.getRemaining();
+            new_token.environment.location = text::Location{
+                getFilename(), getLine(), getColumn() + text_iterator.getSkippedCharacters(),
+                getRealColumn() + text_iterator.getSkippedBytes()};
+            new_token.environment.tabsAndSpaces.clear();
+
+            text_iterator.clearAccumulator();
+            text_iterator.skip(length);
+
+            new_token.setEnd(new_token.repr.begin() + text_iterator.getSkippedBytes());
+
+            return new_token;
+        }
+
+        auto clear(Id new_id) noexcept -> void
+        {
+            id = new_id;
+            prefixes.clear();
+            postfixes.clear();
+        }
 
         auto setReprLength(std::size_t length) noexcept -> void
         {
@@ -147,12 +227,20 @@ export namespace ccl::lexer
             postfixes.push_back(postfix);
         }
 
-        CCL_INLINE auto setEnd(isl::string_view::iterator end_of_repr) noexcept -> void
+        auto setEnd(isl::string_view::iterator end_of_repr) noexcept -> void
         {
             repr = {repr.begin(), end_of_repr};
         }
 
-        auto
-            finishInitialization(text::TextIterator &text_iterator, std::size_t totally_skipped) -> void;
+        auto finishInitialization(text::TextIterator &text_iterator, std::size_t totally_skipped)
+            -> void
+        {
+            text_iterator.skip(1);
+            repr = text_iterator.getRemainingWithCurrent();
+            environment = TokenEnvironment{text_iterator};
+
+            setReprLength(totally_skipped);
+            text_iterator.skip(totally_skipped - 1);
+        }
     };
 }// namespace ccl::lexer

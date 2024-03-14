@@ -1,9 +1,7 @@
-module;
-#include <ccl/defines.hpp>
 export module ccll;
 
-import isl;
-import ccl.lexer;
+export import isl;
+export import ccl.lexer.analyzer;
 
 export namespace ccll
 {

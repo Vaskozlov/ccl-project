@@ -1,21 +1,12 @@
-module;
-#include <fmt/format.h>
-#include <fmt/color.h>
-#include <fmt/std.h>
 export module ccl.handler:cmd;
 
-export import isl;
 export import :excaption_handler;
+export import :cmd_formatter;
 
 export namespace ccl::handler
 {
     class Cmd final : public ExceptionHandler
     {
-    private:
-        static Cmd defaultCmdHandler;
-
-        class CmdFormatter;
-
     public:
         using ExceptionHandler::ExceptionT;
 
@@ -25,44 +16,5 @@ export namespace ccl::handler
 
     private:
         auto onHandle(const ExceptionT *error) -> void override;
-
-        template<fmt::color Color, typename HandleType>
-        auto formatAndPrint(const ExceptionT *value, HandleType &&handle_type) -> void;
-    };
-
-    class Cmd::CmdFormatter
-    {
-        friend class Cmd;
-
-        std::string formattingBuffer{};
-        isl::string_view workingLine{};
-        isl::string_view filename{};
-        isl::string_view message{};
-        isl::string_view suggestion{};
-        std::size_t length{};
-        std::size_t line{};
-        std::size_t column{};
-
-    public:
-        explicit CmdFormatter(const ExceptionT *exception) noexcept;
-
-    private:
-        template<fmt::color Color, typename HandleType>
-        [[nodiscard]] auto format(HandleType &&handle_type) -> std::string;
-
-        auto formatFilename() -> void;
-
-        template<fmt::color Color, typename HandleType>
-        auto formatErrorCategory(HandleType &&handle_type) -> void;
-
-        auto formatMessage() -> void;
-
-        auto formatLineNumber() -> void;
-
-        auto formatWorkingLine() -> std::size_t;
-
-        [[nodiscard]] auto formatArrow(std::size_t tabs_number) -> std::size_t;
-
-        auto formatSuggestion(std::size_t arrow_position) -> void;
     };
 }// namespace ccl::handler

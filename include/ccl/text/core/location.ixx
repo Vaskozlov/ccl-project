@@ -1,6 +1,6 @@
 module;
 #include <ccl/defines.hpp>
-export module ccl.text:location;
+export module ccl.text.core:location;
 
 export import :character;
 export import isl;
@@ -18,8 +18,8 @@ export namespace ccl::text
         Location() noexcept = default;
 
         [[nodiscard]] constexpr explicit Location(
-            isl::string_view name_of_file, std::size_t line_in_file = 1, std::size_t column_in_file = 0,
-            std::size_t real_column = 0) noexcept
+            isl::string_view name_of_file, std::size_t line_in_file = 1,
+            std::size_t column_in_file = 0, std::size_t real_column = 0) noexcept
           : filename{name_of_file}
           , line{line_in_file}
           , column{column_in_file}
@@ -65,7 +65,7 @@ export namespace ccl::text
 }// namespace ccl::text
 
 export template<>
-class std::formatter<ccl::text::Location> : public std::formatter<std::string_view>
+class std::formatter<ccl::text::Location, char> : public std::formatter<std::string_view>
 {
 public:
     template<typename FmtContext>

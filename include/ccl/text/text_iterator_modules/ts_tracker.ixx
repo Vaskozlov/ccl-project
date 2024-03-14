@@ -2,7 +2,7 @@ module;
 #include <ccl/defines.hpp>
 export module ccl.text.modules:ts_tracker;
 
-export import std;
+export import isl;
 
 export namespace ccl::text::modules
 {
@@ -11,6 +11,11 @@ export namespace ccl::text::modules
     private:
         std::string tabsAnsSpaces{};
         bool needToClear{};
+
+        static auto isTabOrSpace(char32_t chr) noexcept -> bool
+        {
+            return '\t' == chr || ' ' == chr;
+        }
 
     public:
         [[nodiscard]] auto size() const noexcept -> std::size_t
@@ -28,9 +33,24 @@ export namespace ccl::text::modules
             return tabsAnsSpaces;
         }
 
-        auto next(char32_t chr) -> void;
+        auto next(char32_t chr) -> void
+        {
+            clearIfNeed();
+
+            if (isTabOrSpace(chr)) {
+                tabsAnsSpaces.push_back(isl::as<char>(chr));
+            } else {
+                needToClear = true;
+            }
+        }
 
     private:
-        auto clearIfNeed() noexcept -> void;
+        auto clearIfNeed() noexcept -> void
+        {
+            if (needToClear) {
+                needToClear = false;
+                tabsAnsSpaces.clear();
+            }
+        }
     };
 }// namespace ccl::text

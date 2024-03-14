@@ -15,7 +15,7 @@ TEST_CASE("LineTracking", "[LineTracker]")
 
     constexpr static auto Input = "Hello, World!\nIt's a \nTest!\nOf line tracker\n "_sv;
 
-    DEBUG_VAR current_line = isl::as<std::size_t>(0);
+    DEBUG_VAR current_line = 0ZU;
     DEBUG_VAR line_tracker = text::modules::LineTracker{Input};
 
     for (auto chr : Input) {

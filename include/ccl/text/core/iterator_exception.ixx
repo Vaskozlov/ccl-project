@@ -1,10 +1,8 @@
 module;
-
 #include <ccl/defines.hpp>
+export module ccl.text.core:iterator_exception;
 
-export module ccl.text:text_iterator_exception;
-
-export import isl;
+export import ccl.core;
 export import :location;
 
 export namespace ccl::text
@@ -27,7 +25,7 @@ export namespace ccl::text
         LEXICAL_ANALYSIS,
         PARSING
     };
-}// namespace ccl
+}// namespace ccl::text
 
 export namespace ccl::text
 {
@@ -49,7 +47,15 @@ export namespace ccl::text
             ExceptionCriticality exception_criticality, AnalysisStage analysis_stage,
             const Location &exception_location, std::size_t exception_length,
             isl::string_view working_line, std::string exception_message,
-            std::string exception_suggestion = std::string{});
+            std::string exception_suggestion = std::string{})
+        : location{exception_location}
+        , message{std::move(exception_message)}
+        , suggestion{std::move(exception_suggestion)}
+        , workingLine{working_line}
+        , length{exception_length}
+        , criticality{exception_criticality}
+        , stage{analysis_stage}
+        {}
 
         [[nodiscard]] auto getLine() const noexcept -> std::size_t
         {
@@ -107,12 +113,38 @@ export namespace ccl::text
             return !suggestion.empty();
         }
 
-        [[nodiscard]] auto what() const noexcept -> const char * override;
+        [[nodiscard]] auto what() const noexcept -> const char * override
+        {
+            return message.c_str();
+        }
 
-        [[nodiscard]] auto createFullMessage() const -> std::string;
+        [[nodiscard]] auto createFullMessage() const -> std::string
+        {
+            auto full_message = std::format(
+                "Error occurred at: {}, line: {}, column: {}, message: {}\n{}\n",
+                location.getFilename(), location.getLine(), location.getColumn(), message, workingLine);
+
+            addArrowToError(full_message);
+            addSuggestion(full_message);
+
+            return full_message;
+        }
 
     private:
-        auto addSuggestion(std::string &full_message) const -> void;
-        auto addArrowToError(std::string &full_message) const -> void;
+        auto addSuggestion(std::string &full_message) const -> void
+        {
+            if (!suggestion.empty()) {
+                full_message.append(std::format("\nSuggestion: {}", suggestion));
+            }
+        }
+
+        auto addArrowToError(std::string &full_message) const -> void
+        {
+            auto column_pos = location.getColumn();
+            auto new_message_size = full_message.size() + (column_pos > 0 ? column_pos - 1 : 0);
+
+            full_message.resize(new_message_size, ' ');
+            full_message.push_back('^');
+        }
     };
 }// namespace ccl::text

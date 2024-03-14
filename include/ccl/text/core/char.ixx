@@ -1,8 +1,6 @@
 module;
-
 #include <ccl/defines.hpp>
-
-export module ccl.text:character;
+export module ccl.text.core:character;
 
 export import isl;
 export import ccl.core;

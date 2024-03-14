@@ -1,17 +1,13 @@
-module;
-#include <ccl/defines.hpp>
-export module ccl.lexer.generator:ccll_parser;
+export module ccl.lexer.analyzer_generator:ccll_parser;
 
-export import isl;
-export import ccl.lexer;
+export import ccll;
+export import ccl.lexer.analyzer;
 
-export namespace ccl::lexer::parser
+export namespace ccl::lexer::generator::parser
 {
     class CcllParser
     {
     public:
-        using Tokenizer = typename LexicalAnalyzer::Tokenizer;
-
         struct BlockInfo
         {
             u16 blockId{};
@@ -55,19 +51,18 @@ export namespace ccl::lexer::parser
     public:
         explicit CcllParser(Tokenizer &input_tokenizer);
 
-        [[nodiscard]] auto getRules() const CCL_LIFETIMEBOUND -> const std::vector<Rule> &
+        [[nodiscard]] auto getRules() const -> const std::vector<Rule> &
         {
             return rules;
         }
 
-        [[nodiscard]] auto getBlocks() const CCL_LIFETIMEBOUND
-            -> const std::map<isl::string_view, BlockInfo> &
+        [[nodiscard]] auto getBlocks() const -> const std::map<isl::string_view, BlockInfo> &
         {
             return blocks;
         }
 
-        [[nodiscard]] auto getDirectives() const CCL_LIFETIMEBOUND
-            -> const std::map<Token, isl::string_view, CompareTokenAsString> &
+        [[nodiscard]] auto
+            getDirectives() const -> const std::map<Token, isl::string_view, CompareTokenAsString> &
         {
             return directives;
         }
@@ -83,5 +78,4 @@ export namespace ccl::lexer::parser
 
         auto parsingError(isl::string_view message, isl::string_view suggestion = {}) -> void;
     };
-}// namespace ccl::lexer::parser
-
+}// namespace ccl::lexer::generator::parser

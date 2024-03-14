@@ -4,8 +4,8 @@ module;
 
 export module ccl.text:basic_text_iterator;
 
-export import isl;
-export import :location;
+export import ccl.core;
+export import ccl.text.core;
 
 export namespace ccl::text
 {
@@ -168,7 +168,7 @@ export namespace ccl::text
         constexpr auto skip(std::size_t n) CCL_NOEXCEPT_IF(moveCarriageToTheNextByte()) -> void
         {
             ISL_UNROLL_N(4)
-            for (auto i = isl::as<std::size_t>(0); i != n; ++i) {
+            for (auto i = 0ZU; i != n; ++i) {
                 moveCarriageToTheNextByte();
             }
         }

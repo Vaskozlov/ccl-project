@@ -108,5 +108,4 @@ export namespace ccl::codegen
     constexpr inline auto endl = BasicCodeGenerator::Endl{};
     constexpr inline auto push_scope = BasicCodeGenerator::PushScope{};
     constexpr inline auto pop_scope = BasicCodeGenerator::PopScope{};
-
 }// namespace ccl::codegen

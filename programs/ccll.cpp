@@ -38,18 +38,13 @@ auto main(int argc, char *argv[]) -> int
     auto print_generation_time = result.count("time") != 0;
 
     auto begin = std::chrono::high_resolution_clock::now();
-    auto generated_header = ccl::lexer::AnalyzerGenerator::generateStaticVersion(source_file);
+    auto generated_header =
+        ccl::lexer::generator::AnalyzerGenerator::generateStaticVersion(source_file);
 
-    auto file_stream = std::fstream{};
-    file_stream.open(output_file, std::ios::out);
-
-    if (!file_stream.is_open()) {
+    if (!isl::io::writeToFile(output_file, *generated_header).has_value()) {
         std::print("Error: cannot open file {}\n", output_file.string());
         return 1;
     }
-
-    file_stream << generated_header;
-    file_stream.close();
 
     auto end = std::chrono::high_resolution_clock::now();
     auto elapsed = end - begin;

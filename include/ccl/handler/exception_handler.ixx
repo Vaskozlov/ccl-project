@@ -1,17 +1,13 @@
 export module ccl.handler:excaption_handler;
 
 export import isl;
-
-export namespace ccl::text
-{
-    class TextIteratorException;
-}
+export import ccl.text.core;
 
 export namespace ccl::handler
 {
     class ExceptionHandler
     {
-    protected:
+    public:
         using ExceptionT = text::TextIteratorException;
 
     private:

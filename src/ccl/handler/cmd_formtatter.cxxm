@@ -1,20 +1,16 @@
 module;
 #include <ccl/defines.hpp>
 #include <fmt/color.h>
-#include <fmt/compile.h>
 #include <fmt/format.h>
-#include <fmt/ranges.h>
-module ccl.handler:cmd_formatter;
+module ccl.handler:cmd_formtatter_impl;
 
-import :cmd;
-import isl;
+import :cmd_formatter;
+import :excaption_handler;
 
 namespace ccl::handler
 {
     static auto replaceTabWithSpaces(isl::string_view string) -> isl::Pair<std::size_t, std::string>
     {
-        using namespace std::string_view_literals;
-
         auto result = std::string{};
         auto replaced_tabs = isl::as<std::size_t>(0);
 
@@ -22,7 +18,7 @@ namespace ccl::handler
         for (char chr : string) {
             if ('\t' == chr) {
                 ++replaced_tabs;
-                result.append("    "sv);
+                result.append("    ");
             } else {
                 result.push_back(chr);
             }
@@ -31,27 +27,27 @@ namespace ccl::handler
         return {replaced_tabs, result};
     }
 
-    auto Cmd::CmdFormatter::formatFilename() -> void
+    auto CmdFormatter::formatFilename() -> void
     {
         fmt::format_to(
             std::back_inserter(formattingBuffer),
-            fmt::emphasis::underline | fg(fmt::color::cornflower_blue), "{}:{}:{}", filename, line,
-            column);
+            fmt::emphasis::underline | fg(fmt::color::cornflower_blue), "{}:{}:{}",
+            isl::as<std::string_view>(filename), line, column);
 
         fmt::format_to(std::back_inserter(formattingBuffer), fg(fmt::color::cornflower_blue), ":");
     }
 
-    auto Cmd::CmdFormatter::formatMessage() -> void
+    auto CmdFormatter::formatMessage() -> void
     {
         fmt::format_to(std::back_inserter(formattingBuffer), "{}\n", as<std::string_view>(message));
     }
 
-    auto Cmd::CmdFormatter::formatLineNumber() -> void
+    auto CmdFormatter::formatLineNumber() -> void
     {
         fmt::format_to(std::back_inserter(formattingBuffer), "{:>4} {:<6}", line, '|');
     }
 
-    auto Cmd::CmdFormatter::formatWorkingLine() -> size_t
+    auto CmdFormatter::formatWorkingLine() -> size_t
     {
         auto [tabs_number, line_to_print] = replaceTabWithSpaces(workingLine);
 
@@ -60,7 +56,7 @@ namespace ccl::handler
         return tabs_number;
     }
 
-    auto Cmd::CmdFormatter::formatArrow(size_t tabs_number) -> size_t
+    auto CmdFormatter::formatArrow(size_t tabs_number) -> size_t
     {
         constexpr auto total_line_number_width = 6U;
         auto arrow_position =
@@ -75,7 +71,7 @@ namespace ccl::handler
         return arrow_position;
     }
 
-    auto Cmd::CmdFormatter::formatSuggestion(size_t arrow_position) -> void
+    auto CmdFormatter::formatSuggestion(size_t arrow_position) -> void
     {
         if (!suggestion.empty()) {
             fmt::format_to(std::back_inserter(formattingBuffer), "{:>6}", '|');
@@ -85,4 +81,14 @@ namespace ccl::handler
                 "Suggestion: ", as<std::string_view>(suggestion));
         }
     }
+
+    CmdFormatter::CmdFormatter(const ExceptionT *exception) noexcept
+      : workingLine{exception->getWorkingLine()}
+      , filename{exception->getFilename()}
+      , message{exception->getMessage()}
+      , suggestion{exception->getSuggestion()}
+      , length{exception->getLength()}
+      , line{exception->getLine()}
+      , column{exception->getColumn()}
+    {}
 }// namespace ccl::handler

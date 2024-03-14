@@ -1,0 +1,43 @@
+module;
+#include <ccl/defines.hpp>
+#include <fmt/color.h>
+#include <fmt/format.h>
+module ccl.handler:cmd_handler;
+
+import :cmd;
+import :excaption_handler;
+
+namespace ccl::handler
+{
+    template<fmt::color Color, typename HandleType>
+    auto formatAndPrint(const CmdFormatter::ExceptionT *value, HandleType &&handle_type) -> void
+    {
+        auto formatter = CmdFormatter{value};
+        fmt::println("{}", formatter.format<Color>(std::forward<HandleType>(handle_type)));
+        std::cout.flush();
+    }
+
+    auto Cmd::instance() -> Cmd &
+    {
+        static auto default_instance = Cmd{};
+
+        return default_instance;
+    }
+
+    auto Cmd::onHandle(const ExceptionT *error) -> void
+    {
+        switch (error->getCriticality()) {
+        case text::ExceptionCriticality::SUGGESTION:
+            formatAndPrint<fmt::color::white>(error, " suggestion: ");
+            break;
+
+        case text::ExceptionCriticality::WARNING:
+            formatAndPrint<fmt::color::medium_violet_red>(error, " warning: ");
+            break;
+
+        default:
+            formatAndPrint<fmt::color::red>(error, " error: ");
+            break;
+        }
+    }
+}// namespace ccl::handler

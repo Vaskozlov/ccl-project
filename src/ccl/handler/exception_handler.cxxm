@@ -2,7 +2,6 @@ module ccl.handler:excpetion_handler_impl;
 
 import :cmd;
 import :excaption_handler;
-import ccl.text;
 
 namespace ccl::handler
 {

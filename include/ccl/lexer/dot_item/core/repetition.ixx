@@ -1,5 +1,3 @@
-module;
-#include <ccl/defines.hpp>
 export module ccl.lexer.dot_item.core:repetition;
 
 export import ccl.text;
@@ -12,12 +10,22 @@ export namespace ccl::lexer::dot_item
         std::size_t from{};
         std::size_t to{};
 
-        [[nodiscard]] constexpr Repetition(std::size_t repetition_begin, std::size_t repetition_end) noexcept
+        [[nodiscard]] constexpr Repetition(
+            std::size_t repetition_begin, std::size_t repetition_end) noexcept
           : from{repetition_begin}
           , to{repetition_end}
         {}
 
-        [[nodiscard]] explicit Repetition(text::TextIterator &text_iterator);
+        [[nodiscard]] explicit Repetition(text::TextIterator &text_iterator)
+        {
+            checkRangeStart(text_iterator);
+            auto iterator_copy = text_iterator;
+
+            from = parseNumber(text_iterator, ',');// NOLINT initialization via =
+            to = parseNumber(text_iterator, '}');  // NOLINT
+
+            checkCorrectnessOfValues(iterator_copy);
+        }
 
         [[nodiscard]] consteval static auto basic() noexcept -> Repetition
         {
@@ -50,22 +58,73 @@ export namespace ccl::lexer::dot_item
         }
 
         [[nodiscard]] auto
-            operator<=>(const Repetition &) const noexcept -> std::weak_ordering = default;
+            operator<=>(const Repetition &) const noexcept -> std::strong_ordering = default;
 
     private:
         [[nodiscard]] static auto
-            parseNumber(text::TextIterator &text_iterator, char32_t terminator) -> std::size_t;
+            parseNumber(text::TextIterator &text_iterator, char32_t terminator) -> std::size_t
+        {
+            constexpr auto decimal_base = 10ZU;
 
-        static auto checkRangeStart(text::TextIterator &text_iterator) -> void;
+            auto result = 0ZU;
+            text_iterator.moveToCleanChar();
 
-        auto checkCorrectnessOfValues(text::TextIterator &text_iterator) const -> void;
+            while (text_iterator.advance() != terminator) {
+                const char32_t chr = text_iterator.getCurrentChar();
 
-        auto throwBadValues(text::TextIterator &text_iterator) const -> void;
+                if (text::isDigit(chr)) {
+                    result = result * decimal_base + isl::as<std::size_t>(chr - '0');
+                    continue;
+                }
+
+                throwUnexpectedCharacter(text_iterator, chr);
+            }
+
+            return result;
+        }
+
+        static auto checkRangeStart(text::TextIterator &text_iterator) -> void
+        {
+            if (text_iterator.getCurrentChar() != '{') {
+                throwRangeBeginException(text_iterator);
+            }
+        }
+
+        auto checkCorrectnessOfValues(text::TextIterator &text_iterator) const -> void
+        {
+            if (from > to) {
+                throwBadValues(text_iterator);
+            }
+        }
+
+        auto throwBadValues(text::TextIterator &text_iterator) const -> void
+        {
+            auto message = std::format(
+                "the beginning of the repetition ({}) is greater than the end "
+                "({})",
+                from, to);
+
+            text_iterator.throwCriticalError(text::AnalysisStage::LEXICAL_ANALYSIS, message);
+        }
+
+        [[noreturn]] static auto throwRangeBeginException(text::TextIterator &text_iterator) -> void
+        {
+            text_iterator.throwPanicError(
+                text::AnalysisStage::LEXICAL_ANALYSIS,
+                "expected '{' at the beginning of repetition range");
+            throw UnrecoverableError{"unrecoverable error in Repetition"};
+        }
 
         [[noreturn]] static auto
-            throwRangeBeginException(text::TextIterator &text_iterator) -> void;
+            throwUnexpectedCharacter(text::TextIterator &text_iterator, char32_t chr) -> void
+        {
+            auto buffer = std::string{};
+            isl::utf8::appendUtf32ToUtf8Container(buffer, chr);
 
-        [[noreturn]] static auto
-            throwUnexpectedCharacter(text::TextIterator &text_iterator, char32_t chr) -> void;
+            auto message = std::format("expected a number, but found `{}`", buffer);
+
+            text_iterator.throwPanicError(text::AnalysisStage::LEXICAL_ANALYSIS, message);
+            throw UnrecoverableError{"unrecoverable error in Repetition"};
+        }
     };
 }// namespace ccl::lexer::dot_item
