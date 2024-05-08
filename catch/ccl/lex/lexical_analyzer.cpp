@@ -26,7 +26,7 @@ TEST_CASE("LexTest", "[LexicalAnalyzer]")
          {token_id++, R"(! "=")"},
          {token_id++, R"(! "\"" ("\\\"" | ["]^)* "\"" )"},
          {token_id++, R"(! "\n")"},
-         {token_id++, R"(! "//"[\n]^*)"}});
+         {token_id, R"(! "//"[\n]^*)"}});
 
     auto tokenizer = analyzer.getTokenizer(text);
     // NOLINTEND

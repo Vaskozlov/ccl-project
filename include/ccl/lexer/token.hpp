@@ -61,9 +61,9 @@ namespace ccl::lexer
             return id;
         }
 
-        [[nodiscard]] CCL_INLINE auto emptyRepr() const noexcept -> bool
+        [[nodiscard]] CCL_INLINE auto isEmptyRepr() const noexcept -> bool
         {
-            return repr.empty();
+            return getReprSize() != 0;
         }
 
         [[nodiscard]] CCL_INLINE explicit operator bool() const noexcept
@@ -76,8 +76,8 @@ namespace ccl::lexer
             return repr.size();
         }
 
-        [[nodiscard]] CCL_INLINE auto getTokenEnvironment() const noexcept
-            -> const TokenEnvironment &
+        [[nodiscard]] CCL_INLINE auto
+            getTokenEnvironment() const noexcept -> const TokenEnvironment &
         {
             return environment;
         }
@@ -112,14 +112,14 @@ namespace ccl::lexer
             return repr;
         }
 
-        [[nodiscard]] CCL_INLINE auto getPrefixes() const noexcept
-            -> const std::vector<isl::string_view> &
+        [[nodiscard]] CCL_INLINE auto
+            getPrefixes() const noexcept -> const std::vector<isl::string_view> &
         {
             return prefixes;
         }
 
-        [[nodiscard]] CCL_INLINE auto getPostfixes() const noexcept
-            -> const std::vector<isl::string_view> &
+        [[nodiscard]] CCL_INLINE auto
+            getPostfixes() const noexcept -> const std::vector<isl::string_view> &
         {
             return postfixes;
         }
@@ -159,8 +159,8 @@ namespace ccl::lexer
             repr = {repr.begin(), end_of_repr};
         }
 
-        auto finishInitialization(text::TextIterator &text_iterator, size_t totally_skipped)
-            -> void;
+        auto
+            finishInitialization(text::TextIterator &text_iterator, size_t totally_skipped) -> void;
     };
 }// namespace ccl::lexer
 

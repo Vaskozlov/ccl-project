@@ -15,7 +15,7 @@ namespace ccl::lexer::gen
         std::array<isl::string_view, 3> result = {
             "<ccl/handler/cmd.hpp>", "<ccl/lexer/tokenizer.hpp>", "<isl/flatmap.hpp>"};
 
-        std::sort(result.begin(), result.end());
+        std::ranges::sort(result);
         return result;
     }();
 
@@ -45,10 +45,10 @@ namespace ccl::lexer::gen
             } else if ("NAMESPACE" == name_str) {
                 nameSpace = std::move(value_str);
             } else {
-                auto excpetion = text::TextIteratorException(
+                auto exception = text::TextIteratorException(
                     ExceptionCriticality::CRITICAL, AnalysisStage::PARSING, name.getLocation(),
                     name_str.size(), name.getInlineRepr(), "unrecognizable directive");
-                tokenizer.getHandler().handle(excpetion);
+                tokenizer.getHandler().handle(exception);
             }
         }
 
@@ -161,7 +161,7 @@ namespace ccl::lexer::gen
         const auto &blocks = ccllParser.getBlocks();
         const auto &rules = ccllParser.getRules();
 
-        auto output_enum_case = [this](isl::string_view name, Id id) {
+        const auto output_enum_case = [this](isl::string_view name, Id id) {
             codeGenerator << endl << name << " = " << fmt::to_string(id) << ',';
         };
 
@@ -207,7 +207,7 @@ namespace ccl::lexer::gen
         codeGenerator << handler << ',' << endl;
         codeGenerator << '{' << push_scope;
 
-        auto generator_definition = isl::Raii{[this]() {
+        const auto generator_definition = isl::Raii{[this]() {
             codeGenerator << pop_scope << endl;
             codeGenerator << '}';
             codeGenerator << pop_scope << endl;

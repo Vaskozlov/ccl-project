@@ -10,12 +10,10 @@
 
 namespace ccl::lexer::dot_item
 {
-    enum struct ScanningType : Id
+    enum struct ScanType : Id
     {
-        MAIN_SCAN,
         BASIC,
-        SPECIAL,
-        CHECK
+        SPECIAL
     };
 
     class Container;
@@ -34,25 +32,25 @@ namespace ccl::lexer::dot_item
             bool isSpecial = false;
         };
 
-        DotItemsStorage items{};
-        SpecialItems &specialItems;
+        DotItemsStorage items;
+        AnyPlaceItems &anyPlaceItems;
         ContainerFlags flags{};
 
     public:
         [[nodiscard]] Container(
-            TextIterator &rule_iterator, SpecialItems &special_items, Id item_id,
+            TextIterator &rule_iterator, AnyPlaceItems &special_items, Id item_id,
             bool main_item = false, bool is_special = false);
 
         [[nodiscard]] Container(
-            const TextIterator &rule_iterator, SpecialItems &special_items, Id item_id,
+            const TextIterator &rule_iterator, AnyPlaceItems &special_items, Id item_id,
             bool main_item = false, bool is_special = false);
 
         [[nodiscard]] auto beginScan(
             TextIterator &text_iterator, Token &token,
-            ScanningType special_scan = ScanningType::BASIC) const -> bool;
+            ScanType special_scan = ScanType::BASIC) const -> bool;
 
         [[nodiscard]] auto scanIteration(const ForkedGenerator &text_iterator) const
-            -> std::optional<size_t> override;
+            -> ScanResult override;
 
         [[nodiscard]] auto operator==(const Container &other) const noexcept -> bool
         {
@@ -69,12 +67,12 @@ namespace ccl::lexer::dot_item
             return items.empty();
         }
 
-        [[nodiscard]] auto isSpecial() const noexcept -> bool
+        [[nodiscard]] auto isAnyPlaceRule() const noexcept -> bool
         {
             return flags.isSpecial;
         }
 
-        [[nodiscard]] auto getItems() const noexcept CCL_LIFETIMEBOUND->const DotItemsStorage &
+        [[nodiscard]] auto getItems() const noexcept CCL_LIFETIMEBOUND -> const DotItemsStorage &
         {
             return items;
         }
@@ -82,11 +80,11 @@ namespace ccl::lexer::dot_item
     private:
         auto parseRule(TextIterator &rule_iterator) -> void;
 
-        [[nodiscard]] auto failedToEndItem(const ForkedGenerator &text_iterator) const -> bool;
+        [[nodiscard]] auto
+            itemSuccessfullyEnded(const ForkedGenerator &text_iterator) const -> bool;
 
-        static auto
-            addPrefixOrPostfix(const DotItemConcept *item, Token &token, isl::string_view repr)
-                -> void;
+        static auto addPrefixOrPostfix(
+            const DotItemConcept *item, Token &token, isl::string_view repr) -> void;
     };
 
     class Container::RuleParser
@@ -94,7 +92,7 @@ namespace ccl::lexer::dot_item
         Container &container;                              // NOLINT
         TextIterator &ruleIterator;                        // NOLINT
         DotItemsStorage &items{container.items};           // NOLINT
-        SpecialItems &specialItems{container.specialItems};// NOLINT
+        AnyPlaceItems &anyPlaceItems{container.anyPlaceItems};// NOLINT
         std::optional<DotItem> constructedLhs{std::nullopt};
         BinaryOperator binaryOperator{};
         bool rhsItemConstructed{false};
@@ -160,12 +158,13 @@ namespace ccl::lexer::dot_item
         [[noreturn]] auto throwUndefinedAction() -> void;
     };
 
-    class DotItemConcept::SpecialItems
+    class DotItemConcept::AnyPlaceItems
     {
     public:
-        std::vector<Container> specialItems;
+        std::vector<Container> items;
 
-        [[nodiscard]] auto specialScan(TextIterator &text_iterator, Token &token) const -> bool;
+        [[nodiscard]] auto
+            isSuccessfulScan(TextIterator &text_iterator, Token &token) const -> bool;
         [[nodiscard]] auto checkForSpecial(const ForkedGenerator &text_iterator) const -> bool;
     };
 }// namespace ccl::lexer::dot_item

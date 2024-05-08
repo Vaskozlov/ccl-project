@@ -36,13 +36,11 @@ namespace ccl::lexer::dot_item
         checkForClosedRange(rule_iterator, is_range);
     }
 
-    auto Union::scanIteration(const ForkedGenerator &text_iterator) const -> std::optional<size_t>
+    auto Union::scanIteration(const ForkedGenerator &text_iterator) const -> ScanResult
     {
-        if (bitset.at(text_iterator.futureChar()) != isReversed()) [[unlikely]] {
-            return isl::utf8::size(text_iterator.getNextCarriageValue());
-        }
-
-        return std::nullopt;
+        return bitset.at(text_iterator.futureChar()) != isReversed()
+                   ? ScanResult{isl::utf8::size(text_iterator.getNextCarriageValue())}
+                   : ScanResult::failure();
     }
 
     CCL_INLINE auto Union::isRange(bool is_escaping, char32_t chr) noexcept -> bool
@@ -95,8 +93,7 @@ namespace ccl::lexer::dot_item
 
     CCL_INLINE auto Union::throwUnterminatedUnion(TextIterator &rule_iterator) -> void
     {
-        rule_iterator.throwPanicError(
-            AnalysisStage::LEXICAL_ANALYSIS, "unterminated union item");
+        rule_iterator.throwPanicError(AnalysisStage::LEXICAL_ANALYSIS, "unterminated union item");
         throw UnrecoverableError{"unrecoverable error in Union"};
     }
 

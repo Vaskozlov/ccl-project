@@ -8,11 +8,11 @@ namespace ccl::text
     class TsTracker
     {
     private:
-        std::string tabsAnsSpaces{};
+        std::string tabsAnsSpaces;
         bool needToClear{};
 
     public:
-        [[nodiscard]] auto size() const noexcept -> size_t
+        [[nodiscard]] auto size() const noexcept -> std::size_t
         {
             return tabsAnsSpaces.size();
         }

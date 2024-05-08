@@ -2,19 +2,13 @@
 #define CCL_PROJECT_ITEM_CONCEPT_HPP
 
 #include <ccl/lexer/dot_item/repetition.hpp>
+#include <ccl/lexer/scan_result.hpp>
 #include <ccl/lexer/token.hpp>
 #include <ccl/text/text_iterator.hpp>
 #include <isl/memory.hpp>
 
 namespace ccl::lexer::dot_item
 {
-    enum struct ScanType : u16
-    {
-        MAIN,
-        FORKED,
-        SPECIAL
-    };
-
     class Container;
 
     class DotItemConcept
@@ -23,7 +17,7 @@ namespace ccl::lexer::dot_item
         using TextIterator = text::TextIterator;
         using ForkedGenerator = typename text::TextIterator::ForkedTextIterator;
 
-        class SpecialItems;
+        class AnyPlaceItems;
 
         struct CCL_TRIVIAL_ABI Flags
         {
@@ -116,11 +110,11 @@ namespace ccl::lexer::dot_item
         static auto neverRecognizedSuggestion(TextIterator &text_iterator, bool condition) -> void;
 
         [[nodiscard]] virtual auto empty() const noexcept -> bool = 0;
-        [[nodiscard]] auto scan(ForkedGenerator text_iterator) const -> std::optional<size_t>;
+        [[nodiscard]] auto scan(ForkedGenerator text_iterator) const -> ScanResult;
 
     private:
-        [[nodiscard]] virtual auto scanIteration(const ForkedGenerator &text_iterator) const
-            -> std::optional<size_t> = 0;
+        [[nodiscard]] virtual auto
+            scanIteration(const ForkedGenerator &text_iterator) const -> ScanResult = 0;
     };
 
     class DotItem : public std::unique_ptr<DotItemConcept>
@@ -137,7 +131,7 @@ namespace ccl::lexer::dot_item
 
 namespace ccl::lexer
 {
-    using SpecialItems = dot_item::DotItemConcept::SpecialItems;
+    using AnyPlaceItems = dot_item::DotItemConcept::AnyPlaceItems;
 }
 
 #endif /* CCL_PROJECT_ITEM_CONCEPT_HPP */

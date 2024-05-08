@@ -20,8 +20,7 @@ namespace ccl::lexer
     auto Tokenizer::shouldIgnoreToken(const Token &token) const -> bool
     {
         const std::vector<Id> &ignored_ids = lexicalAnalyzer.ignoredIds;
-        return std::find(ignored_ids.begin(), ignored_ids.end(), token.getId()) !=
-               ignored_ids.end();
+        return std::ranges::find(ignored_ids, token.getId()) != ignored_ids.end();
     }
 
     // NOLINTNEXTLINE (recursive function)
@@ -41,16 +40,12 @@ namespace ccl::lexer
             return;
         }
 
-        if (lexicalAnalyzer.specialItems.specialScan(textIterator, token)) {
+        if (lexicalAnalyzer.anyPlaceItems.isSuccessfulScan(textIterator, token) ||
+            std::ranges::any_of(lexicalAnalyzer.items, scan_container)) {
             return returnIfNotInIgnored(token);
         }
 
-        if (std::any_of(
-                lexicalAnalyzer.items.cbegin(), lexicalAnalyzer.items.cend(), scan_container)) {
-            return returnIfNotInIgnored(token);
-        }
-
-        char next_carriage_value = textIterator.getNextCarriageValue();
+        const char next_carriage_value = textIterator.getNextCarriageValue();
 
         if (isLayout(next_carriage_value)) {
             chars_to_skip.push_back(next_carriage_value);
@@ -69,13 +64,13 @@ namespace ccl::lexer
     CCL_INLINE auto LexicalAnalyzer::Tokenizer::returnIfNotInIgnored(Token &token) -> void
     {
         if (shouldIgnoreToken(token)) [[unlikely]] {
-            return nextToken(token);
+            nextToken(token);
         }
     }
 
     auto Tokenizer::throwExceptionToHandler(
-        ExceptionCriticality criticality, isl::string_view message, isl::string_view suggestion)
-        -> void
+        ExceptionCriticality criticality, isl::string_view message,
+        isl::string_view suggestion) -> void
     {
         textIterator.throwToHandle(
             textIterator, criticality, AnalysisStage::LEXICAL_ANALYSIS, message, suggestion);

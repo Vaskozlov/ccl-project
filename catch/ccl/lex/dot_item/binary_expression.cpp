@@ -6,7 +6,7 @@ TEST_CASE("BinaryExpressionWith2Elements", "[BinaryExpression]")
     using namespace ccl;
 
     auto text_iterator = text::TextIterator{"[1] | \"2\""};
-    auto special_items = lexer::SpecialItems{};
+    auto special_items = lexer::AnyPlaceItems{};
 
     auto container =
         lexer::dot_item::Container(text_iterator, special_items, debug::FirstUsableToken);
@@ -33,7 +33,7 @@ TEST_CASE("BinaryExpressionWith3Elements", "[BinaryExpression]")
     using namespace ccl;
 
     auto text_iterator = text::TextIterator{"[1] | [2] | [3]"};
-    auto special_items = lexer::SpecialItems{};
+    auto special_items = lexer::AnyPlaceItems{};
 
     auto container =
         lexer::dot_item::Container(text_iterator, special_items, debug::FirstUsableToken);

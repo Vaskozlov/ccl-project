@@ -11,7 +11,7 @@ namespace ccl::lexer::dot_item
         using BinaryExpressionBase::BinaryExpressionBase;
 
         [[nodiscard]] auto scanIteration(const ForkedGenerator &text_iterator) const
-            -> std::optional<size_t> override;
+            -> ScanResult override;
     };
 }// namespace ccl::lexer::dot_item
 

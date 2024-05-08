@@ -46,7 +46,7 @@ namespace ccl::lexer::parser
         std::stack<Token> tokenStack;
         std::map<Token, isl::string_view, CompareTokenAsString> directives;
         std::map<isl::string_view, BlockInfo> blocks{{"NONE", {0, ReservedTokenMaxValue + 1}}};
-        SpecialItems specialItems{};
+        AnyPlaceItems anyPlaceItems{};
         isl::string_view currentBlock = "NONE";
         Tokenizer &tokenizer;
         size_t previousBlockId{1};

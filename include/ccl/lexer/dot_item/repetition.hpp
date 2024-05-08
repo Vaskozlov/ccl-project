@@ -43,13 +43,13 @@ namespace ccl::lexer::dot_item
             return std::numeric_limits<size_t>::max();
         }
 
-        [[nodiscard]] auto inRange(size_t value) const noexcept
+        [[nodiscard]] auto isInRange(size_t value) const noexcept -> bool
         {
             return value >= from && value <= to;
         }
 
-        [[nodiscard]] auto operator<=>(const Repetition &) const noexcept
-            -> std::weak_ordering = default;
+        [[nodiscard]] auto
+            operator<=>(const Repetition &) const noexcept -> std::strong_ordering = default;
 
     private:
         [[nodiscard]] static auto
@@ -60,8 +60,8 @@ namespace ccl::lexer::dot_item
 
         auto throwBadValues(text::TextIterator &text_iterator) const -> void;
 
-        [[noreturn]] static auto throwRangeBeginException(text::TextIterator &text_iterator)
-            -> void;
+        [[noreturn]] static auto
+            throwRangeBeginException(text::TextIterator &text_iterator) -> void;
 
         [[noreturn]] static auto
             throwUnexpectedCharacter(text::TextIterator &text_iterator, char32_t chr) -> void;

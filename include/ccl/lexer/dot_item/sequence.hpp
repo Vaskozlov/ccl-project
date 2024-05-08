@@ -17,9 +17,9 @@ namespace ccl::lexer::dot_item
     private:
         using typename DotItemConcept::TextIterator;
 
-        std::string sequenceValue{};
-        isl::string_view starter{};
-        isl::string_view ender{};
+        std::string sequenceValue;
+        isl::string_view starter;
+        isl::string_view ender;
 
     public:
         [[nodiscard]] Sequence(
@@ -47,7 +47,7 @@ namespace ccl::lexer::dot_item
 
     private:
         [[nodiscard]] auto scanIteration(const ForkedGenerator &text_iterator) const
-            -> std::optional<size_t> override;
+            -> ScanResult override;
 
         [[nodiscard]] auto isStringEnd(const TextIterator &rule_iterator, bool is_escaping) const
             -> bool;

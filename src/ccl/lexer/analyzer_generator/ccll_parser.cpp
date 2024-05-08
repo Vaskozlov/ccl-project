@@ -130,7 +130,7 @@ namespace ccl::lexer::parser
         text_iterator.skip(line_repr.find(':').value() + 1);
 
         [[maybe_unused]] auto run_rule_scan_to_check_correctness =
-            dot_item::Container{text_iterator, specialItems, ReservedTokenMaxValue + 1, true};
+            dot_item::Container{text_iterator, anyPlaceItems, ReservedTokenMaxValue + 1, true};
     }
 
     auto CcllParser::parsingError(isl::string_view message, isl::string_view suggestion) -> void

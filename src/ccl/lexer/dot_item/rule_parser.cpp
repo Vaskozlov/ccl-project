@@ -149,7 +149,7 @@ namespace ccl::lexer::dot_item
         ruleIterator.setEnd(text.begin() + bracket_index);
 
         auto new_container =
-            Container{ruleIterator, specialItems, getId(), false, container.isSpecial()};
+            Container{ruleIterator, anyPlaceItems, getId(), false, container.isAnyPlaceRule()};
         ruleIterator.setEnd(saved_end);
 
         return new_container;
@@ -252,13 +252,12 @@ namespace ccl::lexer::dot_item
 
     auto Container::RuleParser::postCreationCheck() -> void
     {
-        const auto postfix_elem =
-            std::find_if(items.cbegin(), items.cend(), [](const DotItem &elem) {
-                return elem->hasPostfix();
-            });
+        const auto postfix_elem = std::ranges::find_if(items, [](const DotItem &elem) {
+            return elem->hasPostfix();
+        });
 
         const bool postfixes_correct =
-            std::all_of(postfix_elem, items.cend(), [](const DotItem &elem) {
+            std::ranges::all_of(postfix_elem, items.cend(), [](const DotItem &elem) {
                 return elem->hasPostfix();
             });
 
@@ -310,7 +309,7 @@ namespace ccl::lexer::dot_item
             throwUnableToApply("there are not any items to apply prefix/postfix");
         }
 
-        auto &last_item = items.back();
+        const auto &last_item = items.back();
 
         if (last_item->hasPrefix()) {
             throwUnableToApply("item already has prefix modifier");
@@ -344,25 +343,19 @@ namespace ccl::lexer::dot_item
         throw UnrecoverableError{"unrecoverable error in ContainerType"};
     }
 
-    auto DotItemConcept::SpecialItems::checkForSpecial(const ForkedGenerator &text_iterator) const
+    auto DotItemConcept::AnyPlaceItems::checkForSpecial(const ForkedGenerator &text_iterator) const
         -> bool
     {
-        return std::any_of(
-            specialItems.cbegin(),
-            specialItems.cend(),
-            [&text_iterator](const Container &special_item) {
-                return special_item.scan(text_iterator) != std::nullopt;
-            });
+        return std::ranges::any_of(items, [&text_iterator](const Container &special_item) {
+            return special_item.scan(text_iterator).isSuccess();
+        });
     }
 
-    auto DotItemConcept::SpecialItems::specialScan(TextIterator &text_iterator, Token &token) const
-        -> bool
+    auto DotItemConcept::AnyPlaceItems::isSuccessfulScan(TextIterator &text_iterator, Token &token)
+        const -> bool
     {
-        return std::any_of(
-            specialItems.cbegin(),
-            specialItems.cend(),
-            [&text_iterator, &token](const Container &special_item) {
-                return special_item.beginScan(text_iterator, token, ScanningType::SPECIAL);
-            });
+        return std::ranges::any_of(items, [&text_iterator, &token](const Container &special_item) {
+            return special_item.beginScan(text_iterator, token, ScanType::SPECIAL);
+        });
     }
 }// namespace ccl::lexer::dot_item

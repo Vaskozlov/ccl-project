@@ -20,7 +20,7 @@ namespace ccl::lexer::dot_item
         }
     }
 
-    auto DotItemConcept::scan(ForkedGenerator text_iterator) const -> std::optional<size_t>
+    auto DotItemConcept::scan(ForkedGenerator text_iterator) const -> ScanResult
     {
         auto times = isl::as<size_t>(0);
         auto totally_skipped = isl::as<size_t>(0);
@@ -28,19 +28,19 @@ namespace ccl::lexer::dot_item
         while (!text_iterator.isEOI() && times < repetition.to) {
             auto chars_to_skip = scanIteration(text_iterator);
 
-            if (!chars_to_skip.has_value()) {
+            if (chars_to_skip.isFailure()) {
                 break;
             }
 
-            text_iterator.skip(*chars_to_skip);
-            totally_skipped += *chars_to_skip;
+            text_iterator.skip(chars_to_skip.getBytesCount());
+            totally_skipped += chars_to_skip.getBytesCount();
             ++times;
         }
 
-        if (repetition.inRange(times)) {
-            return totally_skipped;
+        if (repetition.isInRange(times)) {
+            return ScanResult{totally_skipped};
         }
 
-        return std::nullopt;
+        return ScanResult::failure();
     }
 }// namespace ccl::lexer::dot_item

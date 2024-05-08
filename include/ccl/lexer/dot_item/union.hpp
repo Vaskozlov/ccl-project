@@ -28,7 +28,7 @@ namespace ccl::lexer::dot_item
 
     private:
         [[nodiscard]] auto scanIteration(const ForkedGenerator &text_iterator) const
-            -> std::optional<size_t> override;
+            -> ScanResult override;
 
         [[nodiscard]] static auto isRange(bool is_escaping, char32_t chr) noexcept -> bool;
 

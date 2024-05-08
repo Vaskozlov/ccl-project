@@ -1,7 +1,7 @@
 #ifndef CCL_PROJECT_BINARY_OPERATION_AND_HPP
 #define CCL_PROJECT_BINARY_OPERATION_AND_HPP
 
-#include "binary_expression_base.hpp"
+#include <ccl/lexer/dot_item/binary_expression/binary_expression_base.hpp>
 
 namespace ccl::lexer::dot_item
 {
@@ -11,7 +11,7 @@ namespace ccl::lexer::dot_item
         using BinaryExpressionBase::BinaryExpressionBase;
 
         [[nodiscard]] auto scanIteration(const ForkedGenerator &text_iterator) const
-            -> std::optional<size_t> override;
+            -> ScanResult override;
     };
 }// namespace ccl::lexer::dot_item
 

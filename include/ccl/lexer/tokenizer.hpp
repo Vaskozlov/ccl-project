@@ -10,7 +10,7 @@ namespace ccl::lexer
         std::array<Token, 2> tokens;
         LexicalAnalyzer &lexicalAnalyzer;
         TextIterator textIterator;
-        bool hasFutureToken{false};
+        bool hasFutureToken{};
         bool tokenIndex{};
 
     public:

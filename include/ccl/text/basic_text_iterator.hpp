@@ -11,7 +11,7 @@ namespace ccl::text
     {
     };
 
-    constexpr auto CrtpFork = CrtpForkType{};
+    constexpr inline auto CrtpFork = CrtpForkType{};
 
     template<typename CRTP>
     class CCL_TRIVIAL_ABI CrtpBasicTextIterator
@@ -223,7 +223,7 @@ namespace ccl::text
             toParent().onCharacter(chr);
         }
 
-        CCL_INLINE auto onUtfError(char chr) CCL_NOEXCEPT_IF(toParent().utfError(chr)) -> void
+        auto onUtfError(char chr) CCL_NOEXCEPT_IF(toParent().utfError(chr)) -> void
         {
             toParent().utfError(chr);
         }

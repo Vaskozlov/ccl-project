@@ -51,20 +51,20 @@ namespace ccl::lexer::dot_item
         }
     }
 
-    auto Sequence::scanIteration(const ForkedGenerator &text_iterator) const
-        -> std::optional<size_t>
+    auto Sequence::scanIteration(const ForkedGenerator &text_iterator) const -> ScanResult
     {
-        isl::string_view future_text = text_iterator.getRemainingText();
+        auto future_text = text_iterator.getRemainingText();
 
         if (future_text.startsWith(sequenceValue) != isReversed()) [[unlikely]] {
-            return isReversed() ? isl::utf8::size(future_text[0]) : sequenceValue.size();
+            return isReversed() ? ScanResult{isl::utf8::size(future_text[0])}
+                                : ScanResult{sequenceValue.size()};
         }
 
-        return std::nullopt;
+        return ScanResult::failure();
     }
 
-    CCL_INLINE auto Sequence::isStringEnd(const TextIterator &rule_iterator, bool is_escaping) const
-        -> bool
+    CCL_INLINE auto
+        Sequence::isStringEnd(const TextIterator &rule_iterator, bool is_escaping) const -> bool
     {
         if (is_escaping) {
             return false;
@@ -88,7 +88,8 @@ namespace ccl::lexer::dot_item
         }
 
         if ('\n' == chr && !getFlags().sequenceIsMultiline) [[unlikely]] {
-            constexpr auto message = "new line is reached, but sequence has not been terminated";
+            constexpr auto message =
+                std::string_view{"new line is reached, but sequence has not been terminated"};
             auto suggestion = fmt::format("use multiline sequence or close it with `{}`", ender);
 
             throwUnterminatedString(rule_iterator, message, suggestion);

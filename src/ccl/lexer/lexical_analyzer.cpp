@@ -18,10 +18,10 @@ namespace ccl::lexer
         -> void
     {
         auto container =
-            Container(TextIterator{rule, exceptionHandler, filename}, specialItems, id, true);
+            Container(TextIterator{rule, exceptionHandler, filename}, anyPlaceItems, id, true);
 
-        if (container.isSpecial()) {
-            specialItems.specialItems.emplace_back(std::move(container));
+        if (container.isAnyPlaceRule()) {
+            anyPlaceItems.items.emplace_back(std::move(container));
         } else if (!container.empty()) {
             items.emplace_back(std::move(container));
         }

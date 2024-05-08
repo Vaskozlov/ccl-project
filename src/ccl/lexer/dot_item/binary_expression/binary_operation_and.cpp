@@ -2,21 +2,15 @@
 
 namespace ccl::lexer::dot_item
 {
-    auto BinaryOperationAnd::scanIteration(const ForkedGenerator &text_iterator) const
-        -> std::optional<size_t>
+    auto BinaryOperationAnd::scanIteration(const ForkedGenerator &text_iterator) const -> ScanResult
     {
         const auto lhs = rhsItem->scan(text_iterator);
 
-        if (!lhs.has_value()) {
-            return std::nullopt;
+        if (lhs.isFailure()) {
+            return ScanResult::failure();
         }
 
         const auto rhs = lhsItem->scan(text_iterator);
-
-        if (rhs.has_value() && (lhs == rhs)) {
-            return *lhs;
-        }
-
-        return std::nullopt;
+        return lhs == rhs ? lhs : ScanResult::failure();
     }
 }// namespace ccl::lexer::dot_item

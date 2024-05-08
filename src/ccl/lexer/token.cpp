@@ -2,8 +2,8 @@
 
 namespace ccl::lexer
 {
-    class TextIteratorWithSkippedChractersAccumulator
-      : public text::CrtpBasicTextIterator<TextIteratorWithSkippedChractersAccumulator>
+    class TextIteratorWithSkippedCharactersAccumulator
+      : public text::CrtpBasicTextIterator<TextIteratorWithSkippedCharactersAccumulator>
     {
     private:
         size_t skippedCharacters{};
@@ -11,7 +11,7 @@ namespace ccl::lexer
 
     public:
         using CrtpBasicTextIterator<
-            TextIteratorWithSkippedChractersAccumulator>::CrtpBasicTextIterator;
+            TextIteratorWithSkippedCharactersAccumulator>::CrtpBasicTextIterator;
 
         auto clearAccumulator() noexcept -> void
         {
@@ -85,7 +85,7 @@ namespace ccl::lexer
         auto new_token = *this;
         new_token.clear(isl::as<size_t>(ReservedTokenType::CUT));
 
-        auto text_iterator = TextIteratorWithSkippedChractersAccumulator(repr);
+        auto text_iterator = TextIteratorWithSkippedCharactersAccumulator(repr);
         text_iterator.skip(first);
 
         new_token.repr = text_iterator.getRemaining();

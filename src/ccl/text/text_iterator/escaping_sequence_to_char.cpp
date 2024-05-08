@@ -67,7 +67,7 @@ namespace ccl::text
 
     auto EscapingSequenceToChar::searchInExtraSymbols(char32_t chr) -> char32_t
     {
-        auto it = std::find_if(extraSymbols.begin(), extraSymbols.end(), [chr](auto elem) {
+        auto it = std::ranges::find_if(extraSymbols, [chr](auto elem) {
             return elem.first == chr;
         });
 

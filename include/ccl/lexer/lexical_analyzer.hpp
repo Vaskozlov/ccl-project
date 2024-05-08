@@ -15,13 +15,13 @@ namespace ccl::lexer
         struct CCL_TRIVIAL_ABI Rule
         {
             Id id{};
-            isl::string_view repr{};
+            isl::string_view repr;
         };
 
-        std::vector<Container> items{};
-        SpecialItems specialItems{};
-        std::vector<Id> ignoredIds{};
-        std::string skippedCharacters{};
+        std::vector<Container> items;
+        AnyPlaceItems anyPlaceItems;
+        std::vector<Id> ignoredIds;
+        std::string skippedCharacters;
         ExceptionHandler &exceptionHandler;// NOLINT
 
     public:

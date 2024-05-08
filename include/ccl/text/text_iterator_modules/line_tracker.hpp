@@ -9,8 +9,8 @@ namespace ccl::text
     class LineTracker
     {
     private:
-        isl::string_view text{};
-        isl::string_view line{};
+        isl::string_view text;
+        isl::string_view line;
         bool newLinePassed{false};
 
     public:
