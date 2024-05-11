@@ -14,11 +14,11 @@ namespace ccl
     private:
         static ExceptionHandler defaultExceptionHandler;// NOLINT
 
-        std::atomic<size_t> suggestionsCounter;
-        std::atomic<size_t> warningsCounter;
-        std::atomic<size_t> uncriticalErrorsCounter;
-        std::atomic<size_t> criticalErrorsCounter;
-        std::atomic<size_t> panicErrorsCounter;
+        std::atomic<std::size_t> suggestionsCounter;
+        std::atomic<std::size_t> warningsCounter;
+        std::atomic<std::size_t> uncriticalErrorsCounter;
+        std::atomic<std::size_t> criticalErrorsCounter;
+        std::atomic<std::size_t> panicErrorsCounter;
 
     public:
         ExceptionHandler() noexcept = default;

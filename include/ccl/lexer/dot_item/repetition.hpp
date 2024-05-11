@@ -19,22 +19,12 @@ namespace ccl::lexer::dot_item
 
         [[nodiscard]] explicit Closure(text::TextIterator &text_iterator);
 
-        [[nodiscard]] consteval static auto kleenClosure() noexcept -> Closure
+        [[nodiscard]] consteval static auto max() noexcept -> std::size_t
         {
-            return {0, max()};
+            return std::numeric_limits<std::size_t>::max();
         }
 
-        [[nodiscard]] consteval static auto positiveClosure() noexcept -> Closure
-        {
-            return {1, max()};
-        }
-
-        [[nodiscard]] consteval static auto max() noexcept -> size_t
-        {
-            return std::numeric_limits<size_t>::max();
-        }
-
-        [[nodiscard]] auto isInClosure(size_t value) const noexcept -> bool
+        [[nodiscard]] auto isInClosure(std::size_t value) const noexcept -> bool
         {
             return value >= from && value <= to;
         }
@@ -44,7 +34,7 @@ namespace ccl::lexer::dot_item
 
     private:
         [[nodiscard]] static auto
-            parseNumber(text::TextIterator &text_iterator, char32_t terminator) -> size_t;
+            parseNumber(text::TextIterator &text_iterator, char32_t terminator) -> std::size_t;
 
         static auto checkRangeStart(text::TextIterator &text_iterator) -> void;
         auto checkCorrectnessOfValues(text::TextIterator &text_iterator) const -> void;

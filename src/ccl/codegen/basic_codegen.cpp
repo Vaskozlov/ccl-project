@@ -25,13 +25,13 @@ namespace ccl::codegen
         addScope(scopesCounter);
     }
 
-    auto BasicCodeGenerator::addScope(size_t scopes_count) -> void
+    auto BasicCodeGenerator::addScope(std::size_t scopes_count) -> void
     {
-        for (size_t i = 0; i < scopes_count * scopeSize; i += 4) {
+        for (std::size_t i = 0; i < scopes_count * scopeSize; i += 4) {
             getCurrentStream().append("    ");
         }
 
-        for (size_t i = 0; i != scopes_count * scopeSize % 4; ++i) {
+        for (std::size_t i = 0; i != scopes_count * scopeSize % 4; ++i) {
             getCurrentStream().push_back(' ');
         }
     }
@@ -47,7 +47,7 @@ namespace ccl::codegen
         return result;
     }
 
-    auto BasicCodeGenerator::reserve(size_t size) -> void
+    auto BasicCodeGenerator::reserve(std::size_t size) -> void
     {
         getCurrentStream().reserve(size);
     }

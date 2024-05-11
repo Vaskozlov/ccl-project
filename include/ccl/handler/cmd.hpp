@@ -37,9 +37,9 @@ namespace ccl::handler
         isl::string_view filename{};
         isl::string_view message{};
         isl::string_view suggestion{};
-        size_t length{};
-        size_t line{};
-        size_t column{};
+        std::size_t length{};
+        std::size_t line{};
+        std::size_t column{};
 
     public:
         explicit CmdFormatter(const ExceptionT *exception) noexcept;
@@ -57,11 +57,11 @@ namespace ccl::handler
 
         auto formatLineNumber() -> void;
 
-        auto formatWorkingLine() -> size_t;
+        auto formatWorkingLine() -> std::size_t;
 
-        [[nodiscard]] auto formatArrow(size_t tabs_number) -> size_t;
+        [[nodiscard]] auto formatArrow(std::size_t tabs_number) -> std::size_t;
 
-        auto formatSuggestion(size_t arrow_position) -> void;
+        auto formatSuggestion(std::size_t arrow_position) -> void;
     };
 }// namespace ccl::handler
 

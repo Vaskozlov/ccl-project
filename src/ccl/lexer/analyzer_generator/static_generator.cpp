@@ -9,7 +9,7 @@ namespace ccl::lexer::gen
     using codegen::pop_scope;
     using codegen::push_scope;
 
-    constexpr static auto ShiftSize = sizeof(size_t) * 8 / 2;
+    constexpr static auto ShiftSize = sizeof(std::size_t) * 8 / 2;
 
     constexpr static auto IncludedHeaders = []() {
         std::array<isl::string_view, 3> result = {

@@ -25,7 +25,7 @@ namespace ccl::codegen
 
         struct CCL_TRIVIAL_ABI ScopeSize
         {
-            size_t size = 4;
+            std::size_t size = 4;
         };
 
         struct CCL_TRIVIAL_ABI StreamId
@@ -36,8 +36,8 @@ namespace ccl::codegen
     private:
         std::map<Id, std::string> generatedCode{};
         Id streamId = 0;
-        size_t scopesCounter = 0;
-        size_t scopeSize = 4;
+        std::size_t scopesCounter = 0;
+        std::size_t scopeSize = 4;
 
     public:
         BasicCodeGenerator() = default;
@@ -47,7 +47,7 @@ namespace ccl::codegen
         [[nodiscard]] auto
             getBackInserter() noexcept CCL_LIFETIMEBOUND->std::back_insert_iterator<std::string>;
 
-        auto reserve(size_t size) -> void;
+        auto reserve(std::size_t size) -> void;
 
         auto operator<<(ScopeSize scope_size) CCL_LIFETIMEBOUND->BasicCodeGenerator &;
         auto operator<<(PushScope /* unused */) CCL_LIFETIMEBOUND->BasicCodeGenerator &;
@@ -72,14 +72,14 @@ namespace ccl::codegen
             return *this;
         }
 
-        template<size_t Size>
+        template<std::size_t Size>
         auto
             operator<<(const isl::ConstString<Size> &string) CCL_LIFETIMEBOUND->BasicCodeGenerator &
         {
             return *this << as<isl::string_view>(string);
         }
 
-        template<size_t N>// NOLINTNEXTLINE
+        template<std::size_t N>// NOLINTNEXTLINE
         auto operator<<(const isl::CArray<char, N> &character_array)
             CCL_LIFETIMEBOUND->BasicCodeGenerator &
         {
@@ -91,10 +91,10 @@ namespace ccl::codegen
         [[nodiscard]] auto getCurrentStream() const noexcept CCL_LIFETIMEBOUND->const std::string &;
 
         auto newLine() -> void;
-        auto addScope(size_t scopes_count) -> void;
+        auto addScope(std::size_t scopes_count) -> void;
     };
 
-    constexpr auto setScopeSize(size_t size) noexcept -> BasicCodeGenerator::ScopeSize
+    constexpr auto setScopeSize(std::size_t size) noexcept -> BasicCodeGenerator::ScopeSize
     {
         return {.size = size};
     }

@@ -47,11 +47,11 @@ namespace ccl::lexer::dot_item
             break;
 
         case U'*':
-            addRepetition(Closure::kleenClosure());
+            addRepetition(Closure{0, Closure::max()});
             break;
 
         case U'+':
-            addRepetition(Closure::positiveClosure());
+            addRepetition(Closure{1, Closure::max()});
             break;
 
         case U'?':
@@ -211,7 +211,7 @@ namespace ccl::lexer::dot_item
 
         auto &last_item = items.back();
 
-        if (last_item->getRepetition() != Closure::basic()) {
+        if (last_item->getRepetition() != Closure{1, 1}) {
             throwUnableToApply("item already has repetition");
         }
 
@@ -279,7 +279,7 @@ namespace ccl::lexer::dot_item
         DotItemConcept::alwaysRecognizedSuggestion(ruleIterator, items.empty() && isReversed());
     }
 
-    auto Container::RuleParser::findContainerEnd(isl::string_view repr) -> size_t
+    auto Container::RuleParser::findContainerEnd(isl::string_view repr) -> std::size_t
     {
         const auto closing_bracket_index = repr.findMatchingPair('(', ')');
 

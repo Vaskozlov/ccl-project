@@ -9,7 +9,7 @@
 
 namespace ccl::debug
 {
-    constexpr inline size_t FirstUsableToken = lexer::ReservedTokenMaxValue + 1;
+    constexpr inline std::size_t FirstUsableToken = lexer::ReservedTokenMaxValue + 1;
 }
 
 #endif /* CCL_PROJECT_DEBUG_FILE_HPP */

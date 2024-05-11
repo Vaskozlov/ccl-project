@@ -163,10 +163,10 @@ namespace ccl::text
             end = new_end;
         }
 
-        constexpr auto skip(size_t n) CCL_NOEXCEPT_IF(moveCarriageToTheNextByte()) -> void
+        constexpr auto skip(std::size_t n) CCL_NOEXCEPT_IF(moveCarriageToTheNextByte()) -> void
         {
             ISL_UNROLL_N(4)
-            for (auto i = isl::as<size_t>(0); i != n; ++i) {
+            for (auto i = isl::as<std::size_t>(0); i != n; ++i) {
                 moveCarriageToTheNextByte();
             }
         }
@@ -230,7 +230,7 @@ namespace ccl::text
 
         constexpr auto moveCarriageToTheNextByte() CCL_NOEXCEPT_IF(modifyCurrentChar()) -> char
         {
-            if ((carriage + isl::as<size_t>(isInitialized())) >= end) [[unlikely]] {
+            if ((carriage + isl::as<std::size_t>(isInitialized())) >= end) [[unlikely]] {
                 carriage = end;
                 currentChar = 0;
                 return 0;

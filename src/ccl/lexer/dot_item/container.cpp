@@ -40,7 +40,7 @@ namespace ccl::lexer::dot_item
     auto Container::beginScan(
         TextIterator &text_iterator, Token &token, ScanType special_scan) const -> bool
     {
-        auto totally_skipped = isl::as<size_t>(0);
+        auto totally_skipped = isl::as<std::size_t>(0);
         auto local_iterator = text_iterator.fork();
 
         token.clear(getId());
@@ -80,7 +80,7 @@ namespace ccl::lexer::dot_item
 
     auto Container::scanIteration(const ForkedGenerator &text_iterator) const -> ScanResult
     {
-        auto totally_skipped = isl::as<size_t>(0);
+        auto totally_skipped = isl::as<std::size_t>(0);
         auto local_iterator = text_iterator;
 
         for (const DotItem &item : items) {

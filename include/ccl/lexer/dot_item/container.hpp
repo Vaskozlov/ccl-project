@@ -146,7 +146,7 @@ namespace ccl::lexer::dot_item
 
         auto postCreationCheck() -> void;
 
-        [[nodiscard]] auto findContainerEnd(isl::string_view repr) -> size_t;
+        [[nodiscard]] auto findContainerEnd(isl::string_view repr) -> std::size_t;
 
         auto checkThereIsLhsItem() -> void;
 

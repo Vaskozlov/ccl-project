@@ -49,17 +49,17 @@ namespace ccl::text
             return location;
         }
 
-        [[nodiscard]] auto getLine() const noexcept -> size_t
+        [[nodiscard]] auto getLine() const noexcept -> std::size_t
         {
             return location.getLine();
         }
 
-        [[nodiscard]] auto getColumn() const noexcept -> size_t
+        [[nodiscard]] auto getColumn() const noexcept -> std::size_t
         {
             return location.getColumn();
         }
 
-        [[nodiscard]] auto getRealColumn() const noexcept -> size_t
+        [[nodiscard]] auto getRealColumn() const noexcept -> std::size_t
         {
             return location.getRealColumn();
         }
@@ -218,13 +218,13 @@ namespace ccl::text
         [[nodiscard]] auto isOutOfNotation(char32_t chr) const -> bool;
 
         auto checkNotation() const -> void;
-        auto checkAllCharsUsage(size_t chars_count) const -> void;
+        auto checkAllCharsUsage(std::size_t chars_count) const -> void;
 
-        auto throwNotEnoughCharsException(size_t chars_count) const -> void;
+        auto throwNotEnoughCharsException(std::size_t chars_count) const -> void;
 
-        [[nodiscard]] auto createSuggestionNotEnoughChars(size_t chars_count) const -> std::string;
+        [[nodiscard]] auto createSuggestionNotEnoughChars(std::size_t chars_count) const -> std::string;
 
-        auto insertExtraZerosToNotEnoughMessage(size_t chars_count, std::string &message) const
+        auto insertExtraZerosToNotEnoughMessage(std::size_t chars_count, std::string &message) const
             -> void;
     };
 

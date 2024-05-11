@@ -13,18 +13,18 @@ namespace ccl::lexer::dot_item
         checkCorrectnessOfValues(iterator_copy);
     }
 
-    auto Closure::parseNumber(text::TextIterator &text_iterator, char32_t terminator) -> size_t
+    auto Closure::parseNumber(text::TextIterator &text_iterator, char32_t terminator) -> std::size_t
     {
-        constexpr auto decimal_base = isl::as<size_t>(10);
+        constexpr auto decimal_base = isl::as<std::size_t>(10);
 
-        auto result = isl::as<size_t>(0);
+        auto result = isl::as<std::size_t>(0);
         text_iterator.moveToCleanChar();
 
         while (text_iterator.advance() != terminator) {
             const char32_t chr = text_iterator.getCurrentChar();
 
             if (isDigit(chr)) {
-                result = result * decimal_base + isl::as<size_t>(chr - '0');
+                result = result * decimal_base + isl::as<std::size_t>(chr - '0');
                 continue;
             }
 

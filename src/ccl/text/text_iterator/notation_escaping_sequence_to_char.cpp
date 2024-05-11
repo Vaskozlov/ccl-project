@@ -20,7 +20,7 @@ namespace ccl::text
 
     auto NotationEscapingSequenceToChar::calculateResult() -> void
     {
-        auto chars_count = isl::as<size_t>(0);
+        auto chars_count = isl::as<std::size_t>(0);
 
         for (; chars_count != maximumSymbols; ++chars_count) {
             char32_t chr = textIterator.futureChar();
@@ -38,7 +38,7 @@ namespace ccl::text
         checkAllCharsUsage(chars_count);
     }
 
-    auto NotationEscapingSequenceToChar::createSuggestionNotEnoughChars(size_t chars_count) const
+    auto NotationEscapingSequenceToChar::createSuggestionNotEnoughChars(std::size_t chars_count) const
         -> std::string
     {
         auto suggestion_message = as<std::string>(textIterator.getWorkingLine());
@@ -47,11 +47,11 @@ namespace ccl::text
     }
 
     auto NotationEscapingSequenceToChar::insertExtraZerosToNotEnoughMessage(
-        size_t chars_count,
+        std::size_t chars_count,
         std::string &message) const -> void
     {
         auto column = textIterator.getColumn();
-        auto insertion_size = isl::as<size_t>(maximumSymbols - chars_count);
+        auto insertion_size = isl::as<std::size_t>(maximumSymbols - chars_count);
         auto insertion_position = column - chars_count;
 
         message.insert(insertion_position, insertion_size, '0');
@@ -68,14 +68,14 @@ namespace ccl::text
                HexadecimalCharsToInt.at(chr) >= (1U << notationPower);
     }
 
-    auto NotationEscapingSequenceToChar::checkAllCharsUsage(size_t chars_count) const -> void
+    auto NotationEscapingSequenceToChar::checkAllCharsUsage(std::size_t chars_count) const -> void
     {
         if (areAllCharsRequired && chars_count != maximumSymbols) {
             throwNotEnoughCharsException(chars_count);
         }
     }
 
-    auto NotationEscapingSequenceToChar::throwNotEnoughCharsException(size_t chars_count) const
+    auto NotationEscapingSequenceToChar::throwNotEnoughCharsException(std::size_t chars_count) const
         -> void
     {
         auto exception_message = fmt::format(

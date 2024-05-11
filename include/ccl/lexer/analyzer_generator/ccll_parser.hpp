@@ -49,7 +49,7 @@ namespace ccl::lexer::parser
         AnyPlaceItems anyPlaceItems{};
         isl::string_view currentBlock = "NONE";
         Tokenizer &tokenizer;
-        size_t previousBlockId{1};
+        std::size_t previousBlockId{1};
 
     public:
         explicit CcllParser(Tokenizer &input_tokenizer);

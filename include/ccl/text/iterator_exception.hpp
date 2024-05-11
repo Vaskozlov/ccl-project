@@ -34,7 +34,7 @@ namespace ccl::text
         std::string message;
         std::string suggestion;
         isl::string_view workingLine;
-        size_t length{1};
+        std::size_t length{1};
         ExceptionCriticality criticality{ExceptionCriticality::NONE};
         AnalysisStage stage{AnalysisStage::NONE};
 
@@ -43,21 +43,21 @@ namespace ccl::text
 
         [[nodiscard]] TextIteratorException(
             ExceptionCriticality exception_criticality, AnalysisStage analysis_stage,
-            const Location &exception_location, size_t exception_length,
+            const Location &exception_location, std::size_t exception_length,
             isl::string_view working_line, std::string exception_message,
             std::string exception_suggestion = std::string{});
 
-        [[nodiscard]] auto getLine() const noexcept -> size_t
+        [[nodiscard]] auto getLine() const noexcept -> std::size_t
         {
             return location.getLine();
         }
 
-        [[nodiscard]] auto getColumn() const noexcept -> size_t
+        [[nodiscard]] auto getColumn() const noexcept -> std::size_t
         {
             return location.getColumn();
         }
 
-        [[nodiscard]] auto getLength() const noexcept -> size_t
+        [[nodiscard]] auto getLength() const noexcept -> std::size_t
         {
             return length;
         }

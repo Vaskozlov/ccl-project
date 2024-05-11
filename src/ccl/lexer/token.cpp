@@ -6,8 +6,8 @@ namespace ccl::lexer
       : public text::CrtpBasicTextIterator<TextIteratorWithSkippedCharactersAccumulator>
     {
     private:
-        size_t skippedCharacters{};
-        size_t skippedBytes{};
+        std::size_t skippedCharacters{};
+        std::size_t skippedBytes{};
 
     public:
         using CrtpBasicTextIterator<
@@ -19,12 +19,12 @@ namespace ccl::lexer
             skippedCharacters = 0;
         }
 
-        [[nodiscard]] constexpr auto getSkippedCharacters() const noexcept -> size_t
+        [[nodiscard]] constexpr auto getSkippedCharacters() const noexcept -> std::size_t
         {
             return skippedCharacters;
         }
 
-        [[nodiscard]] constexpr auto getSkippedBytes() const noexcept -> size_t
+        [[nodiscard]] constexpr auto getSkippedBytes() const noexcept -> std::size_t
         {
             return skippedBytes;
         }
@@ -64,7 +64,7 @@ namespace ccl::lexer
     Token::Token(
         TokenEnvironment &&token_environment, typename isl::string_view::iterator text_begin,
         Id token_id)
-      : Token{std::move(token_environment), {text_begin, isl::as<size_t>(0)}, token_id}
+      : Token{std::move(token_environment), {text_begin, isl::as<std::size_t>(0)}, token_id}
     {}
 
     Token::Token(const text::TextIterator &text_iterator, Id token_id)
@@ -80,10 +80,10 @@ namespace ccl::lexer
         postfixes.clear();
     }
 
-    auto Token::cut(size_t first, size_t length) const -> Token
+    auto Token::cut(std::size_t first, std::size_t length) const -> Token
     {
         auto new_token = *this;
-        new_token.clear(isl::as<size_t>(ReservedTokenType::CUT));
+        new_token.clear(isl::as<std::size_t>(ReservedTokenType::CUT));
 
         auto text_iterator = TextIteratorWithSkippedCharactersAccumulator(repr);
         text_iterator.skip(first);
@@ -102,7 +102,7 @@ namespace ccl::lexer
         return new_token;
     }
 
-    auto Token::finishInitialization(text::TextIterator &text_iterator, size_t totally_skipped)
+    auto Token::finishInitialization(text::TextIterator &text_iterator, std::size_t totally_skipped)
         -> void
     {
         text_iterator.skip(1);

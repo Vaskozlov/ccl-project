@@ -13,7 +13,7 @@ namespace ccl::lexer
         CUT = 2
     };
 
-    constexpr inline size_t ReservedTokenMaxValue = 2;
+    constexpr inline std::size_t ReservedTokenMaxValue = 2;
 
     namespace dot_item
     {
@@ -56,7 +56,7 @@ namespace ccl::lexer
 
         [[nodiscard]] Token(const text::TextIterator &text_iterator, Id token_id);
 
-        [[nodiscard]] CCL_INLINE auto getId() const noexcept -> size_t
+        [[nodiscard]] CCL_INLINE auto getId() const noexcept -> std::size_t
         {
             return id;
         }
@@ -71,7 +71,7 @@ namespace ccl::lexer
             return getId() != 0;
         }
 
-        [[nodiscard]] CCL_INLINE auto getReprSize() const noexcept -> size_t
+        [[nodiscard]] CCL_INLINE auto getReprSize() const noexcept -> std::size_t
         {
             return repr.size();
         }
@@ -87,17 +87,17 @@ namespace ccl::lexer
             return environment.location;
         }
 
-        [[nodiscard]] CCL_INLINE auto getLine() const noexcept -> size_t
+        [[nodiscard]] CCL_INLINE auto getLine() const noexcept -> std::size_t
         {
             return environment.location.getLine();
         }
 
-        [[nodiscard]] CCL_INLINE auto getColumn() const noexcept -> size_t
+        [[nodiscard]] CCL_INLINE auto getColumn() const noexcept -> std::size_t
         {
             return environment.location.getColumn();
         }
 
-        [[nodiscard]] CCL_INLINE auto getRealColumn() const noexcept -> size_t
+        [[nodiscard]] CCL_INLINE auto getRealColumn() const noexcept -> std::size_t
         {
             return environment.location.getRealColumn();
         }
@@ -134,12 +134,12 @@ namespace ccl::lexer
             return environment.tabsAndSpaces;
         }
 
-        [[nodiscard]] auto cut(size_t first, size_t length) const -> Token;
+        [[nodiscard]] auto cut(std::size_t first, std::size_t length) const -> Token;
 
     private:
         auto clear(Id new_id) noexcept -> void;
 
-        auto setReprLength(size_t length) noexcept -> void
+        auto setReprLength(std::size_t length) noexcept -> void
         {
             repr = repr.changeLength<isl::FunctionAPI::UNSAFE>(length);
         }
@@ -160,7 +160,7 @@ namespace ccl::lexer
         }
 
         auto
-            finishInitialization(text::TextIterator &text_iterator, size_t totally_skipped) -> void;
+            finishInitialization(text::TextIterator &text_iterator, std::size_t totally_skipped) -> void;
     };
 }// namespace ccl::lexer
 
