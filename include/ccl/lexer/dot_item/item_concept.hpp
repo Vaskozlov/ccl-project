@@ -29,7 +29,7 @@ namespace ccl::lexer::dot_item
         };
 
     private:
-        Repetition repetition{Repetition::basic()};
+        Closure repetition{1, 1};
         Id id{};
         Flags flags;
 
@@ -51,7 +51,7 @@ namespace ccl::lexer::dot_item
         auto operator=(const DotItemConcept &) -> void = delete;
         auto operator=(DotItemConcept &&) noexcept -> void = delete;
 
-        [[nodiscard]] auto getRepetition() const noexcept -> Repetition
+        [[nodiscard]] auto getRepetition() const noexcept -> Closure
         {
             return repetition;
         }
@@ -91,7 +91,7 @@ namespace ccl::lexer::dot_item
             flags.reversed = !flags.reversed;
         }
 
-        auto setRepetition(Repetition new_repetition) noexcept -> void
+        auto setRepetition(Closure new_repetition) noexcept -> void
         {
             repetition = new_repetition;
         }

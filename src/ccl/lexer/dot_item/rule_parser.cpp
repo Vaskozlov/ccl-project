@@ -47,19 +47,19 @@ namespace ccl::lexer::dot_item
             break;
 
         case U'*':
-            addRepetition(Repetition::star());
+            addRepetition(Closure::kleenClosure());
             break;
 
         case U'+':
-            addRepetition(Repetition::plus());
+            addRepetition(Closure::positiveClosure());
             break;
 
         case U'?':
-            addRepetition(Repetition::question());
+            addRepetition(Closure{0, 1});
             break;
 
         case U'{':
-            addRepetition(Repetition{ruleIterator});
+            addRepetition(Closure{ruleIterator});
             break;
 
         case U'^':
@@ -203,7 +203,7 @@ namespace ccl::lexer::dot_item
         }
     }
 
-    auto Container::RuleParser::addRepetition(Repetition new_repetition) -> void
+    auto Container::RuleParser::addRepetition(Closure new_repetition) -> void
     {
         if (items.empty()) {
             throwUnableToApply("no items found to set repetition");
@@ -211,7 +211,7 @@ namespace ccl::lexer::dot_item
 
         auto &last_item = items.back();
 
-        if (last_item->getRepetition() != Repetition::basic()) {
+        if (last_item->getRepetition() != Closure::basic()) {
             throwUnableToApply("item already has repetition");
         }
 

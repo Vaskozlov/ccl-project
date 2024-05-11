@@ -5,35 +5,26 @@
 
 namespace ccl::lexer::dot_item
 {
-    class CCL_TRIVIAL_ABI Repetition
+    class CCL_TRIVIAL_ABI Closure
     {
     public:
-        size_t from{};
-        size_t to{};
+        std::size_t from{};
+        std::size_t to{};
 
-        [[nodiscard]] constexpr Repetition(size_t repetition_begin, size_t repetition_end) noexcept
+        [[nodiscard]] constexpr Closure(
+            std::size_t repetition_begin, std::size_t repetition_end) noexcept
           : from{repetition_begin}
           , to{repetition_end}
         {}
 
-        [[nodiscard]] explicit Repetition(text::TextIterator &text_iterator);
+        [[nodiscard]] explicit Closure(text::TextIterator &text_iterator);
 
-        [[nodiscard]] consteval static auto basic() noexcept -> Repetition
-        {
-            return {1, 1};
-        }
-
-        [[nodiscard]] consteval static auto question() noexcept -> Repetition
-        {
-            return {0, 1};
-        }
-
-        [[nodiscard]] consteval static auto star() noexcept -> Repetition
+        [[nodiscard]] consteval static auto kleenClosure() noexcept -> Closure
         {
             return {0, max()};
         }
 
-        [[nodiscard]] consteval static auto plus() noexcept -> Repetition
+        [[nodiscard]] consteval static auto positiveClosure() noexcept -> Closure
         {
             return {1, max()};
         }
@@ -43,13 +34,13 @@ namespace ccl::lexer::dot_item
             return std::numeric_limits<size_t>::max();
         }
 
-        [[nodiscard]] auto isInRange(size_t value) const noexcept -> bool
+        [[nodiscard]] auto isInClosure(size_t value) const noexcept -> bool
         {
             return value >= from && value <= to;
         }
 
         [[nodiscard]] auto
-            operator<=>(const Repetition &) const noexcept -> std::strong_ordering = default;
+            operator<=>(const Closure &) const noexcept -> std::strong_ordering = default;
 
     private:
         [[nodiscard]] static auto

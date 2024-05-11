@@ -138,7 +138,7 @@ namespace ccl::lexer::dot_item
 
         auto addPrefixPostfix() -> void;
 
-        auto addRepetition(Repetition new_repetition) -> void;
+        auto addRepetition(Closure new_repetition) -> void;
 
         auto makeSpecial() -> void;
 

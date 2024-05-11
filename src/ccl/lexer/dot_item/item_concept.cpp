@@ -37,7 +37,7 @@ namespace ccl::lexer::dot_item
             ++times;
         }
 
-        if (repetition.isInRange(times)) {
+        if (repetition.isInClosure(times)) {
             return ScanResult{totally_skipped};
         }
 
