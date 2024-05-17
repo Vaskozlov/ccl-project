@@ -11,7 +11,7 @@ namespace ccl::lexer
     template<>
     CCL_DECL auto lexerEnumToString<std::size_t>(std::size_t value) -> isl::string_view
     {
-        return std::to_string(value);
+        return isl::as<isl::string_view>(std::to_string(value));
     }
 
     class LexicalAnalyzer
