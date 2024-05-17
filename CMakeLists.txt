@@ -4,8 +4,7 @@ project(ccl-project VERSION 0.0.2.1 LANGUAGES CXX)
 
 include(GNUInstallDirs)
 
-add_subdirectory(ISL EXCLUDE_FROM_ALL SYSTEM)
-
+include(cmake/ImportISL.cmake)
 include(cmake/ProjectOptions.cmake)
 include(cmake/Libraries.cmake)
 
@@ -22,7 +21,7 @@ install(TARGETS ccl ccl-lexer
         INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
-install(DIRECTORY include/ccl ISL/include
+install(DIRECTORY include/ccl
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
         FILES_MATCHING PATTERN "*.hpp")
 

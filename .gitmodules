@@ -1,4 +1,0 @@
-[submodule "ISL"]
-	path = ISL
-	url = https://github.com/Vaskozlov/ISL.git
-    branch = main
