@@ -70,6 +70,7 @@ namespace ccl::lexer::gen
         generateVariable();
 
         generateNamespaceEnd();
+        generateToStringFunction();
     }
 
     auto StaticGenerator::generateHeaderDefinition() -> void
@@ -81,6 +82,25 @@ namespace ccl::lexer::gen
         }
 
         codeGenerator << endl;
+
+        {
+            codeGenerator << "namespace " << nameSpace << '{' << push_scope << endl;
+
+            const auto namespace_scope = isl::Raii{[this] {
+                codeGenerator << pop_scope << endl << '}' << endl << endl;
+            }};
+
+            codeGenerator << "enum class " << enumName << " : ccl::Id;";
+        }
+
+        codeGenerator
+            << fmt::format(
+                   "template<>\n"
+                   "CCL_DECL auto ccl::lexer::lexerEnumToString<{0}::{1}>({0}::{1} value) -> "
+                   "isl::string_view;",
+                   nameSpace, enumName)
+            << endl
+            << endl;
     }
 
     auto StaticGenerator::generateNamespaceBegin() -> void
@@ -117,8 +137,8 @@ namespace ccl::lexer::gen
         const std::vector<parser::CcllParser::Rule> &rules = ccllParser.getRules();
 
         codeGenerator << fmt::format(
-            "inline constexpr isl::StaticFlatmap<ccl::Id, isl::string_view, {}> ToString{}Token\n",
-            BuiltinRules.size() + rules.size(), variableName);
+            "inline constexpr isl::StaticFlatmap<{}, isl::string_view, {}> ToString{}Token\n",
+            enumName, BuiltinRules.size() + rules.size(), variableName);
         codeGenerator << '{' << push_scope;
 
         for (const auto &[rule, id] : BuiltinRules) {
@@ -143,7 +163,7 @@ namespace ccl::lexer::gen
 
     auto StaticGenerator::generateEnum() -> void
     {
-        codeGenerator << "enum " << enumName << " : ccl::Id {";
+        codeGenerator << "enum class " << enumName << " : ccl::Id {";
         codeGenerator << push_scope;
 
         auto enum_definition = isl::Raii{[this]() {
@@ -229,5 +249,27 @@ namespace ccl::lexer::gen
             codeGenerator << " )\"";
             codeGenerator << "},";
         }
+    }
+
+    auto StaticGenerator::generateToStringFunction() -> void
+    {
+        codeGenerator << endl;
+        codeGenerator << "namespace ccl::lexer {" << endl << push_scope;
+
+        const auto namespace_scope = isl::Raii{[this] {
+            codeGenerator << pop_scope << endl << '}' << endl << endl;
+        }};
+
+        codeGenerator << fmt::format(
+            "template<>\n"
+            "CCL_DECL auto lexerEnumToString<{0}::{1}>({0}::{1} value) -> isl::string_view ",
+            nameSpace, enumName);
+        codeGenerator << "{" << endl << push_scope;
+
+        const auto function_scope = isl::Raii{[this] {
+            codeGenerator << pop_scope << endl << '}';
+        }};
+
+        codeGenerator << fmt::format("return {}::ToString{}Token[value];", nameSpace, variableName);
     }
 }// namespace ccl::lexer::gen

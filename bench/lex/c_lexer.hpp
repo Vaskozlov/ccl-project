@@ -6,7 +6,16 @@
 
 namespace ccl
 {
-    enum CLexerToken : ccl::Id
+    enum class CLexerToken : ccl::Id;
+}
+
+template<>
+CCL_DECL auto
+    ccl::lexer::lexerEnumToString<ccl::CLexerToken>(ccl::CLexerToken value) -> isl::string_view;
+
+namespace ccl
+{
+    enum class CLexerToken : ccl::Id
     {
         DECLS = 17179869184,
         KEYWORD = 12884901888,
@@ -125,7 +134,7 @@ namespace ccl
             {CLexerToken::STRING, R"( ! "\"" (["]^ | "\\\"")* "\"" )"},
         }};
 
-    inline constexpr isl::StaticFlatmap<ccl::Id, isl::string_view, 54> ToStringCLexerToken{
+    inline constexpr isl::StaticFlatmap<CLexerToken, isl::string_view, 54> ToStringCLexerToken{
         {CLexerToken::EOI, "EOI"},
         {CLexerToken::BAD_TOKEN, "BAD_TOKEN"},
         {CLexerToken::CUT, "CUT"},
@@ -181,3 +190,12 @@ namespace ccl
         {CLexerToken::STRING, "STRING"},
     };
 }// namespace ccl
+
+namespace ccl::lexer
+{
+    template<>
+    CCL_DECL auto lexerEnumToString<ccl::CLexerToken>(ccl::CLexerToken value) -> isl::string_view
+    {
+        return ccl::ToStringCLexerToken[value];
+    }
+}// namespace ccl::lexer

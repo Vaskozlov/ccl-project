@@ -5,6 +5,15 @@
 
 namespace ccl::lexer
 {
+    template<typename T>
+    CCL_DECL auto lexerEnumToString(T value) -> isl::string_view;
+
+    template<>
+    CCL_DECL auto lexerEnumToString<std::size_t>(std::size_t value) -> isl::string_view
+    {
+        return std::to_string(value);
+    }
+
     class LexicalAnalyzer
     {
     private:
@@ -16,6 +25,14 @@ namespace ccl::lexer
         {
             Id id{};
             isl::string_view repr;
+            isl::string_view name;
+
+            template<typename T>
+            constexpr Rule(T rule_id, isl::string_view rule_repr)
+              : id{isl::as<Id>(rule_id)}
+              , repr{std::move(rule_repr)}
+              , name{lexerEnumToString<T>(rule_id)}
+            {}
         };
 
         std::vector<Container> items;
@@ -38,12 +55,12 @@ namespace ccl::lexer
             return ignoredIds;
         }
 
-        [[nodiscard]] auto getTokenizer(isl::string_view text, std::string_view filename = {})
-            -> Tokenizer;
+        [[nodiscard]] auto
+            getTokenizer(isl::string_view text, std::string_view filename = {}) -> Tokenizer;
 
         [[nodiscard]] auto getTokenizer(
-            isl::string_view text, std::string_view filename, ExceptionHandler &handler)
-            -> Tokenizer;
+            isl::string_view text, std::string_view filename,
+            ExceptionHandler &handler) -> Tokenizer;
 
     private:
         auto createContainer(isl::string_view rule, Id id, std::string_view filename) -> void;

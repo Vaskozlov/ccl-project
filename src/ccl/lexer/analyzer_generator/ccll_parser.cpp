@@ -22,48 +22,48 @@ namespace ccl::lexer::parser
         using namespace ccll;
 
         while (const Token &token = tokenizer.yield()) {
-            switch (token.getId()) {
-            case GROUP_DECLARATION:
+            switch (isl::as<CcllAnalyzerToken>(token.getId())) {
+            case CcllAnalyzerToken::GROUP_DECLARATION:
                 completeGroup(token);
                 break;
 
-            case BAD_GROUP_DECLARATION_ONLY_BRACKET:
+            case CcllAnalyzerToken::BAD_GROUP_DECLARATION_ONLY_BRACKET:
                 parsingError("group name expected");
                 break;
 
-            case BAD_GROUP_DECLARATION_BRACKET_AND_NAME:
+            case CcllAnalyzerToken::BAD_GROUP_DECLARATION_BRACKET_AND_NAME:
                 parsingError("group end expected", "insert ]");
                 break;
 
-            case BAD_GROUP_DECLARATION_EMPTY_NAME:
+            case CcllAnalyzerToken::BAD_GROUP_DECLARATION_EMPTY_NAME:
                 parsingError("group name can not be empty");
                 break;
 
-            case DIRECTIVE:
+            case CcllAnalyzerToken::DIRECTIVE:
                 completeDirective(token);
                 break;
 
-            case BAD_DIRECTIVE_DECLARATION:
+            case CcllAnalyzerToken::BAD_DIRECTIVE_DECLARATION:
                 parsingError("directive value expected");
                 break;
 
-            case RULE:
+            case CcllAnalyzerToken::RULE:
                 completeRule(token);
                 break;
 
-            case BAD_RULE_DECLARATION:
+            case CcllAnalyzerToken::BAD_RULE_DECLARATION:
                 parsingError("rule definition expected");
                 break;
 
-            case BAD_RULE_OR_DIRECTIVE_DECLARATION:
+            case CcllAnalyzerToken::BAD_RULE_OR_DIRECTIVE_DECLARATION:
                 parsingError("rule or directive declaration expected");
                 break;
 
-            case BAD_GROUP_NO_OPEN_BRACKET:
+            case CcllAnalyzerToken::BAD_GROUP_NO_OPEN_BRACKET:
                 parsingError("unable to match ] to close group declaration");
                 break;
 
-            case COMMENT:
+            case CcllAnalyzerToken::COMMENT:
                 break;
 
             default:
