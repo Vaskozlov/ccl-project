@@ -12,7 +12,7 @@ namespace ccl::lexer
         std::size_t value;
 
     public:
-        [[nodiscard]] consteval static auto failure() noexcept -> ScanResult
+        [[nodiscard]] constexpr static auto failure() noexcept -> ScanResult
         {
             return ScanResult{std::numeric_limits<std::size_t>::max()};
         }

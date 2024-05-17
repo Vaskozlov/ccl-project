@@ -19,7 +19,7 @@ namespace ccl::lexer::dot_item
 
         [[nodiscard]] explicit Closure(text::TextIterator &text_iterator);
 
-        [[nodiscard]] consteval static auto max() noexcept -> std::size_t
+        [[nodiscard]] constexpr static auto max() noexcept -> std::size_t
         {
             return std::numeric_limits<std::size_t>::max();
         }
