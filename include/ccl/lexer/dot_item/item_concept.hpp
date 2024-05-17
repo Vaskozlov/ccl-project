@@ -98,7 +98,7 @@ namespace ccl::lexer::dot_item
 
         [[nodiscard]] auto canBeOptimized() const noexcept -> bool
         {
-            return (!isReversed() && (0 == repetition.from)) && empty();
+            return (!isReversed() && (repetition.from == 0)) && empty();
         }
 
         [[nodiscard]] auto getId() const noexcept -> Id
@@ -123,7 +123,7 @@ namespace ccl::lexer::dot_item
         using std::unique_ptr<DotItemConcept>::unique_ptr;
 
         template<std::derived_from<DotItemConcept> T>
-        explicit DotItem(T dot_item)
+        explicit constexpr DotItem(T dot_item)
           : std::unique_ptr<DotItemConcept>::unique_ptr(isl::makeUnique<T>(std::move(dot_item)))
         {}
     };

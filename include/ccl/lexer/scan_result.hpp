@@ -12,16 +12,16 @@ namespace ccl::lexer
         std::size_t value;
 
     public:
-        consteval static auto failure() noexcept -> ScanResult
+        [[nodiscard]] consteval static auto failure() noexcept -> ScanResult
         {
             return ScanResult{std::numeric_limits<std::size_t>::max()};
         }
 
-        explicit constexpr ScanResult(std::size_t bytesPassed) noexcept
+        CCL_DECL explicit ScanResult(std::size_t bytesPassed) noexcept
           : value{bytesPassed}
         {}
 
-        constexpr auto operator==(const ScanResult &) const noexcept -> bool = default;
+        CCL_DECL auto operator==(const ScanResult &) const noexcept -> bool = default;
 
         CCL_DECL auto getBytesCount() const noexcept -> std::size_t
         {

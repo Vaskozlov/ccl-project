@@ -22,7 +22,9 @@ namespace ccl::lexer
         AnyPlaceItems anyPlaceItems;
         std::vector<Id> ignoredIds;
         std::string skippedCharacters;
-        ExceptionHandler &exceptionHandler;// NOLINT
+
+        // NOLINTNEXTLINE reference
+        ExceptionHandler &exceptionHandler;
 
     public:
         class Tokenizer;

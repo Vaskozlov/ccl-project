@@ -159,8 +159,8 @@ namespace ccl::lexer
             repr = {repr.begin(), end_of_repr};
         }
 
-        auto
-            finishInitialization(text::TextIterator &text_iterator, std::size_t totally_skipped) -> void;
+        auto finishInitialization(text::TextIterator &text_iterator, std::size_t totally_skipped)
+            -> void;
     };
 }// namespace ccl::lexer
 

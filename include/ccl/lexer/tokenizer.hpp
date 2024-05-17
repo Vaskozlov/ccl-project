@@ -8,6 +8,7 @@ namespace ccl::lexer
     class LexicalAnalyzer::Tokenizer
     {
         std::array<Token, 2> tokens;
+        // NOLINTNEXTLINE reference
         LexicalAnalyzer &lexicalAnalyzer;
         TextIterator textIterator;
         bool hasFutureToken{};
