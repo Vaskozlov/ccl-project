@@ -30,7 +30,7 @@ namespace ccl::lexer
             template<typename T>
             constexpr Rule(T rule_id, isl::string_view rule_repr)
               : id{isl::as<Id>(rule_id)}
-              , repr{std::move(rule_repr)}
+              , repr{rule_repr}
               , name{lexerEnumToString<T>(rule_id)}
             {}
         };
