@@ -8,7 +8,7 @@ TEST_CASE("TextIteratorLineTracking", "[TextIteratorLineTracker]")
 
     auto text_iterator = text::TextIterator{"Hi\nWorld!"_sv};
 
-    for (auto i = isl::as<size_t>(0); i != 3; ++i) {
+    for (auto i = 0ZU; i != 3; ++i) {
         text_iterator.advance();
         REQUIRE(text_iterator.getWorkingLine() == "Hi");
     }
