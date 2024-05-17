@@ -19,5 +19,5 @@ message(STATUS "Address sanitizer? " ${CCL_ADDRESS_SANITIZER})
 message(STATUS "Thread sanitizer? " ${CCL_THREAD_SANITIZER})
 message(STATUS "Unity build? " ${CCL_UNITY_BUILD})
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
