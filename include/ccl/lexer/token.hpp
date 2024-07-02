@@ -36,8 +36,8 @@ namespace ccl::lexer
         friend class LexicalAnalyzer;
         friend class dot_item::Container;
 
-        std::vector<isl::string_view> prefixes;
-        std::vector<isl::string_view> postfixes;
+        isl::Vector<isl::string_view> prefixes;
+        isl::Vector<isl::string_view> postfixes;
         TokenEnvironment environment;
         isl::string_view repr;
         Id id{};

@@ -5,7 +5,7 @@
 
 namespace ccl::lexer::dot_item
 {
-    class Sequence final : public DotItemConcept
+    class Sequence : public DotItemConcept
     {
     public:
         struct CCL_TRIVIAL_ABI SequenceFlags
@@ -30,7 +30,7 @@ namespace ccl::lexer::dot_item
             SequenceFlags sequence_flags, isl::string_view sequence_begin_and_end,
             TextIterator &rule_iterator, Id item_id = 0);
 
-        [[nodiscard]] auto getValue() noexcept -> std::string &
+        [[nodiscard]] auto getValue() noexcept CCL_LIFETIMEBOUND -> std::string &
         {
             return sequenceValue;
         }
@@ -46,17 +46,19 @@ namespace ccl::lexer::dot_item
         }
 
     private:
-        [[nodiscard]] auto scanIteration(const ForkedGenerator &text_iterator) const
-            -> ScanResult override;
+        [[nodiscard]] auto
+            scanIteration(const ForkedGenerator &text_iterator) const -> ScanResult override;
 
-        [[nodiscard]] auto isStringEnd(const TextIterator &rule_iterator, bool is_escaping) const
-            -> bool;
+        [[nodiscard]] auto
+            parseIteration(const ForkedGenerator &text_iterator) const -> ParsingResult override;
+
+        [[nodiscard]] auto
+            isStringEnd(const TextIterator &rule_iterator, bool is_escaping) const -> bool;
 
         auto skipStringDefinition(TextIterator &rule_iterator) const -> void;
 
-        auto
-            checkForUnexpectedEnd(TextIterator &rule_iterator, bool is_escaping, char32_t chr) const
-            -> void;
+        auto checkForUnexpectedEnd(
+            TextIterator &rule_iterator, bool is_escaping, char32_t chr) const -> void;
 
         auto checkSequenceArguments(TextIterator &rule_iterator) const -> void;
 

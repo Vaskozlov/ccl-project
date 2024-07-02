@@ -35,9 +35,10 @@ namespace ccl::lexer
             {}
         };
 
-        std::vector<Container> items;
+        std::map<isl::string_view, Container *> allItemsMap;
+        isl::Vector<std::unique_ptr<Container>> items;
         AnyPlaceItems anyPlaceItems;
-        std::vector<Id> ignoredIds;
+        isl::Vector<Id> ignoredIds;
         std::string skippedCharacters;
 
         // NOLINTNEXTLINE reference
@@ -45,14 +46,25 @@ namespace ccl::lexer
 
     public:
         class Tokenizer;
+        class PegParser;
 
         [[nodiscard]] LexicalAnalyzer(
             ExceptionHandler &exception_handler, const std::initializer_list<Rule> &rules,
-            std::string_view filename = {}, std::vector<Id> ignored_ids = {});
+            std::string_view filename = {}, isl::Vector<Id> ignored_ids = {});
 
-        [[nodiscard]] auto getIgnoredIds() const -> const std::vector<Id> &
+        [[nodiscard]] auto getIgnoredIds() const -> const isl::Vector<Id> &
         {
             return ignoredIds;
+        }
+
+        [[nodiscard]] auto getByRuleName(isl::string_view name) const -> const Container *
+        {
+            return allItemsMap.at(name);
+        }
+
+        [[nodiscard]] auto getByRuleName(isl::string_view name) -> Container *
+        {
+            return allItemsMap.at(name);
         }
 
         [[nodiscard]] auto
@@ -62,8 +74,16 @@ namespace ccl::lexer
             isl::string_view text, std::string_view filename,
             ExceptionHandler &handler) -> Tokenizer;
 
+        [[nodiscard]] auto getParser(
+            isl::string_view rule_name, isl::string_view text, std::string_view filename,
+            ExceptionHandler &handler) -> PegParser;
+
+        [[nodiscard]] auto getParser(
+            isl::string_view rule_name, isl::string_view text,
+            std::string_view filename = {}) -> PegParser;
+
     private:
-        auto createContainer(isl::string_view rule, Id id, std::string_view filename) -> void;
+        auto createContainer(Rule rule, Id id, std::string_view filename) -> void;
     };
 }// namespace ccl::lexer
 

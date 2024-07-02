@@ -1,5 +1,6 @@
 #include <ccl/lexer/analyzer_generator/analyzer_generator.hpp>
 #include <ccl/lexer/dot_item/container.hpp>
+#include <ccl/lexer/dot_item/rule_reference.hpp>
 #include <ccl/lexer/dot_item/sequence.hpp>
 #include <ccl/lexer/dot_item/union.hpp>
 
@@ -8,6 +9,7 @@ namespace ccl::lexer::dot_item
     Container::RuleParser::RuleParser(Container &target_container, TextIterator &text_iterator)
       : container{target_container}
       , ruleIterator{text_iterator}
+      , lexicalAnalyzer{target_container.lexicalAnalyzer}
     {
         checkId();
 
@@ -40,6 +42,10 @@ namespace ccl::lexer::dot_item
 
         case U'\"':
             emplaceItem(constructNewSequence());
+            break;
+
+        case U'\'':
+            emplaceItem(constructNewRuleReference());
             break;
 
         case U'(':
@@ -123,22 +129,29 @@ namespace ccl::lexer::dot_item
         isl::unreachable();
     }
 
-    auto Container::RuleParser::constructNewSequence() -> Sequence
+    auto Container::RuleParser::constructNewSequence() -> DotItem
     {
         tryToFinishBinaryExpression();
 
-        return Sequence{Sequence::SequenceFlags{}, "\"", ruleIterator, getId()};
+        return DotItem{Sequence{Sequence::SequenceFlags{}, "\"", ruleIterator, getId()}};
     }
 
-    auto Container::RuleParser::constructNewUnion() -> Union
+    auto Container::RuleParser::constructNewRuleReference() -> DotItem
     {
         tryToFinishBinaryExpression();
 
-        return Union{ruleIterator, getId()};
+        return DotItem{RuleReference{lexicalAnalyzer, "\'", "\'", ruleIterator, getId()}};
+    }
+
+    auto Container::RuleParser::constructNewUnion() -> DotItem
+    {
+        tryToFinishBinaryExpression();
+
+        return DotItem{Union{ruleIterator, getId()}};
     }
 
     // NOLINTNEXTLINE (recursive function)
-    auto Container::RuleParser::constructNewContainer() -> Container
+    auto Container::RuleParser::constructNewContainer() -> DotItem
     {
         tryToFinishBinaryExpression();
 
@@ -148,15 +161,14 @@ namespace ccl::lexer::dot_item
 
         ruleIterator.setEnd(text.begin() + bracket_index);
 
-        auto new_container =
-            Container{ruleIterator, anyPlaceItems, getId(), false, container.isAnyPlaceRule()};
+        auto new_container = Container{lexicalAnalyzer, ruleIterator, anyPlaceItems,
+                                       getId(),         false,        container.isAnyPlaceRule()};
         ruleIterator.setEnd(saved_end);
 
-        return new_container;
+        return DotItem{std::move(new_container)};
     }
 
-    template<std::derived_from<DotItemConcept> T>
-    auto Container::RuleParser::emplaceItem(T item) -> void
+    auto Container::RuleParser::emplaceItem(std::derived_from<DotItemConcept> auto item) -> void
     {
         if (!item.canBeOptimized()) {
             finishPreviousItemInitialization();
@@ -346,16 +358,18 @@ namespace ccl::lexer::dot_item
     auto DotItemConcept::AnyPlaceItems::checkForSpecial(const ForkedGenerator &text_iterator) const
         -> bool
     {
-        return std::ranges::any_of(items, [&text_iterator](const Container &special_item) {
-            return special_item.scan(text_iterator).isSuccess();
-        });
+        return std::ranges::any_of(
+            items, [&text_iterator](const std::unique_ptr<Container> &special_item) {
+                return special_item->scan(text_iterator).isSuccess();
+            });
     }
 
     auto DotItemConcept::AnyPlaceItems::isSuccessfulScan(TextIterator &text_iterator, Token &token)
         const -> bool
     {
-        return std::ranges::any_of(items, [&text_iterator, &token](const Container &special_item) {
-            return special_item.beginScan(text_iterator, token, ScanType::SPECIAL);
-        });
+        return std::ranges::any_of(
+            items, [&text_iterator, &token](const std::unique_ptr<Container> &special_item) {
+                return special_item->beginScan(text_iterator, token, ScanType::SPECIAL);
+            });
     }
 }// namespace ccl::lexer::dot_item

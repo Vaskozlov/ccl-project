@@ -27,8 +27,8 @@ namespace ccl::lexer
     auto Tokenizer::nextToken(Token &token) -> void
     {
         auto &chars_to_skip = lexicalAnalyzer.skippedCharacters;
-        auto scan_container = [this, &token](const Container &container) {
-            return container.beginScan(textIterator, token);
+        auto scan_container = [this, &token](const std::unique_ptr<Container> &container) {
+            return container->beginScan(textIterator, token);
         };
 
         while (chars_to_skip.find(textIterator.getNextCarriageValue()) != std::string::npos) {

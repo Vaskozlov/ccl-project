@@ -3,6 +3,8 @@
 
 namespace ccl::lexer::parser
 {
+    static auto EmptyLexicalAnalyzer = lexer::LexicalAnalyzer(ExceptionHandler::instance(), {});
+
     CcllParser::Rule::Rule(
         BlockInfo &block_info,
         isl::string_view rule_name,
@@ -129,8 +131,8 @@ namespace ccl::lexer::parser
         // NOLINTNEXTLINE : is guaranteed by lexical analyzer rule
         text_iterator.skip(line_repr.find(':').value() + 1);
 
-        [[maybe_unused]] auto run_rule_scan_to_check_correctness =
-            dot_item::Container{text_iterator, anyPlaceItems, ReservedTokenMaxValue + 1, true};
+        [[maybe_unused]] auto run_rule_scan_to_check_correctness = dot_item::Container{
+            EmptyLexicalAnalyzer, text_iterator, anyPlaceItems, ReservedTokenMaxValue + 1, true};
     }
 
     auto CcllParser::parsingError(isl::string_view message, isl::string_view suggestion) -> void

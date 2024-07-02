@@ -1,4 +1,5 @@
 #include <ccl/lexer/dot_item/union.hpp>
+#include <ccl/parser/ast/value.hpp>
 
 namespace ccl::lexer::dot_item
 {
@@ -41,6 +42,17 @@ namespace ccl::lexer::dot_item
         return bitset.at(text_iterator.futureChar()) != isReversed()
                    ? ScanResult{isl::utf8::size(text_iterator.getNextCarriageValue())}
                    : ScanResult::failure();
+    }
+
+    auto Union::parseIteration(const ForkedGenerator &text_iterator) const -> ParsingResult
+    {
+        const auto result = scanIteration(text_iterator);
+
+        if (result.isFailure()) {
+            return ParsingResult::failure();
+        }
+
+        return ParsingResult{result.getBytesCount(), nullptr};
     }
 
     CCL_INLINE auto Union::isRange(bool is_escaping, char32_t chr) noexcept -> bool

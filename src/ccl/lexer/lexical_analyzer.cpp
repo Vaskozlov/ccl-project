@@ -1,34 +1,36 @@
 #include <ccl/lexer/lexical_analyzer.hpp>
 #include <ccl/lexer/tokenizer.hpp>
+#include <ccl/parser/peg_parser.hpp>
 
 namespace ccl::lexer
 {
     LexicalAnalyzer::LexicalAnalyzer(
         ExceptionHandler &exception_handler, const std::initializer_list<Rule> &rules,
-        std::string_view filename, std::vector<std::size_t> ignored_ids)
+        std::string_view filename, isl::Vector<std::size_t> ignored_ids)
       : ignoredIds{std::move(ignored_ids)}
       , exceptionHandler{exception_handler}
     {
         for (const Rule &rule : rules) {
-            createContainer(rule.repr, rule.id, filename);
+            createContainer(rule, rule.id, filename);
         }
     }
 
-    auto LexicalAnalyzer::createContainer(isl::string_view rule, Id id, std::string_view filename)
-        -> void
+    auto LexicalAnalyzer::createContainer(Rule rule, Id id, std::string_view filename) -> void
     {
-        auto container =
-            Container(TextIterator{rule, exceptionHandler, filename}, anyPlaceItems, id, true);
+        auto container = isl::makeUnique<Container>(
+            *this, TextIterator{rule.repr, exceptionHandler, filename}, anyPlaceItems, id, true);
 
-        if (container.isAnyPlaceRule()) {
+        allItemsMap[rule.name] = container.get();
+
+        if (container->isAnyPlaceRule()) {
             anyPlaceItems.items.emplace_back(std::move(container));
-        } else if (!container.empty()) {
+        } else if (!container->empty()) {
             items.emplace_back(std::move(container));
         }
     }
 
-    auto LexicalAnalyzer::getTokenizer(isl::string_view text, std::string_view filename)
-        -> Tokenizer
+    auto
+        LexicalAnalyzer::getTokenizer(isl::string_view text, std::string_view filename) -> Tokenizer
     {
         return {*this, text, filename};
     }
@@ -37,5 +39,18 @@ namespace ccl::lexer
         isl::string_view text, std::string_view filename, ExceptionHandler &handler) -> Tokenizer
     {
         return {*this, text, filename, handler};
+    }
+
+    [[nodiscard]] auto LexicalAnalyzer::getParser(
+        isl::string_view rule_name, isl::string_view text, std::string_view filename,
+        ExceptionHandler &handler) -> PegParser
+    {
+        return {rule_name, *this, text, filename, handler};
+    }
+
+    [[nodiscard]] auto LexicalAnalyzer::getParser(
+        isl::string_view rule_name, isl::string_view text, std::string_view filename) -> PegParser
+    {
+        return getParser(rule_name, text, filename, exceptionHandler);
     }
 }// namespace ccl::lexer

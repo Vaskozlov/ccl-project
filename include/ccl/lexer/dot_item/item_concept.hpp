@@ -2,8 +2,10 @@
 #define CCL_PROJECT_ITEM_CONCEPT_HPP
 
 #include <ccl/lexer/dot_item/repetition.hpp>
+#include <ccl/lexer/parsing_result.hpp>
 #include <ccl/lexer/scan_result.hpp>
 #include <ccl/lexer/token.hpp>
+#include <ccl/parser/ast/node.hpp>
 #include <ccl/text/text_iterator.hpp>
 #include <isl/memory.hpp>
 
@@ -98,7 +100,8 @@ namespace ccl::lexer::dot_item
 
         [[nodiscard]] auto canBeOptimized() const noexcept -> bool
         {
-            return (!isReversed() && (repetition.from == 0)) && empty();
+            const auto fromZeroAccuracies = repetition.from == 0;
+            return !isReversed() && fromZeroAccuracies && empty();
         }
 
         [[nodiscard]] auto getId() const noexcept -> Id
@@ -111,10 +114,13 @@ namespace ccl::lexer::dot_item
 
         [[nodiscard]] virtual auto empty() const noexcept -> bool = 0;
         [[nodiscard]] auto scan(ForkedGenerator text_iterator) const -> ScanResult;
+        [[nodiscard]] auto parse(ForkedGenerator text_iterator) const -> ParsingResult;
 
-    private:
         [[nodiscard]] virtual auto
             scanIteration(const ForkedGenerator &text_iterator) const -> ScanResult = 0;
+
+        [[nodiscard]] virtual auto
+            parseIteration(const ForkedGenerator &text_iterator) const -> ParsingResult = 0;
     };
 
     class DotItem : public std::unique_ptr<DotItemConcept>

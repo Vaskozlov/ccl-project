@@ -1,12 +1,14 @@
 #ifndef CCL_PROJECT_CONTAINER_HPP
 #define CCL_PROJECT_CONTAINER_HPP
 
-#include <ccl/lexer/dot_item/binary_expression/binary_operation_and.hpp>
-#include <ccl/lexer/dot_item/binary_expression/binary_operation_or.hpp>
+#include <ccl/lexer/dot_item/binary_expression/binary_expression_base.hpp>
 #include <ccl/lexer/dot_item/item_concept.hpp>
 #include <ccl/lexer/dot_item/repetition.hpp>
-#include <ccl/lexer/dot_item/sequence.hpp>
-#include <ccl/lexer/dot_item/union.hpp>
+
+namespace ccl::lexer
+{
+    class LexicalAnalyzer;
+}
 
 namespace ccl::lexer::dot_item
 {
@@ -34,23 +36,29 @@ namespace ccl::lexer::dot_item
 
         DotItemsStorage items;
         AnyPlaceItems &anyPlaceItems;
+        LexicalAnalyzer &lexicalAnalyzer;
         ContainerFlags flags{};
 
     public:
         [[nodiscard]] Container(
-            TextIterator &rule_iterator, AnyPlaceItems &special_items, Id item_id,
-            bool main_item = false, bool is_special = false);
+            LexicalAnalyzer &lexical_analyzer, TextIterator &rule_iterator,
+            AnyPlaceItems &special_items, Id item_id, bool main_item = false,
+            bool is_special = false);
 
         [[nodiscard]] Container(
-            const TextIterator &rule_iterator, AnyPlaceItems &special_items, Id item_id,
-            bool main_item = false, bool is_special = false);
+            LexicalAnalyzer &lexical_analyzer, const TextIterator &rule_iterator,
+            AnyPlaceItems &special_items, Id item_id, bool main_item = false,
+            bool is_special = false);
 
         [[nodiscard]] auto beginScan(
             TextIterator &text_iterator, Token &token,
             ScanType special_scan = ScanType::BASIC) const -> bool;
 
-        [[nodiscard]] auto scanIteration(const ForkedGenerator &text_iterator) const
-            -> ScanResult override;
+        [[nodiscard]] auto
+            scanIteration(const ForkedGenerator &text_iterator) const -> ScanResult override;
+
+        [[nodiscard]] auto
+            parseIteration(const ForkedGenerator &text_iterator) const -> ParsingResult override;
 
         [[nodiscard]] auto operator==(const Container &other) const noexcept -> bool
         {
@@ -89,10 +97,11 @@ namespace ccl::lexer::dot_item
 
     class Container::RuleParser
     {
-        Container &container;                              // NOLINT
-        TextIterator &ruleIterator;                        // NOLINT
-        DotItemsStorage &items{container.items};           // NOLINT
+        Container &container;                                 // NOLINT
+        TextIterator &ruleIterator;                           // NOLINT
+        DotItemsStorage &items{container.items};              // NOLINT
         AnyPlaceItems &anyPlaceItems{container.anyPlaceItems};// NOLINT
+        LexicalAnalyzer &lexicalAnalyzer;                     // NOLINT
         std::optional<DotItem> constructedLhs{std::nullopt};
         BinaryOperator binaryOperator{};
         bool rhsItemConstructed{false};
@@ -123,14 +132,15 @@ namespace ccl::lexer::dot_item
 
         [[nodiscard]] auto constructBinaryExpression() -> DotItem;
 
-        [[nodiscard]] auto constructNewSequence() -> Sequence;
+        [[nodiscard]] auto constructNewSequence() -> DotItem;
 
-        [[nodiscard]] auto constructNewUnion() -> Union;
+        [[nodiscard]] auto constructNewRuleReference() -> DotItem;
 
-        [[nodiscard]] auto constructNewContainer() -> Container;
+        [[nodiscard]] auto constructNewUnion() -> DotItem;
 
-        template<std::derived_from<DotItemConcept> T>
-        auto emplaceItem(T item) -> void;
+        [[nodiscard]] auto constructNewContainer() -> DotItem;
+
+        auto emplaceItem(std::derived_from<DotItemConcept> auto item) -> void;
 
         auto emplaceItem(DotItem item) -> void;
 
@@ -161,7 +171,7 @@ namespace ccl::lexer::dot_item
     class DotItemConcept::AnyPlaceItems
     {
     public:
-        std::vector<Container> items;
+        isl::Vector<std::unique_ptr<Container>> items;
 
         [[nodiscard]] auto
             isSuccessfulScan(TextIterator &text_iterator, Token &token) const -> bool;

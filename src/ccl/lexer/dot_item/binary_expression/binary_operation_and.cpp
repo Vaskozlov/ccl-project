@@ -13,4 +13,11 @@ namespace ccl::lexer::dot_item
         const auto rhs = lhsItem->scan(text_iterator);
         return lhs == rhs ? lhs : ScanResult::failure();
     }
+
+    auto BinaryOperationAnd::parseIteration(const ForkedGenerator &/* text_iterator */) const
+        -> ParsingResult
+    {
+        // TODO: add check at regex analysis time
+        throw std::runtime_error{"Not supported operation"};
+    }
 }// namespace ccl::lexer::dot_item

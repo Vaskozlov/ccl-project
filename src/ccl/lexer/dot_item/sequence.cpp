@@ -1,4 +1,5 @@
 #include <ccl/lexer/dot_item/sequence.hpp>
+#include <ccl/parser/ast/value.hpp>
 
 namespace ccl::lexer::dot_item
 {
@@ -61,6 +62,17 @@ namespace ccl::lexer::dot_item
         }
 
         return ScanResult::failure();
+    }
+
+    auto Sequence::parseIteration(const ForkedGenerator &text_iterator) const -> ParsingResult
+    {
+        auto result = scanIteration(text_iterator);
+
+        if (result.isFailure()) {
+            return ParsingResult::failure();
+        }
+
+        return ParsingResult{result.getBytesCount(), nullptr};
     }
 
     CCL_INLINE auto

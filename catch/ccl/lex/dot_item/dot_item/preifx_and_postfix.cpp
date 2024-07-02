@@ -6,8 +6,11 @@ TEST_CASE("ContainerPrefixAndPostfix", "[Container]")
     using namespace ccl;
 
     auto special_items = lexer::AnyPlaceItems{};
+    auto empty_lexical_analyzer = lexer::LexicalAnalyzer(ExceptionHandler::instance(), {});
+
     auto container = lexer::dot_item::Container(
-        text::TextIterator{R"([a-z]+p[_]"test"p)"}, special_items, debug::FirstUsableToken, true);
+        empty_lexical_analyzer, text::TextIterator{R"([a-z]+p[_]"test"p)"}, special_items,
+        debug::FirstUsableToken, true);
     DEBUG_VAR items = container.getItems();
 
     REQUIRE(items.at(0)->hasPrefix());

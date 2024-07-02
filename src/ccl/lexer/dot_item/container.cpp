@@ -1,4 +1,8 @@
 #include <ccl/lexer/dot_item/container.hpp>
+#include <ccl/lexer/dot_item/rule_reference.hpp>
+#include <ccl/lexer/lexical_analyzer.hpp>
+#include <ccl/parser/ast/node_sequence.hpp>
+#include <ccl/parser/ast/value.hpp>
 
 namespace ccl::lexer::dot_item
 {
@@ -17,20 +21,22 @@ namespace ccl::lexer::dot_item
     }
 
     Container::Container(
-        TextIterator &rule_iterator, AnyPlaceItems &special_items, Id item_id, bool main_item,
-        bool is_special)
+        LexicalAnalyzer &lexical_analyzer, TextIterator &rule_iterator,
+        AnyPlaceItems &special_items, Id item_id, bool main_item, bool is_special)
       : DotItemConcept{item_id}
       , anyPlaceItems{special_items}
+      , lexicalAnalyzer{lexical_analyzer}
       , flags{.isMain = main_item, .isSpecial = is_special}
     {
         parseRule(rule_iterator);
     }
 
     Container::Container(
-        const TextIterator &rule_iterator, AnyPlaceItems &special_items, Id item_id, bool main_item,
-        bool is_special)
+        LexicalAnalyzer &lexical_analyzer, const TextIterator &rule_iterator,
+        AnyPlaceItems &special_items, Id item_id, bool main_item, bool is_special)
       : DotItemConcept{item_id}
       , anyPlaceItems{special_items}
+      , lexicalAnalyzer{lexical_analyzer}
       , flags{.isMain = main_item, .isSpecial = is_special}
     {
         auto text_iterator_copy = rule_iterator;
@@ -95,6 +101,38 @@ namespace ccl::lexer::dot_item
         }
 
         return ScanResult{totally_skipped};
+    }
+
+    auto Container::parseIteration(const ForkedGenerator &text_iterator) const -> ParsingResult
+    {
+        auto totally_skipped = isl::as<std::size_t>(0);
+        auto local_iterator = text_iterator;
+        auto node_sequence = isl::makeUnique<parser::ast::NodeSequence>(getId());
+
+        for (const DotItem &item : items) {
+            auto parsing_result = item->parse(local_iterator);
+
+            if (parsing_result.isFailure()) {
+                return ParsingResult::failure();
+            }
+
+            if (parsing_result.getNode() == nullptr) {
+                node_sequence->addNode(isl::makeUnique<parser::ast::ValueNode>(
+                    getId(),
+                    local_iterator.getRemaining().substr(0, parsing_result.getBytesCount())));
+            } else {
+                if (isl::is<RuleReference *>(item.get())) {
+                    node_sequence->addNode(parsing_result.getAndReleaseNode());
+                } else {
+                    node_sequence->joinSequences(parsing_result.getAndReleaseNode());
+                }
+            }
+
+            totally_skipped += parsing_result.getBytesCount();
+            local_iterator.skip(parsing_result.getBytesCount());
+        }
+
+        return ParsingResult{totally_skipped, std::move(node_sequence)};
     }
 
     auto Container::parseRule(TextIterator &rule_iterator) -> void
