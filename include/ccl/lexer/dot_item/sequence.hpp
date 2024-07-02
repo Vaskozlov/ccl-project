@@ -35,7 +35,7 @@ namespace ccl::lexer::dot_item
             return sequenceValue;
         }
 
-        [[nodiscard]] auto getValue() const noexcept -> const std::string &
+        [[nodiscard]] auto getValue() const noexcept CCL_LIFETIMEBOUND-> const std::string &
         {
             return sequenceValue;
         }

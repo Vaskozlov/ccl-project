@@ -18,28 +18,28 @@ namespace ccl::lexer
             return ParsingResult{std::numeric_limits<std::size_t>::max(), nullptr};
         }
 
-        CCL_DECL explicit ParsingResult(
+        [[nodiscard]] explicit ParsingResult(
             std::size_t bytesPassed, std::unique_ptr<parser::ast::Node> constructed_node) noexcept
           : ScanResult{bytesPassed}
           , node{std::move(constructed_node)}
         {}
 
-        CCL_DECL auto getNode() -> parser::ast::Node *
+        [[nodiscard]] auto getNode() CCL_LIFETIMEBOUND -> parser::ast::Node *
         {
             return node.get();
         }
 
-        CCL_DECL auto getAndReleaseNode() -> std::unique_ptr<parser::ast::Node>
+        [[nodiscard]] auto getAndReleaseNode() -> std::unique_ptr<parser::ast::Node>
         {
             return std::move(node);
         }
 
-        CCL_DECL auto getNode() const -> const parser::ast::Node *
+        [[nodiscard]] auto getNode() const CCL_LIFETIMEBOUND -> const parser::ast::Node *
         {
             return node.get();
         }
 
-        CCL_DECL auto orElse(auto &&function) const -> const ParsingResult &
+        [[nodiscard]] auto orElse(auto &&function) const CCL_LIFETIMEBOUND -> const ParsingResult &
         {
             if (isFailure()) {
                 return function();

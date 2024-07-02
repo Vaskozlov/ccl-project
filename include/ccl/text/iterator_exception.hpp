@@ -67,13 +67,13 @@ namespace ccl::text
             return location.getFilename();
         }
 
-        [[nodiscard]] auto getLocation() const noexcept CCL_LIFETIMEBOUND->const Location &
+        [[nodiscard]] auto getLocation() const noexcept CCL_LIFETIMEBOUND -> const Location &
         {
             return location;
         }
 
         [[nodiscard]] auto
-            getWorkingLine() const noexcept CCL_LIFETIMEBOUND->const isl::string_view &
+            getWorkingLine() const noexcept CCL_LIFETIMEBOUND -> const isl::string_view &
         {
             return workingLine;
         }

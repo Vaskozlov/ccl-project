@@ -39,7 +39,7 @@ namespace ccl::lexer::dot_item
         auto onIteration(ParsingResult &result) -> void
         {
             if (result.getNode() != nullptr) {
-                nodeSequence->joinSequences(result.getAndReleaseNode());
+                nodeSequence->joinWithNode(result.getAndReleaseNode());
             }
         }
 

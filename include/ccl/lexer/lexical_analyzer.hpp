@@ -57,12 +57,13 @@ namespace ccl::lexer
             return ignoredIds;
         }
 
-        [[nodiscard]] auto getByRuleName(isl::string_view name) const -> const Container *
+        [[nodiscard]] auto
+            getByRuleName(isl::string_view name) const CCL_LIFETIMEBOUND -> const Container *
         {
             return allItemsMap.at(name);
         }
 
-        [[nodiscard]] auto getByRuleName(isl::string_view name) -> Container *
+        [[nodiscard]] auto getByRuleName(isl::string_view name) CCL_LIFETIMEBOUND -> Container *
         {
             return allItemsMap.at(name);
         }

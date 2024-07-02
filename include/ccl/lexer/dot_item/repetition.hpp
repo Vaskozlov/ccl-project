@@ -37,6 +37,7 @@ namespace ccl::lexer::dot_item
             parseNumber(text::TextIterator &text_iterator, char32_t terminator) -> std::size_t;
 
         static auto checkRangeStart(text::TextIterator &text_iterator) -> void;
+
         auto checkCorrectnessOfValues(text::TextIterator &text_iterator) const -> void;
 
         auto throwBadValues(text::TextIterator &text_iterator) const -> void;

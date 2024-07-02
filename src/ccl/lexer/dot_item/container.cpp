@@ -124,7 +124,7 @@ namespace ccl::lexer::dot_item
                 if (isl::is<RuleReference *>(item.get())) {
                     node_sequence->addNode(parsing_result.getAndReleaseNode());
                 } else {
-                    node_sequence->joinSequences(parsing_result.getAndReleaseNode());
+                    node_sequence->joinWithNode(parsing_result.getAndReleaseNode());
                 }
             }
 

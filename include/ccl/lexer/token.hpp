@@ -77,12 +77,13 @@ namespace ccl::lexer
         }
 
         [[nodiscard]] CCL_INLINE auto
-            getTokenEnvironment() const noexcept -> const TokenEnvironment &
+            getTokenEnvironment() const noexcept CCL_LIFETIMEBOUND -> const TokenEnvironment &
         {
             return environment;
         }
 
-        [[nodiscard]] CCL_INLINE auto getLocation() const noexcept -> const text::Location &
+        [[nodiscard]] CCL_INLINE auto
+            getLocation() const noexcept CCL_LIFETIMEBOUND -> const text::Location &
         {
             return environment.location;
         }
