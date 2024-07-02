@@ -13,33 +13,33 @@ namespace ccl::lexer
         std::unique_ptr<parser::ast::Node> node;
 
     public:
-        [[nodiscard]] constexpr static auto failure() noexcept -> ParsingResult
+        CCL_DECL static auto failure() noexcept -> ParsingResult
         {
             return ParsingResult{std::numeric_limits<std::size_t>::max(), nullptr};
         }
 
-        [[nodiscard]] explicit ParsingResult(
+        CCL_DECL explicit ParsingResult(
             std::size_t bytesPassed, std::unique_ptr<parser::ast::Node> constructed_node) noexcept
           : ScanResult{bytesPassed}
           , node{std::move(constructed_node)}
         {}
 
-        [[nodiscard]] auto getNode() CCL_LIFETIMEBOUND -> parser::ast::Node *
+        CCL_DECL auto getNode() CCL_LIFETIMEBOUND -> parser::ast::Node *
         {
             return node.get();
         }
 
-        [[nodiscard]] auto getAndReleaseNode() -> std::unique_ptr<parser::ast::Node>
+        CCL_DECL auto getAndReleaseNode() -> std::unique_ptr<parser::ast::Node>
         {
             return std::move(node);
         }
 
-        [[nodiscard]] auto getNode() const CCL_LIFETIMEBOUND -> const parser::ast::Node *
+        CCL_DECL auto getNode() const CCL_LIFETIMEBOUND -> const parser::ast::Node *
         {
             return node.get();
         }
 
-        [[nodiscard]] auto orElse(auto &&function) const CCL_LIFETIMEBOUND -> const ParsingResult &
+        CCL_DECL auto orElse(auto &&function) const CCL_LIFETIMEBOUND -> const ParsingResult &
         {
             if (isFailure()) {
                 return function();

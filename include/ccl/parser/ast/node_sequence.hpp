@@ -12,7 +12,7 @@ namespace ccl::parser::ast
         isl::Vector<std::unique_ptr<Node>> nodes;
 
     public:
-        explicit NodeSequence(Id node_type_id)
+        constexpr explicit NodeSequence(Id node_type_id)
           : Node{node_type_id}
         {}
 
@@ -20,27 +20,27 @@ namespace ccl::parser::ast
             const std::string &prefix, bool is_left,
             std::function<isl::string_view(Id)> id_converter) const -> void override;
 
-        [[nodiscard]] auto addNode(std::unique_ptr<Node> node)
+        CCL_DECL auto addNode(std::unique_ptr<Node> node)
         {
             nodes.emplace_back(std::move(node));
         }
 
-        [[nodiscard]] auto getNodes() -> isl::Vector<std::unique_ptr<Node>> &
+        CCL_DECL auto getNodes() -> isl::Vector<std::unique_ptr<Node>> &
         {
             return nodes;
         }
 
-        [[nodiscard]] auto size() const noexcept -> std::size_t
+        CCL_DECL auto size() const noexcept -> std::size_t
         {
             return nodes.size();
         }
 
-        [[nodiscard]] auto empty() const noexcept -> bool
+        CCL_DECL auto empty() const noexcept -> bool
         {
             return size() == 0;
         }
 
-        [[nodiscard]] auto at(std::size_t index) -> std::optional<Node *>
+        CCL_DECL auto at(std::size_t index) -> std::optional<Node *>
         {
             if (nodes.size() <= index) {
                 return std::nullopt;
@@ -49,7 +49,7 @@ namespace ccl::parser::ast
             return nodes.at(index).get();
         }
 
-        [[nodiscard]] auto at(std::size_t index) const -> std::optional<const Node *>
+        CCL_DECL auto at(std::size_t index) const -> std::optional<const Node *>
         {
             if (nodes.size() <= index) {
                 return std::nullopt;
