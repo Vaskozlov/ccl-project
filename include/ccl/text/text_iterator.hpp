@@ -189,9 +189,9 @@ namespace ccl::text
     private:
         TextIterator &textIterator;
         char32_t result{};
-        u16 maximumSymbols;
-        u16 notationPower;
-        bool areAllCharsRequired;
+        u16 maximumSymbols{};
+        u16 notationPower{};
+        bool areAllCharsRequired{};
 
     public:
         NotationEscapingSequenceToChar(

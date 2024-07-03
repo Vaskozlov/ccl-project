@@ -10,6 +10,10 @@ namespace ccl::codegen
 
     CCL_INLINE auto BasicCodeGenerator::getCurrentStream() const noexcept -> const std::string &
     {
+        if (!generatedCode.contains(streamId)) {
+            return std::string{};
+        }
+
         return generatedCode.at(streamId);
     }
 
@@ -54,7 +58,7 @@ namespace ccl::codegen
 
     auto BasicCodeGenerator::operator<<(ScopeSize scope_size) -> BasicCodeGenerator &
     {
-        if (0 == scope_size.size) [[unlikely]] {
+        if (scope_size.size == 0) [[unlikely]] {
             throw std::logic_error{"Scope size can not be equal to zero."};
         }
 
@@ -72,7 +76,7 @@ namespace ccl::codegen
     auto BasicCodeGenerator::operator<<(PopScope /* unused */) -> BasicCodeGenerator &
     {
         if (scopesCounter == 0) [[unlikely]] {
-            throw std::runtime_error{"Cannot pop scope, because there are not any of them"};
+            throw std::logic_error{"Cannot pop scope, because there are not any of them"};
         }
 
         --scopesCounter;
@@ -98,6 +102,7 @@ namespace ccl::codegen
 
     auto BasicCodeGenerator::operator<<(isl::string_view string) -> BasicCodeGenerator &
     {
+        // TODO: use template
         return *this << as<std::string_view>(string);
     }
 
@@ -105,7 +110,7 @@ namespace ccl::codegen
     {
         getCurrentStream().reserve(generatedCode.size() + string.size());
 
-        for (char character : string) {
+        for (auto character : string) {
             *this << character;
         }
 

@@ -171,7 +171,7 @@ namespace ccl::lexer::dot_item
     auto Container::RuleParser::emplaceItem(std::derived_from<DotItemConcept> auto item) -> void
     {
         if (!item.canBeOptimized()) {
-            finishPreviousItemInitialization();
+            completePreviousItemInitialization();
             items.emplace_back(std::move(item));
         }
     }
@@ -179,19 +179,19 @@ namespace ccl::lexer::dot_item
     auto Container::RuleParser::emplaceItem(DotItem item) -> void
     {
         if (!item->canBeOptimized()) {
-            finishPreviousItemInitialization();
+            completePreviousItemInitialization();
             items.emplace_back(std::move(item));
         }
     }
 
-    auto Container::RuleParser::finishPreviousItemInitialization() -> void
+    auto Container::RuleParser::completePreviousItemInitialization() -> void
     {
         if (items.empty()) {
             return;
         }
 
         const DotItem &item = items.back();
-        auto item_repetition = item->getRepetition();
+        auto item_repetition = item->getClosure();
 
         neverRecognizedSuggestion(
             ruleIterator, item_repetition.to == 0 || (item->empty() && !item->isReversed()));
@@ -203,7 +203,7 @@ namespace ccl::lexer::dot_item
 
     auto Container::RuleParser::addPrefixPostfix() -> void
     {
-        checkAbilityToCreatePrefixPostfix();
+        checkAbilityToCreatePrefixOrPostfix();
 
         auto &last_item = items.back();
         auto is_prefix = items.size() == 1 || items[items.size() - 2]->hasPrefix();
@@ -223,7 +223,7 @@ namespace ccl::lexer::dot_item
 
         auto &last_item = items.back();
 
-        if (last_item->getRepetition() != Closure{1, 1}) {
+        if (last_item->getClosure() != Closure{1, 1}) {
             throwUnableToApply("item already has repetition");
         }
 
@@ -286,7 +286,7 @@ namespace ccl::lexer::dot_item
             return;
         }
 
-        finishPreviousItemInitialization();
+        completePreviousItemInitialization();
         DotItemConcept::neverRecognizedSuggestion(ruleIterator, items.empty() && !isReversed());
         DotItemConcept::alwaysRecognizedSuggestion(ruleIterator, items.empty() && isReversed());
     }
@@ -310,7 +310,7 @@ namespace ccl::lexer::dot_item
         }
     }
 
-    auto Container::RuleParser::checkAbilityToCreatePrefixPostfix() -> void
+    auto Container::RuleParser::checkAbilityToCreatePrefixOrPostfix() -> void
     {
         if (!container.flags.isMain) {
             throwUnableToApply(

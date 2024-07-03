@@ -10,7 +10,7 @@ namespace ccl::lexer
     {
     private:
         TextIterator textIterator;
-        Container *mainItem;
+        Container *mainItem{};
 
     public:
         [[nodiscard]] PegParser(

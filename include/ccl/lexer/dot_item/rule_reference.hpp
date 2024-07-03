@@ -9,7 +9,7 @@ namespace ccl::lexer::dot_item
     class RuleReference : public Sequence
     {
     private:
-        // NOLINTNEXTLINE
+        // NOLINTNEXTLINE reference
         LexicalAnalyzer &lexicalAnalyzer;
 
     public:
@@ -25,6 +25,8 @@ namespace ccl::lexer::dot_item
 
         [[nodiscard]] auto empty() const noexcept -> bool override
         {
+            // at the moment of initialization we may not have this information
+            // so it is better to return false to be on the safe side
             return false;
         }
 

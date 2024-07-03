@@ -23,17 +23,17 @@ namespace ccl::lexer
             LexicalAnalyzer &lexical_analyzer, isl::string_view text, std::string_view filename,
             ExceptionHandler &exception_handler);
 
-        [[nodiscard]] auto getIterator() const CCL_LIFETIMEBOUND->const TextIterator &
+        [[nodiscard]] auto getIterator() const CCL_LIFETIMEBOUND -> const TextIterator &
         {
             return textIterator;
         }
 
-        [[nodiscard]] auto getHandler() CCL_LIFETIMEBOUND->ExceptionHandler &
+        [[nodiscard]] auto getHandler() CCL_LIFETIMEBOUND -> ExceptionHandler &
         {
             return textIterator.getHandler();
         }
 
-        [[nodiscard]] auto getCurrentToken() CCL_LIFETIMEBOUND->Token &
+        [[nodiscard]] auto getCurrentToken() CCL_LIFETIMEBOUND -> Token &
         {
             return tokens[tokenIndex];// NOLINT
         }
@@ -42,8 +42,8 @@ namespace ccl::lexer
             ExceptionCriticality criticality, isl::string_view message,
             isl::string_view suggestion = {}) -> void;
 
-        auto yield() CCL_LIFETIMEBOUND->const Token &;
-        auto yieldFutureToken() CCL_LIFETIMEBOUND->const Token &;
+        auto yield() CCL_LIFETIMEBOUND -> const Token &;
+        auto yieldFutureToken() CCL_LIFETIMEBOUND -> const Token &;
 
     private:
         auto nextToken(Token &token) -> void;

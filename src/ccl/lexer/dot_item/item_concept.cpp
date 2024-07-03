@@ -51,11 +51,11 @@ namespace ccl::lexer::dot_item
         [[nodiscard]] auto constructResult(std::size_t totally_skipped) -> ParsingResult
         {
             if (nodeSequence->empty()) {
-                const auto repr =
+                const auto node_repr =
                     isl::string_view{textBegin.begin(), textIterator.getRemainingAsCarriage()};
 
                 return ParsingResult{
-                    totally_skipped, isl::makeUnique<parser::ast::ValueNode>(item.getId(), repr)};
+                    totally_skipped, isl::makeUnique<parser::ast::ValueNode>(item.getId(), node_repr)};
             }
 
             return ParsingResult{totally_skipped, std::move(nodeSequence)};
@@ -82,11 +82,11 @@ namespace ccl::lexer::dot_item
 
     auto DotItemConcept::scan(ForkedGenerator text_iterator) const -> ScanResult
     {
-        return LexerScanner(repetition, *this, text_iterator).scan();
+        return LexerScanner(closure, *this, text_iterator).scan();
     }
 
     auto DotItemConcept::parse(ForkedGenerator text_iterator) const -> ParsingResult
     {
-        return ParserScanner(repetition, *this, text_iterator).scan();
+        return ParserScanner(closure, *this, text_iterator).scan();
     }
 }// namespace ccl::lexer::dot_item

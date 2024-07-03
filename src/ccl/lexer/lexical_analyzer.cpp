@@ -10,7 +10,7 @@ namespace ccl::lexer
       : ignoredIds{std::move(ignored_ids)}
       , exceptionHandler{exception_handler}
     {
-        for (const Rule &rule : rules) {
+        for (const auto &rule : rules) {
             createContainer(rule, rule.id, filename);
         }
     }

@@ -10,8 +10,8 @@ namespace ccl::lexer::dot_item
     public:
         struct CCL_TRIVIAL_ABI SequenceFlags
         {
-            bool multiline = false;
-            bool noEscaping = false;
+            bool multiline{};
+            bool noEscaping{};
         };
 
     private:
@@ -35,7 +35,7 @@ namespace ccl::lexer::dot_item
             return sequenceValue;
         }
 
-        [[nodiscard]] auto getValue() const noexcept CCL_LIFETIMEBOUND-> const std::string &
+        [[nodiscard]] auto getValue() const noexcept CCL_LIFETIMEBOUND -> const std::string &
         {
             return sequenceValue;
         }

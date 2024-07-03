@@ -9,7 +9,7 @@ namespace ccl::lexer
     class CCL_TRIVIAL_ABI ScanResult
     {
     private:
-        std::size_t value;
+        std::size_t value{};
 
     public:
         [[nodiscard]] constexpr static auto failure() noexcept -> ScanResult

@@ -33,7 +33,7 @@ namespace ccl::lexer::parser
         };
 
     private:
-        class CompareTokenAsString
+        class CompareTokensByRepr
         {
         public:
             [[nodiscard]] auto operator()(const Token &lhs, const Token &rhs) const noexcept -> bool
@@ -44,9 +44,9 @@ namespace ccl::lexer::parser
 
         std::vector<Rule> rules;
         std::stack<Token> tokenStack;
-        std::map<Token, isl::string_view, CompareTokenAsString> directives;
-        std::map<isl::string_view, BlockInfo> blocks{{"NONE", {0, ReservedTokenMaxValue + 1}}};
-        AnyPlaceItems anyPlaceItems{};
+        std::map<Token, isl::string_view, CompareTokensByRepr> directives;
+        std::map<isl::string_view, BlockInfo> ruleBlocks{{"NONE", {0, ReservedTokenMaxValue + 1}}};
+        AnyPlaceItems anyPlaceItems;
         isl::string_view currentBlock{"NONE"};
         Tokenizer &tokenizer;
         std::size_t previousBlockId{1};
@@ -62,11 +62,11 @@ namespace ccl::lexer::parser
         [[nodiscard]] auto
             getBlocks() const CCL_LIFETIMEBOUND -> const std::map<isl::string_view, BlockInfo> &
         {
-            return blocks;
+            return ruleBlocks;
         }
 
         [[nodiscard]] auto getDirectives() const CCL_LIFETIMEBOUND
-            -> const std::map<Token, isl::string_view, CompareTokenAsString> &
+            -> const std::map<Token, isl::string_view, CompareTokensByRepr> &
         {
             return directives;
         }

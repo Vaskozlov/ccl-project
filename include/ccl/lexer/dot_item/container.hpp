@@ -30,14 +30,14 @@ namespace ccl::lexer::dot_item
 
         struct ContainerFlags
         {
-            bool isMain = false;
-            bool isSpecial = false;
+            bool isMain{};
+            bool isSpecial{};
         };
 
         DotItemsStorage items;
-        AnyPlaceItems &anyPlaceItems;
-        LexicalAnalyzer &lexicalAnalyzer;
-        ContainerFlags flags{};
+        AnyPlaceItems &anyPlaceItems;    // NOLINT reference
+        LexicalAnalyzer &lexicalAnalyzer;// NOLINT reference
+        ContainerFlags flags;
 
     public:
         [[nodiscard]] Container(
@@ -97,11 +97,11 @@ namespace ccl::lexer::dot_item
 
     class Container::RuleParser
     {
-        Container &container;                                 // NOLINT
-        TextIterator &ruleIterator;                           // NOLINT
-        DotItemsStorage &items{container.items};              // NOLINT
-        AnyPlaceItems &anyPlaceItems{container.anyPlaceItems};// NOLINT
-        LexicalAnalyzer &lexicalAnalyzer;                     // NOLINT
+        Container &container;                                 // NOLINT reference
+        TextIterator &ruleIterator;                           // NOLINT reference
+        DotItemsStorage &items{container.items};              // NOLINT reference
+        AnyPlaceItems &anyPlaceItems{container.anyPlaceItems};// NOLINT reference
+        LexicalAnalyzer &lexicalAnalyzer;                     // NOLINT reference
         std::optional<DotItem> constructedLhs{std::nullopt};
         BinaryOperator binaryOperator{};
         bool rhsItemConstructed{false};
@@ -110,12 +110,12 @@ namespace ccl::lexer::dot_item
         RuleParser(Container &target_container, TextIterator &text_iterator);
 
     private:
-        [[nodiscard]] CCL_INLINE auto getId() const noexcept -> Id
+        [[nodiscard]] auto getId() const noexcept -> Id
         {
             return container.getId();
         }
 
-        [[nodiscard]] CCL_INLINE auto isReversed() const noexcept -> bool
+        [[nodiscard]] auto isReversed() const noexcept -> bool
         {
             return container.isReversed();
         }
@@ -144,7 +144,7 @@ namespace ccl::lexer::dot_item
 
         auto emplaceItem(DotItem item) -> void;
 
-        auto finishPreviousItemInitialization() -> void;
+        auto completePreviousItemInitialization() -> void;
 
         auto addPrefixPostfix() -> void;
 
@@ -160,7 +160,7 @@ namespace ccl::lexer::dot_item
 
         auto checkThereIsLhsItem() -> void;
 
-        auto checkAbilityToCreatePrefixPostfix() -> void;
+        auto checkAbilityToCreatePrefixOrPostfix() -> void;
 
         [[noreturn]] auto
             throwUnableToApply(isl::string_view reason, isl::string_view suggestion = {}) -> void;
@@ -175,6 +175,7 @@ namespace ccl::lexer::dot_item
 
         [[nodiscard]] auto
             isSuccessfulScan(TextIterator &text_iterator, Token &token) const -> bool;
+
         [[nodiscard]] auto checkForSpecial(const ForkedGenerator &text_iterator) const -> bool;
     };
 }// namespace ccl::lexer::dot_item

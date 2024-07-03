@@ -68,20 +68,20 @@ namespace ccl::lexer
             return allItemsMap.at(name);
         }
 
-        [[nodiscard]] auto
-            getTokenizer(isl::string_view text, std::string_view filename = {}) -> Tokenizer;
+        [[nodiscard]] auto getTokenizer(isl::string_view text, std::string_view filename = {})
+            CCL_LIFETIMEBOUND -> Tokenizer;
 
         [[nodiscard]] auto getTokenizer(
             isl::string_view text, std::string_view filename,
-            ExceptionHandler &handler) -> Tokenizer;
+            ExceptionHandler &handler) CCL_LIFETIMEBOUND -> Tokenizer;
 
         [[nodiscard]] auto getParser(
             isl::string_view rule_name, isl::string_view text, std::string_view filename,
-            ExceptionHandler &handler) -> PegParser;
+            ExceptionHandler &handler) CCL_LIFETIMEBOUND -> PegParser;
 
         [[nodiscard]] auto getParser(
             isl::string_view rule_name, isl::string_view text,
-            std::string_view filename = {}) -> PegParser;
+            std::string_view filename = {}) CCL_LIFETIMEBOUND -> PegParser;
 
     private:
         auto createContainer(Rule rule, Id id, std::string_view filename) -> void;

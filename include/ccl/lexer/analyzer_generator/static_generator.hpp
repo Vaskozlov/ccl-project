@@ -18,15 +18,15 @@ namespace ccl::lexer::gen
     private:
         Tokenizer &tokenizer;
         parser::CcllParser ccllParser;
-        std::string includeDirForSrc{};
+        std::string includeDirForSrc;
         std::string handler{"ccl::handler::Cmd::instance()"};
         std::string variableName{"set_me"};
         std::string filename{"set_me"};
-        std::string nameSpace{};
-        std::string enumName{};
-        std::string generatedHeader{};
-        std::string extraSpaces{};
-        codegen::BasicCodeGenerator codeGenerator{};
+        std::string nameSpace;
+        std::string enumName;
+        std::string generatedHeader;
+        std::string extraSpaces;
+        codegen::BasicCodeGenerator codeGenerator;
 
     public:
         explicit StaticGenerator(Tokenizer &input_tokenizer);

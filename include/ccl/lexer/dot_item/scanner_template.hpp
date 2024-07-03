@@ -7,7 +7,7 @@ namespace ccl::lexer::dot_item
 {
     /**
      * Functions to override:
-     *  - scanIteration(DotItemConcept&)
+     *  - scanIteration(DotItemConcept&) const
      *  - onIteration(ResultOfScanIteration &)
      *  - constructResult(std::size_t totally_bytes_skipped)
      * @tparam CRTP
@@ -42,13 +42,14 @@ namespace ccl::lexer::dot_item
             auto totally_skipped = isl::as<std::size_t>(0);
 
             while (!textIterator.isEOI() && times < closure.to) {
-                auto &&scan_result = toParent().scanIteration(item);
+                auto &&scan_result = callScanIteration();
 
                 if (scan_result.isFailure()) {
                     break;
                 }
 
                 toParent().onIteration(scan_result);
+                callOnIteration(scan_result);
 
                 textIterator.skip(scan_result.getBytesCount());
                 totally_skipped += scan_result.getBytesCount();
@@ -56,13 +57,28 @@ namespace ccl::lexer::dot_item
             }
 
             if (closure.isInClosure(times)) {
-                return toParent().constructResult(totally_skipped);
+                return callConstructResult(totally_skipped);
             }
 
             return RT::failure();
         }
 
     private:
+        [[nodiscard]] auto callScanIteration() const -> RT
+        {
+            return toParent().scanIteration(item);
+        }
+
+        auto callOnIteration(RT &scan_result) -> void
+        {
+            return toParent().onIteration(scan_result);
+        }
+
+        [[nodiscard]] auto callConstructResult(std::size_t totally_skipped) -> RT
+        {
+            return toParent().constructResult(totally_skipped);
+        }
+
         CCL_DECL auto toParent() noexcept CCL_LIFETIMEBOUND -> CRTP &
         {
             return static_cast<CRTP &>(*this);

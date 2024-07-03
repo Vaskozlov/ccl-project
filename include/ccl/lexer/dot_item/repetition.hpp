@@ -33,10 +33,10 @@ namespace ccl::lexer::dot_item
             operator<=>(const Closure &) const noexcept -> std::strong_ordering = default;
 
     private:
+        static auto checkRangeStart(text::TextIterator &text_iterator) -> void;
+
         [[nodiscard]] static auto
             parseNumber(text::TextIterator &text_iterator, char32_t terminator) -> std::size_t;
-
-        static auto checkRangeStart(text::TextIterator &text_iterator) -> void;
 
         auto checkCorrectnessOfValues(text::TextIterator &text_iterator) const -> void;
 

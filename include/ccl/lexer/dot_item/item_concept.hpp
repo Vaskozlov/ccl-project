@@ -23,15 +23,15 @@ namespace ccl::lexer::dot_item
 
         struct CCL_TRIVIAL_ABI Flags
         {
-            bool reversed = false;
-            bool isPrefix = false;
-            bool isPostfix = false;
-            bool sequenceIsMultiline = false;
-            bool noEscapingSymbols = false;
+            bool reversed{};
+            bool isPrefix{};
+            bool isPostfix{};
+            bool sequenceIsMultiline{};
+            bool noEscapingSymbols{};
         };
 
     private:
-        Closure repetition{1, 1};
+        Closure closure{1, 1};
         Id id{};
         Flags flags;
 
@@ -53,9 +53,9 @@ namespace ccl::lexer::dot_item
         auto operator=(const DotItemConcept &) -> void = delete;
         auto operator=(DotItemConcept &&) noexcept -> void = delete;
 
-        [[nodiscard]] auto getRepetition() const noexcept -> Closure
+        [[nodiscard]] auto getClosure() const noexcept -> Closure
         {
-            return repetition;
+            return closure;
         }
 
         [[nodiscard]] auto getFlags() const noexcept -> Flags
@@ -95,12 +95,12 @@ namespace ccl::lexer::dot_item
 
         auto setRepetition(Closure new_repetition) noexcept -> void
         {
-            repetition = new_repetition;
+            closure = new_repetition;
         }
 
         [[nodiscard]] auto canBeOptimized() const noexcept -> bool
         {
-            const auto fromZeroAccuracies = repetition.from == 0;
+            const auto fromZeroAccuracies = closure.from == 0;
             return !isReversed() && fromZeroAccuracies && empty();
         }
 
@@ -112,9 +112,10 @@ namespace ccl::lexer::dot_item
         static auto alwaysRecognizedSuggestion(TextIterator &text_iterator, bool condition) -> void;
         static auto neverRecognizedSuggestion(TextIterator &text_iterator, bool condition) -> void;
 
-        [[nodiscard]] virtual auto empty() const noexcept -> bool = 0;
         [[nodiscard]] auto scan(ForkedGenerator text_iterator) const -> ScanResult;
         [[nodiscard]] auto parse(ForkedGenerator text_iterator) const -> ParsingResult;
+
+        [[nodiscard]] virtual auto empty() const noexcept -> bool = 0;
 
         [[nodiscard]] virtual auto
             scanIteration(const ForkedGenerator &text_iterator) const -> ScanResult = 0;

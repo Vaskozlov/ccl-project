@@ -10,7 +10,7 @@ namespace ccl::handler
         auto replaced_tabs = isl::as<std::size_t>(0);
 
         ISL_UNROLL_N(4)
-        for (char chr : string) {
+        for (auto chr : string) {
             if ('\t' == chr) {
                 ++replaced_tabs;
                 result.append("    "sv);
@@ -55,7 +55,7 @@ namespace ccl::handler
     {
         constexpr auto total_line_number_width = 6U;
         auto arrow_position =
-            (column - 1) + length + tabs_number * (4 - 1) + total_line_number_width - 1;
+            (column - 1) + length + (tabs_number * (4 - 1)) + (total_line_number_width - 1);
 
         fmt::format_to(std::back_inserter(formattingBuffer), "{:>6}", '|');
 

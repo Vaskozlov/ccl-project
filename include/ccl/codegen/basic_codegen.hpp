@@ -34,10 +34,10 @@ namespace ccl::codegen
         };
 
     private:
-        std::map<Id, std::string> generatedCode{};
-        Id streamId = 0;
-        std::size_t scopesCounter = 0;
-        std::size_t scopeSize = 4;
+        std::map<Id, std::string> generatedCode;
+        Id streamId{};
+        std::size_t scopesCounter{};
+        std::size_t scopeSize{4};
 
     public:
         BasicCodeGenerator() = default;
@@ -45,7 +45,7 @@ namespace ccl::codegen
         [[nodiscard]] auto getCode() const noexcept -> std::string;
 
         [[nodiscard]] auto
-            getBackInserter() noexcept CCL_LIFETIMEBOUND->std::back_insert_iterator<std::string>;
+            getBackInserter() noexcept CCL_LIFETIMEBOUND -> std::back_insert_iterator<std::string>;
 
         auto reserve(std::size_t size) -> void;
 
@@ -87,8 +87,9 @@ namespace ccl::codegen
         }
 
     private:
-        [[nodiscard]] auto getCurrentStream() noexcept CCL_LIFETIMEBOUND->std::string &;
-        [[nodiscard]] auto getCurrentStream() const noexcept CCL_LIFETIMEBOUND->const std::string &;
+        [[nodiscard]] auto getCurrentStream() noexcept CCL_LIFETIMEBOUND -> std::string &;
+        [[nodiscard]] auto
+            getCurrentStream() const noexcept CCL_LIFETIMEBOUND -> const std::string &;
 
         auto newLine() -> void;
         auto addScope(std::size_t scopes_count) -> void;

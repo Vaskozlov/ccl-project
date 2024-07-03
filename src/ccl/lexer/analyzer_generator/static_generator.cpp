@@ -38,11 +38,11 @@ namespace ccl::lexer::gen
             const auto name_str = name.getRepr();
             auto value_str = isl::as<std::string>(value);
 
-            if ("VAR_NAME" == name_str) {
+            if (name_str == "VAR_NAME") {
                 variableName = std::move(value_str);
-            } else if ("HANDLER" == name_str) {
+            } else if (name_str == "HANDLER") {
                 handler = std::move(value_str);
-            } else if ("NAMESPACE" == name_str) {
+            } else if (name_str == "NAMESPACE") {
                 nameSpace = std::move(value_str);
             } else {
                 auto exception = text::TextIteratorException(
