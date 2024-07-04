@@ -44,9 +44,6 @@ namespace ccl::codegen
 
         [[nodiscard]] auto getCode() const noexcept -> std::string;
 
-        [[nodiscard]] auto
-            getBackInserter() noexcept CCL_LIFETIMEBOUND -> std::back_insert_iterator<std::string>;
-
         auto reserve(std::size_t size) -> void;
 
         auto operator<<(ScopeSize scope_size) CCL_LIFETIMEBOUND->BasicCodeGenerator &;
