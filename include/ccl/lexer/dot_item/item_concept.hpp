@@ -33,6 +33,7 @@ namespace ccl::lexer::dot_item
     private:
         Closure closure{1, 1};
         Id id{};
+        std::size_t priority{};
         Flags flags;
 
     public:
@@ -61,6 +62,11 @@ namespace ccl::lexer::dot_item
         [[nodiscard]] auto getFlags() const noexcept -> Flags
         {
             return flags;
+        }
+
+        [[nodiscard]] auto getPriority() const noexcept -> std::size_t
+        {
+            return priority;
         }
 
         [[nodiscard]] auto isReversed() const noexcept -> bool
@@ -96,6 +102,11 @@ namespace ccl::lexer::dot_item
         auto setRepetition(Closure new_repetition) noexcept -> void
         {
             closure = new_repetition;
+        }
+
+        auto setPriority(std::size_t new_priority) noexcept -> void
+        {
+            priority = new_priority;
         }
 
         [[nodiscard]] auto canBeOptimized() const noexcept -> bool
