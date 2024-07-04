@@ -10,10 +10,6 @@ namespace ccl::codegen
 
     CCL_INLINE auto BasicCodeGenerator::getCurrentStream() const noexcept -> const std::string &
     {
-        if (!generatedCode.contains(streamId)) {
-            return std::string{};
-        }
-
         return generatedCode.at(streamId);
     }
 
