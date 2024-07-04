@@ -11,7 +11,7 @@ namespace ccl::text
     private:
         isl::string_view text;
         isl::string_view line;
-        bool newLinePassed{false};
+        bool newLinePassed{};
 
     public:
         [[nodiscard]] explicit LineTracker(isl::string_view text_to_track) noexcept;

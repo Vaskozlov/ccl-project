@@ -53,7 +53,7 @@ namespace ccl::text
                 errorDetected = true;
             }
 
-            bool errorDetected{false};
+            bool errorDetected{};
         };
 
         CrtpBasicTextIterator() noexcept = default;

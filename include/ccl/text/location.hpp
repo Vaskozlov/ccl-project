@@ -11,15 +11,15 @@ namespace ccl::text
     {
         isl::string_view filename;
         std::size_t line{1};
-        std::size_t column{0};
-        std::size_t realColumn{0};
+        std::size_t column{};
+        std::size_t realColumn{};
 
     public:
         Location() noexcept = default;
 
         [[nodiscard]] constexpr explicit Location(
-            isl::string_view name_of_file, std::size_t line_in_file = 1, std::size_t column_in_file = 0,
-            std::size_t real_column = 0) noexcept
+            isl::string_view name_of_file, std::size_t line_in_file = 1,
+            std::size_t column_in_file = 0, std::size_t real_column = 0) noexcept
           : filename{name_of_file}
           , line{line_in_file}
           , column{column_in_file}

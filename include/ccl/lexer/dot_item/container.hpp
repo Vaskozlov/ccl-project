@@ -104,7 +104,7 @@ namespace ccl::lexer::dot_item
         LexicalAnalyzer &lexicalAnalyzer;                     // NOLINT reference
         std::optional<DotItem> constructedLhs{std::nullopt};
         BinaryOperator binaryOperator{};
-        bool rhsItemConstructed{false};
+        bool rhsItemConstructed{};
 
     public:
         RuleParser(Container &target_container, TextIterator &text_iterator);
