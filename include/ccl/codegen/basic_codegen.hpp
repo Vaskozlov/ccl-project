@@ -55,13 +55,19 @@ namespace ccl::codegen
         auto operator<<(StreamId stream_id) CCL_LIFETIMEBOUND->BasicCodeGenerator &;
 
         auto operator<<(char character) CCL_LIFETIMEBOUND->BasicCodeGenerator &;
-        auto operator<<(isl::string_view string) CCL_LIFETIMEBOUND->BasicCodeGenerator &;
-        auto operator<<(std::string_view string) CCL_LIFETIMEBOUND->BasicCodeGenerator &;
-        auto operator<<(const std::string &string) CCL_LIFETIMEBOUND->BasicCodeGenerator &;
 
-        template<typename Numeric>
+        auto operator<<(const isl::RangeOf<char> auto &range_of_chars)
+            CCL_LIFETIMEBOUND->BasicCodeGenerator &
+        {
+            for (auto chr : range_of_chars) {
+                *this << chr;
+            }
+
+            return *this;
+        }
+
+        template<isl::AnyTrait<std::is_integral, std::is_floating_point> Numeric>
         auto operator<<(Numeric value) CCL_LIFETIMEBOUND->BasicCodeGenerator &
-            requires std::floating_point<Numeric> || std::integral<Numeric>
         {
             return *this << std::string_view{fmt::to_string(value)};
         }
@@ -70,13 +76,6 @@ namespace ccl::codegen
         {
             newLine();
             return *this;
-        }
-
-        template<std::size_t Size>
-        auto
-            operator<<(const isl::ConstString<Size> &string) CCL_LIFETIMEBOUND->BasicCodeGenerator &
-        {
-            return *this << as<isl::string_view>(string);
         }
 
         template<std::size_t N>// NOLINTNEXTLINE

@@ -95,26 +95,4 @@ namespace ccl::codegen
 
         return *this;
     }
-
-    auto BasicCodeGenerator::operator<<(isl::string_view string) -> BasicCodeGenerator &
-    {
-        // TODO: use template
-        return *this << as<std::string_view>(string);
-    }
-
-    auto BasicCodeGenerator::operator<<(std::string_view string) -> BasicCodeGenerator &
-    {
-        getCurrentStream().reserve(generatedCode.size() + string.size());
-
-        for (auto character : string) {
-            *this << character;
-        }
-
-        return *this;
-    }
-
-    auto BasicCodeGenerator::operator<<(const std::string &string) -> BasicCodeGenerator &
-    {
-        return *this << isl::as<std::string_view>(string);
-    }
 }// namespace ccl::codegen
