@@ -29,8 +29,8 @@ namespace tparser
     inline auto TestParser = ccl::lexer::LexicalAnalyzer{    
         ccl::handler::Cmd::instance(),
         {    
-            {TestParserToken::PRODUCT, R"( ('NUMBER' ([ ]* [*] [ ]* 'NUMBER')) | 'NUMBER' )"},
-            {TestParserToken::ADDITION, R"( ('PRODUCT' ([ ]* [+] [ ]* 'ADDITION')) | 'PRODUCT' )"},
+            {TestParserToken::PRODUCT, R"( ('NUMBER'  [*] 'NUMBER') | 'NUMBER' )"},
+            {TestParserToken::ADDITION, R"( ('PRODUCT' [+] 'ADDITION') | 'PRODUCT' )"},
             {TestParserToken::EXPR, R"( 'ADDITION' )"},
             {TestParserToken::NUMBER, R"( [0-9]+ | 'PARENTHESIZED_EXPR' )"},
             {TestParserToken::PARENTHESIZED_EXPR, R"( ([(] 'EXPR' [)]) )"},

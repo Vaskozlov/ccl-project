@@ -2,8 +2,8 @@ NAMESPACE   = "tparser"
 VAR_NAME    = "TestParser"
 HANDLER     = "ccl::handler::Cmd::instance()"
 
-PRODUCT: ('NUMBER' ([ ]* [*] [ ]* 'NUMBER')) | 'NUMBER'
-ADDITION: ('PRODUCT' ([ ]* [+] [ ]* 'ADDITION')) | 'PRODUCT'
+PRODUCT: ('NUMBER'  [*] 'NUMBER') | 'NUMBER'
+ADDITION: ('PRODUCT' [+] 'ADDITION') | 'PRODUCT'
 EXPR: 'ADDITION'
 NUMBER: [0-9]+ | 'PARENTHESIZED_EXPR'
 PARENTHESIZED_EXPR: ([(] 'EXPR' [)])
