@@ -11,15 +11,15 @@ namespace ccl::codegen
     class BasicCodeGenerator
     {
     public:
-        struct CCL_TRIVIAL_ABI PushScope : std::true_type
+        struct CCL_TRIVIAL_ABI PushScope : private std::true_type
         {
         };
 
-        struct CCL_TRIVIAL_ABI PopScope : std::false_type
+        struct CCL_TRIVIAL_ABI PopScope : private std::false_type
         {
         };
 
-        struct CCL_TRIVIAL_ABI Endl : std::true_type
+        struct CCL_TRIVIAL_ABI Endl : private std::true_type
         {
         };
 
@@ -79,13 +79,11 @@ namespace ccl::codegen
         auto operator<<(const isl::CArray<char, N> &character_array)
             CCL_LIFETIMEBOUND->BasicCodeGenerator &
         {
-            return *this << std::string_view{character_array};// NOLINT
+            return *this << isl::string_view{character_array};// NOLINT
         }
 
     private:
         [[nodiscard]] auto getCurrentStream() noexcept CCL_LIFETIMEBOUND -> std::string &;
-        [[nodiscard]] auto
-            getCurrentStream() const noexcept CCL_LIFETIMEBOUND -> const std::string &;
 
         auto newLine() -> void;
         auto addScope(std::size_t scopes_count) -> void;
