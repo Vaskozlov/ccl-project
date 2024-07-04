@@ -84,6 +84,10 @@ namespace ccl::lexer::dot_item
             startBinaryExpression(BinaryOperator::OR);
             break;
 
+        case U'_':
+            addPriority();
+            break;
+
         default:
             throwUndefinedAction();
         }
@@ -228,6 +232,21 @@ namespace ccl::lexer::dot_item
         }
 
         last_item->setRepetition(new_repetition);
+    }
+
+    auto Container::RuleParser::addPriority() -> void
+    {
+        auto rule_priority = isl::as<std::size_t>(ruleIterator.advance() - U'0');
+
+        while (isDigit(ruleIterator.futureChar())) {
+            rule_priority *= 10;
+            rule_priority += (ruleIterator.advance() - U'0');
+        }
+
+        auto &last_item = items.back();
+        last_item->setPriority(rule_priority);
+
+        ruleIterator.advance();
     }
 
     auto Container::RuleParser::makeSpecial() -> void
