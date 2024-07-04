@@ -8,11 +8,6 @@ namespace ccl::codegen
         return generatedCode[streamId];
     }
 
-    CCL_INLINE auto BasicCodeGenerator::getCurrentStream() const noexcept -> const std::string &
-    {
-        return generatedCode.at(streamId);
-    }
-
     auto BasicCodeGenerator::getBackInserter() noexcept -> std::back_insert_iterator<std::string>
     {
         return std::back_inserter(getCurrentStream());
