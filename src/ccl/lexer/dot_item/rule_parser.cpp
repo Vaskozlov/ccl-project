@@ -3,6 +3,7 @@
 #include <ccl/lexer/dot_item/rule_reference.hpp>
 #include <ccl/lexer/dot_item/sequence.hpp>
 #include <ccl/lexer/dot_item/union.hpp>
+#include <utility>
 
 namespace ccl::lexer::dot_item
 {
@@ -85,7 +86,7 @@ namespace ccl::lexer::dot_item
             break;
 
         case U'_':
-            addPriority();
+            addBindingPower();
             break;
 
         default:
@@ -234,17 +235,18 @@ namespace ccl::lexer::dot_item
         last_item->setRepetition(new_repetition);
     }
 
-    auto Container::RuleParser::addPriority() -> void
+    auto Container::RuleParser::addBindingPower() -> void
     {
-        auto rule_priority = isl::as<std::size_t>(ruleIterator.advance() - U'0');
+        constexpr auto decimal_base = isl::as<std::size_t>(10);
+        auto binding_power = isl::as<std::size_t>(ruleIterator.advance() - U'0');
 
         while (isDigit(ruleIterator.futureChar())) {
-            rule_priority *= 10;
-            rule_priority += (ruleIterator.advance() - U'0');
+            binding_power *= decimal_base;
+            binding_power += (ruleIterator.advance() - U'0');
         }
 
         auto &last_item = items.back();
-        last_item->setPriority(rule_priority);
+        last_item->setBindingPower(binding_power);
 
         ruleIterator.advance();
     }

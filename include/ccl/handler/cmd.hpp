@@ -32,11 +32,11 @@ namespace ccl::handler
     {
         friend class Cmd;
 
-        std::string formattingBuffer{};
-        isl::string_view workingLine{};
-        isl::string_view filename{};
-        isl::string_view message{};
-        isl::string_view suggestion{};
+        std::string formattingBuffer;
+        isl::string_view workingLine;
+        isl::string_view filename;
+        isl::string_view message;
+        isl::string_view suggestion;
         std::size_t length{};
         std::size_t line{};
         std::size_t column{};

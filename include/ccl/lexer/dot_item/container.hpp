@@ -150,7 +150,7 @@ namespace ccl::lexer::dot_item
 
         auto addRepetition(Closure new_repetition) -> void;
 
-        auto addPriority() -> void;
+        auto addBindingPower() -> void;
 
         auto makeSpecial() -> void;
 

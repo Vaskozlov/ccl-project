@@ -1,7 +1,7 @@
 #include <ccl/debug/debug_file.hpp>
 #include <ccl/lexer/lexical_analyzer.hpp>
 
-TEST_CASE("TestPriorityOnUnion", "[Container]")
+TEST_CASE("TestBindingPowerOnUnion", "[Container]")
 {
     using namespace ccl;
 
@@ -13,5 +13,5 @@ TEST_CASE("TestPriorityOnUnion", "[Container]")
         debug::FirstUsableToken, true);
 
     DEBUG_VAR items = container.getItems();
-    REQUIRE(items.back()->getPriority() == 100);
+    REQUIRE(items.back()->getBindingPower() == 100);
 }

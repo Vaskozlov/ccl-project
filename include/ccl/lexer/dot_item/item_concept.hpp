@@ -33,7 +33,7 @@ namespace ccl::lexer::dot_item
     private:
         Closure closure{1, 1};
         Id id{};
-        std::size_t priority{};
+        std::size_t bindingPower{};
         Flags flags;
 
     public:
@@ -64,9 +64,9 @@ namespace ccl::lexer::dot_item
             return flags;
         }
 
-        [[nodiscard]] auto getPriority() const noexcept -> std::size_t
+        [[nodiscard]] auto getBindingPower() const noexcept -> std::size_t
         {
-            return priority;
+            return bindingPower;
         }
 
         [[nodiscard]] auto isReversed() const noexcept -> bool
@@ -104,9 +104,9 @@ namespace ccl::lexer::dot_item
             closure = new_repetition;
         }
 
-        auto setPriority(std::size_t new_priority) noexcept -> void
+        auto setBindingPower(std::size_t new_binding_power) noexcept -> void
         {
-            priority = new_priority;
+            bindingPower = new_binding_power;
         }
 
         [[nodiscard]] auto canBeOptimized() const noexcept -> bool

@@ -16,6 +16,7 @@ namespace ccl::lexer::gen
         using Tokenizer = typename LexicalAnalyzer::Tokenizer;
 
     private:
+        // NOLINTNEXTLINE reference
         Tokenizer &tokenizer;
         parser::CcllParser ccllParser;
         std::string includeDirForSrc;
