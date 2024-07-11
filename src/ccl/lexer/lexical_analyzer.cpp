@@ -22,7 +22,7 @@ namespace ccl::lexer
 
         allItemsMap[rule.name] = container.get();
 
-        if (container->isAnyPlaceRule()) {
+        if (container->isAnyPlaceItem()) {
             anyPlaceItems.items.emplace_back(std::move(container));
         } else if (!container->empty()) {
             items.emplace_back(std::move(container));

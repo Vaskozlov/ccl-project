@@ -167,7 +167,7 @@ namespace ccl::lexer::dot_item
         ruleIterator.setEnd(text.begin() + bracket_index);
 
         auto new_container = Container{lexicalAnalyzer, ruleIterator, anyPlaceItems,
-                                       getId(),         false,        container.isAnyPlaceRule()};
+                                       getId(),         false,        container.isAnyPlaceItem()};
         ruleIterator.setEnd(saved_end);
 
         return DotItem{std::move(new_container)};

@@ -75,7 +75,7 @@ namespace ccl::lexer::dot_item
             return items.empty();
         }
 
-        [[nodiscard]] auto isAnyPlaceRule() const noexcept -> bool
+        [[nodiscard]] auto isAnyPlaceItem() const noexcept -> bool
         {
             return flags.isSpecial;
         }
