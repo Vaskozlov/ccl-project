@@ -83,6 +83,12 @@ namespace ccl::lexer
             isl::string_view rule_name, isl::string_view text,
             std::string_view filename = {}) CCL_LIFETIMEBOUND -> PegParser;
 
+        [[nodiscard]] auto
+            getItems() const noexcept -> const isl::Vector<std::unique_ptr<Container>> &
+        {
+            return items;
+        }
+
     private:
         auto createContainer(Rule rule, Id id, std::string_view filename) -> void;
     };
