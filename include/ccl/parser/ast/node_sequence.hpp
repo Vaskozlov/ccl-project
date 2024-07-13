@@ -68,6 +68,11 @@ namespace ccl::parser::ast
                 addNode(std::move(node));
             }
         }
+
+        auto reverse() -> void
+        {
+            std::ranges::reverse(nodes);
+        }
     };
 }// namespace ccl::parser::ast
 
