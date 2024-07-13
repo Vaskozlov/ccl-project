@@ -14,9 +14,9 @@ namespace ccl::lexer::dot_item
             // do nothing
         }
 
-        [[nodiscard]] auto scanIteration(const DotItemConcept &item) const -> ScanResult
+        [[nodiscard]] auto scanIteration(const DotItemConcept &item_concept) const -> ScanResult
         {
-            return item.scanIteration(textIterator);
+            return item_concept.scanIteration(textIterator);
         }
 
         [[nodiscard]] static auto constructResult(std::size_t totally_skipped) -> ScanResult
@@ -43,9 +43,9 @@ namespace ccl::lexer::dot_item
             }
         }
 
-        [[nodiscard]] auto scanIteration(const DotItemConcept &item) const -> ParsingResult
+        [[nodiscard]] auto scanIteration(const DotItemConcept &item_concept) const -> ParsingResult
         {
-            return item.parseIteration(textIterator);
+            return item_concept.parseIteration(textIterator);
         }
 
         [[nodiscard]] auto constructResult(std::size_t totally_skipped) -> ParsingResult
