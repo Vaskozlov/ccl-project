@@ -163,6 +163,13 @@ namespace ccl::lexer
         auto finishInitialization(text::TextIterator &text_iterator, std::size_t totally_skipped)
             -> void;
     };
+
+    template<isl::AnyTrait<std::is_integral, std::is_enum> T>
+    CCL_DECL auto isUsedDefinedTokenOrEoF(T token_id) -> bool
+    {
+        return isl::as<std::size_t>(token_id) == isl::as<std::size_t>(ReservedTokenType::EOI) ||
+               isl::as<std::size_t>(token_id) > ReservedTokenMaxValue;
+    }
 }// namespace ccl::lexer
 
 #endif /* CCL_PROJECT_TOKEN_HPP */
