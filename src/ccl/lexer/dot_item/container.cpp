@@ -2,7 +2,7 @@
 #include <ccl/lexer/dot_item/rule_reference.hpp>
 #include <ccl/lexer/lexical_analyzer.hpp>
 #include <ccl/parser/ast/node_sequence.hpp>
-#include <ccl/parser/ast/value.hpp>
+#include <ccl/parser/ast/string_node.hpp>
 
 namespace ccl::lexer::dot_item
 {
@@ -117,7 +117,7 @@ namespace ccl::lexer::dot_item
             }
 
             if (parsing_result.getNode() == nullptr) {
-                node_sequence->addNode(isl::makeUnique<parser::ast::ValueNode>(
+                node_sequence->addNode(isl::makeUnique<parser::ast::StringNode>(
                     getId(),
                     local_iterator.getRemaining().substr(0, parsing_result.getBytesCount())));
             } else {

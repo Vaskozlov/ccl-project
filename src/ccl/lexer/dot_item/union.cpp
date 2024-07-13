@@ -1,5 +1,4 @@
 #include <ccl/lexer/dot_item/union.hpp>
-#include <ccl/parser/ast/value.hpp>
 
 namespace ccl::lexer::dot_item
 {

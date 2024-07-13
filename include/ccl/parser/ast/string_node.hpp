@@ -1,17 +1,17 @@
-#ifndef CCL_PROJECT_VALUE_NODE_HPP
-#define CCL_PROJECT_VALUE_NODE_HPP
+#ifndef CCL_PROJECT_STRING_NODE_HPP
+#define CCL_PROJECT_STRING_NODE_HPP
 
 #include <ccl/parser/ast/node.hpp>
 
 namespace ccl::parser::ast
 {
-    class ValueNode : public Node
+    class StringNode : public Node
     {
     private:
         std::string repr;
 
     public:
-        explicit ValueNode(Id node_type_id, isl::string_view value_repr)
+        explicit StringNode(Id node_type_id, isl::string_view value_repr)
           : Node{node_type_id}
           , repr{value_repr}
         {}
@@ -22,4 +22,4 @@ namespace ccl::parser::ast
     };
 }// namespace ccl::parser::ast
 
-#endif /* CCL_PROJECT_VALUE_NODE_HPP */
+#endif /* CCL_PROJECT_STRING_NODE_HPP */
