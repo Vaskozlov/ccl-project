@@ -26,6 +26,6 @@ endif ()
 target_link_libraries(
         ccl-lexer
         ccl
-        fmt::fmt
+        fmt::fmt-header-only
         cxxopts::cxxopts
 )
