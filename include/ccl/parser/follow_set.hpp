@@ -10,9 +10,9 @@ namespace ccl::parser
         class FollowSetEvaluator : private FirstAndFollowSetsCommon
         {
         private:
-            isl::Map<Production, isl::Set<Production>> followSet;
-            const isl::Map<Production, isl::Set<Production>> &firstSet;
-            Production epsilon;
+            isl::Map<Symbol, isl::Set<Symbol>> followSet;
+            const isl::Map<Symbol, isl::Set<Symbol>> &firstSet;
+            Symbol epsilon;
 
             using FirstAndFollowSetsCommon::applyFixedPointAlgorithmOnAllRules;
             using FirstAndFollowSetsCommon::insertRange;
@@ -23,31 +23,33 @@ namespace ccl::parser
 
         public:
             FollowSetEvaluator(
-                Production start_symbol, Production end_of_input, Production epsilon_symbol,
-                const isl::Set<Production> &grammar_symbols, const isl::Set<Production> &terminal_symbols,
-                const isl::Map<Production, isl::Vector<isl::Vector<Production>>> &parser_rules,
-                const isl::Map<Production, isl::Set<Production>> &first_set);
+                Symbol start_symbol, Symbol end_of_input, Symbol epsilon_symbol,
+                const isl::Set<Symbol> &grammar_symbols, const isl::Set<Symbol> &terminal_symbols,
+                const isl::Map<Symbol, isl::Vector<isl::Vector<Symbol>>> &parser_rules,
+                const isl::Map<Symbol, isl::Set<Symbol>> &first_set);
 
-            [[nodiscard]] auto getFollowSet() CCL_LIFETIMEBOUND -> isl::Map<Production, isl::Set<Production>> &
+            [[nodiscard]] auto
+                getFollowSet() CCL_LIFETIMEBOUND -> isl::Map<Symbol, isl::Set<Symbol>> &
             {
                 return followSet;
             }
 
         private:
-            auto initializeFollowSet(Production start_symbol, Production end_of_input) -> void;
+            auto initializeFollowSet(Symbol start_symbol, Symbol end_of_input) -> void;
 
             auto computeFollowSet() -> void;
 
-            auto followSetComputationIteration(Production key, const isl::Vector<Production> &rule) -> bool;
+            auto followSetComputationIteration(Symbol key, const isl::Vector<Symbol> &rule) -> bool;
 
-            auto followSetNonTerminalCase(Production elem, isl::Set<Production> &trailer) -> bool;
+            auto followSetNonTerminalCase(Symbol elem, isl::Set<Symbol> &trailer) -> bool;
         };
     }// namespace detail
 
     auto evaluateFollowSet(
-        Production start_symbol, Production end_of_input, Production epsilon_symbol, const isl::Set<Production> &grammar_symbols,
-        const isl::Set<Production> &terminals, const isl::Map<Production, isl::Vector<isl::Vector<Production>>> &rules,
-        const isl::Map<Production, isl::Set<Production>> &first_set) -> isl::Map<Production, isl::Set<Production>>;
+        Symbol start_symbol, Symbol end_of_input, Symbol epsilon_symbol,
+        const isl::Set<Symbol> &grammar_symbols, const isl::Set<Symbol> &terminals,
+        const isl::Map<Symbol, isl::Vector<isl::Vector<Symbol>>> &rules,
+        const isl::Map<Symbol, isl::Set<Symbol>> &first_set) -> isl::Map<Symbol, isl::Set<Symbol>>;
 }// namespace ccl::parser
 
 

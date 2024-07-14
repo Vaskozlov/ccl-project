@@ -8,12 +8,12 @@ namespace ccl::parser
             fillActionTableEntry(cc, item);
         }
 
-        for (const auto product : allSymbols) {
-            if (isTerminal(product)) {
+        for (const auto symbol : allSymbols) {
+            if (isTerminal(symbol)) {
                 continue;
             }
 
-            fillGotoTableEntry(cc, product);
+            fillGotoTableEntry(cc, symbol);
         }
     }
 
@@ -45,9 +45,9 @@ namespace ccl::parser
         }
     }
 
-    auto LrParser::fillGotoTableEntry(const CanonicalCollection &cc, Production production) -> void
+    auto LrParser::fillGotoTableEntry(const CanonicalCollection &cc, Symbol symbol) -> void
     {
-        auto entry = TableEntry{.state = cc.collectionId, .lookAhead = production};
+        auto entry = TableEntry{.state = cc.collectionId, .lookAhead = symbol};
 
         if (!transitions.contains(entry)) {
             return;

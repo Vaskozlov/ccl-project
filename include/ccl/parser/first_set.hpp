@@ -10,8 +10,8 @@ namespace ccl::parser
         class FirstSetEvaluator : private FirstAndFollowSetsCommon
         {
         private:
-            isl::Map<Production, isl::Set<Production>> firstSet;
-            Production epsilon;
+            isl::Map<Symbol, isl::Set<Symbol>> firstSet;
+            Symbol epsilon;
 
             using FirstAndFollowSetsCommon::applyFixedPointAlgorithmOnAllRules;
             using FirstAndFollowSetsCommon::insertRange;
@@ -22,12 +22,12 @@ namespace ccl::parser
 
         public:
             FirstSetEvaluator(
-                Production epsilon_symbol, const isl::Set<Production> &grammar_symbols,
-                const isl::Set<Production> &terminal_symbols,
-                const isl::Map<Production, isl::Vector<isl::Vector<Production>>> &parser_rules);
+                Symbol epsilon_symbol, const isl::Set<Symbol> &grammar_symbols,
+                const isl::Set<Symbol> &terminal_symbols,
+                const isl::Map<Symbol, isl::Vector<isl::Vector<Symbol>>> &parser_rules);
 
             [[nodiscard]] auto
-                getFirstSet() CCL_LIFETIMEBOUND -> isl::Map<Production, isl::Set<Production>> &
+                getFirstSet() CCL_LIFETIMEBOUND -> isl::Map<Symbol, isl::Set<Symbol>> &
             {
                 return firstSet;
             }
@@ -35,16 +35,14 @@ namespace ccl::parser
         private:
             auto initializeFirstSet() -> void;
             auto computeFirstSet() -> void;
-            auto firstSetComputationIteration(Production key, const isl::Vector<Production> &rule)
-                -> bool;
+            auto firstSetComputationIteration(Symbol key, const isl::Vector<Symbol> &rule) -> bool;
         };
     }// namespace detail
 
     auto evaluateFirstSet(
-        Production epsilon, const isl::Set<Production> &grammar_symbols,
-        const isl::Set<Production> &terminals,
-        const isl::Map<Production, isl::Vector<isl::Vector<Production>>> &rules)
-        -> isl::Map<Production, isl::Set<Production>>;
+        Symbol epsilon, const isl::Set<Symbol> &grammar_symbols, const isl::Set<Symbol> &terminals,
+        const isl::Map<Symbol, isl::Vector<isl::Vector<Symbol>>> &rules)
+        -> isl::Map<Symbol, isl::Set<Symbol>>;
 }// namespace ccl::parser
 
 #endif /* CCL_PROJECT_FIRST_SET_HPP */

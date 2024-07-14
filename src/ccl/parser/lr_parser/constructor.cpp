@@ -4,9 +4,9 @@
 namespace ccl::parser
 {
     LrParser::LrParser(
-        const LrItem &start_item, Production epsilon_symbol, isl::Set<Production> grammar_symbols,
-        isl::Set<Production> terminal_symbols,
-        isl::Map<Production, isl::Vector<isl::Vector<Production>>> parser_rules)
+        const LrItem &start_item, Symbol epsilon_symbol, isl::Set<Symbol> grammar_symbols,
+        isl::Set<Symbol> terminal_symbols,
+        isl::Map<Symbol, isl::Vector<isl::Vector<Symbol>>> parser_rules)
       : rules{std::move(parser_rules)}
       , allSymbols{std::move(grammar_symbols)}
       , terminals{std::move(terminal_symbols)}

@@ -10,12 +10,11 @@ namespace ccl::parser::detail
     class FirstAndFollowSetsCommon
     {
     protected:
-        const isl::Map<Production, isl::Vector<isl::Vector<Production>>> &rules;// NOLINT reference
-        const isl::Set<Production> &symbols;                                    // NOLINT reference
-        const isl::Set<Production> &terminals;                                  // NOLINT reference
+        const isl::Map<Symbol, isl::Vector<isl::Vector<Symbol>>> &rules;// NOLINT reference
+        const isl::Set<Symbol> &symbols;                                // NOLINT reference
+        const isl::Set<Symbol> &terminals;                              // NOLINT reference
 
-        static auto
-            insertRange(isl::Set<Production> &set, isl::RangeOf<Production> auto &&range) -> bool
+        static auto insertRange(isl::Set<Symbol> &set, isl::RangeOf<Symbol> auto &&range) -> bool
         {
             auto has_inserted_element = false;
 
@@ -29,20 +28,20 @@ namespace ccl::parser::detail
 
     public:
         FirstAndFollowSetsCommon(
-            const isl::Set<Production> &grammar_symbols,
-            const isl::Set<Production> &terminal_symbols,
-            const isl::Map<Production, isl::Vector<isl::Vector<Production>>> &parser_rules)
+            const isl::Set<Symbol> &grammar_symbols,
+            const isl::Set<Symbol> &terminal_symbols,
+            const isl::Map<Symbol, isl::Vector<isl::Vector<Symbol>>> &parser_rules)
           : rules{parser_rules}
           , symbols{grammar_symbols}
           , terminals{terminal_symbols}
         {}
 
-        [[nodiscard]] auto isTerminal(Production value) const -> bool
+        [[nodiscard]] auto isTerminal(Symbol value) const -> bool
         {
             return terminals.contains(value);
         }
 
-        [[nodiscard]] auto isNonTerminal(Production value) const -> bool
+        [[nodiscard]] auto isNonTerminal(Symbol value) const -> bool
         {
             return !isTerminal(value);
         }

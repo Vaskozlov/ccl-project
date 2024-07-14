@@ -14,32 +14,33 @@ namespace ccl::parser
         struct TableEntry
         {
             State state{};
-            Production lookAhead{};
+            Symbol lookAhead{};
 
             [[nodiscard]] auto operator<=>(const TableEntry &other) const noexcept
                 -> std::strong_ordering = default;
         };
 
     private:
-        isl::Map<Production, isl::Vector<isl::Vector<Production>>> rules;
+        isl::Map<Symbol, isl::Vector<isl::Vector<Symbol>>> rules;
         isl::Set<CanonicalCollection> canonicalCollection;
-        isl::Set<Production> allSymbols;
-        isl::Set<Production> terminals;
+        isl::Set<Symbol> allSymbols;
+        isl::Set<Symbol> terminals;
         isl::Map<TableEntry, State> transitions;
         isl::Map<TableEntry, State> gotoTable;
         isl::Map<TableEntry, Action> actionTable;
-        Production goalProduction;
-        Production endOfInput;
-        Production epsilon;
-        isl::Map<Production, isl::Set<Production>> firstSet;
+        Symbol goalProduction;
+        Symbol endOfInput;
+        Symbol epsilon;
+        isl::Map<Symbol, isl::Set<Symbol>> firstSet;
 
     public:
         explicit LrParser(
-            const LrItem &start_item, Production epsilon_symbol,
-            isl::Set<Production> grammar_symbols, isl::Set<Production> terminal_symbols,
-            isl::Map<Production, isl::Vector<isl::Vector<Production>>> parser_rules);
+            const LrItem &start_item, Symbol epsilon_symbol, isl::Set<Symbol> grammar_symbols,
+            isl::Set<Symbol> terminal_symbols,
+            isl::Map<Symbol, isl::Vector<isl::Vector<Symbol>>> parser_rules);
 
-        auto parse(lexer::LexicalAnalyzer::Tokenizer &tokenizer) -> std::unique_ptr<ast::Node>;
+        auto
+            parse(lexer::LexicalAnalyzer::Tokenizer &tokenizer) const -> std::unique_ptr<ast::Node>;
 
         [[nodiscard]] auto getGotoTable() const noexcept -> const isl::Map<TableEntry, State> &
         {
@@ -52,12 +53,17 @@ namespace ccl::parser
         }
 
     private:
-        [[nodiscard]] auto isTerminal(Production symbol) const noexcept -> bool
+        [[nodiscard]] auto isTerminal(Symbol symbol) const noexcept -> bool
         {
             return terminals.contains(symbol);
         }
 
-        auto gotoFunction(const isl::Set<LrItem> &items, Production product) -> isl::Set<LrItem>;
+        auto reduceAction(
+            const Action &action,
+            isl::Vector<State> &state_stack,
+            isl::Vector<std::unique_ptr<ast::Node>> &nodes_stack) const -> void;
+
+        auto gotoFunction(const isl::Set<LrItem> &items, Symbol symbol) const -> isl::Set<LrItem>;
 
         auto doCanonicalCollectionConstructionIterationOnItem(
             Id &closure_id, const CanonicalCollection &cc, const LrItem &item,
@@ -68,15 +74,15 @@ namespace ccl::parser
 
         auto constructCanonicalCollection(const LrItem &start_item) -> void;
 
-        auto doClosureComputationIteration(isl::Set<LrItem> &s, const LrItem &item) -> bool;
+        auto doClosureComputationIteration(isl::Set<LrItem> &s, const LrItem &item) const -> bool;
 
-        auto computeClosure(isl::Set<LrItem> s) -> isl::Set<LrItem>;
+        auto computeClosure(isl::Set<LrItem> s) const -> isl::Set<LrItem>;
 
         auto fillTablesUsingCanonicalCollection(const CanonicalCollection &cc) -> void;
 
         auto fillActionTableEntry(const CanonicalCollection &cc, const LrItem &item) -> void;
 
-        auto fillGotoTableEntry(const CanonicalCollection &cc, Production production) -> void;
+        auto fillGotoTableEntry(const CanonicalCollection &cc, Symbol symbol) -> void;
 
         auto fillTables() -> void;
 

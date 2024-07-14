@@ -5,10 +5,11 @@
 
 namespace ccl::parser
 {
-    auto LrParser::parse(lexer::LexicalAnalyzer::Tokenizer &tokenizer) -> std::unique_ptr<ast::Node>
+    auto LrParser::parse(lexer::LexicalAnalyzer::Tokenizer &tokenizer) const
+        -> std::unique_ptr<ast::Node>
     {
         auto state_stack = isl::Vector<State>{0};
-        auto token_stack = isl::Vector<std::unique_ptr<ast::Node>>{};
+        auto nodes_stack = isl::Vector<std::unique_ptr<ast::Node>>{};
         const auto *word = &tokenizer.yield();
 
         while (true) {
@@ -26,38 +27,45 @@ namespace ccl::parser
 
             switch (action.getParsingAction()) {
             case ParsingAction::SHIFT:
-                token_stack.emplace_back(isl::makeUnique<ast::TokenNode>(word->getId(), *word));
+                nodes_stack.emplace_back(isl::makeUnique<ast::TokenNode>(word->getId(), *word));
                 state_stack.push_back(action.getShiftingState());
                 word = &tokenizer.yield();
                 break;
 
-            case ParsingAction::REDUCE: {
-                const auto &lr_item = action.getReducingItem();
-                auto reduced_item = isl::makeUnique<ast::NodeSequence>(
-                    isl::as<Production>(lr_item.getProductionType()));
-
-                for (std::size_t i = 0; i != lr_item.length(); ++i) {
-                    reduced_item->addNode(std::move(token_stack.back()));
-                    token_stack.pop_back();
-                    state_stack.pop_back();
-                }
-
-                reduced_item->reverse();
-                token_stack.push_back(std::move(reduced_item));
-                state_stack.push_back(gotoTable.at({
-                    state_stack.back(),
-                    lr_item.getProductionType(),
-                }));
-
+            case ParsingAction::REDUCE:
+                reduceAction(action, state_stack, nodes_stack);
                 break;
-            }
 
             case ParsingAction::ACCEPT:
-                return std::move(token_stack.back());
+                return std::move(nodes_stack.back());
 
             default:
                 isl::unreachable();
             }
         }
+    }
+
+    auto LrParser::reduceAction(
+        const Action &action,
+        isl::Vector<State> &state_stack,
+        isl::Vector<std::unique_ptr<ast::Node>> &nodes_stack) const -> void
+    {
+        const auto &lr_item = action.getReducingItem();
+        auto reduced_item =
+            isl::makeUnique<ast::NodeSequence>(isl::as<Symbol>(lr_item.getProductionType()));
+        const auto number_of_elements_to_take_from_stack = lr_item.length();
+
+        for (std::size_t i = 0; i != number_of_elements_to_take_from_stack; ++i) {
+            reduced_item->addNode(std::move(nodes_stack.back()));
+            nodes_stack.pop_back();
+            state_stack.pop_back();
+        }
+
+        reduced_item->reverse();
+        nodes_stack.push_back(std::move(reduced_item));
+        state_stack.push_back(gotoTable.at({
+            state_stack.back(),
+            lr_item.getProductionType(),
+        }));
     }
 }// namespace ccl::parser

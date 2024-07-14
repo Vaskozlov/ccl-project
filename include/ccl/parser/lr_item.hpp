@@ -9,26 +9,26 @@ namespace ccl::parser
     class LrItem
     {
     private:
-        isl::Vector<Production> rule;
+        isl::Vector<Symbol> rule;
         std::size_t dotLocation{};
-        Production product{};
-        Production lookAhead{};
+        Symbol production{};
+        Symbol lookAhead{};
 
     public:
         explicit LrItem(
-            const isl::Vector<Production> &item_rule,
+            const isl::Vector<Symbol> &item_rule,
             std::size_t dot_location,
-            Production item_name,
-            Production look_ahead)
+            Symbol item_name,
+            Symbol look_ahead)
           : rule{item_rule}
           , dotLocation{std::min(dot_location, rule.size())}
-          , product{item_name}
+          , production{item_name}
           , lookAhead{look_ahead}
         {}
 
-        [[nodiscard]] auto getProductionType() const noexcept -> Production
+        [[nodiscard]] auto getProductionType() const noexcept -> Symbol
         {
-            return product;
+            return production;
         }
 
         [[nodiscard]] auto getDotLocation() const noexcept -> std::size_t
@@ -36,13 +36,12 @@ namespace ccl::parser
             return dotLocation;
         }
 
-        [[nodiscard]] auto getLookAhead() const noexcept -> Production
+        [[nodiscard]] auto getLookAhead() const noexcept -> Symbol
         {
             return lookAhead;
         }
 
-        [[nodiscard]] auto
-            getRule() const noexcept CCL_LIFETIMEBOUND -> const isl::Vector<Production> &
+        [[nodiscard]] auto getRule() const noexcept CCL_LIFETIMEBOUND -> const isl::Vector<Symbol> &
         {
             return rule;
         }
@@ -52,12 +51,12 @@ namespace ccl::parser
             return dotLocation == rule.size();
         }
 
-        [[nodiscard]] auto at(std::size_t index) CCL_LIFETIMEBOUND -> Production &
+        [[nodiscard]] auto at(std::size_t index) CCL_LIFETIMEBOUND -> Symbol &
         {
             return rule.at(index);
         }
 
-        [[nodiscard]] auto at(std::size_t index) const CCL_LIFETIMEBOUND -> const Production &
+        [[nodiscard]] auto at(std::size_t index) const CCL_LIFETIMEBOUND -> const Symbol &
         {
             return rule.at(index);
         }

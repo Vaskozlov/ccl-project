@@ -2,7 +2,8 @@
 
 namespace ccl::parser
 {
-    auto LrParser::doClosureComputationIteration(isl::Set<LrItem> &s, const LrItem &item) -> bool
+    auto LrParser::doClosureComputationIteration(isl::Set<LrItem> &s, const LrItem &item) const
+        -> bool
     {
         if (item.isDotInTheEnd()) {
             return false;
@@ -10,21 +11,21 @@ namespace ccl::parser
 
         auto has_modifications = false;
         const auto index = item.getDotLocation();
-        const auto production = item.at(index);
+        const auto symbol = item.at(index);
 
-        if (isTerminal(production)) {
+        if (isTerminal(symbol)) {
             return false;
         }
 
-        const auto has_production_after_current = (index + 1 == item.length());
-        const auto next_production =
-            has_production_after_current ? item.getLookAhead() : item.at(index + 1);
+        const auto has_symbol_after_current = (index + 1 == item.length());
+        const auto next_symbol =
+            has_symbol_after_current ? item.getLookAhead() : item.at(index + 1);
 
-        const auto &first_set_of_next_production = firstSet.at(next_production);
+        const auto &first_set_of_next_symbol = firstSet.at(next_symbol);
 
-        for (const auto first_symbol : first_set_of_next_production) {
-            for (const auto &alternatives : rules.at(production)) {
-                auto [it, has_inserted] = s.emplace(alternatives, 0, production, first_symbol);
+        for (const auto first_symbol : first_set_of_next_symbol) {
+            for (const auto &alternatives : rules.at(symbol)) {
+                auto [it, has_inserted] = s.emplace(alternatives, 0, symbol, first_symbol);
                 has_modifications = has_modifications || has_inserted;
             }
         }
@@ -32,7 +33,7 @@ namespace ccl::parser
         return has_modifications;
     }
 
-    auto LrParser::computeClosure(isl::Set<LrItem> s) -> isl::Set<LrItem>
+    auto LrParser::computeClosure(isl::Set<LrItem> s) const -> isl::Set<LrItem>
     {
         auto has_modifications = true;
 

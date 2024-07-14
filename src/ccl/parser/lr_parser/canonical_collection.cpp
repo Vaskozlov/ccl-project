@@ -2,7 +2,7 @@
 
 namespace ccl::parser
 {
-    auto LrParser::gotoFunction(const isl::Set<LrItem> &items, Production product)
+    auto LrParser::gotoFunction(const isl::Set<LrItem> &items, Symbol symbol) const
         -> isl::Set<LrItem>
     {
         auto moved = isl::Set<LrItem>{};
@@ -12,7 +12,7 @@ namespace ccl::parser
                 continue;
             }
 
-            if (item.at(item.getDotLocation()) == product) {
+            if (item.at(item.getDotLocation()) == symbol) {
                 moved.emplace(
                     item.getRule(), item.getDotLocation() + 1, item.getProductionType(),
                     item.getLookAhead());

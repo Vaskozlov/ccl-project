@@ -6,7 +6,7 @@
 namespace ccl::parser
 {
     using State = std::size_t;
-    using Production = std::size_t;
+    using Symbol = std::size_t;
 }// namespace ccl::parser
 
 #endif /* CCL_PROJECT_GENERAL_HPP */
