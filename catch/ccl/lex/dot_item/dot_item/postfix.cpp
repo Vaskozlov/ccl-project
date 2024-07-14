@@ -1,5 +1,6 @@
 #include <ccl/debug/debug_file.hpp>
 #include <ccl/lexer/dot_item/container.hpp>
+#include <ccl/lexer/lexical_analyzer.hpp>
 
 TEST_CASE("TwoPostfixes", "[Container]")
 {

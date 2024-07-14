@@ -1,4 +1,5 @@
-#include <ccl/lexer/analyzer_generator/analyzer_generator.hpp>
+#include <ccl/lexer/dot_item/binary_expression/binary_operation_and.hpp>
+#include <ccl/lexer/dot_item/binary_expression/binary_operation_or.hpp>
 #include <ccl/lexer/dot_item/container.hpp>
 #include <ccl/lexer/dot_item/rule_reference.hpp>
 #include <ccl/lexer/dot_item/sequence.hpp>

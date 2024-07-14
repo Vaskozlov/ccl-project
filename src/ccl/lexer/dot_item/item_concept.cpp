@@ -1,6 +1,7 @@
 #include <ccl/lexer/dot_item/item_concept.hpp>
 #include <ccl/lexer/dot_item/scanner_template.hpp>
 #include <ccl/parser/ast/node_sequence.hpp>
+#include <ccl/parser/ast/string_node.hpp>
 
 namespace ccl::lexer::dot_item
 {
