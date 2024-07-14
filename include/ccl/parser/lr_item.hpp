@@ -92,7 +92,7 @@ public:
             ccl::lexer::lexerEnumToString(isl::as<T>(item.getProductionType())));
 
         for (std::size_t i = 0; i != item.length(); ++i) {
-            if (i == item.dotLocation) {
+            if (i == item.getDotLocation()) {
                 fmt::format_to(ctx.out(), "\u2022");
             }
 
