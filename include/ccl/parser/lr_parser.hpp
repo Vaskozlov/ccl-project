@@ -40,6 +40,16 @@ namespace ccl::parser
 
         auto parse(lexer::LexicalAnalyzer::Tokenizer &tokenizer) -> std::unique_ptr<ast::Node>;
 
+        [[nodiscard]] auto getGotoTable() const noexcept -> const isl::Map<TableEntry, Id> &
+        {
+            return gotoTable;
+        }
+
+        [[nodiscard]] auto getActionTable() const noexcept -> const isl::Map<TableEntry, Action> &
+        {
+            return actionTable;
+        }
+
     private:
         [[nodiscard]] auto isTerminal(std::size_t symbol) const noexcept -> bool
         {
