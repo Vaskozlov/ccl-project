@@ -54,7 +54,7 @@ namespace ccl::parser
             auto elements_to_insert = firstSet.at(rule.at(index));
             elements_to_insert.erase(epsilon);
 
-            rhs.insert_range(elements_to_insert);
+            insertRange(rhs, elements_to_insert);
         }
 
         if (index == index_max && firstSet[back_element].contains(epsilon)) {

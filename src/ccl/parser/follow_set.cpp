@@ -59,7 +59,7 @@ namespace ccl::parser
 
         if (elem_first_set.contains(epsilon)) {
             elem_first_set.erase(epsilon);
-            trailer.insert_range(elem_first_set);
+            insertRange(trailer, elem_first_set);
         } else {
             trailer = std::move(elem_first_set);
         }

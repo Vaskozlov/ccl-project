@@ -71,7 +71,9 @@ namespace ccl::parser
             }
         }
 
-        canonicalCollection.insert_range(pending_collections);
+        for (const auto &collection : pending_collections) {
+            canonicalCollection.emplace(collection);
+        }
 
         return has_new_sets;
     }
@@ -82,7 +84,7 @@ namespace ccl::parser
         auto has_new_sets = true;
         auto marked_collections = isl::Set<Id>{};
 
-        canonicalCollection.emplace(computeClosure({start_item}), closure_id);
+        canonicalCollection.emplace(CanonicalCollection{computeClosure({start_item}), closure_id});
         ++closure_id;
 
         while (has_new_sets) {
