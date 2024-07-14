@@ -6,7 +6,7 @@
 
 namespace ccll
 {
-    enum class CcllAnalyzerToken : ccl::Id;
+    enum CcllAnalyzerToken : ccl::Id;
 }
 
 template<>
@@ -15,7 +15,7 @@ CCL_DECL auto ccl::lexer::lexerEnumToString<ccll::CcllAnalyzerToken>(ccll::CcllA
 
 namespace ccll
 {
-    enum class CcllAnalyzerToken : ccl::Id
+    enum CcllAnalyzerToken : ccl::Id
     {
         EXTRA = 12884901888,
         FAILURE = 8589934592,
@@ -61,27 +61,24 @@ namespace ccll
             {CcllAnalyzerToken::COMMENT, R"( ! [#] [\n]*^ )"},
         }};
 
-    inline constexpr isl::StaticFlatmap<CcllAnalyzerToken, isl::string_view, 14>
-        ToStringCcllAnalyzerToken{
-            {CcllAnalyzerToken::EOI, "EOI"},
-            {CcllAnalyzerToken::BAD_TOKEN, "BAD_TOKEN"},
-            {CcllAnalyzerToken::CUT, "CUT"},
-            {CcllAnalyzerToken::GROUP_DECLARATION, "GROUP_DECLARATION"},
-            {CcllAnalyzerToken::RULE, "RULE"},
-            {CcllAnalyzerToken::DIRECTIVE, "DIRECTIVE"},
-            {CcllAnalyzerToken::BAD_GROUP_DECLARATION_EMPTY_NAME,
-             "BAD_GROUP_DECLARATION_EMPTY_NAME"},
-            {CcllAnalyzerToken::BAD_GROUP_DECLARATION_BRACKET_AND_NAME,
-             "BAD_GROUP_DECLARATION_BRACKET_AND_NAME"},
-            {CcllAnalyzerToken::BAD_GROUP_NO_OPEN_BRACKET, "BAD_GROUP_NO_OPEN_BRACKET"},
-            {CcllAnalyzerToken::BAD_GROUP_DECLARATION_ONLY_BRACKET,
-             "BAD_GROUP_DECLARATION_ONLY_BRACKET"},
-            {CcllAnalyzerToken::BAD_RULE_DECLARATION, "BAD_RULE_DECLARATION"},
-            {CcllAnalyzerToken::BAD_DIRECTIVE_DECLARATION, "BAD_DIRECTIVE_DECLARATION"},
-            {CcllAnalyzerToken::BAD_RULE_OR_DIRECTIVE_DECLARATION,
-             "BAD_RULE_OR_DIRECTIVE_DECLARATION"},
-            {CcllAnalyzerToken::COMMENT, "COMMENT"},
-        };
+    inline constexpr isl::StaticFlatmap<ccl::Id, isl::string_view, 14> ToStringCcllAnalyzerToken{
+        {CcllAnalyzerToken::EOI, "EOI"},
+        {CcllAnalyzerToken::BAD_TOKEN, "BAD_TOKEN"},
+        {CcllAnalyzerToken::CUT, "CUT"},
+        {CcllAnalyzerToken::GROUP_DECLARATION, "GROUP_DECLARATION"},
+        {CcllAnalyzerToken::RULE, "RULE"},
+        {CcllAnalyzerToken::DIRECTIVE, "DIRECTIVE"},
+        {CcllAnalyzerToken::BAD_GROUP_DECLARATION_EMPTY_NAME, "BAD_GROUP_DECLARATION_EMPTY_NAME"},
+        {CcllAnalyzerToken::BAD_GROUP_DECLARATION_BRACKET_AND_NAME,
+         "BAD_GROUP_DECLARATION_BRACKET_AND_NAME"},
+        {CcllAnalyzerToken::BAD_GROUP_NO_OPEN_BRACKET, "BAD_GROUP_NO_OPEN_BRACKET"},
+        {CcllAnalyzerToken::BAD_GROUP_DECLARATION_ONLY_BRACKET,
+         "BAD_GROUP_DECLARATION_ONLY_BRACKET"},
+        {CcllAnalyzerToken::BAD_RULE_DECLARATION, "BAD_RULE_DECLARATION"},
+        {CcllAnalyzerToken::BAD_DIRECTIVE_DECLARATION, "BAD_DIRECTIVE_DECLARATION"},
+        {CcllAnalyzerToken::BAD_RULE_OR_DIRECTIVE_DECLARATION, "BAD_RULE_OR_DIRECTIVE_DECLARATION"},
+        {CcllAnalyzerToken::COMMENT, "COMMENT"},
+    };
 }// namespace ccll
 
 namespace ccl::lexer

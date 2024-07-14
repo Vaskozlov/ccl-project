@@ -72,6 +72,7 @@ namespace ccl::codegen
     auto BasicCodeGenerator::operator<<(StreamId stream_id) -> BasicCodeGenerator &
     {
         streamId = stream_id.streamId;
+        generatedCode.try_emplace(streamId);
         return *this;
     }
 

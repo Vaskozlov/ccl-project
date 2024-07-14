@@ -16,12 +16,12 @@ TEST_CASE("BinaryExpressionWith2Elements", "[BinaryExpression]")
     auto container = lexer::dot_item::Container(
         empty_lexical_analyzer, text_iterator, special_items, debug::FirstUsableToken);
 
-    const std::vector<lexer::dot_item::DotItem> &items = container.getItems();
+    const isl::Vector<lexer::dot_item::DotItem> &items = container.getItems();
 
     const auto *binary_operation =
-        isl::as<const lexer::dot_item::BinaryExpressionBase *>(items[0].get());
+        isl::as<const lexer::dot_item::BinaryExpressionBase *>(items.at(0).get());
 
-    REQUIRE(isl::is<lexer::dot_item::BinaryExpressionBase *>(items[0].get()));
+    REQUIRE(isl::is<lexer::dot_item::BinaryExpressionBase *>(items.at(0).get()));
     REQUIRE(isl::is<lexer::dot_item::Union *>(binary_operation->getLhs().get()));
     REQUIRE(isl::is<lexer::dot_item::Sequence *>(binary_operation->getRhs().get()));
 }
@@ -37,10 +37,10 @@ TEST_CASE("BinaryExpressionWith3Elements", "[BinaryExpression]")
     auto container = lexer::dot_item::Container(
         empty_lexical_analyzer, text_iterator, special_items, debug::FirstUsableToken);
 
-    const std::vector<lexer::dot_item::DotItem> &items = container.getItems();
+    const isl::Vector<lexer::dot_item::DotItem> &items = container.getItems();
 
     const auto *first_binary_operation =
-        isl::as<const lexer::dot_item::BinaryExpressionBase *>(items[0].get());
+        isl::as<const lexer::dot_item::BinaryExpressionBase *>(items.at(0).get());
 
     REQUIRE(first_binary_operation != nullptr);
     REQUIRE(isl::is<const lexer::dot_item::BinaryExpressionBase *>(

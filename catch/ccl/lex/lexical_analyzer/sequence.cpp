@@ -19,12 +19,12 @@ TEST_CASE("LexicalAnalyzerSequence", "[ContainerSequence]")
     REQUIRE(token.getId() == debug::FirstUsableToken);
     REQUIRE(token.getRepr() == R"(abz10)");
     REQUIRE(token.getPrefixes().size() == 1);
-    REQUIRE(token.getPrefixes()[0] == "abz");
+    REQUIRE(token.getPrefixes().at(0) == "abz");
 
     DEBUG_VAR token_2 = tokenizer.yield();
 
     REQUIRE(token_2.getId() == debug::FirstUsableToken + 1);
     REQUIRE(token_2.getRepr() == R"(10abz)");
     REQUIRE(token_2.getPostfixes().size() == 1);
-    REQUIRE(token_2.getPostfixes()[0] == "abz");
+    REQUIRE(token_2.getPostfixes().at(0) == "abz");
 }

@@ -34,13 +34,16 @@ namespace ccl::codegen
         };
 
     private:
-        std::map<Id, std::string> generatedCode;
+        isl::Map<Id, std::string> generatedCode;
         Id streamId{};
         std::size_t scopesCounter{};
         std::size_t scopeSize{4};
 
     public:
-        BasicCodeGenerator() = default;
+        BasicCodeGenerator()
+        {
+            generatedCode.try_emplace(streamId);
+        };
 
         [[nodiscard]] auto getCode() const noexcept -> std::string;
 

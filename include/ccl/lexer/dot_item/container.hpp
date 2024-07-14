@@ -24,7 +24,7 @@ namespace ccl::lexer::dot_item
     {
         using DotItemConcept::canBeOptimized;
         using typename DotItemConcept::TextIterator;
-        using DotItemsStorage = std::vector<DotItem>;
+        using DotItemsStorage = isl::Vector<DotItem>;
 
         class RuleParser;
 

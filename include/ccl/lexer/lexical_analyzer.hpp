@@ -35,7 +35,7 @@ namespace ccl::lexer
             {}
         };
 
-        std::map<isl::string_view, Container *> allItemsMap;
+        isl::Map<isl::string_view, Container *> allItemsMap;
         isl::Vector<std::unique_ptr<Container>> items;
         AnyPlaceItems anyPlaceItems;
         isl::Vector<Id> ignoredIds;

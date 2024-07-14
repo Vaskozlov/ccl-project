@@ -15,11 +15,11 @@ TEST_CASE("TwoPostfixes", "[Container]")
         true);
     DEBUG_VAR items = container.getItems();
 
-    REQUIRE(!items[0]->hasPrefix());
-    REQUIRE(!items[0]->hasPostfix());
+    REQUIRE(!items.at(0)->hasPrefix());
+    REQUIRE(!items.at(0)->hasPostfix());
 
-    REQUIRE(items[1]->hasPostfix());
-    REQUIRE(items[2]->hasPostfix());
+    REQUIRE(items.at(1)->hasPostfix());
+    REQUIRE(items.at(2)->hasPostfix());
 }
 
 TEST_CASE("WrongPostfixCreation", "[Container]")

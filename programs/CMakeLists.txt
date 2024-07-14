@@ -1,12 +1,6 @@
-file(
-        GLOB_RECURSE
-        FSC_LEX_GENERATOR_OBJECTS
-        "programs/*.cpp"
-)
-
 add_executable(
         ccl-lexer
-        ${FSC_LEX_GENERATOR_OBJECTS}
+        programs/ccll.cpp
 )
 
 isl_set_project_warnings(
@@ -34,4 +28,68 @@ target_link_libraries(
         ccl
         fmt::fmt
         cxxopts::cxxopts
+)
+
+
+add_executable(
+        ccl-lr
+        programs/lr.cpp
+)
+
+isl_set_project_warnings(
+        ccl-lr
+        ${CCL_STRICT_COMPILATION}
+        ""
+        ""
+        ""
+        ""
+        ${CCL_HARDENING}
+        ${CCL_LIBCPP}
+        ${CCL_UNITY_BUILD}
+)
+
+if (PRECOMPILED_HEADER)
+    target_precompile_headers(
+            ccl-lr
+            PUBLIC
+            "pch.hpp"
+    )
+endif ()
+
+target_link_libraries(
+        ccl-lr
+        ccl
+        fmt::fmt
+)
+
+
+add_executable(
+        ccl-lr-parentheses
+        programs/lr_parentheses.cpp
+)
+
+isl_set_project_warnings(
+        ccl-lr-parentheses
+        ${CCL_STRICT_COMPILATION}
+        ""
+        ""
+        ""
+        ""
+        ${CCL_HARDENING}
+        ${CCL_LIBCPP}
+        ${CCL_UNITY_BUILD}
+)
+
+if (PRECOMPILED_HEADER)
+    target_precompile_headers(
+            ccl-lr-parentheses
+            PUBLIC
+            "pch.hpp"
+    )
+endif ()
+
+target_link_libraries(
+        ccl-lr-parentheses
+        ccl
+        fmt::fmt
 )

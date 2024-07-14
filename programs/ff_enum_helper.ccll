@@ -1,0 +1,20 @@
+NAMESPACE   = "ff_test"
+VAR_NAME    = "helper"
+HANDLER     = "ccl::handler::Cmd::instance()"
+
+ANGLE_OPEN: ![(]
+ANGLE_CLOSE: ![)]
+ADD: ![+]
+SUB: ![\-]
+MUL: ![*]
+DIV: ![/]
+NUMBER: [0-9]+
+NAME: [a-zA-Z_][a-zA-Z0-9_]*
+
+GOAL:   [0]
+EPSILON: [0]
+EXPR:   [0]
+EXPR_C: [0]
+TERM:   [0]
+TERM_C: [0]
+FACTOR: [0]

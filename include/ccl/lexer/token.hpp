@@ -114,13 +114,13 @@ namespace ccl::lexer
         }
 
         [[nodiscard]] CCL_INLINE auto
-            getPrefixes() const noexcept -> const std::vector<isl::string_view> &
+            getPrefixes() const noexcept -> const isl::Vector<isl::string_view> &
         {
             return prefixes;
         }
 
         [[nodiscard]] CCL_INLINE auto
-            getPostfixes() const noexcept -> const std::vector<isl::string_view> &
+            getPostfixes() const noexcept -> const isl::Vector<isl::string_view> &
         {
             return postfixes;
         }

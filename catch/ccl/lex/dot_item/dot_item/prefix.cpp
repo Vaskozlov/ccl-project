@@ -13,7 +13,7 @@ TEST_CASE("ContainerTwoPrefixesCreation", "[Container]")
         debug::FirstUsableToken, true);
     DEBUG_VAR items = container.getItems();
 
-    REQUIRE(items[0]->hasPrefix());
-    REQUIRE(items[1]->hasPrefix());
-    REQUIRE(!items[2]->hasPrefix());
+    REQUIRE(items.at(0)->hasPrefix());
+    REQUIRE(items.at(1)->hasPrefix());
+    REQUIRE(!items.at(2)->hasPrefix());
 }
