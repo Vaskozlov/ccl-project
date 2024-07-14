@@ -51,7 +51,7 @@ namespace ccl::parser
                 return std::move(token_stack.back());
 
             default:
-                std::unreachable();
+                isl::unreachable();
             }
         }
     }

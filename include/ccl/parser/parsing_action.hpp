@@ -32,7 +32,7 @@ public:
             return fmt::format_to(ctx.out(), "ACCEPT");
 
         default:
-            std::unreachable();
+            isl::unreachable();
         }
     }
 };
