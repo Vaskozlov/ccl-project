@@ -5,13 +5,16 @@ project(ccl-project VERSION 0.0.2.1 LANGUAGES CXX)
 include(GNUInstallDirs)
 
 include(cmake/ImportISL.cmake)
+include(cmake/ImportFMT.cmake)
+include(cmake/ImportCxxOpts.cmake)
+include(cmake/ImportCatch2.cmake)
+
 include(cmake/ProjectOptions.cmake)
 include(cmake/Libraries.cmake)
 
 include(programs/CMakeLists.txt)
 include(src/CMakeLists.txt)
 include(catch/CMakeLists.txt)
-include(bench/CMakeLists.txt)
 
 install(TARGETS ccl ccl-lexer
         EXPORT cclTargets
