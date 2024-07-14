@@ -182,7 +182,7 @@ namespace ccl::lexer::gen
         const auto &rules = ccllParser.getRules();
 
         const auto output_enum_case = [this](isl::string_view name, Id id) {
-            codeGenerator << endl << name << " = " << fmt::to_string(id) << ',';
+            codeGenerator << endl << name << " = " << fmt::to_string(id) << "ULL,";
         };
 
         for (const auto &[block_name, block_info] : blocks) {
