@@ -28,6 +28,8 @@ namespace ccl::parser
           , parsingAction{ParsingAction::ACCEPT}
         {}
 
+        [[nodiscard]] auto operator==(const Action &other) const noexcept -> bool = default;
+
         [[nodiscard]] auto isShift() const noexcept -> bool
         {
             return parsingAction == ParsingAction::SHIFT;

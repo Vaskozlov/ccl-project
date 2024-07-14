@@ -22,23 +22,32 @@ namespace ccl::parser
         using enum ccl::parser::ParsingAction;
 
         if (item.isDotInTheEnd() && item.getProductionType() == goalProduction) {
-            const auto entry = TableEntry{cc.collectionId, endOfInput};
-            checkForConflictsInActionTable(entry, ACCEPT);
-            actionTable.try_emplace(entry, std::monostate{});
+            insertIntoActionTable(
+                TableEntry{
+                    .state = cc.collectionId,
+                    .lookAhead = endOfInput,
+                },
+                std::monostate{});
         } else if (item.isDotInTheEnd()) {
-            auto entry = TableEntry{cc.collectionId, item.getLookAhead()};
-            checkForConflictsInActionTable(entry, REDUCE);
-            actionTable.try_emplace(entry, item);
+            insertIntoActionTable(
+                TableEntry{
+                    .state = cc.collectionId,
+                    .lookAhead = item.getLookAhead(),
+                },
+                item);
         } else {
-            auto entry = TableEntry{cc.collectionId, item.at(item.getDotLocation())};
-            checkForConflictsInActionTable(entry, SHIFT);
-            actionTable.try_emplace(entry, transitions.at(entry));
+            auto entry = TableEntry{
+                .state = cc.collectionId,
+                .lookAhead = item.at(item.getDotLocation()),
+            };
+
+            insertIntoActionTable(entry, transitions.at(entry));
         }
     }
 
     auto LrParser::fillGotoTableEntry(const CanonicalCollection &cc, std::size_t product) -> void
     {
-        auto entry = TableEntry{cc.collectionId, product};
+        auto entry = TableEntry{.state = cc.collectionId, .lookAhead = product};
 
         if (!transitions.contains(entry)) {
             return;
@@ -54,13 +63,22 @@ namespace ccl::parser
         }
     }
 
-    auto LrParser::checkForConflictsInActionTable(
-        const TableEntry &entry,
-        ParsingAction parsingAction) -> void
+    template<typename... Ts>
+    auto LrParser::insertIntoActionTable(TableEntry entry, Ts &&...args) -> void
     {
-        if (actionTable.contains(entry) &&
-            actionTable.at(entry).getParsingAction() != parsingAction) {
-            throw std::logic_error("Shift reduce conflict");
+        auto action = Action{std::forward<Ts>(args)...};
+
+        if (!actionTable.contains(entry)) {
+            actionTable.try_emplace(entry, std::move(action));
+            return;
+        }
+
+        if (actionTable.at(entry) != action) {
+            if (action.getParsingAction() != actionTable.at(entry).getParsingAction()) {
+                throw std::logic_error("Shift reduce conflict");
+            }
+
+            throw std::logic_error("Reduce reduce conflict");
         }
     }
 }// namespace ccl::parser

@@ -10,7 +10,7 @@ namespace ccl::parser
 {
     class LrParser
     {
-    private:
+    public:
         struct TableEntry
         {
             Id state{};
@@ -20,6 +20,7 @@ namespace ccl::parser
                 -> std::strong_ordering = default;
         };
 
+    private:
         isl::Map<Id, isl::Vector<isl::Vector<Id>>> rules;
         isl::Set<CanonicalCollection> canonicalCollection;
         isl::Set<Id> allSymbols;
@@ -68,9 +69,32 @@ namespace ccl::parser
 
         auto fillTables() -> void;
 
-        auto checkForConflictsInActionTable(const TableEntry &entry, ParsingAction parsingAction)
-            -> void;
+        template<typename... Ts>
+        auto insertIntoActionTable(TableEntry entry, Ts &&...args) -> void;
+    };
+
+    template<typename T>
+    struct TableEntryPrintHelper
+    {
+        const typename LrParser::TableEntry &entry;
     };
 }// namespace ccl::parser
+
+template<typename T>
+class fmt::formatter<ccl::parser::TableEntryPrintHelper<T>>
+  : public fmt::formatter<std::string_view>
+{
+public:
+    template<typename FmtContext>
+    constexpr auto
+        format(ccl::parser::TableEntryPrintHelper<T> entry_print_helper, FmtContext &ctx) const
+    {
+        const auto &entry = entry_print_helper.entry;
+
+        return fmt::format_to(
+            ctx.out(), "{}-{}", entry.state,
+            ccl::lexer::lexerEnumToString(isl::as<T>(entry.lookAhead)));
+    }
+};
 
 #endif /* CCL_PROJECT_LR_PARSER_HPP */
