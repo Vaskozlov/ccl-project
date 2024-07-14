@@ -21,16 +21,16 @@ namespace ccl::parser
         };
 
     private:
-        isl::Map<Symbol, isl::Vector<isl::Vector<Symbol>>> rules;
+        isl::Map<Symbol, isl::Vector<isl::Vector<Symbol>>> grammarRules;
         isl::Set<CanonicalCollection> canonicalCollection;
         isl::Set<Symbol> allSymbols;
-        isl::Set<Symbol> terminals;
+        isl::Set<Symbol> terminalSymbols;
         isl::Map<TableEntry, State> transitions;
         isl::Map<TableEntry, State> gotoTable;
         isl::Map<TableEntry, Action> actionTable;
         Symbol goalProduction;
         Symbol endOfInput;
-        Symbol epsilon;
+        Symbol epsilonSymbol;
         isl::Map<Symbol, isl::Set<Symbol>> firstSet;
 
     public:
@@ -55,7 +55,7 @@ namespace ccl::parser
     private:
         [[nodiscard]] auto isTerminal(Symbol symbol) const noexcept -> bool
         {
-            return terminals.contains(symbol);
+            return terminalSymbols.contains(symbol);
         }
 
         auto reduceAction(

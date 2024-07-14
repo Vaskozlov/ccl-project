@@ -34,22 +34,22 @@ namespace ccl::parser
 
             auto temp_cc = CanonicalCollection{
                 .items = goto_result,
-                .collectionId = temp_cc_id,
+                .id = temp_cc_id,
             };
 
             if (auto cc_it = canonicalCollection.find(temp_cc);
                 cc_it != canonicalCollection.end()) {
-                temp_cc_id = cc_it->collectionId;
+                temp_cc_id = cc_it->id;
             } else if (auto pending_it = pending_collections.find(temp_cc);
                        pending_it != pending_collections.end()) {
-                temp_cc_id = pending_it->collectionId;
+                temp_cc_id = pending_it->id;
             } else {
                 ++closure_id;
                 has_new_sets = true;
                 pending_collections.emplace(std::move(temp_cc));
             }
 
-            transitions.try_emplace({cc.collectionId, item.at(i)}, temp_cc_id);
+            transitions.try_emplace({cc.id, item.at(i)}, temp_cc_id);
         }
 
         return has_new_sets;
@@ -62,11 +62,11 @@ namespace ccl::parser
         auto pending_collections = isl::Set<CanonicalCollection>{};
 
         for (const auto &cc : canonicalCollection) {
-            if (marked_collections.contains(cc.collectionId)) {
+            if (marked_collections.contains(cc.id)) {
                 continue;
             }
 
-            marked_collections.emplace(cc.collectionId);
+            marked_collections.emplace(cc.id);
 
             for (const auto &item : cc.items) {
                 has_new_sets = doCanonicalCollectionConstructionIterationOnItem(
@@ -90,7 +90,7 @@ namespace ccl::parser
 
         canonicalCollection.emplace(CanonicalCollection{
             .items = computeClosure({start_item}),
-            .collectionId = 0,
+            .id = 0,
         });
 
         while (has_new_sets) {

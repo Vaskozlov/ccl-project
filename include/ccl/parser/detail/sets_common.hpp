@@ -10,9 +10,9 @@ namespace ccl::parser::detail
     class FirstAndFollowSetsCommon
     {
     protected:
-        const isl::Map<Symbol, isl::Vector<isl::Vector<Symbol>>> &rules;// NOLINT reference
-        const isl::Set<Symbol> &symbols;                                // NOLINT reference
-        const isl::Set<Symbol> &terminals;                              // NOLINT reference
+        const isl::Map<Symbol, isl::Vector<isl::Vector<Symbol>>> &grammarRules;// NOLINT reference
+        const isl::Set<Symbol> &allSymbolsInGrammar;                           // NOLINT reference
+        const isl::Set<Symbol> &terminalSymbols;                               // NOLINT reference
 
         static auto insertRange(isl::Set<Symbol> &set, isl::RangeOf<Symbol> auto &&range) -> bool
         {
@@ -30,15 +30,15 @@ namespace ccl::parser::detail
         FirstAndFollowSetsCommon(
             const isl::Set<Symbol> &grammar_symbols,
             const isl::Set<Symbol> &terminal_symbols,
-            const isl::Map<Symbol, isl::Vector<isl::Vector<Symbol>>> &parser_rules)
-          : rules{parser_rules}
-          , symbols{grammar_symbols}
-          , terminals{terminal_symbols}
+            const isl::Map<Symbol, isl::Vector<isl::Vector<Symbol>>> &grammar_rules)
+          : grammarRules{grammar_rules}
+          , allSymbolsInGrammar{grammar_symbols}
+          , terminalSymbols{terminal_symbols}
         {}
 
         [[nodiscard]] auto isTerminal(Symbol value) const -> bool
         {
-            return terminals.contains(value);
+            return terminalSymbols.contains(value);
         }
 
         [[nodiscard]] auto isNonTerminal(Symbol value) const -> bool
@@ -54,7 +54,7 @@ namespace ccl::parser::detail
             while (has_modifications) {
                 has_modifications = false;
 
-                for (const auto &[key, rule_alternatives] : rules) {
+                for (const auto &[key, rule_alternatives] : grammarRules) {
                     for (const auto &rule : rule_alternatives) {
                         has_modifications = function(key, rule) || has_modifications;
                     }

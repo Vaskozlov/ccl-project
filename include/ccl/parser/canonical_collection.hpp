@@ -9,7 +9,7 @@ namespace ccl::parser
     struct CanonicalCollection
     {
         isl::Set<LrItem> items;
-        Id collectionId{};
+        Id id{};
 
         [[nodiscard]] auto operator==(const CanonicalCollection &other) const noexcept -> bool
         {
@@ -43,7 +43,7 @@ public:
         const auto &collection = collection_print_wrapper.canonicalCollection;
 
         return fmt::format_to(
-            ctx.out(), "{}: {}", collection.collectionId,
+            ctx.out(), "{}: {}", collection.id,
             std::views::transform(collection.items, [](const ccl::parser::LrItem &item) {
                 return ccl::parser::LrItemPrintWrapper<T>(item);
             }));

@@ -24,20 +24,20 @@ namespace ccl::parser
         if (item.isDotInTheEnd() && item.getProductionType() == goalProduction) {
             insertIntoActionTable(
                 TableEntry{
-                    .state = cc.collectionId,
+                    .state = cc.id,
                     .lookAhead = endOfInput,
                 },
                 std::monostate{});
         } else if (item.isDotInTheEnd()) {
             insertIntoActionTable(
                 TableEntry{
-                    .state = cc.collectionId,
+                    .state = cc.id,
                     .lookAhead = item.getLookAhead(),
                 },
                 item);
         } else {
             auto entry = TableEntry{
-                .state = cc.collectionId,
+                .state = cc.id,
                 .lookAhead = item.at(item.getDotLocation()),
             };
 
@@ -47,7 +47,7 @@ namespace ccl::parser
 
     auto LrParser::fillGotoTableEntry(const CanonicalCollection &cc, Symbol symbol) -> void
     {
-        auto entry = TableEntry{.state = cc.collectionId, .lookAhead = symbol};
+        auto entry = TableEntry{.state = cc.id, .lookAhead = symbol};
 
         if (!transitions.contains(entry)) {
             return;

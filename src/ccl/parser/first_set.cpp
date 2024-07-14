@@ -16,7 +16,7 @@ namespace ccl::parser
 
     auto detail::FirstSetEvaluator::initializeFirstSet() -> void
     {
-        for (auto symbol : symbols) {
+        for (auto symbol : allSymbolsInGrammar) {
             if (!lexer::isUsedDefinedTokenOrEoF(symbol)) {
                 continue;
             }

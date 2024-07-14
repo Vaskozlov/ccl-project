@@ -12,14 +12,12 @@ namespace ccl::parser
         private:
             isl::Map<Symbol, isl::Set<Symbol>> followSet;
             const isl::Map<Symbol, isl::Set<Symbol>> &firstSet;
-            Symbol epsilon;
+            Symbol epsilonSymbol;
 
             using FirstAndFollowSetsCommon::applyFixedPointAlgorithmOnAllRules;
             using FirstAndFollowSetsCommon::insertRange;
             using FirstAndFollowSetsCommon::isNonTerminal;
             using FirstAndFollowSetsCommon::isTerminal;
-            using FirstAndFollowSetsCommon::symbols;
-            using FirstAndFollowSetsCommon::terminals;
 
         public:
             FollowSetEvaluator(

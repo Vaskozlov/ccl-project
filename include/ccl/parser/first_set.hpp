@@ -17,8 +17,6 @@ namespace ccl::parser
             using FirstAndFollowSetsCommon::insertRange;
             using FirstAndFollowSetsCommon::isNonTerminal;
             using FirstAndFollowSetsCommon::isTerminal;
-            using FirstAndFollowSetsCommon::symbols;
-            using FirstAndFollowSetsCommon::terminals;
 
         public:
             FirstSetEvaluator(

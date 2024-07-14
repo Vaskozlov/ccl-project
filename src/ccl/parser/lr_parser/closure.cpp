@@ -24,7 +24,7 @@ namespace ccl::parser
         const auto &first_set_of_next_symbol = firstSet.at(next_symbol);
 
         for (const auto first_symbol : first_set_of_next_symbol) {
-            for (const auto &alternatives : rules.at(symbol)) {
+            for (const auto &alternatives : grammarRules.at(symbol)) {
                 auto [it, has_inserted] = s.emplace(alternatives, 0, symbol, first_symbol);
                 has_modifications = has_modifications || has_inserted;
             }

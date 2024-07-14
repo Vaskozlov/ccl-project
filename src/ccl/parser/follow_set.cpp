@@ -10,7 +10,7 @@ namespace ccl::parser
       : FirstAndFollowSetsCommon::
             FirstAndFollowSetsCommon{grammar_symbols, terminal_symbols, parser_rules}
       , firstSet{first_set}
-      , epsilon{epsilon_symbol}
+      , epsilonSymbol{epsilon_symbol}
     {
         initializeFollowSet(start_symbol, end_of_input);
         computeFollowSet();
@@ -19,7 +19,7 @@ namespace ccl::parser
     auto detail::FollowSetEvaluator::initializeFollowSet(Symbol start_symbol, Symbol end_of_input)
         -> void
     {
-        for (auto symbol : symbols) {
+        for (auto symbol : allSymbolsInGrammar) {
             if (isNonTerminal(symbol)) {
                 followSet.try_emplace(symbol);
             }
@@ -58,8 +58,8 @@ namespace ccl::parser
         auto has_modifications = insertRange(followSet[elem], trailer);
         auto elem_first_set = firstSet.at(elem);
 
-        if (elem_first_set.contains(epsilon)) {
-            elem_first_set.erase(epsilon);
+        if (elem_first_set.contains(epsilonSymbol)) {
+            elem_first_set.erase(epsilonSymbol);
             insertRange(trailer, elem_first_set);
         } else {
             trailer = std::move(elem_first_set);
