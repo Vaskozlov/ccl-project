@@ -14,9 +14,9 @@ namespace ccl::lexer::dot_item
             bool noEscaping{};
         };
 
-    private:
         using typename DotItemConcept::TextIterator;
 
+    private:
         std::string sequenceValue;
         isl::string_view starter;
         isl::string_view ender;
