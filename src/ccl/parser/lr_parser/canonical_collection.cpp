@@ -2,7 +2,8 @@
 
 namespace ccl::parser
 {
-    auto LrParser::gotoFunction(const isl::Set<LrItem> &items, std::size_t product) -> isl::Set<LrItem>
+    auto LrParser::gotoFunction(const isl::Set<LrItem> &items, std::size_t product)
+        -> isl::Set<LrItem>
     {
         auto moved = isl::Set<LrItem>{};
 
@@ -89,4 +90,4 @@ namespace ccl::parser
                 doCanonicalCollectionConstructionIteration(closure_id, marked_collections);
         }
     }
-}
+}// namespace ccl::parser

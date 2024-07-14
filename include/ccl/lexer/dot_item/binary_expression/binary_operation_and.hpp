@@ -10,8 +10,8 @@ namespace ccl::lexer::dot_item
     public:
         using BinaryExpressionBase::BinaryExpressionBase;
 
-        [[nodiscard]] auto scanIteration(const ForkedGenerator &text_iterator) const
-            -> ScanResult override;
+        [[nodiscard]] auto
+            scanIteration(const ForkedGenerator &text_iterator) const -> ScanResult override;
 
         [[nodiscard]] auto
             parseIteration(const ForkedGenerator &text_iterator) const -> ParsingResult override;

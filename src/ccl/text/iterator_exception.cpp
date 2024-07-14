@@ -4,8 +4,9 @@ namespace ccl::text
 {
     TextIteratorException::TextIteratorException(
         ExceptionCriticality exception_criticality, AnalysisStage analysis_stage,
-        const Location &exception_location, std::size_t exception_length, isl::string_view working_line,
-        std::string exception_message, std::string exception_suggestion)
+        const Location &exception_location, std::size_t exception_length,
+        isl::string_view working_line, std::string exception_message,
+        std::string exception_suggestion)
       : location{exception_location}
       , message{std::move(exception_message)}
       , suggestion{std::move(exception_suggestion)}

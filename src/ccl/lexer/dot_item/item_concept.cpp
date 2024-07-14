@@ -55,7 +55,8 @@ namespace ccl::lexer::dot_item
                     isl::string_view{textBegin.begin(), textIterator.getRemainingAsCarriage()};
 
                 return ParsingResult{
-                    totally_skipped, isl::makeUnique<parser::ast::StringNode>(item.getId(), node_repr)};
+                    totally_skipped,
+                    isl::makeUnique<parser::ast::StringNode>(item.getId(), node_repr)};
             }
 
             return ParsingResult{totally_skipped, std::move(nodeSequence)};

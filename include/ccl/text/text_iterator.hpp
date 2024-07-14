@@ -26,13 +26,12 @@ namespace ccl::text
         class EscapingSequenceToChar;
         class NotationEscapingSequenceToChar;
 
-        [[nodiscard]] static auto
-            doEscapeSymbolizing(TextIterator &text_iterator, const extra_symbols_t &extra_symbols)
-                -> char32_t;
+        [[nodiscard]] static auto doEscapeSymbolizing(
+            TextIterator &text_iterator, const extra_symbols_t &extra_symbols) -> char32_t;
 
         [[nodiscard]] static auto calculateNotationEscapeSymbol(
-            TextIterator &text_iterator, u16 max_times, u16 notation_power, bool need_all_chars)
-            -> char32_t;
+            TextIterator &text_iterator, u16 max_times, u16 notation_power,
+            bool need_all_chars) -> char32_t;
 
         [[nodiscard]] explicit TextIterator(
             isl::string_view input,
@@ -44,7 +43,7 @@ namespace ccl::text
             ExceptionHandler &exception_handler,
             const Location &iterator_location);
 
-        [[nodiscard]] auto getLocation() const noexcept CCL_LIFETIMEBOUND->const Location &
+        [[nodiscard]] auto getLocation() const noexcept CCL_LIFETIMEBOUND -> const Location &
         {
             return location;
         }
@@ -74,7 +73,8 @@ namespace ccl::text
             return lineTracker.get();
         }
 
-        [[nodiscard]] auto getTabsAndSpaces() const noexcept CCL_LIFETIMEBOUND->const std::string &
+        [[nodiscard]] auto
+            getTabsAndSpaces() const noexcept CCL_LIFETIMEBOUND -> const std::string &
         {
             return tsTracker.get();
         }
@@ -126,29 +126,29 @@ namespace ccl::text
             isl::string_view suggestion = {}) -> void;
 
         auto throwSuggestion(
-            AnalysisStage stage, isl::string_view message, isl::string_view suggestion = {})
-            -> void;
+            AnalysisStage stage, isl::string_view message,
+            isl::string_view suggestion = {}) -> void;
 
         auto throwWarning(
-            AnalysisStage stage, isl::string_view message, isl::string_view suggestion = {})
-            -> void;
+            AnalysisStage stage, isl::string_view message,
+            isl::string_view suggestion = {}) -> void;
 
         auto throwUncriticalError(
-            AnalysisStage stage, isl::string_view message, isl::string_view suggestion = {})
-            -> void;
+            AnalysisStage stage, isl::string_view message,
+            isl::string_view suggestion = {}) -> void;
 
         auto throwCriticalError(
-            AnalysisStage stage, isl::string_view message, isl::string_view suggestion = {})
-            -> void;
+            AnalysisStage stage, isl::string_view message,
+            isl::string_view suggestion = {}) -> void;
 
         auto throwPanicError(
-            AnalysisStage stage, isl::string_view message, isl::string_view suggestion = {})
-            -> void;
+            AnalysisStage stage, isl::string_view message,
+            isl::string_view suggestion = {}) -> void;
 
         auto throwToHandle(
             const TextIterator &iterator_location, ExceptionCriticality criticality,
-            AnalysisStage stage, isl::string_view message, isl::string_view suggestion = {})
-            -> void;
+            AnalysisStage stage, isl::string_view message,
+            isl::string_view suggestion = {}) -> void;
     };
 
     class TextIterator::EscapingSequenceToChar
@@ -172,7 +172,7 @@ namespace ccl::text
         auto operator=(const EscapingSequenceToChar &) -> void = delete;
 
         [[nodiscard]] auto
-            getExtraSymbols() const noexcept CCL_LIFETIMEBOUND->const extra_symbols_t &
+            getExtraSymbols() const noexcept CCL_LIFETIMEBOUND -> const extra_symbols_t &
         {
             return extraSymbols;
         }
@@ -222,7 +222,8 @@ namespace ccl::text
 
         auto throwNotEnoughCharsException(std::size_t chars_count) const -> void;
 
-        [[nodiscard]] auto createSuggestionNotEnoughChars(std::size_t chars_count) const -> std::string;
+        [[nodiscard]] auto
+            createSuggestionNotEnoughChars(std::size_t chars_count) const -> std::string;
 
         auto insertExtraZerosToNotEnoughMessage(std::size_t chars_count, std::string &message) const
             -> void;

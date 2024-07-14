@@ -16,7 +16,7 @@ namespace ccl::text
     public:
         [[nodiscard]] explicit LineTracker(isl::string_view text_to_track) noexcept;
 
-        [[nodiscard]] auto get() const noexcept CCL_LIFETIMEBOUND->const isl::string_view &
+        [[nodiscard]] auto get() const noexcept CCL_LIFETIMEBOUND -> const isl::string_view &
         {
             return line;
         }

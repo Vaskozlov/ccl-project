@@ -12,7 +12,7 @@ namespace ccl::parser::ast
         isl::Vector<std::unique_ptr<Node>> nodes;
 
     public:
-         explicit NodeSequence(Id node_type_id)
+        explicit NodeSequence(Id node_type_id)
           : Node{node_type_id}
         {}
 

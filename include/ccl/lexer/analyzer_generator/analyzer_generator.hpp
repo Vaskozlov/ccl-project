@@ -11,8 +11,8 @@ namespace ccl::lexer
     {
     public:
         static auto generateStaticVersion(const std::filesystem::path &path) -> std::string;
-        static auto generateStaticVersion(std::string_view filename, isl::string_view text)
-            -> std::string;
+        static auto
+            generateStaticVersion(std::string_view filename, isl::string_view text) -> std::string;
     };
 }// namespace ccl::lexer
 

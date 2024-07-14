@@ -14,7 +14,7 @@ namespace ccl::lexer::dot_item
         return lhs == rhs ? lhs : ScanResult::failure();
     }
 
-    auto BinaryOperationAnd::parseIteration(const ForkedGenerator &/* text_iterator */) const
+    auto BinaryOperationAnd::parseIteration(const ForkedGenerator & /* text_iterator */) const
         -> ParsingResult
     {
         // TODO: add check at regex analysis time

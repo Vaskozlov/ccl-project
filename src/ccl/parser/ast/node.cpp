@@ -16,7 +16,7 @@ namespace ccl::parser::ast
 
     auto Node::getPrintingPrefix(const std::string &prefix, bool is_left) -> std::string
     {
-        return prefix + (is_left ? "├──" : "└──" );
+        return prefix + (is_left ? "├──" : "└──");
     }
 
     auto Node::expandPrefix(const std::string &prefix, bool is_left, size_t extra_expansion)

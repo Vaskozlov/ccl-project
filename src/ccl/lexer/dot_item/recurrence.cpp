@@ -58,8 +58,7 @@ namespace ccl::lexer::dot_item
         text_iterator.throwCriticalError(AnalysisStage::LEXICAL_ANALYSIS, message);
     }
 
-    auto Closure::throwUnexpectedCharacter(text::TextIterator &text_iterator, char32_t chr)
-        -> void
+    auto Closure::throwUnexpectedCharacter(text::TextIterator &text_iterator, char32_t chr) -> void
     {
         auto buffer = std::string{};
         isl::utf8::appendUtf32ToUtf8Container(buffer, chr);

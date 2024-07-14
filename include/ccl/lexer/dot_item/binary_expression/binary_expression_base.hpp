@@ -30,12 +30,12 @@ namespace ccl::lexer::dot_item
 
         [[nodiscard]] auto empty() const noexcept -> bool override;
 
-        [[nodiscard]] auto getLhs() const CCL_LIFETIMEBOUND->const DotItem &
+        [[nodiscard]] auto getLhs() const CCL_LIFETIMEBOUND -> const DotItem &
         {
             return lhsItem;
         }
 
-        [[nodiscard]] auto getRhs() const CCL_LIFETIMEBOUND->const DotItem &
+        [[nodiscard]] auto getRhs() const CCL_LIFETIMEBOUND -> const DotItem &
         {
             return rhsItem;
         }
