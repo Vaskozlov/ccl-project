@@ -30,11 +30,11 @@ if (CCL_LIBCPP AND LINUX)
             fmt::fmt-header-only
     )
 else ()
-    add_dependencies(ccl fmt::fmt)
+    add_dependencies(ccl fmt::fmt-header-only)
 
     target_link_libraries(
             ccl
-            fmt::fmt
+            fmt::fmt-header-only
     )
 endif ()
 
