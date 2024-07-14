@@ -9,11 +9,11 @@ namespace ccl::parser
     class Action
     {
     private:
-        std::variant<std::monostate, Id, LrItem> data;
+        std::variant<std::monostate, State, LrItem> data;
         ParsingAction parsingAction;
 
     public:
-        explicit Action(Id state)
+        explicit Action(State state)
           : data{state}
           , parsingAction{ParsingAction::SHIFT}
         {}
@@ -50,18 +50,18 @@ namespace ccl::parser
             return parsingAction;
         }
 
-        [[nodiscard]] auto
-            getStoredData() const noexcept -> const std::variant<std::monostate, Id, LrItem> &
+        [[nodiscard]] auto getStoredData() const noexcept CCL_LIFETIMEBOUND
+            -> const std::variant<std::monostate, State, LrItem> &
         {
             return data;
         }
 
-        [[nodiscard]] auto getShiftingState() const noexcept -> Id
+        [[nodiscard]] auto getShiftingState() const noexcept -> State
         {
             return std::get<Id>(data);
         }
 
-        [[nodiscard]] auto getReducingItem() const noexcept -> const LrItem &
+        [[nodiscard]] auto getReducingItem() const noexcept CCL_LIFETIMEBOUND -> const LrItem &
         {
             return std::get<LrItem>(data);
         }

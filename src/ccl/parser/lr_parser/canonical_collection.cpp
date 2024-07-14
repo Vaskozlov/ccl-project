@@ -2,7 +2,7 @@
 
 namespace ccl::parser
 {
-    auto LrParser::gotoFunction(const isl::Set<LrItem> &items, std::size_t product)
+    auto LrParser::gotoFunction(const isl::Set<LrItem> &items, Production product)
         -> isl::Set<LrItem>
     {
         auto moved = isl::Set<LrItem>{};
@@ -28,10 +28,14 @@ namespace ccl::parser
     {
         auto has_new_sets = false;
 
-        for (std::size_t i = item.getDotLocation(); i < item.length(); ++i) {
+        for (std::size_t i = item.getDotLocation(); i != item.length(); ++i) {
             auto goto_result = gotoFunction(cc.items, item.at(i));
             auto temp_cc_id = closure_id;
-            auto temp_cc = CanonicalCollection{goto_result, temp_cc_id};
+
+            auto temp_cc = CanonicalCollection{
+                .items = goto_result,
+                .collectionId = temp_cc_id,
+            };
 
             if (auto cc_it = canonicalCollection.find(temp_cc);
                 cc_it != canonicalCollection.end()) {
@@ -80,12 +84,14 @@ namespace ccl::parser
 
     auto LrParser::constructCanonicalCollection(const LrItem &start_item) -> void
     {
-        auto closure_id = Id{};
+        auto closure_id = Id{1};
         auto has_new_sets = true;
         auto marked_collections = isl::Set<Id>{};
 
-        canonicalCollection.emplace(CanonicalCollection{computeClosure({start_item}), closure_id});
-        ++closure_id;
+        canonicalCollection.emplace(CanonicalCollection{
+            .items = computeClosure({start_item}),
+            .collectionId = 0,
+        });
 
         while (has_new_sets) {
             has_new_sets =

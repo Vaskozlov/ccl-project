@@ -3,10 +3,10 @@
 namespace ccl::parser
 {
     detail::FollowSetEvaluator::FollowSetEvaluator(
-        Id start_symbol, Id end_of_input, Id epsilon_symbol, const isl::Set<Id> &grammar_symbols,
-        const isl::Set<Id> &terminal_symbols,
-        const isl::Map<Id, isl::Vector<isl::Vector<Id>>> &parser_rules,
-        const isl::Map<Id, isl::Set<Id>> &first_set)
+        Production start_symbol, Production end_of_input, Production epsilon_symbol,
+        const isl::Set<Production> &grammar_symbols, const isl::Set<Production> &terminal_symbols,
+        const isl::Map<Production, isl::Vector<isl::Vector<Production>>> &parser_rules,
+        const isl::Map<Production, isl::Set<Production>> &first_set)
       : FirstAndFollowSetsCommon::
             FirstAndFollowSetsCommon{grammar_symbols, terminal_symbols, parser_rules}
       , firstSet{first_set}
@@ -16,7 +16,8 @@ namespace ccl::parser
         computeFollowSet();
     }
 
-    auto detail::FollowSetEvaluator::initializeFollowSet(Id start_symbol, Id end_of_input) -> void
+    auto detail::FollowSetEvaluator::initializeFollowSet(
+        Production start_symbol, Production end_of_input) -> void
     {
         for (auto symbol : symbols) {
             if (isNonTerminal(symbol)) {
@@ -29,13 +30,14 @@ namespace ccl::parser
 
     auto detail::FollowSetEvaluator::computeFollowSet() -> void
     {
-        applyFixedPointAlgorithmOnAllRules([this](Id key, const isl::Vector<Id> &rule) {
-            return followSetComputationIteration(key, rule);
-        });
+        applyFixedPointAlgorithmOnAllRules(
+            [this](Production key, const isl::Vector<Production> &rule) {
+                return followSetComputationIteration(key, rule);
+            });
     }
 
     auto detail::FollowSetEvaluator::followSetComputationIteration(
-        Id key, const isl::Vector<Id> &rule) -> bool
+        Production key, const isl::Vector<Production> &rule) -> bool
     {
         auto has_modifications = false;
         auto trailer = followSet.at(key);
@@ -51,8 +53,8 @@ namespace ccl::parser
         return has_modifications;
     }
 
-    auto
-        detail::FollowSetEvaluator::followSetNonTerminalCase(Id elem, isl::Set<Id> &trailer) -> bool
+    auto detail::FollowSetEvaluator::followSetNonTerminalCase(
+        Production elem, isl::Set<Production> &trailer) -> bool
     {
         auto has_modifications = insertRange(followSet[elem], trailer);
         auto elem_first_set = firstSet.at(elem);
@@ -68,9 +70,11 @@ namespace ccl::parser
     }
 
     auto evaluateFollowSet(
-        Id start_symbol, Id end_of_input, Id epsilon_symbol, const isl::Set<Id> &grammar_symbols,
-        const isl::Set<Id> &terminals, const isl::Map<Id, isl::Vector<isl::Vector<Id>>> &rules,
-        const isl::Map<Id, isl::Set<Id>> &first_set) -> isl::Map<Id, isl::Set<Id>>
+        Production start_symbol, Production end_of_input, Production epsilon_symbol,
+        const isl::Set<Production> &grammar_symbols, const isl::Set<Production> &terminals,
+        const isl::Map<Production, isl::Vector<isl::Vector<Production>>> &rules,
+        const isl::Map<Production, isl::Set<Production>> &first_set)
+        -> isl::Map<Production, isl::Set<Production>>
     {
         auto follow_set = detail::FollowSetEvaluator(
             start_symbol, end_of_input, epsilon_symbol, grammar_symbols, terminals, rules,

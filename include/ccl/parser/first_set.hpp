@@ -10,8 +10,8 @@ namespace ccl::parser
         class FirstSetEvaluator : private FirstAndFollowSetsCommon
         {
         private:
-            isl::Map<Id, isl::Set<Id>> firstSet;
-            std::size_t epsilon;
+            isl::Map<Production, isl::Set<Production>> firstSet;
+            Production epsilon;
 
             using FirstAndFollowSetsCommon::applyFixedPointAlgorithmOnAllRules;
             using FirstAndFollowSetsCommon::insertRange;
@@ -22,11 +22,12 @@ namespace ccl::parser
 
         public:
             FirstSetEvaluator(
-                Id epsilon_symbol, const isl::Set<Id> &grammar_symbols,
-                const isl::Set<Id> &terminal_symbols,
-                const isl::Map<Id, isl::Vector<isl::Vector<Id>>> &parser_rules);
+                Production epsilon_symbol, const isl::Set<Production> &grammar_symbols,
+                const isl::Set<Production> &terminal_symbols,
+                const isl::Map<Production, isl::Vector<isl::Vector<Production>>> &parser_rules);
 
-            [[nodiscard]] auto getFirstSet() -> isl::Map<Id, isl::Set<Id>> &
+            [[nodiscard]] auto
+                getFirstSet() CCL_LIFETIMEBOUND -> isl::Map<Production, isl::Set<Production>> &
             {
                 return firstSet;
             }
@@ -34,13 +35,16 @@ namespace ccl::parser
         private:
             auto initializeFirstSet() -> void;
             auto computeFirstSet() -> void;
-            auto firstSetComputationIteration(Id key, const isl::Vector<Id> &rule) -> bool;
+            auto firstSetComputationIteration(Production key, const isl::Vector<Production> &rule)
+                -> bool;
         };
     }// namespace detail
 
     auto evaluateFirstSet(
-        Id epsilon, const isl::Set<Id> &grammar_symbols, const isl::Set<Id> &terminals,
-        const isl::Map<Id, isl::Vector<isl::Vector<Id>>> &rules) -> isl::Map<Id, isl::Set<Id>>;
+        Production epsilon, const isl::Set<Production> &grammar_symbols,
+        const isl::Set<Production> &terminals,
+        const isl::Map<Production, isl::Vector<isl::Vector<Production>>> &rules)
+        -> isl::Map<Production, isl::Set<Production>>;
 }// namespace ccl::parser
 
 #endif /* CCL_PROJECT_FIRST_SET_HPP */

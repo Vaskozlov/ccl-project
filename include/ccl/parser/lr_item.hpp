@@ -1,32 +1,32 @@
 #ifndef CCL_PROJECT_LR_ITEM_HPP
 #define CCL_PROJECT_LR_ITEM_HPP
 
-#include <ccl/ccl.hpp>
 #include <ccl/lexer/lexical_analyzer.hpp>
+#include <ccl/parser/general.hpp>
 
 namespace ccl::parser
 {
     class LrItem
     {
     private:
-        isl::Vector<Id> rule;
+        isl::Vector<Production> rule;
         std::size_t dotLocation{};
-        Id product{};
-        Id lookAhead{};
+        Production product{};
+        Production lookAhead{};
 
     public:
         explicit LrItem(
-            const isl::Vector<Id> &item_rule,
+            const isl::Vector<Production> &item_rule,
             std::size_t dot_location,
-            Id item_name,
-            Id look_ahead)
+            Production item_name,
+            Production look_ahead)
           : rule{item_rule}
-          , dotLocation{dot_location}
+          , dotLocation{std::min(dot_location, rule.size())}
           , product{item_name}
           , lookAhead{look_ahead}
         {}
 
-        [[nodiscard]] auto getProductionType() const noexcept -> Id
+        [[nodiscard]] auto getProductionType() const noexcept -> Production
         {
             return product;
         }
@@ -36,27 +36,28 @@ namespace ccl::parser
             return dotLocation;
         }
 
-        [[nodiscard]] auto getLookAhead() const noexcept -> Id
+        [[nodiscard]] auto getLookAhead() const noexcept -> Production
         {
             return lookAhead;
         }
 
-        [[nodiscard]] auto getRule() const noexcept -> const isl::Vector<Id> &
+        [[nodiscard]] auto
+            getRule() const noexcept CCL_LIFETIMEBOUND -> const isl::Vector<Production> &
         {
             return rule;
         }
 
         [[nodiscard]] auto isDotInTheEnd() const noexcept -> bool
         {
-            return dotLocation >= rule.size();
+            return dotLocation == rule.size();
         }
 
-        [[nodiscard]] auto at(std::size_t index) -> Id &
+        [[nodiscard]] auto at(std::size_t index) CCL_LIFETIMEBOUND -> Production &
         {
             return rule.at(index);
         }
 
-        [[nodiscard]] auto at(std::size_t index) const -> const Id &
+        [[nodiscard]] auto at(std::size_t index) const CCL_LIFETIMEBOUND -> const Production &
         {
             return rule.at(index);
         }

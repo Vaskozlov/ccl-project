@@ -7,8 +7,9 @@ TEST_CASE("FirstSetComputation", "[FirstSet]")
     using namespace isl;
     using namespace ccl;
     using namespace ccl::debug;
+    using namespace ccl::parser;
 
-    auto first_set = parser::evaluateFirstSet(GrammarSymbol::EPSILON, AllSymbols, Terminals, Rules);
+    auto first_set = evaluateFirstSet(GrammarSymbol::EPSILON, AllSymbols, Terminals, Rules);
 
     const auto &goal_first_set = first_set.at(GrammarSymbol::GOAL);
     const auto &expr_first_set = first_set.at(GrammarSymbol::EXPR);
@@ -18,7 +19,7 @@ TEST_CASE("FirstSetComputation", "[FirstSet]")
     const auto &factor_first_set = first_set.at(GrammarSymbol::FACTOR);
 
     REQUIRE(
-        goal_first_set == isl::Set<Id>{
+        goal_first_set == isl::Set<Production>{
                               GrammarSymbol::ANGLE_OPEN,
                               GrammarSymbol::NUMBER,
                               GrammarSymbol::NAME,
@@ -27,7 +28,7 @@ TEST_CASE("FirstSetComputation", "[FirstSet]")
     REQUIRE(expr_first_set == goal_first_set);
 
     REQUIRE(
-        expr_c_first_set == isl::Set<Id>{
+        expr_c_first_set == isl::Set<Production>{
                                 GrammarSymbol::ADD,
                                 GrammarSymbol::SUB,
                                 GrammarSymbol::EPSILON,
@@ -36,7 +37,7 @@ TEST_CASE("FirstSetComputation", "[FirstSet]")
     REQUIRE(term_first_set == goal_first_set);
 
     REQUIRE(
-        term_c_first_set == isl::Set<Id>{
+        term_c_first_set == isl::Set<Production>{
                                 GrammarSymbol::MUL,
                                 GrammarSymbol::DIV,
                                 GrammarSymbol::EPSILON,

@@ -45,9 +45,9 @@ namespace ccl::parser
         }
     }
 
-    auto LrParser::fillGotoTableEntry(const CanonicalCollection &cc, std::size_t product) -> void
+    auto LrParser::fillGotoTableEntry(const CanonicalCollection &cc, Production production) -> void
     {
-        auto entry = TableEntry{.state = cc.collectionId, .lookAhead = product};
+        auto entry = TableEntry{.state = cc.collectionId, .lookAhead = production};
 
         if (!transitions.contains(entry)) {
             return;

@@ -8,10 +8,11 @@ TEST_CASE("FollowSetComputation", "[FollowSet]")
     using namespace isl;
     using namespace ccl;
     using namespace ccl::debug;
+    using namespace ccl::parser;
 
-    auto first_set = parser::evaluateFirstSet(GrammarSymbol::EPSILON, AllSymbols, Terminals, Rules);
+    auto first_set = evaluateFirstSet(GrammarSymbol::EPSILON, AllSymbols, Terminals, Rules);
 
-    auto follow_Set = parser::evaluateFollowSet(
+    auto follow_Set = evaluateFollowSet(
         GrammarSymbol::GOAL, GrammarSymbol::EOI, GrammarSymbol::EPSILON, AllSymbols, Terminals,
         Rules, first_set);
 
@@ -23,12 +24,12 @@ TEST_CASE("FollowSetComputation", "[FollowSet]")
     const auto &factor_follow_set = follow_Set.at(GrammarSymbol::FACTOR);
 
     REQUIRE(
-        goal_follow_set == isl::Set<Id>{
+        goal_follow_set == isl::Set<Production>{
                                GrammarSymbol::EOI,
                            });
 
     REQUIRE(
-        expr_follow_set == isl::Set<Id>{
+        expr_follow_set == isl::Set<Production>{
                                GrammarSymbol::EOI,
                                GrammarSymbol::ANGLE_CLOSE,
                            });
@@ -36,7 +37,7 @@ TEST_CASE("FollowSetComputation", "[FollowSet]")
     REQUIRE(expr_c_follow_set == expr_follow_set);
 
     REQUIRE(
-        term_follow_set == isl::Set<Id>{
+        term_follow_set == isl::Set<Production>{
                                GrammarSymbol::EOI,
                                GrammarSymbol::ANGLE_CLOSE,
                                GrammarSymbol::ADD,
@@ -46,7 +47,7 @@ TEST_CASE("FollowSetComputation", "[FollowSet]")
     REQUIRE(term_c_follow_set == term_follow_set);
 
     REQUIRE(
-        factor_follow_set == isl::Set<Id>{
+        factor_follow_set == isl::Set<Production>{
                                  GrammarSymbol::EOI,
                                  GrammarSymbol::ANGLE_CLOSE,
                                  GrammarSymbol::ADD,

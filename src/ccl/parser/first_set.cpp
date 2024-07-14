@@ -4,11 +4,10 @@
 namespace ccl::parser
 {
     detail::FirstSetEvaluator::FirstSetEvaluator(
-        Id epsilon_symbol, const isl::Set<Id> &grammar_symbols,
-        const isl::Set<Id> &terminal_symbols,
-        const isl::Map<Id, isl::Vector<isl::Vector<Id>>> &parser_rules)
-      : FirstAndFollowSetsCommon::
-            FirstAndFollowSetsCommon{grammar_symbols, terminal_symbols, parser_rules}
+        Production epsilon_symbol, const isl::Set<Production> &grammar_symbols,
+        const isl::Set<Production> &terminal_symbols,
+        const isl::Map<Production, isl::Vector<isl::Vector<Production>>> &parser_rules)
+      : FirstAndFollowSetsCommon{grammar_symbols, terminal_symbols, parser_rules}
       , epsilon{epsilon_symbol}
     {
         initializeFirstSet();
@@ -23,7 +22,7 @@ namespace ccl::parser
             }
 
             if (isTerminal(symbol)) {
-                firstSet.try_emplace(symbol, isl::Set<Id>{symbol});
+                firstSet.try_emplace(symbol, isl::Set<Production>{symbol});
             } else {
                 firstSet.try_emplace(symbol);
             }
@@ -32,13 +31,14 @@ namespace ccl::parser
 
     auto detail::FirstSetEvaluator::computeFirstSet() -> void
     {
-        applyFixedPointAlgorithmOnAllRules([this](Id key, const isl::Vector<Id> &rule) {
-            return firstSetComputationIteration(key, rule);
-        });
+        applyFixedPointAlgorithmOnAllRules(
+            [this](Production key, const isl::Vector<Production> &rule) {
+                return firstSetComputationIteration(key, rule);
+            });
     }
 
     auto detail::FirstSetEvaluator::firstSetComputationIteration(
-        Id key, const isl::Vector<Id> &rule) -> bool
+        Production key, const isl::Vector<Production> &rule) -> bool
     {
         const auto front_element = rule.front();
         const auto back_element = rule.back();
@@ -65,8 +65,10 @@ namespace ccl::parser
     }
 
     auto evaluateFirstSet(
-        Id epsilon, const isl::Set<Id> &grammar_symbols, const isl::Set<Id> &terminals,
-        const isl::Map<Id, isl::Vector<isl::Vector<Id>>> &rules) -> isl::Map<Id, isl::Set<Id>>
+        Production epsilon, const isl::Set<Production> &grammar_symbols,
+        const isl::Set<Production> &terminals,
+        const isl::Map<Production, isl::Vector<isl::Vector<Production>>> &rules)
+        -> isl::Map<Production, isl::Set<Production>>
     {
         auto first_set = detail::FirstSetEvaluator(epsilon, grammar_symbols, terminals, rules);
         return std::move(first_set.getFirstSet());

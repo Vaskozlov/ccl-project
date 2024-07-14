@@ -1,7 +1,7 @@
 #ifndef CCL_PROJECT_SETS_COMMON_HPP
 #define CCL_PROJECT_SETS_COMMON_HPP
 
-#include <ccl/ccl.hpp>
+#include <ccl/parser/general.hpp>
 #include <map>
 #include <set>
 
@@ -10,11 +10,12 @@ namespace ccl::parser::detail
     class FirstAndFollowSetsCommon
     {
     protected:
-        const isl::Map<Id, isl::Vector<isl::Vector<Id>>> &rules;// NOLINT reference
-        const isl::Set<Id> &symbols;                            // NOLINT reference
-        const isl::Set<Id> &terminals;                          // NOLINT reference
+        const isl::Map<Production, isl::Vector<isl::Vector<Production>>> &rules;// NOLINT reference
+        const isl::Set<Production> &symbols;                                    // NOLINT reference
+        const isl::Set<Production> &terminals;                                  // NOLINT reference
 
-        static auto insertRange(isl::Set<Id> &set, isl::RangeOf<Id> auto &&range) -> bool
+        static auto
+            insertRange(isl::Set<Production> &set, isl::RangeOf<Production> auto &&range) -> bool
         {
             auto has_inserted_element = false;
 
@@ -28,20 +29,20 @@ namespace ccl::parser::detail
 
     public:
         FirstAndFollowSetsCommon(
-            const isl::Set<Id> &grammar_symbols,
-            const isl::Set<Id> &terminal_symbols,
-            const isl::Map<Id, isl::Vector<isl::Vector<Id>>> &parser_rules)
+            const isl::Set<Production> &grammar_symbols,
+            const isl::Set<Production> &terminal_symbols,
+            const isl::Map<Production, isl::Vector<isl::Vector<Production>>> &parser_rules)
           : rules{parser_rules}
           , symbols{grammar_symbols}
           , terminals{terminal_symbols}
         {}
 
-        [[nodiscard]] auto isTerminal(Id value) const -> bool
+        [[nodiscard]] auto isTerminal(Production value) const -> bool
         {
             return terminals.contains(value);
         }
 
-        [[nodiscard]] auto isNonTerminal(Id value) const -> bool
+        [[nodiscard]] auto isNonTerminal(Production value) const -> bool
         {
             return !isTerminal(value);
         }
