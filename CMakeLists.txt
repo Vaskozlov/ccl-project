@@ -3,11 +3,11 @@ cmake_minimum_required(VERSION 3.20.0)
 project(ccl-project VERSION 0.0.2.1 LANGUAGES CXX)
 
 include(GNUInstallDirs)
+include(FetchContent)
 
 include(cmake/ImportISL.cmake)
 include(cmake/ImportFMT.cmake)
 include(cmake/ImportCxxOpts.cmake)
-include(cmake/ImportCatch2.cmake)
 
 include(cmake/ProjectOptions.cmake)
 include(cmake/Libraries.cmake)
