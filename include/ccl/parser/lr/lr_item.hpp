@@ -2,7 +2,7 @@
 #define CCL_PROJECT_LR_ITEM_HPP
 
 #include <ccl/lexer/lexical_analyzer.hpp>
-#include <ccl/parser/general.hpp>
+#include <ccl/parser/types.hpp>
 
 namespace ccl::parser
 {

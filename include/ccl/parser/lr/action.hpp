@@ -1,8 +1,8 @@
 #ifndef CCL_PROJECT_ACTION_HPP
 #define CCL_PROJECT_ACTION_HPP
 
-#include <ccl/parser/lr_item.hpp>
-#include <ccl/parser/parsing_action.hpp>
+#include <ccl/parser/lr/lr_item.hpp>
+#include <ccl/parser/lr/parsing_action.hpp>
 
 namespace ccl::parser
 {

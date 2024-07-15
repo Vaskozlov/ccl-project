@@ -1,8 +1,8 @@
-#include "ccl/parser/lr_parser.hpp"
+#include "ccl/parser/lr/lr_parser.hpp"
 #include "ccl/lexer/tokenizer.hpp"
 #include "ccl/parser/ast/node_sequence.hpp"
 #include "ccl/parser/ast/token_node.hpp"
-#include "ccl/parser/lr_parser_generator.hpp"
+#include "ccl/parser/lr/lr_parser_generator.hpp"
 
 namespace ccl::parser
 {

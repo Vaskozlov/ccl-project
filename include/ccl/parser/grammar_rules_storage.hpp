@@ -1,7 +1,7 @@
 #ifndef CCL_PROJECT_GRAMMAR_RULES_STORAGE_HPP
 #define CCL_PROJECT_GRAMMAR_RULES_STORAGE_HPP
 
-#include <ccl/parser/general.hpp>
+#include <ccl/parser/types.hpp>
 #include <isl/generator.hpp>
 
 namespace ccl::parser

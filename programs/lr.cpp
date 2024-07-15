@@ -1,6 +1,6 @@
+#include "ccl/parser/lr/lr_parser.hpp"
 #include "ff_enum_helper.hpp"
 #include <ccl/lexer/dot_item/container.hpp>
-#include <ccl/parser/lr_parser.hpp>
 
 using namespace ccl::lexer;
 

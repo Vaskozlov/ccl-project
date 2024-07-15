@@ -1,11 +1,11 @@
 #ifndef CCL_PROJECT_LR_PARSER_GENERATOR_HPP
 #define CCL_PROJECT_LR_PARSER_GENERATOR_HPP
 
-#include <ccl/parser/action.hpp>
 #include <ccl/parser/ast/node.hpp>
-#include <ccl/parser/canonical_collection.hpp>
 #include <ccl/parser/grammar_rules_storage.hpp>
-#include <ccl/parser/table_entry.hpp>
+#include <ccl/parser/lr/action.hpp>
+#include <ccl/parser/lr/canonical_collection.hpp>
+#include <ccl/parser/lr/table_entry.hpp>
 
 namespace ccl::parser
 {

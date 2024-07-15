@@ -1,8 +1,8 @@
 #ifndef CCL_PROJECT_SETS_COMMON_HPP
 #define CCL_PROJECT_SETS_COMMON_HPP
 
-#include <ccl/parser/general.hpp>
 #include <ccl/parser/grammar_rules_storage.hpp>
+#include <ccl/parser/types.hpp>
 
 namespace ccl::parser::detail
 {

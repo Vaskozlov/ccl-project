@@ -1,7 +1,7 @@
 #ifndef CCL_PROJECT_TABLE_ENTRY_HPP
 #define CCL_PROJECT_TABLE_ENTRY_HPP
 
-#include <ccl/parser/general.hpp>
+#include <ccl/parser/types.hpp>
 
 namespace ccl::parser
 {
