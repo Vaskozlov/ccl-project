@@ -2,8 +2,8 @@
 
 namespace ccl::parser
 {
-    auto LrParserGenerator::doClosureComputationIteration(isl::Set<LrItem> &s, const LrItem &item) const
-        -> bool
+    auto LrParserGenerator::doClosureComputationIteration(
+        isl::Set<LrItem> &s, const LrItem &item) const -> bool
     {
         if (item.isDotInTheEnd()) {
             return false;

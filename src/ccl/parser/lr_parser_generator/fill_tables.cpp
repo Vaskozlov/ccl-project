@@ -2,7 +2,8 @@
 
 namespace ccl::parser
 {
-    auto LrParserGenerator::fillTablesUsingCanonicalCollection(const CanonicalCollection &cc) -> void
+    auto
+        LrParserGenerator::fillTablesUsingCanonicalCollection(const CanonicalCollection &cc) -> void
     {
         for (const auto &item : cc.items) {
             fillActionTableEntry(cc, item);
@@ -17,7 +18,8 @@ namespace ccl::parser
         }
     }
 
-    auto LrParserGenerator::fillActionTableEntry(const CanonicalCollection &cc, const LrItem &item) -> void
+    auto LrParserGenerator::fillActionTableEntry(const CanonicalCollection &cc, const LrItem &item)
+        -> void
     {
         using enum ccl::parser::ParsingAction;
 

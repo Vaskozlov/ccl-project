@@ -18,8 +18,9 @@ namespace ccl::parser
 
     public:
         explicit LrParser(
-            const LrItem &start_item, Symbol epsilon_symbol, const isl::Set<Symbol> &grammar_symbols,
-            const isl::Set<Symbol> &terminal_symbols, const GrammarRulesStorage &parser_rules);
+            const LrItem &start_item, Symbol epsilon_symbol,
+            const isl::Set<Symbol> &grammar_symbols, const isl::Set<Symbol> &terminal_symbols,
+            const GrammarRulesStorage &parser_rules);
 
         auto parse(lexer::LexicalAnalyzer::Tokenizer &tokenizer) const -> ast::NodePtr;
 
