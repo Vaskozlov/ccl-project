@@ -2,12 +2,13 @@
 #define CCL_PROJECT_TEST_GRAMMAR_HPP
 
 #include "ff_enum_helper.hpp"
+#include <ccl/parser/grammar_rules_storage.hpp>
 
 namespace ccl::debug
 {
     using GrammarSymbol = ff_test::helperToken;
 
-    const inline isl::Map<Id, isl::Vector<isl::Vector<Id>>> Rules{
+    const inline parser::GrammarRulesStorage Rules{
         {GrammarSymbol::GOAL,
          {
              {GrammarSymbol::EXPR, GrammarSymbol::EOI},

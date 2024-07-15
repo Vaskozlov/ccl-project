@@ -2,17 +2,16 @@
 #define CCL_PROJECT_SETS_COMMON_HPP
 
 #include <ccl/parser/general.hpp>
-#include <map>
-#include <set>
+#include <ccl/parser/grammar_rules_storage.hpp>
 
 namespace ccl::parser::detail
 {
     class FirstAndFollowSetsCommon
     {
     protected:
-        const isl::Map<Symbol, isl::Vector<isl::Vector<Symbol>>> &grammarRules;// NOLINT reference
-        const isl::Set<Symbol> &allSymbolsInGrammar;                           // NOLINT reference
-        const isl::Set<Symbol> &terminalSymbols;                               // NOLINT reference
+        const GrammarRulesStorage &grammarRules;    // NOLINT reference
+        const isl::Set<Symbol> &allSymbolsInGrammar;// NOLINT reference
+        const isl::Set<Symbol> &terminalSymbols;    // NOLINT reference
 
         static auto insertRange(isl::Set<Symbol> &set, isl::RangeOf<Symbol> auto &&range) -> bool
         {
@@ -30,7 +29,7 @@ namespace ccl::parser::detail
         FirstAndFollowSetsCommon(
             const isl::Set<Symbol> &grammar_symbols,
             const isl::Set<Symbol> &terminal_symbols,
-            const isl::Map<Symbol, isl::Vector<isl::Vector<Symbol>>> &grammar_rules)
+            const GrammarRulesStorage &grammar_rules)
           : grammarRules{grammar_rules}
           , allSymbolsInGrammar{grammar_symbols}
           , terminalSymbols{terminal_symbols}
@@ -54,10 +53,8 @@ namespace ccl::parser::detail
             while (has_modifications) {
                 has_modifications = false;
 
-                for (const auto &[key, rule_alternatives] : grammarRules) {
-                    for (const auto &rule : rule_alternatives) {
-                        has_modifications = function(key, rule) || has_modifications;
-                    }
+                for (const auto &[key, rule] : grammarRules.rulesIterator()) {
+                    has_modifications = function(key, rule) || has_modifications;
                 }
             }
         }

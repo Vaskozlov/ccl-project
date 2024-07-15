@@ -23,7 +23,7 @@ namespace ccl::parser
             FollowSetEvaluator(
                 Symbol start_symbol, Symbol end_of_input, Symbol epsilon_symbol,
                 const isl::Set<Symbol> &grammar_symbols, const isl::Set<Symbol> &terminal_symbols,
-                const isl::Map<Symbol, isl::Vector<isl::Vector<Symbol>>> &parser_rules,
+                const GrammarRulesStorage &parser_rules,
                 const isl::Map<Symbol, isl::Set<Symbol>> &first_set);
 
             [[nodiscard]] auto
@@ -46,7 +46,7 @@ namespace ccl::parser
     auto evaluateFollowSet(
         Symbol start_symbol, Symbol end_of_input, Symbol epsilon_symbol,
         const isl::Set<Symbol> &grammar_symbols, const isl::Set<Symbol> &terminals,
-        const isl::Map<Symbol, isl::Vector<isl::Vector<Symbol>>> &rules,
+        const GrammarRulesStorage &rules,
         const isl::Map<Symbol, isl::Set<Symbol>> &first_set) -> isl::Map<Symbol, isl::Set<Symbol>>;
 }// namespace ccl::parser
 

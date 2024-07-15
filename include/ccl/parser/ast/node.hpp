@@ -43,6 +43,8 @@ namespace ccl::parser::ast
                 return "not set";
             }) const -> void = 0;
     };
+
+    using NodePtr = std::unique_ptr<Node>;
 }// namespace ccl::parser::ast
 
 #endif /* CCL_PROJECT_NODE_HPP */

@@ -8,8 +8,10 @@ namespace ccl::parser
     auto LrParser::parse(lexer::LexicalAnalyzer::Tokenizer &tokenizer) const
         -> std::unique_ptr<ast::Node>
     {
+        using enum ccl::parser::ParsingAction;
+
         auto state_stack = isl::Vector<State>{0};
-        auto nodes_stack = isl::Vector<std::unique_ptr<ast::Node>>{};
+        auto nodes_stack = isl::Vector<ast::NodePtr>{};
         const auto *word = &tokenizer.yield();
 
         while (true) {
@@ -26,17 +28,17 @@ namespace ccl::parser
             const auto &action = actionTable.at(entry);
 
             switch (action.getParsingAction()) {
-            case ParsingAction::SHIFT:
+            case SHIFT:
                 nodes_stack.emplace_back(isl::makeUnique<ast::TokenNode>(word->getId(), *word));
                 state_stack.push_back(action.getShiftingState());
                 word = &tokenizer.yield();
                 break;
 
-            case ParsingAction::REDUCE:
+            case REDUCE:
                 reduceAction(action, state_stack, nodes_stack);
                 break;
 
-            case ParsingAction::ACCEPT:
+            case ACCEPT:
                 return std::move(nodes_stack.back());
 
             default:
@@ -48,7 +50,7 @@ namespace ccl::parser
     auto LrParser::reduceAction(
         const Action &action,
         isl::Vector<State> &state_stack,
-        isl::Vector<std::unique_ptr<ast::Node>> &nodes_stack) const -> void
+        isl::Vector<ast::NodePtr> &nodes_stack) const -> void
     {
         const auto &lr_item = action.getReducingItem();
         auto reduced_item =

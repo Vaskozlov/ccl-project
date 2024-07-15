@@ -11,7 +11,7 @@ namespace ccl::parser
         {
         private:
             isl::Map<Symbol, isl::Set<Symbol>> firstSet;
-            Symbol epsilon;
+            Symbol epsilonSymbol;
 
             using FirstAndFollowSetsCommon::applyFixedPointAlgorithmOnAllRules;
             using FirstAndFollowSetsCommon::insertRange;
@@ -21,8 +21,7 @@ namespace ccl::parser
         public:
             FirstSetEvaluator(
                 Symbol epsilon_symbol, const isl::Set<Symbol> &grammar_symbols,
-                const isl::Set<Symbol> &terminal_symbols,
-                const isl::Map<Symbol, isl::Vector<isl::Vector<Symbol>>> &parser_rules);
+                const isl::Set<Symbol> &terminal_symbols, const GrammarRulesStorage &parser_rules);
 
             [[nodiscard]] auto
                 getFirstSet() CCL_LIFETIMEBOUND -> isl::Map<Symbol, isl::Set<Symbol>> &
@@ -39,8 +38,7 @@ namespace ccl::parser
 
     auto evaluateFirstSet(
         Symbol epsilon, const isl::Set<Symbol> &grammar_symbols, const isl::Set<Symbol> &terminals,
-        const isl::Map<Symbol, isl::Vector<isl::Vector<Symbol>>> &rules)
-        -> isl::Map<Symbol, isl::Set<Symbol>>;
+        const GrammarRulesStorage &rules) -> isl::Map<Symbol, isl::Set<Symbol>>;
 }// namespace ccl::parser
 
 #endif /* CCL_PROJECT_FIRST_SET_HPP */

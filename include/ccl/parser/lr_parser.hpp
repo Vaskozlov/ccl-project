@@ -5,6 +5,7 @@
 #include <ccl/parser/action.hpp>
 #include <ccl/parser/ast/node.hpp>
 #include <ccl/parser/canonical_collection.hpp>
+#include <ccl/parser/grammar_rules_storage.hpp>
 
 namespace ccl::parser
 {
@@ -21,7 +22,7 @@ namespace ccl::parser
         };
 
     private:
-        isl::Map<Symbol, isl::Vector<isl::Vector<Symbol>>> grammarRules;
+        GrammarRulesStorage grammarRules;
         isl::Set<CanonicalCollection> canonicalCollection;
         isl::Set<Symbol> allSymbols;
         isl::Set<Symbol> terminalSymbols;
@@ -36,11 +37,9 @@ namespace ccl::parser
     public:
         explicit LrParser(
             const LrItem &start_item, Symbol epsilon_symbol, isl::Set<Symbol> grammar_symbols,
-            isl::Set<Symbol> terminal_symbols,
-            isl::Map<Symbol, isl::Vector<isl::Vector<Symbol>>> parser_rules);
+            isl::Set<Symbol> terminal_symbols, GrammarRulesStorage parser_rules);
 
-        auto
-            parse(lexer::LexicalAnalyzer::Tokenizer &tokenizer) const -> std::unique_ptr<ast::Node>;
+        auto parse(lexer::LexicalAnalyzer::Tokenizer &tokenizer) const -> ast::NodePtr;
 
         [[nodiscard]] auto getGotoTable() const noexcept -> const isl::Map<TableEntry, State> &
         {
@@ -61,7 +60,7 @@ namespace ccl::parser
         auto reduceAction(
             const Action &action,
             isl::Vector<State> &state_stack,
-            isl::Vector<std::unique_ptr<ast::Node>> &nodes_stack) const -> void;
+            isl::Vector<ast::NodePtr> &nodes_stack) const -> void;
 
         auto gotoFunction(const isl::Set<LrItem> &items, Symbol symbol) const -> isl::Set<LrItem>;
 
