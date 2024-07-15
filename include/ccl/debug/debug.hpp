@@ -1,5 +1,5 @@
-#ifndef CCL_PROJECT_DEBUG_FILE_HPP
-#define CCL_PROJECT_DEBUG_FILE_HPP
+#ifndef CCL_PROJECT_DEBUG_HPP
+#define CCL_PROJECT_DEBUG_HPP
 
 #include <catch2/catch_test_macros.hpp>
 #include <ccl/ccl.hpp>
@@ -12,4 +12,4 @@ namespace ccl::debug
     constexpr inline std::size_t FirstUsableToken = lexer::ReservedTokenMaxValue + 1;
 }
 
-#endif /* CCL_PROJECT_DEBUG_FILE_HPP */
+#endif /* CCL_PROJECT_DEBUG_HPP */

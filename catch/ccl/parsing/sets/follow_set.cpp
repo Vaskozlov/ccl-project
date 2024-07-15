@@ -1,5 +1,5 @@
 #include "test_grammar.hpp"
-#include <ccl/debug/debug_file.hpp>
+#include <ccl/debug/debug.hpp>
 #include <ccl/parser/first_set.hpp>
 #include <ccl/parser/follow_set.hpp>
 

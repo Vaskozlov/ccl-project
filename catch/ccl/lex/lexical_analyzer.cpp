@@ -1,4 +1,4 @@
-#include <ccl/debug/debug_file.hpp>
+#include <ccl/debug/debug.hpp>
 #include <ccl/handler/cmd.hpp>
 #include <ccl/lexer/tokenizer.hpp>
 

@@ -1,4 +1,4 @@
-#include <ccl/debug/debug_file.hpp>
+#include <ccl/debug/debug.hpp>
 #include <ccl/lexer/lexical_analyzer.hpp>
 
 TEST_CASE("AnyPlaceItem", "[Container]")

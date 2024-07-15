@@ -1,5 +1,5 @@
 #include "peg_grammar.hpp"
-#include <ccl/debug/debug_file.hpp>
+#include <ccl/debug/debug.hpp>
 #include <ccl/parser/ast/node_sequence.hpp>
 #include <ccl/parser/peg_parser.hpp>
 

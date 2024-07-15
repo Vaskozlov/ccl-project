@@ -1,4 +1,4 @@
-#include <ccl/debug/debug_file.hpp>
+#include <ccl/debug/debug.hpp>
 #include <ccl/text/text_iterator.hpp>
 
 TEST_CASE("TextIteratorTabsAndSpaceTracking", "[TabsAndSpacesTracker]")

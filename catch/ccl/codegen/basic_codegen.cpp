@@ -1,5 +1,5 @@
 #include "ccl/codegen/basic_codegen.hpp"
-#include "ccl/debug/debug_file.hpp"
+#include "ccl/debug/debug.hpp"
 
 TEST_CASE("BasicCodegen", "[Codegen]")
 {

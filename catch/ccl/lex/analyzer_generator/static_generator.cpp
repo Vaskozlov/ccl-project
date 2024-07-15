@@ -1,5 +1,5 @@
 #include <ccl/debug/c_rule.hpp>
-#include <ccl/debug/debug_file.hpp>
+#include <ccl/debug/debug.hpp>
 #include <ccl/lexer/analyzer_generator/analyzer_generator.hpp>
 
 TEST_CASE("StaticGeneration", "[StaticGenerator]")

@@ -1,5 +1,5 @@
 #include <ccl/char.hpp>
-#include <ccl/debug/debug_file.hpp>
+#include <ccl/debug/debug.hpp>
 
 // NOLINTBEGIN
 
