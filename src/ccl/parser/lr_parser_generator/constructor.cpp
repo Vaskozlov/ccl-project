@@ -1,14 +1,14 @@
 #include "ccl/parser/first_set.hpp"
-#include "ccl/parser/lr_parser.hpp"
+#include "ccl/parser/lr_parser_generator.hpp"
 
 namespace ccl::parser
 {
-    LrParser::LrParser(
-        const LrItem &start_item, Symbol epsilon_symbol, isl::Set<Symbol> grammar_symbols,
-        isl::Set<Symbol> terminal_symbols, GrammarRulesStorage parser_rules)
-      : grammarRules{std::move(parser_rules)}
-      , allSymbols{std::move(grammar_symbols)}
-      , terminalSymbols{std::move(terminal_symbols)}
+    LrParserGenerator::LrParserGenerator(
+        const LrItem &start_item, Symbol epsilon_symbol, const isl::Set<Symbol> &grammar_symbols,
+        const isl::Set<Symbol> &terminal_symbols, const GrammarRulesStorage &parser_rules)
+      : grammarRules{parser_rules}
+      , allSymbols{grammar_symbols}
+      , terminalSymbols{terminal_symbols}
       , goalProduction{start_item.getProductionType()}
       , endOfInput{start_item.getLookAhead()}
       , epsilonSymbol{epsilon_symbol}

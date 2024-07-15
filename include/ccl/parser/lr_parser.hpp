@@ -6,38 +6,20 @@
 #include <ccl/parser/ast/node.hpp>
 #include <ccl/parser/canonical_collection.hpp>
 #include <ccl/parser/grammar_rules_storage.hpp>
+#include <ccl/parser/table_entry.hpp>
 
 namespace ccl::parser
 {
     class LrParser
     {
-    public:
-        struct TableEntry
-        {
-            State state{};
-            Symbol lookAhead{};
-
-            [[nodiscard]] auto operator<=>(const TableEntry &other) const noexcept
-                -> std::strong_ordering = default;
-        };
-
     private:
-        GrammarRulesStorage grammarRules;
-        isl::Set<CanonicalCollection> canonicalCollection;
-        isl::Set<Symbol> allSymbols;
-        isl::Set<Symbol> terminalSymbols;
-        isl::Map<TableEntry, State> transitions;
         isl::Map<TableEntry, State> gotoTable;
         isl::Map<TableEntry, Action> actionTable;
-        Symbol goalProduction;
-        Symbol endOfInput;
-        Symbol epsilonSymbol;
-        isl::Map<Symbol, isl::Set<Symbol>> firstSet;
 
     public:
         explicit LrParser(
-            const LrItem &start_item, Symbol epsilon_symbol, isl::Set<Symbol> grammar_symbols,
-            isl::Set<Symbol> terminal_symbols, GrammarRulesStorage parser_rules);
+            const LrItem &start_item, Symbol epsilon_symbol, const isl::Set<Symbol> &grammar_symbols,
+            const isl::Set<Symbol> &terminal_symbols, const GrammarRulesStorage &parser_rules);
 
         auto parse(lexer::LexicalAnalyzer::Tokenizer &tokenizer) const -> ast::NodePtr;
 
@@ -52,65 +34,11 @@ namespace ccl::parser
         }
 
     private:
-        [[nodiscard]] auto isTerminal(Symbol symbol) const noexcept -> bool
-        {
-            return terminalSymbols.contains(symbol);
-        }
-
         auto reduceAction(
             const Action &action,
             isl::Vector<State> &state_stack,
             isl::Vector<ast::NodePtr> &nodes_stack) const -> void;
-
-        auto gotoFunction(const isl::Set<LrItem> &items, Symbol symbol) const -> isl::Set<LrItem>;
-
-        auto doCanonicalCollectionConstructionIterationOnItem(
-            Id &closure_id, const CanonicalCollection &cc, const LrItem &item,
-            isl::Set<CanonicalCollection> &pending_collections) -> bool;
-
-        auto doCanonicalCollectionConstructionIteration(
-            Id &closure_id, isl::Set<Id> &marked_collections) -> bool;
-
-        auto constructCanonicalCollection(const LrItem &start_item) -> void;
-
-        auto doClosureComputationIteration(isl::Set<LrItem> &s, const LrItem &item) const -> bool;
-
-        auto computeClosure(isl::Set<LrItem> s) const -> isl::Set<LrItem>;
-
-        auto fillTablesUsingCanonicalCollection(const CanonicalCollection &cc) -> void;
-
-        auto fillActionTableEntry(const CanonicalCollection &cc, const LrItem &item) -> void;
-
-        auto fillGotoTableEntry(const CanonicalCollection &cc, Symbol symbol) -> void;
-
-        auto fillTables() -> void;
-
-        template<typename... Ts>
-        auto insertIntoActionTable(TableEntry entry, Ts &&...args) -> void;
-    };
-
-    template<typename T>
-    struct TableEntryPrintHelper
-    {
-        const typename LrParser::TableEntry &entry;
     };
 }// namespace ccl::parser
-
-template<typename T>
-class fmt::formatter<ccl::parser::TableEntryPrintHelper<T>>
-  : public fmt::formatter<std::string_view>
-{
-public:
-    template<typename FmtContext>
-    constexpr auto
-        format(ccl::parser::TableEntryPrintHelper<T> entry_print_helper, FmtContext &ctx) const
-    {
-        const auto &entry = entry_print_helper.entry;
-
-        return fmt::format_to(
-            ctx.out(), "{}-{}", entry.state,
-            ccl::lexer::lexerEnumToString(isl::as<T>(entry.lookAhead)));
-    }
-};
 
 #endif /* CCL_PROJECT_LR_PARSER_HPP */

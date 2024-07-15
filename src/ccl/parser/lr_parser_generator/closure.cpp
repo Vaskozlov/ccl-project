@@ -1,8 +1,8 @@
-#include "ccl/parser/lr_parser.hpp"
+#include "ccl/parser/lr_parser_generator.hpp"
 
 namespace ccl::parser
 {
-    auto LrParser::doClosureComputationIteration(isl::Set<LrItem> &s, const LrItem &item) const
+    auto LrParserGenerator::doClosureComputationIteration(isl::Set<LrItem> &s, const LrItem &item) const
         -> bool
     {
         if (item.isDotInTheEnd()) {
@@ -33,7 +33,7 @@ namespace ccl::parser
         return has_modifications;
     }
 
-    auto LrParser::computeClosure(isl::Set<LrItem> s) const -> isl::Set<LrItem>
+    auto LrParserGenerator::computeClosure(isl::Set<LrItem> s) const -> isl::Set<LrItem>
     {
         auto has_modifications = true;
 

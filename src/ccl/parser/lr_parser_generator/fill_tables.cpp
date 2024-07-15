@@ -1,8 +1,8 @@
-#include "ccl/parser/lr_parser.hpp"
+#include "ccl/parser/lr_parser_generator.hpp"
 
 namespace ccl::parser
 {
-    auto LrParser::fillTablesUsingCanonicalCollection(const CanonicalCollection &cc) -> void
+    auto LrParserGenerator::fillTablesUsingCanonicalCollection(const CanonicalCollection &cc) -> void
     {
         for (const auto &item : cc.items) {
             fillActionTableEntry(cc, item);
@@ -17,7 +17,7 @@ namespace ccl::parser
         }
     }
 
-    auto LrParser::fillActionTableEntry(const CanonicalCollection &cc, const LrItem &item) -> void
+    auto LrParserGenerator::fillActionTableEntry(const CanonicalCollection &cc, const LrItem &item) -> void
     {
         using enum ccl::parser::ParsingAction;
 
@@ -45,7 +45,7 @@ namespace ccl::parser
         }
     }
 
-    auto LrParser::fillGotoTableEntry(const CanonicalCollection &cc, Symbol symbol) -> void
+    auto LrParserGenerator::fillGotoTableEntry(const CanonicalCollection &cc, Symbol symbol) -> void
     {
         auto entry = TableEntry{.state = cc.id, .lookAhead = symbol};
 
@@ -56,7 +56,7 @@ namespace ccl::parser
         gotoTable.try_emplace(entry, transitions.at(entry));
     }
 
-    auto LrParser::fillTables() -> void
+    auto LrParserGenerator::fillTables() -> void
     {
         for (const auto &cc : canonicalCollection) {
             fillTablesUsingCanonicalCollection(cc);
@@ -64,7 +64,7 @@ namespace ccl::parser
     }
 
     template<typename... Ts>
-    auto LrParser::insertIntoActionTable(TableEntry entry, Ts &&...args) -> void
+    auto LrParserGenerator::insertIntoActionTable(TableEntry entry, Ts &&...args) -> void
     {
         auto action = Action{std::forward<Ts>(args)...};
 

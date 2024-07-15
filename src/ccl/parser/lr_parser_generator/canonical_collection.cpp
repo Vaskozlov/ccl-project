@@ -1,8 +1,8 @@
-#include "ccl/parser/lr_parser.hpp"
+#include "ccl/parser/lr_parser_generator.hpp"
 
 namespace ccl::parser
 {
-    auto LrParser::gotoFunction(const isl::Set<LrItem> &items, Symbol symbol) const
+    auto LrParserGenerator::gotoFunction(const isl::Set<LrItem> &items, Symbol symbol) const
         -> isl::Set<LrItem>
     {
         auto moved = isl::Set<LrItem>{};
@@ -22,7 +22,7 @@ namespace ccl::parser
         return computeClosure(moved);
     }
 
-    auto LrParser::doCanonicalCollectionConstructionIterationOnItem(
+    auto LrParserGenerator::doCanonicalCollectionConstructionIterationOnItem(
         Id &closure_id, const CanonicalCollection &cc, const LrItem &item,
         isl::Set<CanonicalCollection> &pending_collections) -> bool
     {
@@ -55,7 +55,7 @@ namespace ccl::parser
         return has_new_sets;
     }
 
-    auto LrParser::doCanonicalCollectionConstructionIteration(
+    auto LrParserGenerator::doCanonicalCollectionConstructionIteration(
         Id &closure_id, isl::Set<Id> &marked_collections) -> bool
     {
         auto has_new_sets = false;
@@ -82,7 +82,7 @@ namespace ccl::parser
         return has_new_sets;
     }
 
-    auto LrParser::constructCanonicalCollection(const LrItem &start_item) -> void
+    auto LrParserGenerator::constructCanonicalCollection(const LrItem &start_item) -> void
     {
         auto closure_id = Id{1};
         auto has_new_sets = true;
