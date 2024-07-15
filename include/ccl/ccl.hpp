@@ -19,6 +19,8 @@
 
 namespace ccl
 {
+    // system must be at least 64 bit
+    // NOLINTNEXTLINE
     static_assert(sizeof(std::size_t) >= 8);
 
     using i8 = isl::i8;
