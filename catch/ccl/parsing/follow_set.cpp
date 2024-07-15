@@ -1,4 +1,4 @@
-#include "test_grammar.hpp"
+#include "basic_math_grammar.hpp"
 #include <ccl/debug/debug.hpp>
 #include <ccl/parser/first_set.hpp>
 #include <ccl/parser/follow_set.hpp>
@@ -10,11 +10,12 @@ TEST_CASE("FollowSetComputation", "[FollowSet]")
     using namespace ccl::debug;
     using namespace ccl::parser;
 
-    auto first_set = evaluateFirstSet(GrammarSymbol::EPSILON, AllSymbols, Terminals, Rules);
+    auto first_set = evaluateFirstSet(
+        GrammarSymbol::EPSILON, AllSymbols, Terminals, GrammarForFirstFollowSetTest);
 
     auto follow_Set = evaluateFollowSet(
         GrammarSymbol::GOAL, GrammarSymbol::EOI, GrammarSymbol::EPSILON, AllSymbols, Terminals,
-        Rules, first_set);
+        GrammarForFirstFollowSetTest, first_set);
 
     const auto &goal_follow_set = follow_Set.at(GrammarSymbol::GOAL);
     const auto &expr_follow_set = follow_Set.at(GrammarSymbol::EXPR);

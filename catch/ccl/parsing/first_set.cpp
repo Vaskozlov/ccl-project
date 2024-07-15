@@ -1,4 +1,4 @@
-#include "test_grammar.hpp"
+#include "basic_math_grammar.hpp"
 #include <ccl/debug/debug.hpp>
 #include <ccl/parser/first_set.hpp>
 
@@ -9,7 +9,8 @@ TEST_CASE("FirstSetComputation", "[FirstSet]")
     using namespace ccl::debug;
     using namespace ccl::parser;
 
-    auto first_set = evaluateFirstSet(GrammarSymbol::EPSILON, AllSymbols, Terminals, Rules);
+    auto first_set = evaluateFirstSet(
+        GrammarSymbol::EPSILON, AllSymbols, Terminals, GrammarForFirstFollowSetTest);
 
     const auto &goal_first_set = first_set.at(GrammarSymbol::GOAL);
     const auto &expr_first_set = first_set.at(GrammarSymbol::EXPR);

@@ -1,14 +1,14 @@
-#ifndef CCL_PROJECT_TEST_GRAMMAR_HPP
-#define CCL_PROJECT_TEST_GRAMMAR_HPP
+#ifndef CCL_PROJECT_BASIC_MATH_GRAMMAR_HPP
+#define CCL_PROJECT_BASIC_MATH_GRAMMAR_HPP
 
-#include "ff_enum_helper.hpp"
+#include "basic_math.hpp"
 #include <ccl/parser/grammar_rules_storage.hpp>
 
 namespace ccl::debug
 {
-    using GrammarSymbol = ff_test::helperToken;
+    using GrammarSymbol = math::MathLexerToken;
 
-    const inline parser::GrammarRulesStorage Rules{
+    const inline parser::GrammarRulesStorage GrammarForFirstFollowSetTest{
         {GrammarSymbol::GOAL,
          {
              {GrammarSymbol::EXPR, GrammarSymbol::EOI},
@@ -50,7 +50,7 @@ namespace ccl::debug
     const inline isl::Set<Id> AllSymbols = []() {
         isl::Set<Id> result;
 
-        for (const auto &[token, repr] : ff_test::ToStringhelperToken) {
+        for (const auto &[token, repr] : math::ToStringMathLexerToken) {
             if (lexer::isUsedDefinedTokenOrEoF(token)) {
                 result.emplace(token);
             }
@@ -71,4 +71,4 @@ public:
     }
 };
 
-#endif /* CCL_PROJECT_TEST_GRAMMAR_HPP */
+#endif /* CCL_PROJECT_BASIC_MATH_GRAMMAR_HPP */
