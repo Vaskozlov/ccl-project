@@ -93,9 +93,6 @@ namespace ccl::parser
             .id = 0,
         });
 
-        while (has_new_sets) {
-            has_new_sets =
-                doCanonicalCollectionConstructionIteration(closure_id, marked_collections);
-        }
+        CCL_REPEAT_WHILE(doCanonicalCollectionConstructionIteration(closure_id, marked_collections))
     }
 }// namespace ccl::parser

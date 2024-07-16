@@ -9,7 +9,8 @@ namespace ccl::parser
     {
         SHIFT,
         REDUCE,
-        ACCEPT
+        ACCEPT,
+        FAILED
     };
 }
 
@@ -30,6 +31,9 @@ public:
 
         case ccl::parser::ParsingAction::ACCEPT:
             return fmt::format_to(ctx.out(), "ACCEPT");
+
+        case ccl::parser::ParsingAction::FAILED:
+            return fmt::format_to(ctx.out(), "FAILED");
 
         default:
             isl::unreachable();

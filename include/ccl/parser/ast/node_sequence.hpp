@@ -1,31 +1,39 @@
 #ifndef CCL_PROJECT_NODE_SEQUENCE_HPP
 #define CCL_PROJECT_NODE_SEQUENCE_HPP
 
-#include <ccl/parser/ast/node.hpp>
+#include <algorithm>
+#include <ccl/parser/ast/node_of_nodes.hpp>
 #include <optional>
+#include <ranges>
 
 namespace ccl::parser::ast
 {
-    class NodeSequence : public Node
+    template<template<class> class T>
+    class NodeSequence : public NodeOfNodes
     {
     private:
-        isl::Vector<std::unique_ptr<Node>> nodes;
+        isl::Vector<T<Node>> nodes;
+
+        [[nodiscard]] auto getNodes() const -> isl::Vector<const Node *> override
+        {
+            return std::ranges::to<isl::Vector<const Node *>>(
+                std::views::transform(nodes, [](const auto &node) {
+                    return node.get();
+                }));
+        }
 
     public:
         explicit NodeSequence(Id node_type_id)
-          : Node{node_type_id}
+          : NodeOfNodes{node_type_id}
         {}
 
-        auto print(
-            const std::string &prefix, bool is_left,
-            std::function<isl::string_view(Id)> id_converter) const -> void override;
-
-        [[nodiscard]] auto addNode(std::unique_ptr<Node> node)
+        [[nodiscard]] auto addNode(T<Node> node)
         {
+            node.get();
             nodes.emplace_back(std::move(node));
         }
 
-        [[nodiscard]] auto getNodes() -> isl::Vector<std::unique_ptr<Node>> &
+        [[nodiscard]] auto getNodes() -> isl::Vector<T<Node>> &
         {
             return nodes;
         }
@@ -40,27 +48,19 @@ namespace ccl::parser::ast
             return size() == 0;
         }
 
-        [[nodiscard]] auto at(std::size_t index) -> std::optional<Node *>
+        [[nodiscard]] auto at(std::size_t index) -> Node *
         {
-            if (nodes.size() <= index) {
-                return std::nullopt;
-            }
-
             return nodes.at(index).get();
         }
 
-        [[nodiscard]] auto at(std::size_t index) const -> std::optional<const Node *>
+        [[nodiscard]] auto at(std::size_t index) const -> const Node *
         {
-            if (nodes.size() <= index) {
-                return std::nullopt;
-            }
-
             return nodes.at(index).get();
         }
 
-        auto joinWithNode(std::unique_ptr<Node> node) -> void
+        auto joinWithNode(T<Node> node) -> void
         {
-            if (auto *casted = isl::as<NodeSequence *>(node.get()); casted != nullptr) {
+            if (auto *casted = isl::as<NodeSequence<T> *>(node.get()); casted != nullptr) {
                 for (auto &elem : casted->nodes) {
                     addNode(std::move(elem));
                 }
@@ -74,6 +74,9 @@ namespace ccl::parser::ast
             std::ranges::reverse(nodes);
         }
     };
+
+    using UnNodeSequence = NodeSequence<std::unique_ptr>;
+    using ShNodeSequence = NodeSequence<std::shared_ptr>;
 }// namespace ccl::parser::ast
 
 #endif /* CCL_PROJECT_NODE_SEQUENCE_HPP */

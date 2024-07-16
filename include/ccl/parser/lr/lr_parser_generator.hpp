@@ -13,7 +13,7 @@ namespace ccl::parser
     {
     private:
         isl::Map<TableEntry, State> gotoTable;
-        isl::Map<TableEntry, Action> actionTable;
+        isl::Map<TableEntry, isl::Set<Action>> actionTable;
         isl::Set<CanonicalCollection> canonicalCollection;
         isl::Map<TableEntry, State> transitions;
         const GrammarRulesStorage &grammarRules;
@@ -35,10 +35,9 @@ namespace ccl::parser
             return gotoTable;
         }
 
-        [[nodiscard]] auto getActionTable() -> isl::Map<TableEntry, Action> &
-        {
-            return actionTable;
-        }
+        [[nodiscard]] auto getLrActionTable() const -> isl::Map<TableEntry, Action>;
+
+        [[nodiscard]] auto getGlrActionTable() const -> isl::Map<TableEntry, isl::Vector<Action>>;
 
     private:
         [[nodiscard]] auto isTerminal(Symbol symbol) const noexcept -> bool
@@ -49,7 +48,7 @@ namespace ccl::parser
         auto reduceAction(
             const Action &action,
             isl::Vector<State> &state_stack,
-            isl::Vector<ast::NodePtr> &nodes_stack) const -> void;
+            isl::Vector<ast::UnNodePtr> &nodes_stack) const -> void;
 
         auto gotoFunction(const isl::Set<LrItem> &items, Symbol symbol) const -> isl::Set<LrItem>;
 
@@ -76,6 +75,8 @@ namespace ccl::parser
 
         template<typename... Ts>
         auto insertIntoActionTable(TableEntry entry, Ts &&...args) -> void;
+
+        auto insertIntoGotoTable(TableEntry entry, State state) -> void;
     };
 }// namespace ccl::parser
 

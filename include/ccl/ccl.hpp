@@ -17,6 +17,14 @@
 #define CCL_TRIVIAL_ABI ISL_TRIVIAL_ABI
 #define CCL_NOEXCEPT_IF(EXPR) ISL_NOEXCEPT_IF(EXPR)
 
+#define CCL_REPEAT_WHILE(X)                                                                        \
+    while (X) {}
+
+#define CCL_REPEAT_FOREVER(X)                                                                      \
+    while (true) {                                                                                 \
+        X;                                                                                         \
+    }
+
 namespace ccl
 {
     // system must be at least 64 bit

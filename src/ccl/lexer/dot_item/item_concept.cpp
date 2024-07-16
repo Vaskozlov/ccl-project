@@ -32,8 +32,8 @@ namespace ccl::lexer::dot_item
         using CrtpScanner<ParserScanner, ParsingResult>::CrtpScanner;
 
     private:
-        std::unique_ptr<parser::ast::NodeSequence> nodeSequence =
-            isl::makeUnique<parser::ast::NodeSequence>(item.getId());
+        std::unique_ptr<parser::ast::UnNodeSequence> nodeSequence =
+            isl::makeUnique<parser::ast::UnNodeSequence>(item.getId());
         isl::string_view textBegin = textIterator.getRemaining();
 
     public:

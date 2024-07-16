@@ -2,6 +2,33 @@
 
 namespace ccl::parser
 {
+    auto LrParserGenerator::getLrActionTable() const -> isl::Map<TableEntry, Action>
+    {
+        auto result = isl::Map<TableEntry, Action>{};
+
+        for (const auto &[key, actions] : actionTable) {
+            if (actions.size() != 1) {
+                throw std::logic_error("Grammar is not suitable for LR parser");
+            }
+
+            result.try_emplace(key, *actions.begin());
+        }
+
+        return result;
+    }
+
+    [[nodiscard]] auto
+        LrParserGenerator::getGlrActionTable() -> isl::Map<TableEntry, isl::Vector<Action>>
+    {
+        auto result = isl::Map<TableEntry, isl::Vector<Action>>{};
+
+        for (const auto &[key, actions] : actionTable) {
+            result.try_emplace(key, std::ranges::to<isl::Vector<Action>>(actions));
+        }
+
+        return result;
+    }
+
     auto
         LrParserGenerator::fillTablesUsingCanonicalCollection(const CanonicalCollection &cc) -> void
     {
@@ -55,7 +82,7 @@ namespace ccl::parser
             return;
         }
 
-        gotoTable.try_emplace(entry, transitions.at(entry));
+        insertIntoGotoTable(entry, transitions.at(entry));
     }
 
     auto LrParserGenerator::fillTables() -> void
@@ -70,17 +97,19 @@ namespace ccl::parser
     {
         auto action = Action{std::forward<Ts>(args)...};
 
-        if (!actionTable.contains(entry)) {
-            actionTable.try_emplace(entry, std::move(action));
+        actionTable.try_emplace(entry);
+        actionTable.at(entry).emplace(std::move(action));
+    }
+
+    auto LrParserGenerator::insertIntoGotoTable(TableEntry entry, State state) -> void
+    {
+        if (!gotoTable.contains(entry)) {
+            gotoTable.try_emplace(entry, state);
             return;
         }
 
-        if (actionTable.at(entry) != action) {
-            if (action.getParsingAction() != actionTable.at(entry).getParsingAction()) {
-                throw std::logic_error("Shift reduce conflict");
-            }
-
-            throw std::logic_error("Reduce reduce conflict");
+        if (gotoTable.at(entry) != state) {
+            throw std::logic_error("Goto table conflict");
         }
     }
 }// namespace ccl::parser

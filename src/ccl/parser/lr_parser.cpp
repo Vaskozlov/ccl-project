@@ -14,7 +14,7 @@ namespace ccl::parser
             start_item, epsilon_symbol, grammar_symbols, terminal_symbols, parser_rules);
 
         gotoTable = std::move(parser_generator.getGotoTable());
-        actionTable = std::move(parser_generator.getActionTable());
+        actionTable = parser_generator.getLrActionTable();
     }
 
     auto LrParser::parse(lexer::LexicalAnalyzer::Tokenizer &tokenizer) const
@@ -22,12 +22,14 @@ namespace ccl::parser
     {
         using enum ccl::parser::ParsingAction;
 
-        auto state_stack = isl::Vector<State>{0};
-        auto nodes_stack = isl::Vector<ast::NodePtr>{};
+        auto state_stack = isl::Stack<State>{};
+        auto nodes_stack = isl::Stack<ast::UnNodePtr>{};
         const auto *word = &tokenizer.yield();
 
+        state_stack.push(0);
+
         while (true) {
-            const auto state = state_stack.back();
+            const auto state = state_stack.top();
             const auto entry = TableEntry{
                 .state = state,
                 .lookAhead = word->getId(),
@@ -41,8 +43,8 @@ namespace ccl::parser
 
             switch (action.getParsingAction()) {
             case SHIFT:
-                nodes_stack.emplace_back(isl::makeUnique<ast::TokenNode>(word->getId(), *word));
-                state_stack.push_back(action.getShiftingState());
+                nodes_stack.emplace(isl::makeUnique<ast::TokenNode>(word->getId(), *word));
+                state_stack.emplace(action.getShiftingState());
                 word = &tokenizer.yield();
                 break;
 
@@ -51,7 +53,7 @@ namespace ccl::parser
                 break;
 
             case ACCEPT:
-                return std::move(nodes_stack.back());
+                return std::move(nodes_stack.top());
 
             default:
                 isl::unreachable();
@@ -61,24 +63,25 @@ namespace ccl::parser
 
     auto LrParser::reduceAction(
         const Action &action,
-        isl::Vector<State> &state_stack,
-        isl::Vector<ast::NodePtr> &nodes_stack) const -> void
+        isl::Stack<State> &state_stack,
+        isl::Stack<ast::UnNodePtr> &nodes_stack) const -> void
     {
         const auto &lr_item = action.getReducingItem();
         auto reduced_item =
-            isl::makeUnique<ast::NodeSequence>(isl::as<Symbol>(lr_item.getProductionType()));
+            isl::makeUnique<ast::UnNodeSequence>(isl::as<Symbol>(lr_item.getProductionType()));
         const auto number_of_elements_to_take_from_stack = lr_item.length();
 
         for (std::size_t i = 0; i != number_of_elements_to_take_from_stack; ++i) {
-            reduced_item->addNode(std::move(nodes_stack.back()));
-            nodes_stack.pop_back();
-            state_stack.pop_back();
+            reduced_item->addNode(std::move(nodes_stack.top()));
+            nodes_stack.pop();
+            state_stack.pop();
         }
 
         reduced_item->reverse();
-        nodes_stack.push_back(std::move(reduced_item));
-        state_stack.push_back(gotoTable.at({
-            state_stack.back(),
+
+        nodes_stack.emplace(std::move(reduced_item));
+        state_stack.emplace(gotoTable.at({
+            state_stack.top(),
             lr_item.getProductionType(),
         }));
     }

@@ -107,7 +107,7 @@ namespace ccl::lexer::dot_item
     {
         auto totally_skipped = isl::as<std::size_t>(0);
         auto local_iterator = text_iterator;
-        auto node_sequence = isl::makeUnique<parser::ast::NodeSequence>(getId());
+        auto node_sequence = isl::makeUnique<parser::ast::UnNodeSequence>(getId());
 
         for (const DotItem &item : items) {
             auto parsing_result = item->parse(local_iterator);
