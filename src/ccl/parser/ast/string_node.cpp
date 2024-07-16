@@ -8,7 +8,7 @@ namespace ccl::parser::ast
         std::function<isl::string_view(Id)> id_converter) const -> void
     {
         std::cout << fmt::format(
-                         "{}-{}: {}", getPrintingPrefix(prefix, is_left), id_converter(getId()),
+                         "{}-{}: {}", getPrintingPrefix(prefix, is_left), id_converter(getType()),
                          repr)
                   << std::endl;
     }

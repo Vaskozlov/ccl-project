@@ -11,7 +11,7 @@ namespace ccl::parser::ast
         const auto expanded_prefix = expandPrefix(prefix, is_left);
         std::cout << fmt::format(
                          "{}NodeSequence-{}", getPrintingPrefix(prefix, is_left),
-                         id_converter(getId()))
+                         id_converter(getType()))
                   << std::endl;
 
         for (const auto &node : nodes | std::ranges::views::take(nodes.size() - 1)) {

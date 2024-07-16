@@ -10,7 +10,7 @@ namespace ccl::parser::ast
     class Node
     {
     private:
-        Id nodeTypeId{};
+        Id nodeType{};
 
     protected:
         static auto getPrintingPrefix(const std::string &prefix, bool is_left) -> std::string;
@@ -20,8 +20,8 @@ namespace ccl::parser::ast
     public:
         Node() = default;
 
-        explicit Node(Id node_type_id)
-          : nodeTypeId{node_type_id}
+        explicit Node(Id node_type)
+          : nodeType{node_type}
         {}
 
         Node(const Node &node) = default;
@@ -32,9 +32,9 @@ namespace ccl::parser::ast
         auto operator=(const Node &node) -> Node & = default;
         auto operator=(Node &&) noexcept -> Node & = default;
 
-        [[nodiscard]] auto getId() const noexcept -> Id
+        [[nodiscard]] auto getType() const noexcept -> Id
         {
-            return nodeTypeId;
+            return nodeType;
         }
 
         virtual auto print(

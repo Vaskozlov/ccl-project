@@ -16,6 +16,11 @@ namespace ccl::parser::ast
           , token{std::move(l_token)}
         {}
 
+        [[nodiscard]] auto getToken() const noexcept -> const lexer::Token &
+        {
+            return token;
+        }
+
         auto print(
             const std::string &prefix, bool is_left,
             std::function<isl::string_view(Id)> id_converter) const -> void override;
