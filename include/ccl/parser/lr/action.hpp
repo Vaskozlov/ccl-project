@@ -29,6 +29,8 @@ namespace ccl::parser
         {}
 
         [[nodiscard]] auto operator==(const Action &other) const noexcept -> bool = default;
+        [[nodiscard]] auto
+            operator<=>(const Action &other) const noexcept -> std::weak_ordering = default;
 
         [[nodiscard]] auto isShift() const noexcept -> bool
         {
