@@ -67,7 +67,7 @@ namespace ccl::parser
         }
 
         [[nodiscard]] auto
-            operator<=>(const LrItem &other) const noexcept -> std::strong_ordering = default;
+            operator<=>(const LrItem &other) const noexcept -> std::weak_ordering = default;
     };
 
     template<typename T>
