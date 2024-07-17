@@ -50,7 +50,7 @@ namespace ccl::lexer
 
         [[nodiscard]] LexicalAnalyzer(
             ExceptionHandler &exception_handler, const std::initializer_list<Rule> &rules,
-            std::string_view filename = {}, isl::Vector<Id> ignored_ids = {});
+            isl::string_view filename = {}, isl::Vector<Id> ignored_ids = {});
 
         [[nodiscard]] auto getIgnoredIds() const -> const isl::Vector<Id> &
         {
@@ -68,20 +68,20 @@ namespace ccl::lexer
             return allItemsMap.at(name);
         }
 
-        [[nodiscard]] auto getTokenizer(isl::string_view text, std::string_view filename = {})
+        [[nodiscard]] auto getTokenizer(isl::string_view text, isl::string_view filename = {})
             CCL_LIFETIMEBOUND -> Tokenizer;
 
         [[nodiscard]] auto getTokenizer(
-            isl::string_view text, std::string_view filename,
+            isl::string_view text, isl::string_view filename,
             ExceptionHandler &handler) CCL_LIFETIMEBOUND -> Tokenizer;
 
         [[nodiscard]] auto getParser(
-            isl::string_view rule_name, isl::string_view text, std::string_view filename,
+            isl::string_view rule_name, isl::string_view text, isl::string_view filename,
             ExceptionHandler &handler) CCL_LIFETIMEBOUND -> PegParser;
 
         [[nodiscard]] auto getParser(
             isl::string_view rule_name, isl::string_view text,
-            std::string_view filename = {}) CCL_LIFETIMEBOUND -> PegParser;
+            isl::string_view filename = {}) CCL_LIFETIMEBOUND -> PegParser;
 
         [[nodiscard]] auto
             getItems() const noexcept -> const isl::Vector<std::unique_ptr<Container>> &
@@ -90,7 +90,7 @@ namespace ccl::lexer
         }
 
     private:
-        auto createContainer(Rule rule, Id id, std::string_view filename) -> void;
+        auto createContainer(Rule rule, Id id, isl::string_view filename) -> void;
     };
 }// namespace ccl::lexer
 

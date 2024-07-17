@@ -5,13 +5,13 @@ namespace ccl::lexer
     using Tokenizer = LexicalAnalyzer::Tokenizer;
 
     Tokenizer::Tokenizer(
-        LexicalAnalyzer &lexical_analyzer, isl::string_view text, std::string_view filename)
+        LexicalAnalyzer &lexical_analyzer, isl::string_view text, isl::string_view filename)
       : lexicalAnalyzer{lexical_analyzer}
       , textIterator{text, lexical_analyzer.exceptionHandler, filename}
     {}
 
     Tokenizer::Tokenizer(
-        LexicalAnalyzer &lexical_analyzer, isl::string_view text, std::string_view filename,
+        LexicalAnalyzer &lexical_analyzer, isl::string_view text, isl::string_view filename,
         ExceptionHandler &exception_handler)
       : lexicalAnalyzer{lexical_analyzer}
       , textIterator{text, exception_handler, filename}

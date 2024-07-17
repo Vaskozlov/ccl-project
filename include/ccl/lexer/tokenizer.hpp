@@ -17,10 +17,10 @@ namespace ccl::lexer
     public:
         [[nodiscard]] Tokenizer(
             LexicalAnalyzer &lexical_analyzer, isl::string_view text,
-            std::string_view filename = {});
+            isl::string_view filename = {});
 
         [[nodiscard]] Tokenizer(
-            LexicalAnalyzer &lexical_analyzer, isl::string_view text, std::string_view filename,
+            LexicalAnalyzer &lexical_analyzer, isl::string_view text, isl::string_view filename,
             ExceptionHandler &exception_handler);
 
         [[nodiscard]] auto getIterator() const CCL_LIFETIMEBOUND -> const TextIterator &

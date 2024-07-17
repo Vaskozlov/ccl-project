@@ -6,7 +6,7 @@ namespace ccl::lexer
 {
     LexicalAnalyzer::LexicalAnalyzer(
         ExceptionHandler &exception_handler, const std::initializer_list<Rule> &rules,
-        std::string_view filename, isl::Vector<std::size_t> ignored_ids)
+        isl::string_view filename, isl::Vector<std::size_t> ignored_ids)
       : ignoredIds{std::move(ignored_ids)}
       , exceptionHandler{exception_handler}
     {
@@ -15,7 +15,7 @@ namespace ccl::lexer
         }
     }
 
-    auto LexicalAnalyzer::createContainer(Rule rule, Id id, std::string_view filename) -> void
+    auto LexicalAnalyzer::createContainer(Rule rule, Id id, isl::string_view filename) -> void
     {
         auto container = isl::makeUnique<Container>(
             *this, TextIterator{rule.repr, exceptionHandler, filename}, anyPlaceItems, id, true);
@@ -30,26 +30,26 @@ namespace ccl::lexer
     }
 
     auto
-        LexicalAnalyzer::getTokenizer(isl::string_view text, std::string_view filename) -> Tokenizer
+        LexicalAnalyzer::getTokenizer(isl::string_view text, isl::string_view filename) -> Tokenizer
     {
         return {*this, text, filename};
     }
 
     auto LexicalAnalyzer::getTokenizer(
-        isl::string_view text, std::string_view filename, ExceptionHandler &handler) -> Tokenizer
+        isl::string_view text, isl::string_view filename, ExceptionHandler &handler) -> Tokenizer
     {
         return {*this, text, filename, handler};
     }
 
     [[nodiscard]] auto LexicalAnalyzer::getParser(
-        isl::string_view rule_name, isl::string_view text, std::string_view filename,
+        isl::string_view rule_name, isl::string_view text, isl::string_view filename,
         ExceptionHandler &handler) -> PegParser
     {
         return {rule_name, *this, text, filename, handler};
     }
 
     [[nodiscard]] auto LexicalAnalyzer::getParser(
-        isl::string_view rule_name, isl::string_view text, std::string_view filename) -> PegParser
+        isl::string_view rule_name, isl::string_view text, isl::string_view filename) -> PegParser
     {
         return getParser(rule_name, text, filename, exceptionHandler);
     }

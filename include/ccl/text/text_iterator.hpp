@@ -36,7 +36,7 @@ namespace ccl::text
         [[nodiscard]] explicit TextIterator(
             isl::string_view input,
             ExceptionHandler &exception_handler = ExceptionHandler::instance(),
-            std::string_view filename = {});
+            isl::string_view filename = {});
 
         [[nodiscard]] explicit TextIterator(
             isl::string_view input,

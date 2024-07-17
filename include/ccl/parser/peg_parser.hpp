@@ -15,11 +15,11 @@ namespace ccl::lexer
     public:
         [[nodiscard]] PegParser(
             isl::string_view rule_name, LexicalAnalyzer &lexical_analyzer, isl::string_view text,
-            std::string_view filename = {});
+            isl::string_view filename = {});
 
         [[nodiscard]] PegParser(
             isl::string_view rule_name, LexicalAnalyzer &lexical_analyzer, isl::string_view text,
-            std::string_view filename, ExceptionHandler &exception_handler);
+            isl::string_view filename, ExceptionHandler &exception_handler);
 
         [[nodiscard]] auto parse() -> std::unique_ptr<parser::ast::Node>;
     };
