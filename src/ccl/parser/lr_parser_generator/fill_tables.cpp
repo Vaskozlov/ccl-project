@@ -1,4 +1,5 @@
 #include "ccl/parser/lr/detail//lr_parser_generator.hpp"
+#include <ranges>
 
 namespace ccl::parser
 {
@@ -23,7 +24,7 @@ namespace ccl::parser
         auto result = isl::Map<TableEntry, isl::Vector<Action>>{};
 
         for (const auto &[key, actions] : actionTable) {
-            result.try_emplace(key, std::ranges::to<isl::Vector<Action>>(actions));
+            result.try_emplace(key, isl::Vector<Action>{actions});
         }
 
         return result;

@@ -16,10 +16,9 @@ namespace ccl::parser::ast
 
         [[nodiscard]] auto getNodes() const -> isl::Vector<const Node *> override
         {
-            return std::ranges::to<isl::Vector<const Node *>>(
-                std::views::transform(nodes, [](const auto &node) {
-                    return node.get();
-                }));
+            return isl::Vector<const Node *>{std::views::transform(nodes, [](const auto &node) {
+                return node.get();
+            })};
         }
 
     public:
