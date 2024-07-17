@@ -10,7 +10,7 @@ namespace ccl::parser::detail
         const auto new_state = stateStack.top();
         const auto entry = TableEntry{
             .state = new_state,
-            .lookAhead = common.word->getId(),
+            .lookAhead = common.word->getToken().getId(),
         };
 
         if (!common.actionTable.contains(entry)) {
@@ -66,7 +66,7 @@ namespace ccl::parser::detail
     {
         switch (action.getParsingAction()) {
         case SHIFT:
-            nodesStack.emplace(isl::makeShared<ast::TokenNode>(common.word->getId(), *common.word));
+            nodesStack.emplace(common.word);
             stateStack.emplace(action.getShiftingState());
             break;
 

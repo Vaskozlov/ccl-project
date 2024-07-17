@@ -17,8 +17,7 @@ namespace ccl::parser
         actionTable = parser_generator.getLrActionTable();
     }
 
-    auto LrParser::parse(lexer::LexicalAnalyzer::Tokenizer &tokenizer) const
-        -> std::unique_ptr<ast::Node>
+    auto LrParser::parse(lexer::LexicalAnalyzer::Tokenizer &tokenizer) const -> ast::UnNodePtr
     {
         using enum ccl::parser::ParsingAction;
 

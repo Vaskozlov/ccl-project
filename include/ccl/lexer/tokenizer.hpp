@@ -38,6 +38,11 @@ namespace ccl::lexer
             return tokens[tokenIndex];// NOLINT
         }
 
+        [[nodiscard]] auto getCurrentToken() const CCL_LIFETIMEBOUND -> const Token &
+        {
+            return tokens[tokenIndex];// NOLINT
+        }
+
         auto throwExceptionToHandler(
             ExceptionCriticality criticality, isl::string_view message,
             isl::string_view suggestion = {}) -> void;

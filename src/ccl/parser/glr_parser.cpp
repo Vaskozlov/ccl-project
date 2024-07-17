@@ -69,10 +69,13 @@ namespace ccl::parser
             .common = runners_common,
         });
 
+        const auto *new_token = isl::as<lexer::Token *>(nullptr);
+
         do {
-            runners_common.word = &tokenizer.yield();
+            new_token = &tokenizer.yield();
+            runners_common.word = isl::makeShared<ast::TokenNode>(new_token->getId(), *new_token);
             newWordIteration(runners_common, parsing_runners);
-        } while (runners_common.word->getId() != 0);
+        } while (new_token->getId() != 0);
 
         return std::move(runners_common.acceptedNodes);
     }

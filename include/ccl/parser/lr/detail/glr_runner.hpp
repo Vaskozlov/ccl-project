@@ -1,6 +1,7 @@
 #ifndef CCL_PROJECT_GLR_RUNNER_HPP
 #define CCL_PROJECT_GLR_RUNNER_HPP
 
+#include <ccl/parser/ast/token_node.hpp>
 #include <ccl/parser/lr/glr_parser.hpp>
 #include <forward_list>
 
@@ -15,7 +16,7 @@ namespace ccl::parser::detail
         isl::Vector<ast::ShNodePtr> acceptedNodes;
         const isl::Map<TableEntry, State> &gotoTable;
         const isl::Map<TableEntry, isl::Vector<Action>> &actionTable;
-        const lexer::Token *word;
+        std::shared_ptr<ast::TokenNode> word;
     };
 
     class Runner
