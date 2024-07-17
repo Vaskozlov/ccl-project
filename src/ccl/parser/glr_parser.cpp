@@ -1,48 +1,46 @@
 #include "ccl/parser/lr/glr_parser.hpp"
 #include "ccl/lexer/tokenizer.hpp"
-#include "ccl/parser/ast/node_sequence.hpp"
 #include "ccl/parser/ast/token_node.hpp"
-#include "ccl/parser/lr/deatil/glr_runner.hpp"
-#include "ccl/parser/lr/lr_parser_generator.hpp"
+#include "ccl/parser/lr/detail/glr_runner.hpp"
+#include "ccl/parser/lr/detail/lr_parser_generator.hpp"
 
 namespace ccl::parser
 {
+    using namespace detail;
     using enum ccl::parser::ParsingAction;
-    using ListOfPollers = std::list<isl::Generator<ParsingAction>>;
 
-    static auto pollAlternatives(ListOfPollers &parsing_alternatives) -> void
+    static auto pollRunners(std::list<Runner> &parsing_runners) -> std::list<Runner>
     {
-        for (auto &alternative : parsing_alternatives) {
-            CCL_REPEAT_WHILE(alternative.yield() == REDUCE)
-        }
-    }
+        auto running_runners = std::list<Runner>{};
 
-    static auto pollAlternativesIfNotInShift(
-        detail::ListOfPendingAlternatives &parsing_alternatives) -> void
-    {
-        for (auto &[action, alternative] : parsing_alternatives) {
-            if (action == SHIFT) {
-                continue;
+        for (auto &runner : parsing_runners) {
+            switch (runner.poll()) {
+            case ParsingAction::SHIFT:
+            case ParsingAction::REDUCE:
+                running_runners.emplace_back(std::move(runner));
+                break;
+
+            default:
+                break;
             }
-
-            CCL_REPEAT_WHILE(alternative.yield() == REDUCE)
         }
+
+        return running_runners;
     }
 
     static auto
-        newWordIteration(detail::RunnersCommon &common, ListOfPollers &parsing_alternatives) -> void
+        newWordIteration(detail::RunnersCommon &common, std::list<Runner> &parsing_runners) -> void
     {
-        pollAlternatives(parsing_alternatives);
+        parsing_runners = pollRunners(parsing_runners);
 
-        while (!common.pendingAlternatives.empty()) {
-            auto pending_copy = std::move(common.pendingAlternatives);
-            common.pendingAlternatives.clear();
+        while (!common.newRunnersInReduceState.empty()) {
+            auto runners_in_reduce_state_copy = std::move(common.newRunnersInReduceState);
+            // after move object is in unknown state
+            common.newRunnersInReduceState.clear();
 
-            pollAlternativesIfNotInShift(pending_copy);
-
-            for (auto &&[action, alternative] : pending_copy) {
-                parsing_alternatives.emplace_back(std::move(alternative));
-            }
+            parsing_runners.splice(parsing_runners.end(), common.newRunnersInShiftState);
+            parsing_runners.splice(
+                parsing_runners.end(), pollRunners(runners_in_reduce_state_copy));
         }
     }
 
@@ -61,24 +59,25 @@ namespace ccl::parser
         -> isl::Vector<ast::ShNodePtr>
     {
         auto runners_common = detail::RunnersCommon{
-            .pendingAlternatives = {},
+            .newRunnersInShiftState = {},
+            .newRunnersInReduceState = {},
             .acceptedNodes = {},
             .gotoTable = gotoTable,
             .actionTable = actionTable,
             .word = nullptr,
         };
 
-        auto parsing_alternatives = ListOfPollers{};
+        auto parsing_runners = std::list<Runner>{};
 
-        parsing_alternatives.emplace_back(detail::constructRunnerPoller(detail::Runner{
-            .stateStack = isl::WeakStack<State>{0},
+        parsing_runners.emplace_back(Runner{
+            .stateStack = {0},
             .nodesStack = {},
             .common = runners_common,
-        }));
+        });
 
         do {
             runners_common.word = &tokenizer.yield();
-            newWordIteration(runners_common, parsing_alternatives);
+            newWordIteration(runners_common, parsing_runners);
         } while (runners_common.word->getId() != 0);
 
         return std::move(runners_common.acceptedNodes);

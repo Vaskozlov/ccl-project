@@ -1,5 +1,5 @@
 #include "ccl/parser/first_set.hpp"
-#include "ccl/parser/lr/lr_parser_generator.hpp"
+#include "ccl/parser/lr/detail/lr_parser_generator.hpp"
 
 namespace ccl::parser
 {

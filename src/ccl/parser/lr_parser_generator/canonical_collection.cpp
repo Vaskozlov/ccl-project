@@ -1,4 +1,4 @@
-#include "ccl/parser/lr/lr_parser_generator.hpp"
+#include "ccl/parser/lr/detail/lr_parser_generator.hpp"
 
 namespace ccl::parser
 {
@@ -85,7 +85,6 @@ namespace ccl::parser
     auto LrParserGenerator::constructCanonicalCollection(const LrItem &start_item) -> void
     {
         auto closure_id = Id{1};
-        auto has_new_sets = true;
         auto marked_collections = isl::Set<Id>{};
 
         canonicalCollection.emplace(CanonicalCollection{

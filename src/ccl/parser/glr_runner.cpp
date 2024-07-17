@@ -1,38 +1,37 @@
-#include "ccl/parser/lr/deatil/glr_runner.hpp"
+#include "ccl/parser/lr/detail/glr_runner.hpp"
+#include "ccl/parser/ast/node_sequence.hpp"
 
 namespace ccl::parser::detail
 {
-    auto constructRunnerPoller(Runner runner) -> isl::Generator<ParsingAction>
+    using enum ccl::parser::ParsingAction;
+
+    auto Runner::poll() -> ParsingAction
     {
-        using enum ccl::parser::ParsingAction;
+        const auto state = stateStack.top();
+        const auto entry = TableEntry{
+            .state = state,
+            .lookAhead = common.word->getId(),
+        };
 
-        while (true) {
-            const auto state = runner.stateStack.top();
-            const auto entry = TableEntry{
-                .state = state,
-                .lookAhead = runner.common.word->getId(),
-            };
-
-            if (!runner.common.actionTable.contains(entry)) {
-                CCL_REPEAT_FOREVER(co_yield FAILED)
-            }
-
-            const auto &actions = runner.common.actionTable.at(entry);
-            runner.hostNewRunnersIfMoreThanOneAction(actions);
-
-            const auto &current_runner_action = actions.front();
-            runner.runAction(current_runner_action);
-
-            if (current_runner_action.isAccept()) {
-                CCL_REPEAT_FOREVER(co_yield ACCEPT)
-            }
-
-            if (current_runner_action.isReduce()) {
-                continue;
-            }
-
-            co_yield SHIFT;
+        if (!common.actionTable.contains(entry)) {
+            return FAILED;
         }
+
+        const auto &actions = common.actionTable.at(entry);
+        hostNewRunnersIfMoreThanOneAction(actions);
+
+        const auto &current_runner_action = actions.front();
+        runAction(current_runner_action);
+
+        if (current_runner_action.isAccept()) {
+            return ACCEPT;
+        }
+
+        if (current_runner_action.isReduce()) {
+            return poll();
+        }
+
+        return SHIFT;
     }
 
     auto Runner::hostNewRunnersIfMoreThanOneAction(const isl::Vector<Action> &actions) -> void
@@ -40,15 +39,31 @@ namespace ccl::parser::detail
         for (const auto &action : actions | std::views::drop(1)) {
             auto new_runner = *this;
             new_runner.runAction(action);
-            common.pendingAlternatives.emplace_back(
-                action.getParsingAction(), constructRunnerPoller(std::move(new_runner)));
+
+            switch (action.getParsingAction()) {
+            case SHIFT:
+                common.newRunnersInShiftState.emplace_back(std::move(new_runner));
+                break;
+
+            case REDUCE:
+                common.newRunnersInReduceState.emplace_back(std::move(new_runner));
+                break;
+
+            case ACCEPT:
+                common.acceptedNodes.emplace_back(new_runner.nodesStack.top());
+                break;
+
+            case FAILED:
+                break;
+
+            default:
+                isl::unreachable();
+            }
         }
     }
 
     auto Runner::runAction(const Action &action) -> void
     {
-        using enum ccl::parser::ParsingAction;
-
         switch (action.getParsingAction()) {
         case SHIFT:
             nodesStack.emplace(isl::makeShared<ast::TokenNode>(common.word->getId(), *common.word));
@@ -82,6 +97,7 @@ namespace ccl::parser::detail
         }
 
         reduced_item->reverse();
+
         nodesStack.emplace(std::move(reduced_item));
         stateStack.emplace(common.gotoTable.at({
             stateStack.top(),

@@ -2,7 +2,6 @@
 #define CCL_PROJECT_NODE_OF_NODES_HPP
 
 #include <ccl/parser/ast/node.hpp>
-#include <isl/generator.hpp>
 #include <optional>
 
 namespace ccl::parser::ast

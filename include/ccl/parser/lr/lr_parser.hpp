@@ -5,8 +5,8 @@
 #include <ccl/parser/ast/node.hpp>
 #include <ccl/parser/grammar_rules_storage.hpp>
 #include <ccl/parser/lr/action.hpp>
-#include <ccl/parser/lr/canonical_collection.hpp>
-#include <ccl/parser/lr/table_entry.hpp>
+#include <ccl/parser/lr/detail/canonical_collection.hpp>
+#include <ccl/parser/lr/detail/table_entry.hpp>
 
 namespace ccl::parser
 {

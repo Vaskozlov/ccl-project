@@ -5,12 +5,12 @@
 
 namespace ccl::parser::detail
 {
-    using ListOfPendingAlternatives =
-        std::list<isl::Pair<ParsingAction, isl::Generator<ParsingAction>>>;
+    class Runner;
 
     struct RunnersCommon
     {
-        ListOfPendingAlternatives pendingAlternatives;
+        std::list<Runner> newRunnersInShiftState;
+        std::list<Runner> newRunnersInReduceState;
         isl::Vector<ast::ShNodePtr> acceptedNodes;
         const isl::Map<TableEntry, State> &gotoTable;
         const isl::Map<TableEntry, isl::Vector<Action>> &actionTable;
@@ -24,14 +24,14 @@ namespace ccl::parser::detail
         isl::WeakStack<ast::ShNodePtr> nodesStack;
         RunnersCommon &common;
 
+        auto poll() -> ParsingAction;
+
         auto hostNewRunnersIfMoreThanOneAction(const isl::Vector<Action> &actions) -> void;
 
         auto runAction(const Action &action) -> void;
 
         auto reduceAction(const Action &action) -> void;
     };
-
-    auto constructRunnerPoller(Runner runner) -> isl::Generator<ParsingAction>;
 }// namespace ccl::parser::detail
 
 #endif /* CCL_PROJECT_GLR_RUNNER_HPP */

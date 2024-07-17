@@ -1,4 +1,4 @@
-#include "ccl/parser/lr/lr_parser_generator.hpp"
+#include "ccl/parser/lr/detail//lr_parser_generator.hpp"
 
 namespace ccl::parser
 {
@@ -18,7 +18,7 @@ namespace ccl::parser
     }
 
     [[nodiscard]] auto
-        LrParserGenerator::getGlrActionTable() -> isl::Map<TableEntry, isl::Vector<Action>>
+        LrParserGenerator::getGlrActionTable() const -> isl::Map<TableEntry, isl::Vector<Action>>
     {
         auto result = isl::Map<TableEntry, isl::Vector<Action>>{};
 

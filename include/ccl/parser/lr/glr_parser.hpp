@@ -5,8 +5,8 @@
 #include <ccl/parser/ast/node.hpp>
 #include <ccl/parser/grammar_rules_storage.hpp>
 #include <ccl/parser/lr/action.hpp>
-#include <ccl/parser/lr/canonical_collection.hpp>
-#include <ccl/parser/lr/table_entry.hpp>
+#include <ccl/parser/lr/detail//canonical_collection.hpp>
+#include <ccl/parser/lr/detail//table_entry.hpp>
 #include <isl/weak_stack.hpp>
 #include <list>
 
@@ -15,8 +15,6 @@ namespace ccl::parser
     class GlrParser
     {
     private:
-        using ListOfPollers = std::list<isl::Generator<ParsingAction>>;
-
         isl::Map<TableEntry, State> gotoTable;
         isl::Map<TableEntry, isl::Vector<Action>> actionTable;
 
