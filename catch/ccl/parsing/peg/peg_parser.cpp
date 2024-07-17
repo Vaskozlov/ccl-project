@@ -12,7 +12,7 @@ TEST_CASE("PegParsing", "[Parser]")
     auto tokenizer = tparser::TestParser.getParser("EXPR", input, "stdin");
 
     tokenizer.parse()->print("", false, [](Id value) {
-        return lexer::lexerEnumToString<tparser::TestParserToken>(
-            as<tparser::TestParserToken>(value));
+        return std::string{lexer::lexerEnumToString<tparser::TestParserToken>(
+            as<tparser::TestParserToken>(value))};
     });
 }
