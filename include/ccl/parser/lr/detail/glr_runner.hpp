@@ -2,6 +2,7 @@
 #define CCL_PROJECT_GLR_RUNNER_HPP
 
 #include <ccl/parser/lr/glr_parser.hpp>
+#include <forward_list>
 
 namespace ccl::parser::detail
 {
@@ -9,8 +10,8 @@ namespace ccl::parser::detail
 
     struct RunnersCommon
     {
-        std::list<Runner> newRunnersInShiftState;
-        std::list<Runner> newRunnersInReduceState;
+        std::forward_list<Runner> newRunnersInShiftState;
+        std::forward_list<Runner> newRunnersInReduceState;
         isl::Vector<ast::ShNodePtr> acceptedNodes;
         const isl::Map<TableEntry, State> &gotoTable;
         const isl::Map<TableEntry, isl::Vector<Action>> &actionTable;

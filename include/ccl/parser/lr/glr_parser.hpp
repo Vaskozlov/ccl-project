@@ -8,7 +8,6 @@
 #include <ccl/parser/lr/detail//canonical_collection.hpp>
 #include <ccl/parser/lr/detail//table_entry.hpp>
 #include <isl/weak_stack.hpp>
-#include <list>
 
 namespace ccl::parser
 {

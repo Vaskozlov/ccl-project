@@ -3,44 +3,38 @@
 #include "ccl/parser/ast/token_node.hpp"
 #include "ccl/parser/lr/detail/glr_runner.hpp"
 #include "ccl/parser/lr/detail/lr_parser_generator.hpp"
+#include <algorithm>
 
 namespace ccl::parser
 {
     using namespace detail;
     using enum ccl::parser::ParsingAction;
 
-    static auto pollRunners(std::list<Runner> &parsing_runners) -> std::list<Runner>
+    static auto pollRunners(std::forward_list<Runner> &parsing_runners) -> void
     {
-        auto running_runners = std::list<Runner>{};
-
-        for (auto &runner : parsing_runners) {
-            switch (runner.poll()) {
-            case ParsingAction::SHIFT:
-            case ParsingAction::REDUCE:
-                running_runners.emplace_back(std::move(runner));
-                break;
-
-            default:
-                break;
-            }
-        }
-
-        return running_runners;
+        std::erase_if(parsing_runners, [](Runner &runner) {
+            const auto polling_result = runner.poll();
+            return polling_result == ACCEPT || polling_result == FAILED;
+        });
     }
 
-    static auto
-        newWordIteration(detail::RunnersCommon &common, std::list<Runner> &parsing_runners) -> void
+    static auto newWordIteration(
+        detail::RunnersCommon &common, std::forward_list<Runner> &parsing_runners) -> void
     {
-        parsing_runners = pollRunners(parsing_runners);
+        pollRunners(parsing_runners);
 
         while (!common.newRunnersInReduceState.empty()) {
             auto runners_in_reduce_state_copy = std::move(common.newRunnersInReduceState);
             // after move object is in unknown state
             common.newRunnersInReduceState.clear();
 
-            parsing_runners.splice(parsing_runners.end(), common.newRunnersInShiftState);
-            parsing_runners.splice(
-                parsing_runners.end(), pollRunners(runners_in_reduce_state_copy));
+            parsing_runners.splice_after(
+                parsing_runners.before_begin(), common.newRunnersInShiftState);
+
+            pollRunners(runners_in_reduce_state_copy);
+
+            parsing_runners.splice_after(
+                parsing_runners.before_begin(), runners_in_reduce_state_copy);
         }
     }
 
@@ -67,9 +61,9 @@ namespace ccl::parser
             .word = nullptr,
         };
 
-        auto parsing_runners = std::list<Runner>{};
+        auto parsing_runners = std::forward_list<Runner>{};
 
-        parsing_runners.emplace_back(Runner{
+        parsing_runners.emplace_front(Runner{
             .stateStack = {0},
             .nodesStack = {},
             .common = runners_common,

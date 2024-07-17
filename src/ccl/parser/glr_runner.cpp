@@ -7,9 +7,9 @@ namespace ccl::parser::detail
 
     auto Runner::poll() -> ParsingAction
     {
-        const auto state = stateStack.top();
+        const auto new_state = stateStack.top();
         const auto entry = TableEntry{
-            .state = state,
+            .state = new_state,
             .lookAhead = common.word->getId(),
         };
 
@@ -42,11 +42,11 @@ namespace ccl::parser::detail
 
             switch (action.getParsingAction()) {
             case SHIFT:
-                common.newRunnersInShiftState.emplace_back(std::move(new_runner));
+                common.newRunnersInShiftState.emplace_front(std::move(new_runner));
                 break;
 
             case REDUCE:
-                common.newRunnersInReduceState.emplace_back(std::move(new_runner));
+                common.newRunnersInReduceState.emplace_front(std::move(new_runner));
                 break;
 
             case ACCEPT:
