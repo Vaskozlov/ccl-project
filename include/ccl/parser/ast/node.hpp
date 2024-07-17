@@ -40,7 +40,7 @@ namespace ccl::parser::ast
         virtual auto print(
             const std::string &prefix = "", bool is_left = false,
             std::function<std::string(Id)> id_converter = [](auto arg) {
-                return std::to_string(arg);
+                return fmt::to_string(arg);
             }) const -> void = 0;
     };
 
