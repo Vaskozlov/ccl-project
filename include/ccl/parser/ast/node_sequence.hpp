@@ -28,7 +28,6 @@ namespace ccl::parser::ast
 
         [[nodiscard]] auto addNode(T<Node> node)
         {
-            node.get();
             nodes.emplace_back(std::move(node));
         }
 
