@@ -73,8 +73,8 @@ namespace ccl::parser::ast
         }
     };
 
-    using UnNodeSequence = NodeSequence<std::unique_ptr>;
-    using ShNodeSequence = NodeSequence<std::shared_ptr>;
+    using UnNodeSequence = NodeSequence<isl::UniquePtr>;
+    using ShNodeSequence = NodeSequence<isl::SharedPtr>;
 }// namespace ccl::parser::ast
 
 #endif /* CCL_PROJECT_NODE_SEQUENCE_HPP */

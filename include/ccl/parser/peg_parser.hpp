@@ -21,7 +21,7 @@ namespace ccl::lexer
             isl::string_view rule_name, LexicalAnalyzer &lexical_analyzer, isl::string_view text,
             isl::string_view filename, ExceptionHandler &exception_handler);
 
-        [[nodiscard]] auto parse() -> std::unique_ptr<parser::ast::Node>;
+        [[nodiscard]] auto parse() -> isl::UniquePtr<parser::ast::Node>;
     };
 }// namespace ccl::lexer
 

@@ -173,7 +173,7 @@ namespace ccl::lexer::dot_item
     class DotItemConcept::AnyPlaceItems
     {
     public:
-        isl::Vector<std::unique_ptr<Container>> items;
+        isl::Vector<isl::UniquePtr<Container>> items;
 
         [[nodiscard]] auto
             isSuccessfulScan(TextIterator &text_iterator, Token &token) const -> bool;

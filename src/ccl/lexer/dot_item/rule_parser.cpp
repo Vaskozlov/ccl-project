@@ -381,7 +381,7 @@ namespace ccl::lexer::dot_item
         -> bool
     {
         return std::ranges::any_of(
-            items, [&text_iterator](const std::unique_ptr<Container> &special_item) {
+            items, [&text_iterator](const isl::UniquePtr<Container> &special_item) {
                 return special_item->scan(text_iterator).isSuccess();
             });
     }
@@ -390,7 +390,7 @@ namespace ccl::lexer::dot_item
         const -> bool
     {
         return std::ranges::any_of(
-            items, [&text_iterator, &token](const std::unique_ptr<Container> &special_item) {
+            items, [&text_iterator, &token](const isl::UniquePtr<Container> &special_item) {
                 return special_item->beginScan(text_iterator, token, ScanType::SPECIAL);
             });
     }

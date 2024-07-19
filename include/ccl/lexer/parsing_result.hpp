@@ -10,7 +10,7 @@ namespace ccl::lexer
     class ParsingResult : public ScanResult
     {
     private:
-        std::unique_ptr<parser::ast::Node> node;
+        isl::UniquePtr<parser::ast::Node> node;
 
     public:
         [[nodiscard]] static auto failure() noexcept -> ParsingResult
@@ -19,7 +19,7 @@ namespace ccl::lexer
         }
 
         [[nodiscard]] explicit ParsingResult(
-            std::size_t bytesPassed, std::unique_ptr<parser::ast::Node> constructed_node) noexcept
+            std::size_t bytesPassed, isl::UniquePtr<parser::ast::Node> constructed_node) noexcept
           : ScanResult{bytesPassed}
           , node{std::move(constructed_node)}
         {}
@@ -29,7 +29,7 @@ namespace ccl::lexer
             return node.get();
         }
 
-        [[nodiscard]] auto getAndReleaseNode() -> std::unique_ptr<parser::ast::Node>
+        [[nodiscard]] auto getAndReleaseNode() -> isl::UniquePtr<parser::ast::Node>
         {
             return std::move(node);
         }

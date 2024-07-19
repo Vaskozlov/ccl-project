@@ -44,8 +44,8 @@ namespace ccl::parser::ast
             }) const -> void = 0;
     };
 
-    using UnNodePtr = std::unique_ptr<Node>;
-    using ShNodePtr = std::shared_ptr<Node>;
+    using UnNodePtr = isl::UniquePtr<Node>;
+    using ShNodePtr = isl::SharedPtr<Node>;
 }// namespace ccl::parser::ast
 
 #endif /* CCL_PROJECT_NODE_HPP */

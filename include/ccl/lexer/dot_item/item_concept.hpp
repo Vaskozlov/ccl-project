@@ -135,14 +135,14 @@ namespace ccl::lexer::dot_item
             parseIteration(const ForkedGenerator &text_iterator) const -> ParsingResult = 0;
     };
 
-    class DotItem : public std::unique_ptr<DotItemConcept>
+    class DotItem : public isl::UniquePtr<DotItemConcept>
     {
     public:
-        using std::unique_ptr<DotItemConcept>::unique_ptr;
+        using isl::UniquePtr<DotItemConcept>::unique_ptr;
 
         template<std::derived_from<DotItemConcept> T>
         explicit constexpr DotItem(T dot_item)
-          : std::unique_ptr<DotItemConcept>::unique_ptr(isl::makeUnique<T>(std::move(dot_item)))
+          : isl::UniquePtr<DotItemConcept>::unique_ptr(isl::makeUnique<T>(std::move(dot_item)))
         {}
     };
 }// namespace ccl::lexer::dot_item

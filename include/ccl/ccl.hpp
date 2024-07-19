@@ -5,6 +5,7 @@
 #include <array>
 
 #include <isl/isl.hpp>
+#include <isl/memory.hpp>
 
 #include <fmt/color.h>
 #include <fmt/compile.h>

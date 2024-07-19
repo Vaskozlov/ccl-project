@@ -36,7 +36,7 @@ namespace ccl::lexer
         };
 
         isl::Map<isl::string_view, Container *> allItemsMap;
-        isl::Vector<std::unique_ptr<Container>> items;
+        isl::Vector<isl::UniquePtr<Container>> items;
         AnyPlaceItems anyPlaceItems;
         isl::Vector<Id> ignoredIds;
         std::string skippedCharacters;
@@ -84,7 +84,7 @@ namespace ccl::lexer
             isl::string_view filename = {}) CCL_LIFETIMEBOUND -> PegParser;
 
         [[nodiscard]] auto
-            getItems() const noexcept -> const isl::Vector<std::unique_ptr<Container>> &
+            getItems() const noexcept -> const isl::Vector<isl::UniquePtr<Container>> &
         {
             return items;
         }

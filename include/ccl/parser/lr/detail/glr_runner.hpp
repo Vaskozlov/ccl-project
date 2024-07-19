@@ -16,7 +16,7 @@ namespace ccl::parser::detail
         isl::Vector<ast::ShNodePtr> acceptedNodes;
         const isl::Map<TableEntry, State> &gotoTable;
         const isl::Map<TableEntry, isl::Vector<Action>> &actionTable;
-        std::shared_ptr<ast::TokenNode> word;
+        isl::SharedPtr<ast::TokenNode> word;
     };
 
     class Runner

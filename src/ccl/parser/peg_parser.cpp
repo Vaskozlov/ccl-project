@@ -15,7 +15,7 @@ namespace ccl::lexer
       : PegParser{rule_name, lexical_analyzer, text, filename, lexical_analyzer.exceptionHandler}
     {}
 
-    auto LexicalAnalyzer::PegParser::parse() -> std::unique_ptr<parser::ast::Node>
+    auto LexicalAnalyzer::PegParser::parse() -> isl::UniquePtr<parser::ast::Node>
     {
         return mainItem->parse(textIterator.fork()).getAndReleaseNode();
     }
