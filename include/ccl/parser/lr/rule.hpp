@@ -8,8 +8,8 @@
 
 #define CCL_PARSER_RULE_CONSTRUCTOR_ARGUMENTS_DECL(PRODUCTION_NAME, NODES_ARGUMENT_NAME)           \
     <template<class> class SmartPointer>(                                                          \
-        ccl::parser::Symbol PRODUCTION_NAME,                                                       \
-        isl::Vector<SmartPointer<ccl::parser::ast::Node>>                                          \
+        [[maybe_unused]] ccl::parser::Symbol PRODUCTION_NAME,                                      \
+        [[maybe_unused]] isl::Vector<SmartPointer<ccl::parser::ast::Node>>                         \
             NODES_ARGUMENT_NAME)
 
 
