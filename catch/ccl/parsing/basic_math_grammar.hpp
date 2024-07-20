@@ -9,36 +9,100 @@ namespace ccl::debug
     using GrammarSymbol = math::MathLexerToken;
 
     const inline parser::GrammarRulesStorage GrammarForFirstFollowSetTest{
-        {GrammarSymbol::GOAL,
-         {
-             {GrammarSymbol::EXPR, GrammarSymbol::EOI},
-         }},
+        {
+            GrammarSymbol::GOAL,
+            {
+                parser::Rule{
+                    {
+                        GrammarSymbol::EXPR,
+                        GrammarSymbol::EOI,
+                    },
+                },
+            },
+        },
         {GrammarSymbol::EXPR,
          {
-             {GrammarSymbol::TERM, GrammarSymbol::EXPR_C},
+             parser::Rule{
+                 {
+                     GrammarSymbol::TERM,
+                     GrammarSymbol::EXPR_C,
+                 },
+             },
          }},
         {GrammarSymbol::EXPR_C,
          {
-             {GrammarSymbol::ADD, GrammarSymbol::TERM, GrammarSymbol::EXPR_C},
-             {GrammarSymbol::SUB, GrammarSymbol::TERM, GrammarSymbol::EXPR_C},
-             {GrammarSymbol::EPSILON},
+             parser::Rule{
+                 {
+                     GrammarSymbol::ADD,
+                     GrammarSymbol::TERM,
+                     GrammarSymbol::EXPR_C,
+                 },
+             },
+             parser::Rule{
+                 {
+                     GrammarSymbol::SUB,
+                     GrammarSymbol::TERM,
+                     GrammarSymbol::EXPR_C,
+                 },
+             },
+             parser::Rule{
+                 {GrammarSymbol::EPSILON},
+             },
          }},
         {GrammarSymbol::TERM,
          {
-             {GrammarSymbol::FACTOR, GrammarSymbol::TERM_C},
+             parser::Rule{
+                 {
+                     GrammarSymbol::FACTOR,
+                     GrammarSymbol::TERM_C,
+                 },
+             },
          }},
-        {GrammarSymbol::TERM_C,
-         {
-             {GrammarSymbol::MUL, GrammarSymbol::FACTOR, GrammarSymbol::TERM_C},
-             {GrammarSymbol::DIV, GrammarSymbol::FACTOR, GrammarSymbol::TERM_C},
-             {GrammarSymbol::EPSILON},
-         }},
-        {GrammarSymbol::FACTOR,
-         {
-             {GrammarSymbol::ANGLE_OPEN, GrammarSymbol::EXPR, GrammarSymbol::ANGLE_CLOSE},
-             {GrammarSymbol::NAME},
-             {GrammarSymbol::NUMBER},
-         }}};
+        {
+            GrammarSymbol::TERM_C,
+            {
+                parser::Rule{
+                    {
+                        GrammarSymbol::MUL,
+                        GrammarSymbol::FACTOR,
+                        GrammarSymbol::TERM_C,
+                    },
+                },
+                parser::Rule{
+                    {
+                        GrammarSymbol::DIV,
+                        GrammarSymbol::FACTOR,
+                        GrammarSymbol::TERM_C,
+                    },
+                },
+                parser::Rule{{
+                    GrammarSymbol::EPSILON,
+                }},
+            },
+        },
+        {
+            GrammarSymbol::FACTOR,
+            {
+                parser::Rule{
+                    {
+                        GrammarSymbol::ANGLE_OPEN,
+                        GrammarSymbol::EXPR,
+                        GrammarSymbol::ANGLE_CLOSE,
+                    },
+                },
+                parser::Rule{
+                    {
+                        GrammarSymbol::NAME,
+                    },
+                },
+                parser::Rule{
+                    {
+                        GrammarSymbol::NUMBER,
+                    },
+                },
+            },
+        },
+    };
 
     const inline isl::Set<Id> Terminals{
         GrammarSymbol::NAME,       GrammarSymbol::NUMBER, GrammarSymbol::ANGLE_CLOSE,
