@@ -1,9 +1,9 @@
-#include <ccl/lexer/dot_item/union.hpp>
+#include <ccl/lexer/rule/union.hpp>
 
-namespace ccl::lexer::dot_item
+namespace ccl::lexer::rule
 {
     Union::Union(TextIterator &rule_iterator, Id rule_id)
-      : DotItemConcept{rule_id}
+      : RuleBlockInterface{rule_id}
     {
         static constexpr isl::StaticFlatmap<char32_t, char32_t, 3> special_symbols = {
             {U'[', U'['}, {U']', U']'}, {U'-', U'-'}};

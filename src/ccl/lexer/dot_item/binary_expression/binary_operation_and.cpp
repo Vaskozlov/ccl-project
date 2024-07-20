@@ -1,6 +1,6 @@
-#include <ccl/lexer/dot_item/binary_expression/binary_operation_and.hpp>
+#include <ccl/lexer/rule/binary_expression/binary_operation_and.hpp>
 
-namespace ccl::lexer::dot_item
+namespace ccl::lexer::rule
 {
     auto BinaryOperationAnd::scanIteration(const ForkedGenerator &text_iterator) const -> ScanResult
     {

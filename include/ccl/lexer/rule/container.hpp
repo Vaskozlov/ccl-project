@@ -1,16 +1,16 @@
 #ifndef CCL_PROJECT_CONTAINER_HPP
 #define CCL_PROJECT_CONTAINER_HPP
 
-#include <ccl/lexer/dot_item/binary_expression/binary_expression_base.hpp>
-#include <ccl/lexer/dot_item/item_concept.hpp>
-#include <ccl/lexer/dot_item/repetition.hpp>
+#include <ccl/lexer/rule/binary_expression/binary_expression_base.hpp>
+#include <ccl/lexer/rule/repetition.hpp>
+#include <ccl/lexer/rule/rule_block_interface.hpp>
 
 namespace ccl::lexer
 {
     class LexicalAnalyzer;
 }
 
-namespace ccl::lexer::dot_item
+namespace ccl::lexer::rule
 {
     enum struct ScanType : Id
     {
@@ -20,11 +20,11 @@ namespace ccl::lexer::dot_item
 
     class Container;
 
-    class Container final : public DotItemConcept
+    class Container final : public RuleBlockInterface
     {
-        using DotItemConcept::canBeOptimized;
-        using typename DotItemConcept::TextIterator;
-        using DotItemsStorage = isl::Vector<DotItem>;
+        using RuleBlockInterface::canBeOptimized;
+        using typename RuleBlockInterface::TextIterator;
+        using DotItemsStorage = isl::Vector<RuleBlock>;
 
         class RuleParser;
 
@@ -92,7 +92,7 @@ namespace ccl::lexer::dot_item
             itemSuccessfullyEnded(const ForkedGenerator &text_iterator) const -> bool;
 
         static auto addPrefixOrPostfix(
-            const DotItemConcept *item, Token &token, isl::string_view repr) -> void;
+            const RuleBlockInterface *item, Token &token, isl::string_view repr) -> void;
     };
 
     class Container::RuleParser
@@ -102,7 +102,7 @@ namespace ccl::lexer::dot_item
         DotItemsStorage &items{container.items};              // NOLINT reference
         AnyPlaceItems &anyPlaceItems{container.anyPlaceItems};// NOLINT reference
         LexicalAnalyzer &lexicalAnalyzer;                     // NOLINT reference
-        std::optional<DotItem> constructedLhs{std::nullopt};
+        std::optional<RuleBlock> constructedLhs{std::nullopt};
         BinaryOperator binaryOperator{};
         bool rhsItemConstructed{};
 
@@ -130,19 +130,19 @@ namespace ccl::lexer::dot_item
 
         [[nodiscard]] auto hasMovedToTheNextChar() -> bool;
 
-        [[nodiscard]] auto constructBinaryExpression() -> DotItem;
+        [[nodiscard]] auto constructBinaryExpression() -> RuleBlock;
 
-        [[nodiscard]] auto constructNewSequence() -> DotItem;
+        [[nodiscard]] auto constructNewSequence() -> RuleBlock;
 
-        [[nodiscard]] auto constructNewRuleReference() -> DotItem;
+        [[nodiscard]] auto constructNewRuleReference() -> RuleBlock;
 
-        [[nodiscard]] auto constructNewUnion() -> DotItem;
+        [[nodiscard]] auto constructNewUnion() -> RuleBlock;
 
-        [[nodiscard]] auto constructNewContainer() -> DotItem;
+        [[nodiscard]] auto constructNewContainer() -> RuleBlock;
 
-        auto emplaceItem(std::derived_from<DotItemConcept> auto item) -> void;
+        auto emplaceItem(std::derived_from<RuleBlockInterface> auto item) -> void;
 
-        auto emplaceItem(DotItem item) -> void;
+        auto emplaceItem(RuleBlock item) -> void;
 
         auto completePreviousItemInitialization() -> void;
 
@@ -151,8 +151,6 @@ namespace ccl::lexer::dot_item
         auto addPrefixPostfix() -> void;
 
         auto addRepetition(Closure new_repetition) -> void;
-
-        auto addBindingPower() -> void;
 
         auto makeSpecial() -> void;
 
@@ -172,7 +170,7 @@ namespace ccl::lexer::dot_item
         [[noreturn]] auto throwUndefinedAction() -> void;
     };
 
-    class DotItemConcept::AnyPlaceItems
+    class RuleBlockInterface::AnyPlaceItems
     {
     public:
         isl::Vector<isl::UniquePtr<Container>> items;

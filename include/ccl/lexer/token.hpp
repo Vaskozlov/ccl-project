@@ -15,7 +15,7 @@ namespace ccl::lexer
 
     constexpr inline std::size_t ReservedTokenMaxValue = 2;
 
-    namespace dot_item
+    namespace rule
     {
         class Container;
     }
@@ -34,7 +34,7 @@ namespace ccl::lexer
     {
     private:
         friend class LexicalAnalyzer;
-        friend class dot_item::Container;
+        friend class rule::Container;
 
         isl::Vector<isl::string_view> prefixes;
         isl::Vector<isl::string_view> postfixes;

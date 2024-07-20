@@ -1,19 +1,19 @@
-#ifndef CCL_PROJECT_ITEM_CONCEPT_HPP
-#define CCL_PROJECT_ITEM_CONCEPT_HPP
+#ifndef CCL_PROJECT_RULE_INTERFACE_HPP
+#define CCL_PROJECT_RULE_INTERFACE_HPP
 
-#include <ccl/lexer/dot_item/repetition.hpp>
 #include <ccl/lexer/parsing_result.hpp>
+#include <ccl/lexer/rule/repetition.hpp>
 #include <ccl/lexer/scan_result.hpp>
 #include <ccl/lexer/token.hpp>
 #include <ccl/parser/ast/node.hpp>
 #include <ccl/text/text_iterator.hpp>
 #include <isl/memory.hpp>
 
-namespace ccl::lexer::dot_item
+namespace ccl::lexer::rule
 {
     class Container;
 
-    class DotItemConcept
+    class RuleBlockInterface
     {
     public:
         using TextIterator = text::TextIterator;
@@ -34,26 +34,25 @@ namespace ccl::lexer::dot_item
     private:
         Closure closure{1, 1};
         Id id{};
-        std::size_t bindingPower{};
         Flags flags;
 
     public:
-        CCL_INLINE explicit DotItemConcept(Id item_id)
+        CCL_INLINE explicit RuleBlockInterface(Id item_id)
           : id{item_id}
         {}
 
-        CCL_INLINE DotItemConcept(Id item_id, Flags item_flags)
+        CCL_INLINE RuleBlockInterface(Id item_id, Flags item_flags)
           : id{item_id}
           , flags{item_flags}
         {}
 
-        DotItemConcept(const DotItemConcept &) = default;
-        DotItemConcept(DotItemConcept &&) noexcept = default;
+        RuleBlockInterface(const RuleBlockInterface &) = default;
+        RuleBlockInterface(RuleBlockInterface &&) noexcept = default;
 
-        virtual ~DotItemConcept() = default;
+        virtual ~RuleBlockInterface() = default;
 
-        auto operator=(const DotItemConcept &) -> void = delete;
-        auto operator=(DotItemConcept &&) noexcept -> void = delete;
+        auto operator=(const RuleBlockInterface &) -> void = delete;
+        auto operator=(RuleBlockInterface &&) noexcept -> void = delete;
 
         [[nodiscard]] auto getClosure() const noexcept -> Closure
         {
@@ -63,11 +62,6 @@ namespace ccl::lexer::dot_item
         [[nodiscard]] auto getFlags() const noexcept -> Flags
         {
             return flags;
-        }
-
-        [[nodiscard]] auto getBindingPower() const noexcept -> std::size_t
-        {
-            return bindingPower;
         }
 
         [[nodiscard]] auto isReversed() const noexcept -> bool
@@ -110,11 +104,6 @@ namespace ccl::lexer::dot_item
             closure = new_repetition;
         }
 
-        auto setBindingPower(std::size_t new_binding_power) noexcept -> void
-        {
-            bindingPower = new_binding_power;
-        }
-
         [[nodiscard]] auto canBeOptimized() const noexcept -> bool
         {
             const auto fromZeroAccuracies = closure.from == 0;
@@ -141,21 +130,21 @@ namespace ccl::lexer::dot_item
             parseIteration(const ForkedGenerator &text_iterator) const -> ParsingResult = 0;
     };
 
-    class DotItem : public isl::UniquePtr<DotItemConcept>
+    class RuleBlock : public isl::UniquePtr<RuleBlockInterface>
     {
     public:
-        using isl::UniquePtr<DotItemConcept>::unique_ptr;
+        using isl::UniquePtr<RuleBlockInterface>::unique_ptr;
 
-        template<std::derived_from<DotItemConcept> T>
-        explicit constexpr DotItem(T dot_item)
-          : isl::UniquePtr<DotItemConcept>::unique_ptr(isl::makeUnique<T>(std::move(dot_item)))
+        template<std::derived_from<RuleBlockInterface> T>
+        explicit constexpr RuleBlock(T dot_item)
+          : isl::UniquePtr<RuleBlockInterface>::unique_ptr(isl::makeUnique<T>(std::move(dot_item)))
         {}
     };
 }// namespace ccl::lexer::dot_item
 
 namespace ccl::lexer
 {
-    using AnyPlaceItems = dot_item::DotItemConcept::AnyPlaceItems;
+    using AnyPlaceItems = rule::RuleBlockInterface::AnyPlaceItems;
 }
 
-#endif /* CCL_PROJECT_ITEM_CONCEPT_HPP */
+#endif /* CCL_PROJECT_RULE_INTERFACE_HPP */

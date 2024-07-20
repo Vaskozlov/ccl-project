@@ -1,12 +1,12 @@
-#include <ccl/lexer/dot_item/binary_expression/binary_operation_and.hpp>
-#include <ccl/lexer/dot_item/binary_expression/binary_operation_or.hpp>
-#include <ccl/lexer/dot_item/container.hpp>
-#include <ccl/lexer/dot_item/rule_reference.hpp>
-#include <ccl/lexer/dot_item/sequence.hpp>
-#include <ccl/lexer/dot_item/union.hpp>
+#include <ccl/lexer/rule/binary_expression/binary_operation_and.hpp>
+#include <ccl/lexer/rule/binary_expression/binary_operation_or.hpp>
+#include <ccl/lexer/rule/container.hpp>
+#include <ccl/lexer/rule/rule_reference.hpp>
+#include <ccl/lexer/rule/sequence.hpp>
+#include <ccl/lexer/rule/union.hpp>
 #include <utility>
 
-namespace ccl::lexer::dot_item
+namespace ccl::lexer::rule
 {
     Container::RuleParser::RuleParser(Container &target_container, TextIterator &text_iterator)
       : container{target_container}
@@ -90,10 +90,6 @@ namespace ccl::lexer::dot_item
             startBinaryExpression(BinaryOperator::OR);
             break;
 
-        case U'_':
-            addBindingPower();
-            break;
-
         default:
             throwUndefinedAction();
         }
@@ -121,47 +117,47 @@ namespace ccl::lexer::dot_item
         }
     }
 
-    auto Container::RuleParser::constructBinaryExpression() -> DotItem
+    auto Container::RuleParser::constructBinaryExpression() -> RuleBlock
     {
         auto rhs = std::move(items.back());
         items.pop_back();
 
         if (binaryOperator == BinaryOperator::AND) {
-            return DotItem{
+            return RuleBlock{
                 BinaryOperationAnd(std::move(constructedLhs.value()), std::move(rhs), getId())};
         }
 
         if (binaryOperator == BinaryOperator::OR) {
-            return DotItem{
+            return RuleBlock{
                 BinaryOperationOr(std::move(constructedLhs.value()), std::move(rhs), getId())};
         }
 
         isl::unreachable();
     }
 
-    auto Container::RuleParser::constructNewSequence() -> DotItem
+    auto Container::RuleParser::constructNewSequence() -> RuleBlock
     {
         tryToFinishBinaryExpression();
 
-        return DotItem{Sequence{Sequence::SequenceFlags{}, "\"", ruleIterator, getId()}};
+        return RuleBlock{Sequence{Sequence::SequenceFlags{}, "\"", ruleIterator, getId()}};
     }
 
-    auto Container::RuleParser::constructNewRuleReference() -> DotItem
+    auto Container::RuleParser::constructNewRuleReference() -> RuleBlock
     {
         tryToFinishBinaryExpression();
 
-        return DotItem{RuleReference{lexicalAnalyzer, "\'", "\'", ruleIterator, getId()}};
+        return RuleBlock{RuleReference{lexicalAnalyzer, "\'", "\'", ruleIterator, getId()}};
     }
 
-    auto Container::RuleParser::constructNewUnion() -> DotItem
+    auto Container::RuleParser::constructNewUnion() -> RuleBlock
     {
         tryToFinishBinaryExpression();
 
-        return DotItem{Union{ruleIterator, getId()}};
+        return RuleBlock{Union{ruleIterator, getId()}};
     }
 
     // NOLINTNEXTLINE (recursive function)
-    auto Container::RuleParser::constructNewContainer() -> DotItem
+    auto Container::RuleParser::constructNewContainer() -> RuleBlock
     {
         tryToFinishBinaryExpression();
 
@@ -175,10 +171,10 @@ namespace ccl::lexer::dot_item
                                        getId(),         false,        container.isAnyPlaceItem()};
         ruleIterator.setEnd(saved_end);
 
-        return DotItem{std::move(new_container)};
+        return RuleBlock{std::move(new_container)};
     }
 
-    auto Container::RuleParser::emplaceItem(std::derived_from<DotItemConcept> auto item) -> void
+    auto Container::RuleParser::emplaceItem(std::derived_from<RuleBlockInterface> auto item) -> void
     {
         if (!item.canBeOptimized()) {
             completePreviousItemInitialization();
@@ -186,7 +182,7 @@ namespace ccl::lexer::dot_item
         }
     }
 
-    auto Container::RuleParser::emplaceItem(DotItem item) -> void
+    auto Container::RuleParser::emplaceItem(RuleBlock item) -> void
     {
         if (!item->canBeOptimized()) {
             completePreviousItemInitialization();
@@ -200,7 +196,7 @@ namespace ccl::lexer::dot_item
             return;
         }
 
-        const DotItem &item = items.back();
+        const RuleBlock &item = items.back();
         auto item_repetition = item->getClosure();
 
         neverRecognizedSuggestion(
@@ -245,22 +241,6 @@ namespace ccl::lexer::dot_item
         last_item->setRepetition(new_repetition);
     }
 
-    auto Container::RuleParser::addBindingPower() -> void
-    {
-        constexpr auto decimal_base = isl::as<std::size_t>(10);
-        auto binding_power = isl::as<std::size_t>(ruleIterator.advance() - U'0');
-
-        while (isDigit(ruleIterator.futureChar())) {
-            binding_power *= decimal_base;
-            binding_power += (ruleIterator.advance() - U'0');
-        }
-
-        auto &last_item = items.back();
-        last_item->setBindingPower(binding_power);
-
-        ruleIterator.advance();
-    }
-
     auto Container::RuleParser::makeSpecial() -> void
     {
         if (!items.empty()) {
@@ -295,12 +275,12 @@ namespace ccl::lexer::dot_item
 
     auto Container::RuleParser::postCreationCheck() -> void
     {
-        const auto postfix_elem = std::ranges::find_if(items, [](const DotItem &elem) {
+        const auto postfix_elem = std::ranges::find_if(items, [](const RuleBlock &elem) {
             return elem->hasPostfix();
         });
 
         const bool postfixes_correct =
-            std::ranges::all_of(postfix_elem, items.cend(), [](const DotItem &elem) {
+            std::ranges::all_of(postfix_elem, items.cend(), [](const RuleBlock &elem) {
                 return elem->hasPostfix();
             });
 
@@ -318,8 +298,8 @@ namespace ccl::lexer::dot_item
         }
 
         completePreviousItemInitialization();
-        DotItemConcept::neverRecognizedSuggestion(ruleIterator, items.empty() && !isReversed());
-        DotItemConcept::alwaysRecognizedSuggestion(ruleIterator, items.empty() && isReversed());
+        RuleBlockInterface::neverRecognizedSuggestion(ruleIterator, items.empty() && !isReversed());
+        RuleBlockInterface::alwaysRecognizedSuggestion(ruleIterator, items.empty() && isReversed());
     }
 
     auto Container::RuleParser::findContainerEnd(isl::string_view repr) -> std::size_t
@@ -386,7 +366,7 @@ namespace ccl::lexer::dot_item
         throw UnrecoverableError{"unrecoverable error in ContainerType"};
     }
 
-    auto DotItemConcept::AnyPlaceItems::checkForSpecial(const ForkedGenerator &text_iterator) const
+    auto RuleBlockInterface::AnyPlaceItems::checkForSpecial(const ForkedGenerator &text_iterator) const
         -> bool
     {
         return std::ranges::any_of(
@@ -395,7 +375,7 @@ namespace ccl::lexer::dot_item
             });
     }
 
-    auto DotItemConcept::AnyPlaceItems::isSuccessfulScan(TextIterator &text_iterator, Token &token)
+    auto RuleBlockInterface::AnyPlaceItems::isSuccessfulScan(TextIterator &text_iterator, Token &token)
         const -> bool
     {
         return std::ranges::any_of(

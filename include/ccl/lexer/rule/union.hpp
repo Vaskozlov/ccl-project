@@ -1,18 +1,18 @@
 #ifndef CCL_PROJECT_UNION_HPP
 #define CCL_PROJECT_UNION_HPP
 
-#include <ccl/lexer/dot_item/item_concept.hpp>
+#include <ccl/lexer/rule/rule_block_interface.hpp>
 #include <isl/utf_set.hpp>
 
-namespace ccl::lexer::dot_item
+namespace ccl::lexer::rule
 {
-    class Union final : public DotItemConcept
+    class Union final : public RuleBlockInterface
     {
     private:
         isl::UtfSet bitset;
 
     public:
-        using typename DotItemConcept::TextIterator;
+        using typename RuleBlockInterface::TextIterator;
 
         [[nodiscard]] explicit Union(TextIterator &rule_iterator, Id rule_id = 0);
 

@@ -1,10 +1,10 @@
 #ifndef CCL_PROJECT_RULE_REFERENCE_HPP
 #define CCL_PROJECT_RULE_REFERENCE_HPP
 
-#include <ccl/lexer/dot_item/sequence.hpp>
 #include <ccl/lexer/lexical_analyzer.hpp>
+#include <ccl/lexer/rule/sequence.hpp>
 
-namespace ccl::lexer::dot_item
+namespace ccl::lexer::rule
 {
     class RuleReference : public Sequence
     {
@@ -13,7 +13,7 @@ namespace ccl::lexer::dot_item
         LexicalAnalyzer &lexicalAnalyzer;
 
     public:
-        using typename DotItemConcept::TextIterator;
+        using typename RuleBlockInterface::TextIterator;
 
         [[nodiscard]] RuleReference(
             LexicalAnalyzer &lexical_analyzer, isl::string_view sequence_starter,

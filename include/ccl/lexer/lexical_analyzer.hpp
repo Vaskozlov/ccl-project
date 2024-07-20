@@ -1,7 +1,7 @@
 #ifndef CCL_PROJECT_LEXICAL_ANALYZER_HPP
 #define CCL_PROJECT_LEXICAL_ANALYZER_HPP
 
-#include <ccl/lexer/dot_item/container.hpp>
+#include <ccl/lexer/rule/container.hpp>
 
 namespace ccl::lexer
 {
@@ -17,9 +17,9 @@ namespace ccl::lexer
     class LexicalAnalyzer
     {
     private:
-        using Container = dot_item::Container;
-        using DotItemConcept = dot_item::DotItemConcept;
-        using TextIterator = typename DotItemConcept::TextIterator;
+        using Container = rule::Container;
+        using RuleBlockInterface = rule::RuleBlockInterface;
+        using TextIterator = typename RuleBlockInterface::TextIterator;
 
         struct CCL_TRIVIAL_ABI Rule
         {

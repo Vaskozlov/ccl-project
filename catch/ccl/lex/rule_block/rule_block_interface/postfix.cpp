@@ -1,6 +1,6 @@
 #include <ccl/debug/debug.hpp>
-#include <ccl/lexer/dot_item/container.hpp>
 #include <ccl/lexer/lexical_analyzer.hpp>
+#include <ccl/lexer/rule/container.hpp>
 
 TEST_CASE("TwoPostfixes", "[Container]")
 {
@@ -8,7 +8,7 @@ TEST_CASE("TwoPostfixes", "[Container]")
 
     auto special_items = lexer::AnyPlaceItems{};
     auto empty_lexical_analyzer = lexer::LexicalAnalyzer(ExceptionHandler::instance(), {});
-    auto container = lexer::dot_item::Container(
+    auto container = lexer::rule::Container(
         empty_lexical_analyzer,
         text::TextIterator{R"([a-z]+[_]p"test"p)"},
         special_items,
@@ -31,7 +31,7 @@ TEST_CASE("WrongPostfixCreation", "[Container]")
     auto empty_lexical_analyzer = lexer::LexicalAnalyzer(ExceptionHandler::instance(), {});
 
     REQUIRE_THROWS_AS(
-        lexer::dot_item::Container(
+        lexer::rule::Container(
             empty_lexical_analyzer,
             text::TextIterator{R"([a-z]+[_]p"test")"},
             special_items,

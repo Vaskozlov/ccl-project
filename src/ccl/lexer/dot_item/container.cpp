@@ -1,13 +1,13 @@
-#include <ccl/lexer/dot_item/container.hpp>
-#include <ccl/lexer/dot_item/rule_reference.hpp>
 #include <ccl/lexer/lexical_analyzer.hpp>
+#include <ccl/lexer/rule/container.hpp>
+#include <ccl/lexer/rule/rule_reference.hpp>
 #include <ccl/parser/ast/node_sequence.hpp>
 #include <ccl/parser/ast/string_node.hpp>
 
-namespace ccl::lexer::dot_item
+namespace ccl::lexer::rule
 {
     CCL_INLINE auto Container::addPrefixOrPostfix(
-        const DotItemConcept *item, Token &token, isl::string_view repr) -> void
+        const RuleBlockInterface *item, Token &token, isl::string_view repr) -> void
     {
         if (repr.empty()) [[unlikely]] {
             return;
@@ -23,7 +23,7 @@ namespace ccl::lexer::dot_item
     Container::Container(
         LexicalAnalyzer &lexical_analyzer, TextIterator &rule_iterator,
         AnyPlaceItems &special_items, Id item_id, bool main_item, bool is_special)
-      : DotItemConcept{item_id}
+      : RuleBlockInterface{item_id}
       , anyPlaceItems{special_items}
       , lexicalAnalyzer{lexical_analyzer}
       , flags{.isMain = main_item, .isSpecial = is_special}
@@ -34,7 +34,7 @@ namespace ccl::lexer::dot_item
     Container::Container(
         LexicalAnalyzer &lexical_analyzer, const TextIterator &rule_iterator,
         AnyPlaceItems &special_items, Id item_id, bool main_item, bool is_special)
-      : DotItemConcept{item_id}
+      : RuleBlockInterface{item_id}
       , anyPlaceItems{special_items}
       , lexicalAnalyzer{lexical_analyzer}
       , flags{.isMain = main_item, .isSpecial = is_special}
@@ -51,7 +51,7 @@ namespace ccl::lexer::dot_item
 
         token.clear(getId());
 
-        for (const DotItem &item : items) {
+        for (const RuleBlock &item : items) {
             auto scan_result = item->scan(local_iterator);
 
             if (scan_result.isFailure() && isReversed()) {
@@ -89,7 +89,7 @@ namespace ccl::lexer::dot_item
         auto totally_skipped = isl::as<std::size_t>(0);
         auto local_iterator = text_iterator;
 
-        for (const DotItem &item : items) {
+        for (const RuleBlock &item : items) {
             auto scan_result = item->scan(local_iterator);
 
             if (scan_result.isFailure()) {
@@ -109,7 +109,7 @@ namespace ccl::lexer::dot_item
         auto local_iterator = text_iterator;
         auto node_sequence = isl::makeUnique<parser::ast::UnNodeSequence>(getId());
 
-        for (const DotItem &item : items) {
+        for (const RuleBlock &item : items) {
             auto parsing_result = item->parse(local_iterator);
 
             if (parsing_result.isFailure()) {

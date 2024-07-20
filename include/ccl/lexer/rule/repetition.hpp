@@ -3,7 +3,7 @@
 
 #include <ccl/text/text_iterator.hpp>
 
-namespace ccl::lexer::dot_item
+namespace ccl::lexer::rule
 {
     class CCL_TRIVIAL_ABI Closure
     {

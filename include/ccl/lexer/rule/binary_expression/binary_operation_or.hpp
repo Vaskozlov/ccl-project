@@ -1,11 +1,11 @@
-#ifndef CCL_PROJECT_BINARY_OPERATION_AND_HPP
-#define CCL_PROJECT_BINARY_OPERATION_AND_HPP
+#ifndef CCL_PROJECT_BINARY_OPERATION_OR_HPP
+#define CCL_PROJECT_BINARY_OPERATION_OR_HPP
 
-#include <ccl/lexer/dot_item/binary_expression/binary_expression_base.hpp>
+#include "binary_expression_base.hpp"
 
-namespace ccl::lexer::dot_item
+namespace ccl::lexer::rule
 {
-    class BinaryOperationAnd final : public BinaryExpressionBase
+    class BinaryOperationOr final : public BinaryExpressionBase
     {
     public:
         using BinaryExpressionBase::BinaryExpressionBase;
@@ -18,4 +18,4 @@ namespace ccl::lexer::dot_item
     };
 }// namespace ccl::lexer::dot_item
 
-#endif /* CCL_PROJECT_BINARY_OPERATION_AND_HPP */
+#endif /* CCL_PROJECT_BINARY_OPERATION_OR_HPP */

@@ -1,6 +1,6 @@
-#include <ccl/lexer/dot_item/repetition.hpp>
+#include <ccl/lexer/rule/repetition.hpp>
 
-namespace ccl::lexer::dot_item
+namespace ccl::lexer::rule
 {
     Closure::Closure(text::TextIterator &text_iterator)
     {

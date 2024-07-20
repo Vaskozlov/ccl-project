@@ -1,17 +1,18 @@
-#include <ccl/lexer/dot_item/rule_reference.hpp>
+#include <ccl/lexer/rule/rule_reference.hpp>
 
-namespace ccl::lexer::dot_item
+namespace ccl::lexer::rule
 {
     RuleReference::RuleReference(
         LexicalAnalyzer &lexical_analyzer, isl::string_view sequence_starter,
-        isl::string_view sequence_ender, DotItemConcept::TextIterator &rule_iterator, Id item_id)
+        isl::string_view sequence_ender, RuleBlockInterface::TextIterator &rule_iterator,
+        Id item_id)
       : Sequence{SequenceFlags{.multiline = false, .noEscaping = false}, sequence_starter, sequence_ender, rule_iterator, item_id}
       , lexicalAnalyzer{lexical_analyzer}
     {}
 
     RuleReference::RuleReference(
         LexicalAnalyzer &lexical_analyzer, isl::string_view sequence_begin_and_end,
-        DotItemConcept::TextIterator &rule_iterator, Id item_id)
+        RuleBlockInterface::TextIterator &rule_iterator, Id item_id)
       : RuleReference{
             lexical_analyzer, sequence_begin_and_end, sequence_begin_and_end, rule_iterator,
             item_id}

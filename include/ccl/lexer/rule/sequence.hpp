@@ -1,11 +1,11 @@
 #ifndef CCL_PROJECT_SEQUENCE_HPP
 #define CCL_PROJECT_SEQUENCE_HPP
 
-#include <ccl/lexer/dot_item/item_concept.hpp>
+#include <ccl/lexer/rule/rule_block_interface.hpp>
 
-namespace ccl::lexer::dot_item
+namespace ccl::lexer::rule
 {
-    class Sequence : public DotItemConcept
+    class Sequence : public RuleBlockInterface
     {
     public:
         struct CCL_TRIVIAL_ABI SequenceFlags
@@ -14,7 +14,7 @@ namespace ccl::lexer::dot_item
             bool noEscaping{};
         };
 
-        using typename DotItemConcept::TextIterator;
+        using typename RuleBlockInterface::TextIterator;
 
     private:
         std::string sequenceValue;

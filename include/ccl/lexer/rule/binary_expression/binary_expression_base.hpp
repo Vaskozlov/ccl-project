@@ -1,9 +1,9 @@
 #ifndef CCL_PROJECT_BINARY_EXPRESSION_BASE_HPP
 #define CCL_PROJECT_BINARY_EXPRESSION_BASE_HPP
 
-#include <ccl/lexer/dot_item/item_concept.hpp>
+#include <ccl/lexer/rule/rule_block_interface.hpp>
 
-namespace ccl::lexer::dot_item
+namespace ccl::lexer::rule
 {
     class BinaryOperationOr;
     class BinaryOperationAnd;
@@ -15,27 +15,27 @@ namespace ccl::lexer::dot_item
         OR
     };
 
-    class BinaryExpressionBase : public DotItemConcept
+    class BinaryExpressionBase : public RuleBlockInterface
     {
     private:
         friend BinaryOperationOr;
         friend BinaryOperationAnd;
-        using typename DotItemConcept::TextIterator;
+        using typename RuleBlockInterface::TextIterator;
 
-        DotItem rhsItem;
-        DotItem lhsItem;
+        RuleBlock rhsItem;
+        RuleBlock lhsItem;
 
     public:
-        [[nodiscard]] BinaryExpressionBase(DotItem lhs, DotItem rhs, Id item_id);
+        [[nodiscard]] BinaryExpressionBase(RuleBlock lhs, RuleBlock rhs, Id item_id);
 
         [[nodiscard]] auto empty() const noexcept -> bool override;
 
-        [[nodiscard]] auto getLhs() const CCL_LIFETIMEBOUND -> const DotItem &
+        [[nodiscard]] auto getLhs() const CCL_LIFETIMEBOUND -> const RuleBlock &
         {
             return lhsItem;
         }
 
-        [[nodiscard]] auto getRhs() const CCL_LIFETIMEBOUND -> const DotItem &
+        [[nodiscard]] auto getRhs() const CCL_LIFETIMEBOUND -> const RuleBlock &
         {
             return rhsItem;
         }

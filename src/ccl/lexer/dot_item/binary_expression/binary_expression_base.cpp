@@ -1,9 +1,9 @@
-#include "ccl/lexer/dot_item/binary_expression/binary_expression_base.hpp"
+#include "ccl/lexer/rule/binary_expression/binary_expression_base.hpp"
 
-namespace ccl::lexer::dot_item
+namespace ccl::lexer::rule
 {
-    BinaryExpressionBase::BinaryExpressionBase(DotItem lhs, DotItem rhs, Id item_id)
-      : DotItemConcept{item_id}
+    BinaryExpressionBase::BinaryExpressionBase(RuleBlock lhs, RuleBlock rhs, Id item_id)
+      : RuleBlockInterface{item_id}
       , rhsItem{std::move(rhs)}
       , lhsItem{std::move(lhs)}
     {}

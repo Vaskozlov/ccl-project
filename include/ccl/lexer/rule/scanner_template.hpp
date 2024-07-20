@@ -1,13 +1,13 @@
 #ifndef CCL_PROJECT_SCANNER_TEMPLATE_HPP
 #define CCL_PROJECT_SCANNER_TEMPLATE_HPP
 
-#include <ccl/lexer/dot_item/item_concept.hpp>
+#include <ccl/lexer/rule/rule_block_interface.hpp>
 
-namespace ccl::lexer::dot_item
+namespace ccl::lexer::rule
 {
     /**
      * Functions to override:
-     *  - scanIteration(DotItemConcept&) const
+     *  - scanIteration(RuleBlockInterface&) const
      *  - onIteration(ResultOfScanIteration &)
      *  - constructResult(std::size_t totally_bytes_skipped)
      * @tparam CRTP
@@ -23,13 +23,13 @@ namespace ccl::lexer::dot_item
     protected:
         Closure closure;
         // NOLINTNEXTLINE reference
-        const DotItemConcept &item;
+        const RuleBlockInterface &item;
         // NOLINTNEXTLINE reference
         ForkedGenerator &textIterator;
 
     public:
         CrtpScanner(
-            Closure item_closure, const DotItemConcept &item_concept,
+            Closure item_closure, const RuleBlockInterface &item_concept,
             ForkedGenerator &text_iterator)
           : closure{item_closure}
           , item{item_concept}

@@ -1,6 +1,6 @@
-#include <ccl/lexer/dot_item/sequence.hpp>
+#include <ccl/lexer/rule/sequence.hpp>
 
-namespace ccl::lexer::dot_item
+namespace ccl::lexer::rule
 {
     Sequence::Sequence(
         SequenceFlags sequence_flags, isl::string_view sequence_begin_and_end,
@@ -12,7 +12,7 @@ namespace ccl::lexer::dot_item
     Sequence::Sequence(
         SequenceFlags sequence_flags, isl::string_view sequence_starter,
         isl::string_view sequence_ender, TextIterator &rule_iterator, Id item_id)
-      : DotItemConcept{item_id, Flags{
+      : RuleBlockInterface{item_id, Flags{
                                .sequenceIsMultiline=sequence_flags.multiline,
                                .noEscapingSymbols=sequence_flags.noEscaping
                            }}

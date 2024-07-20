@@ -1,9 +1,9 @@
-#include <ccl/lexer/dot_item/item_concept.hpp>
-#include <ccl/lexer/dot_item/scanner_template.hpp>
+#include <ccl/lexer/rule/rule_block_interface.hpp>
+#include <ccl/lexer/rule/scanner_template.hpp>
 #include <ccl/parser/ast/node_sequence.hpp>
 #include <ccl/parser/ast/string_node.hpp>
 
-namespace ccl::lexer::dot_item
+namespace ccl::lexer::rule
 {
     class LexerScanner : public CrtpScanner<LexerScanner, ScanResult>
     {
@@ -15,7 +15,7 @@ namespace ccl::lexer::dot_item
             // do nothing
         }
 
-        [[nodiscard]] auto scanIteration(const DotItemConcept &item_concept) const -> ScanResult
+        [[nodiscard]] auto scanIteration(const RuleBlockInterface &item_concept) const -> ScanResult
         {
             return item_concept.scanIteration(textIterator);
         }
@@ -44,7 +44,8 @@ namespace ccl::lexer::dot_item
             }
         }
 
-        [[nodiscard]] auto scanIteration(const DotItemConcept &item_concept) const -> ParsingResult
+        [[nodiscard]] auto
+            scanIteration(const RuleBlockInterface &item_concept) const -> ParsingResult
         {
             return item_concept.parseIteration(textIterator);
         }
@@ -64,7 +65,7 @@ namespace ccl::lexer::dot_item
         }
     };
 
-    auto DotItemConcept::alwaysRecognizedSuggestion(TextIterator &text_iterator, bool condition)
+    auto RuleBlockInterface::alwaysRecognizedSuggestion(TextIterator &text_iterator, bool condition)
         -> void
     {
         if (condition) [[unlikely]] {
@@ -73,7 +74,7 @@ namespace ccl::lexer::dot_item
         }
     }
 
-    auto DotItemConcept::neverRecognizedSuggestion(TextIterator &text_iterator, bool condition)
+    auto RuleBlockInterface::neverRecognizedSuggestion(TextIterator &text_iterator, bool condition)
         -> void
     {
         if (condition) [[unlikely]] {
@@ -82,12 +83,12 @@ namespace ccl::lexer::dot_item
         }
     }
 
-    auto DotItemConcept::scan(ForkedGenerator text_iterator) const -> ScanResult
+    auto RuleBlockInterface::scan(ForkedGenerator text_iterator) const -> ScanResult
     {
         return LexerScanner(closure, *this, text_iterator).scan();
     }
 
-    auto DotItemConcept::parse(ForkedGenerator text_iterator) const -> ParsingResult
+    auto RuleBlockInterface::parse(ForkedGenerator text_iterator) const -> ParsingResult
     {
         return ParserScanner(closure, *this, text_iterator).scan();
     }
