@@ -56,81 +56,80 @@ namespace ccl::lexer
 
         [[nodiscard]] Token(const text::TextIterator &text_iterator, Id token_id);
 
-        [[nodiscard]] CCL_INLINE auto getId() const noexcept -> std::size_t
+        [[nodiscard]] auto getId() const noexcept -> std::size_t
         {
             return id;
         }
 
-        [[nodiscard]] CCL_INLINE auto isEmptyRepr() const noexcept -> bool
+        [[nodiscard]] auto isEmptyRepr() const noexcept -> bool
         {
             return getReprSize() != 0;
         }
 
-        [[nodiscard]] CCL_INLINE explicit operator bool() const noexcept
+        [[nodiscard]] explicit operator bool() const noexcept
         {
             return getId() != 0;
         }
 
-        [[nodiscard]] CCL_INLINE auto getReprSize() const noexcept -> std::size_t
+        [[nodiscard]] auto getReprSize() const noexcept -> std::size_t
         {
             return repr.size();
         }
 
-        [[nodiscard]] CCL_INLINE auto
+        [[nodiscard]] auto
             getTokenEnvironment() const noexcept CCL_LIFETIMEBOUND -> const TokenEnvironment &
         {
             return environment;
         }
 
-        [[nodiscard]] CCL_INLINE auto
-            getLocation() const noexcept CCL_LIFETIMEBOUND -> const text::Location &
+        [[nodiscard]] auto getLocation() const noexcept CCL_LIFETIMEBOUND -> const text::Location &
         {
             return environment.location;
         }
 
-        [[nodiscard]] CCL_INLINE auto getLine() const noexcept -> std::size_t
+        [[nodiscard]] auto getLine() const noexcept -> std::size_t
         {
             return environment.location.getLine();
         }
 
-        [[nodiscard]] CCL_INLINE auto getColumn() const noexcept -> std::size_t
+        [[nodiscard]] auto getColumn() const noexcept -> std::size_t
         {
             return environment.location.getColumn();
         }
 
-        [[nodiscard]] CCL_INLINE auto getRealColumn() const noexcept -> std::size_t
+        [[nodiscard]] auto getRealColumn() const noexcept -> std::size_t
         {
             return environment.location.getRealColumn();
         }
 
-        [[nodiscard]] CCL_INLINE auto getFilename() const noexcept -> isl::string_view
+        [[nodiscard]] auto getFilename() const noexcept CCL_LIFETIMEBOUND -> isl::string_view
         {
             return environment.location.getFilename();
         }
 
-        [[nodiscard]] CCL_INLINE auto getRepr() const noexcept -> isl::string_view
+        [[nodiscard]] auto getRepr() const noexcept CCL_LIFETIMEBOUND -> isl::string_view
         {
             return repr;
         }
 
-        [[nodiscard]] CCL_INLINE auto
-            getPrefixes() const noexcept -> const isl::Vector<isl::string_view> &
+        [[nodiscard]] auto
+            getPrefixes() const noexcept CCL_LIFETIMEBOUND -> const isl::Vector<isl::string_view> &
         {
             return prefixes;
         }
 
-        [[nodiscard]] CCL_INLINE auto
-            getPostfixes() const noexcept -> const isl::Vector<isl::string_view> &
+        [[nodiscard]] auto
+            getPostfixes() const noexcept CCL_LIFETIMEBOUND -> const isl::Vector<isl::string_view> &
         {
             return postfixes;
         }
 
-        [[nodiscard]] CCL_INLINE auto getInlineRepr() const noexcept -> isl::string_view
+        [[nodiscard]] auto getInlineRepr() const noexcept CCL_LIFETIMEBOUND -> isl::string_view
         {
             return environment.workingLine;
         }
 
-        [[nodiscard]] CCL_INLINE auto getTabsAndSpaces() const noexcept -> std::string_view
+        [[nodiscard]] auto getTabsAndSpaces() const noexcept CCL_LIFETIMEBOUND -> std::string_view
         {
             return environment.tabsAndSpaces;
         }
