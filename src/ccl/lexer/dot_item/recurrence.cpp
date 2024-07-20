@@ -1,4 +1,4 @@
-#include <ccl/lexer/rule/repetition.hpp>
+#include <ccl/lexer/rule/closure.hpp>
 
 namespace ccl::lexer::rule
 {

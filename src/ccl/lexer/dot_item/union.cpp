@@ -6,7 +6,10 @@ namespace ccl::lexer::rule
       : RuleBlockInterface{rule_id}
     {
         static constexpr isl::StaticFlatmap<char32_t, char32_t, 3> special_symbols = {
-            {U'[', U'['}, {U']', U']'}, {U'-', U'-'}};
+            {U'[', U'['},
+            {U']', U']'},
+            {U'-', U'-'},
+        };
 
         auto is_range = false;
         auto previous_chr = U'\0';
@@ -36,9 +39,14 @@ namespace ccl::lexer::rule
         checkForClosedRange(rule_iterator, is_range);
     }
 
+    Union::Union(isl::UtfSet stored_symbols, Id rule_id)
+      : RuleBlockInterface{rule_id}
+      , storedSymbols{std::move(stored_symbols)}
+    {}
+
     auto Union::scanIteration(const ForkedGenerator &text_iterator) const -> ScanResult
     {
-        return bitset.at(text_iterator.futureChar()) != isReversed()
+        return storedSymbols.at(text_iterator.futureChar()) != isReversed()
                    ? ScanResult{isl::utf8::size(text_iterator.getNextCarriageValue())}
                    : ScanResult::failure();
     }
@@ -72,10 +80,10 @@ namespace ccl::lexer::rule
         Union::addCharactersToTheBitset(bool &is_range, char32_t previous_chr, char32_t chr) -> void
     {
         if (is_range) {
-            bitset.set({previous_chr, chr + 1}, true);
+            storedSymbols.set({previous_chr, chr + 1}, true);
             is_range = false;
         } else {
-            bitset.set(chr, true);
+            storedSymbols.set(chr, true);
         }
     }
 
@@ -125,4 +133,4 @@ namespace ccl::lexer::rule
         rule_iterator.throwPanicError(AnalysisStage::LEXICAL_ANALYSIS, message);
         throw UnrecoverableError{"unrecoverable error in Union"};
     }
-}// namespace ccl::lexer::dot_item
+}// namespace ccl::lexer::rule

@@ -1,5 +1,5 @@
-#ifndef CCL_PROJECT_REPETITION_HPP
-#define CCL_PROJECT_REPETITION_HPP
+#ifndef CCL_PROJECT_CLOSURE_HPP
+#define CCL_PROJECT_CLOSURE_HPP
 
 #include <ccl/text/text_iterator.hpp>
 
@@ -50,4 +50,4 @@ namespace ccl::lexer::rule
     };
 }// namespace ccl::lexer::dot_item
 
-#endif /* CCL_PROJECT_REPETITION_HPP */
+#endif /* CCL_PROJECT_CLOSURE_HPP */

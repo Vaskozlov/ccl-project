@@ -18,15 +18,21 @@ namespace ccl::lexer::rule
             item_id}
     {}
 
+    RuleReference::RuleReference(
+        LexicalAnalyzer &lexical_analyzer, std::string rule_name, Id item_id)
+      : Sequence{std::move(rule_name), item_id}
+      , lexicalAnalyzer{lexical_analyzer}
+    {}
+
     auto RuleReference::scanIteration(const ForkedGenerator &text_iterator) const -> ScanResult
     {
-        auto *container = lexicalAnalyzer.getByRuleName(getValue());
+        const auto *container = lexicalAnalyzer.getByRuleName(getValue());
         return container->scan(text_iterator);
     }
 
     auto RuleReference::parseIteration(const ForkedGenerator &text_iterator) const -> ParsingResult
     {
-        auto *container = lexicalAnalyzer.getByRuleName(getValue());
+        const auto *container = lexicalAnalyzer.getByRuleName(getValue());
         return container->parse(text_iterator);
     }
-}// namespace ccl::lexer::dot_item
+}// namespace ccl::lexer::rule

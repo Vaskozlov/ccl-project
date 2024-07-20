@@ -2,7 +2,7 @@
 #define CCL_PROJECT_CONTAINER_HPP
 
 #include <ccl/lexer/rule/binary_expression/binary_expression_base.hpp>
-#include <ccl/lexer/rule/repetition.hpp>
+#include <ccl/lexer/rule/closure.hpp>
 #include <ccl/lexer/rule/rule_block_interface.hpp>
 
 namespace ccl::lexer

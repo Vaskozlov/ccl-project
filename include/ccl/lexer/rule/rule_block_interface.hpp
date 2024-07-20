@@ -2,7 +2,7 @@
 #define CCL_PROJECT_RULE_INTERFACE_HPP
 
 #include <ccl/lexer/parsing_result.hpp>
-#include <ccl/lexer/rule/repetition.hpp>
+#include <ccl/lexer/rule/closure.hpp>
 #include <ccl/lexer/scan_result.hpp>
 #include <ccl/lexer/token.hpp>
 #include <ccl/parser/ast/node.hpp>
@@ -37,11 +37,11 @@ namespace ccl::lexer::rule
         Flags flags;
 
     public:
-        CCL_INLINE explicit RuleBlockInterface(Id item_id)
+        [[nodiscard]] explicit RuleBlockInterface(Id item_id)
           : id{item_id}
         {}
 
-        CCL_INLINE RuleBlockInterface(Id item_id, Flags item_flags)
+        [[nodiscard]] RuleBlockInterface(Id item_id, Flags item_flags)
           : id{item_id}
           , flags{item_flags}
         {}
@@ -140,7 +140,7 @@ namespace ccl::lexer::rule
           : isl::UniquePtr<RuleBlockInterface>::unique_ptr(isl::makeUnique<T>(std::move(dot_item)))
         {}
     };
-}// namespace ccl::lexer::dot_item
+}// namespace ccl::lexer::rule
 
 namespace ccl::lexer
 {

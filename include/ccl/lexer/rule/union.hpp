@@ -9,21 +9,24 @@ namespace ccl::lexer::rule
     class Union final : public RuleBlockInterface
     {
     private:
-        isl::UtfSet bitset;
+        isl::UtfSet storedSymbols;
 
     public:
         using typename RuleBlockInterface::TextIterator;
 
         [[nodiscard]] explicit Union(TextIterator &rule_iterator, Id rule_id = 0);
 
-        [[nodiscard]] auto getBitset() const noexcept CCL_LIFETIMEBOUND -> const isl::UtfSet &
+        [[nodiscard]] explicit Union(isl::UtfSet stored_symbols, Id rule_id = 0);
+
+        [[nodiscard]] auto
+            getStoredSymbols() const noexcept CCL_LIFETIMEBOUND -> const isl::UtfSet &
         {
-            return bitset;
+            return storedSymbols;
         }
 
         [[nodiscard]] auto empty() const noexcept -> bool override
         {
-            return bitset.empty();
+            return storedSymbols.empty();
         }
 
     private:
@@ -50,6 +53,6 @@ namespace ccl::lexer::rule
         [[noreturn]] static auto
             throwUnterminatedRangeException(TextIterator &rule_iterator) -> void;
     };
-}// namespace ccl::lexer::dot_item
+}// namespace ccl::lexer::rule
 
 #endif /* CCL_PROJECT_UNION_HPP */

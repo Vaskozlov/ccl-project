@@ -10,7 +10,7 @@ TEST_CASE("UnionWithOneElem", "[ContainerUnion]")
     text_iterator.advance();
 
     auto union_item = lexer::rule::Union(text_iterator);
-    DEBUG_VAR bitset = union_item.getBitset();
+    DEBUG_VAR bitset = union_item.getStoredSymbols();
 
     for (char32_t i = 0; i < 127; ++i) {// NOLINT
         REQUIRE(bitset.at(i) == (i == 'a'));
@@ -25,7 +25,7 @@ TEST_CASE("UnionWithMultipleElems", "[ContainerUnion]")
     text_iterator.advance();
 
     auto union_item = lexer::rule::Union(text_iterator);
-    DEBUG_VAR bitset = union_item.getBitset();
+    DEBUG_VAR bitset = union_item.getStoredSymbols();
 
     for (char32_t i = '\0'; i != '_'; ++i) {
         REQUIRE(!bitset.at(i));

@@ -19,8 +19,10 @@ namespace ccl::lexer::rule
       , starter{sequence_starter}
       , ender{sequence_ender}
     {
-        static constexpr isl::StaticFlatmap<char32_t, char32_t, 2> special_symbols_for_sequence{
-            {U'[', U'['}, {U']', U']'}};
+        static constexpr isl::StaticFlatmap<char32_t, char32_t, 4> special_symbols_for_sequence{
+            {U'[', U'['},
+            {U']', U']'},
+        };
 
         auto begin_iterator_state = rule_iterator;
 
@@ -50,6 +52,11 @@ namespace ccl::lexer::rule
             isl::utf8::appendUtf32ToUtf8Container(sequenceValue, chr);
         }
     }
+
+    Sequence::Sequence(std::string value, Id item_id)
+      : RuleBlockInterface{item_id}
+      , sequenceValue{std::move(value)}
+    {}
 
     auto Sequence::scanIteration(const ForkedGenerator &text_iterator) const -> ScanResult
     {
@@ -159,4 +166,4 @@ namespace ccl::lexer::rule
         rule_iterator.throwPanicError(AnalysisStage::LEXICAL_ANALYSIS, message);
         throw UnrecoverableError{"unrecoverable error in SequenceType"};
     }
-}// namespace ccl::lexer::dot_item
+}// namespace ccl::lexer::rule

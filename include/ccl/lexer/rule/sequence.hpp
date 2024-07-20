@@ -30,6 +30,8 @@ namespace ccl::lexer::rule
             SequenceFlags sequence_flags, isl::string_view sequence_begin_and_end,
             TextIterator &rule_iterator, Id item_id = 0);
 
+        [[nodiscard]] Sequence(std::string value, Id item_id = 0);
+
         [[nodiscard]] auto getValue() noexcept CCL_LIFETIMEBOUND -> std::string &
         {
             return sequenceValue;
@@ -73,6 +75,6 @@ namespace ccl::lexer::rule
             isl::string_view message,
             isl::string_view suggestion = {}) -> void;
     };
-}// namespace ccl::lexer::dot_item
+}// namespace ccl::lexer::rule
 
 #endif /* CCL_PROJECT_SEQUENCE_HPP */

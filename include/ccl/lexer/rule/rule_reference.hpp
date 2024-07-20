@@ -23,6 +23,9 @@ namespace ccl::lexer::rule
             LexicalAnalyzer &lexical_analyzer, isl::string_view sequence_begin_and_end,
             TextIterator &rule_iterator, Id item_id = 0);
 
+        [[nodiscard]] RuleReference(
+            LexicalAnalyzer &lexical_analyzer, std::string rule_name, Id item_id = 0);
+
         [[nodiscard]] auto empty() const noexcept -> bool override
         {
             // at the moment of initialization we may not have this information
