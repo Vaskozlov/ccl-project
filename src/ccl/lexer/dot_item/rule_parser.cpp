@@ -238,7 +238,7 @@ namespace ccl::lexer::rule
             throwUnableToApply("item already has repetition");
         }
 
-        last_item->setRepetition(new_repetition);
+        last_item->setClosure(new_repetition);
     }
 
     auto Container::RuleParser::makeSpecial() -> void

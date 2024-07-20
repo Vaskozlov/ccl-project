@@ -99,7 +99,7 @@ namespace ccl::lexer::rule
             flags.reversed = !flags.reversed;
         }
 
-        auto setRepetition(Closure new_repetition) noexcept -> void
+        auto setClosure(Closure new_repetition) noexcept -> void
         {
             closure = new_repetition;
         }
