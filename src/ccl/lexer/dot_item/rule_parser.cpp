@@ -78,6 +78,10 @@ namespace ccl::lexer::dot_item
             addPrefixPostfix();
             break;
 
+        case U'h':
+            hideFromParser();
+            break;
+
         case U'&':
             startBinaryExpression(BinaryOperator::AND);
             break;
@@ -206,6 +210,11 @@ namespace ccl::lexer::dot_item
             ruleIterator, item_repetition.to != 0 && item->empty() && item->isReversed());
     }
 
+    auto Container::RuleParser::hideFromParser() -> void
+    {
+        auto &last_item = items.back();
+        last_item->hideFromParser();
+    }
 
     auto Container::RuleParser::addPrefixPostfix() -> void
     {

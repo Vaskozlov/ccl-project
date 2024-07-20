@@ -1,17 +1,16 @@
 #ifndef CCL_PROJECT_GRAMMAR_RULES_STORAGE_HPP
 #define CCL_PROJECT_GRAMMAR_RULES_STORAGE_HPP
 
+#include <ccl/parser/lr/rule.hpp>
 #include <ccl/parser/types.hpp>
 #include <isl/generator.hpp>
 
 namespace ccl::parser
 {
-    class GrammarRulesStorage : public isl::Map<Symbol, isl::Vector<isl::Vector<Symbol>>>
+    class GrammarRulesStorage : public isl::Map<Symbol, isl::Vector<Rule>>
     {
     public:
-        using Rule = isl::Vector<Symbol>;
-        using RuleAlternatives = isl::Vector<Rule>;
-        using isl::Map<Symbol, isl::Vector<isl::Vector<Symbol>>>::Map;
+        using isl::Map<Symbol, isl::Vector<Rule>>::Map;
 
         [[nodiscard]] auto rulesIterator() const -> isl::Generator<isl::Pair<Symbol, const Rule &>>
         {

@@ -14,7 +14,7 @@ namespace ccl::parser
     private:
         isl::Map<TableEntry, State> gotoTable;
         isl::Map<TableEntry, isl::Set<Action>> actionTable;
-        isl::Set<CanonicalCollection> canonicalCollection;
+        isl::Vector<CanonicalCollection> canonicalCollection;
         isl::Map<TableEntry, State> transitions;
         const GrammarRulesStorage &grammarRules;
         const isl::Set<Symbol> &allSymbols;
@@ -50,20 +50,22 @@ namespace ccl::parser
             isl::Vector<State> &state_stack,
             isl::Vector<ast::UnNodePtr> &nodes_stack) const -> void;
 
-        auto gotoFunction(const isl::Set<LrItem> &items, Symbol symbol) const -> isl::Set<LrItem>;
+        auto gotoFunction(const isl::UnorderedSet<LrItem> &items, Symbol symbol) const
+            -> isl::UnorderedSet<LrItem>;
 
         auto doCanonicalCollectionConstructionIterationOnItem(
             Id &closure_id, const CanonicalCollection &cc, const LrItem &item,
-            isl::Set<CanonicalCollection> &pending_collections) -> bool;
+            isl::Vector<CanonicalCollection> &pending_collections) -> bool;
 
         auto doCanonicalCollectionConstructionIteration(
             Id &closure_id, isl::Set<Id> &marked_collections) -> bool;
 
         auto constructCanonicalCollection(const LrItem &start_item) -> void;
 
-        auto doClosureComputationIteration(isl::Set<LrItem> &s, const LrItem &item) const -> bool;
+        auto doClosureComputationIteration(isl::UnorderedSet<LrItem> &s, const LrItem &item) const
+            -> bool;
 
-        auto computeClosure(isl::Set<LrItem> s) const -> isl::Set<LrItem>;
+        auto computeClosure(isl::UnorderedSet<LrItem> s) const -> isl::UnorderedSet<LrItem>;
 
         auto fillTablesUsingCanonicalCollection(const CanonicalCollection &cc) -> void;
 

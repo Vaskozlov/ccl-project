@@ -30,13 +30,13 @@ namespace ccl::parser
 
     auto detail::FollowSetEvaluator::computeFollowSet() -> void
     {
-        applyFixedPointAlgorithmOnAllRules([this](Symbol key, const isl::Vector<Symbol> &rule) {
+        applyFixedPointAlgorithmOnAllRules([this](Symbol key, const Rule &rule) {
             return followSetComputationIteration(key, rule);
         });
     }
 
-    auto detail::FollowSetEvaluator::followSetComputationIteration(
-        Symbol key, const isl::Vector<Symbol> &rule) -> bool
+    auto detail::FollowSetEvaluator::followSetComputationIteration(Symbol key, const Rule &rule)
+        -> bool
     {
         auto has_modifications = false;
         auto trailer = followSet.at(key);

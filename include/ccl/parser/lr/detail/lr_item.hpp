@@ -2,6 +2,7 @@
 #define CCL_PROJECT_LR_ITEM_HPP
 
 #include <ccl/lexer/lexical_analyzer.hpp>
+#include <ccl/parser/lr/rule.hpp>
 #include <ccl/parser/types.hpp>
 
 namespace ccl::parser
@@ -9,21 +10,23 @@ namespace ccl::parser
     class LrItem
     {
     private:
-        isl::Vector<Symbol> rule;
+        Rule rule;
         std::size_t dotLocation{};
         Symbol production{};
         Symbol lookAhead{};
+        std::size_t itemHash{};
 
     public:
         explicit LrItem(
-            const isl::Vector<Symbol> &item_rule,
+            Rule item_rule,
             std::size_t dot_location,
             Symbol item_name,
             Symbol look_ahead)
-          : rule{item_rule}
+          : rule{std::move(item_rule)}
           , dotLocation{std::min(dot_location, rule.size())}
           , production{item_name}
           , lookAhead{look_ahead}
+          , itemHash{isl::hash::combine(rule.getHash(), dotLocation, production, lookAhead)}
         {}
 
         [[nodiscard]] auto getProductionType() const noexcept -> Symbol
@@ -41,9 +44,14 @@ namespace ccl::parser
             return lookAhead;
         }
 
-        [[nodiscard]] auto getRule() const noexcept CCL_LIFETIMEBOUND -> const isl::Vector<Symbol> &
+        [[nodiscard]] auto getRule() const noexcept CCL_LIFETIMEBOUND -> const Rule &
         {
             return rule;
+        }
+
+        [[nodiscard]] auto getHash() const noexcept -> std::size_t
+        {
+            return itemHash;
         }
 
         [[nodiscard]] auto isDotInTheEnd() const noexcept -> bool
@@ -51,17 +59,12 @@ namespace ccl::parser
             return dotLocation == rule.size();
         }
 
-        [[nodiscard]] auto at(std::size_t index) CCL_LIFETIMEBOUND -> Symbol &
+        [[nodiscard]] auto at(std::size_t index) const CCL_LIFETIMEBOUND -> Symbol
         {
             return rule.at(index);
         }
 
-        [[nodiscard]] auto at(std::size_t index) const CCL_LIFETIMEBOUND -> const Symbol &
-        {
-            return rule.at(index);
-        }
-
-        [[nodiscard]] auto length() const noexcept -> std::size_t
+        [[nodiscard]] auto size() const noexcept -> std::size_t
         {
             return rule.size();
         }
@@ -77,6 +80,15 @@ namespace ccl::parser
     };
 }// namespace ccl::parser
 
+template<>
+struct std::hash<ccl::parser::LrItem>
+{
+    auto operator()(const ccl::parser::LrItem &item) const noexcept -> std::size_t
+    {
+        return item.getHash();
+    }
+};
+
 template<typename T>
 class fmt::formatter<ccl::parser::LrItemPrintWrapper<T>> : public fmt::formatter<std::string_view>
 {
@@ -91,7 +103,7 @@ public:
             "{} -> [",
             ccl::lexer::lexerEnumToString(isl::as<T>(item.getProductionType())));
 
-        for (std::size_t i = 0; i != item.length(); ++i) {
+        for (std::size_t i = 0; i != item.size(); ++i) {
             if (i == item.getDotLocation()) {
                 fmt::format_to(ctx.out(), "\u2022");
             }

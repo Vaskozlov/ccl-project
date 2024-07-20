@@ -32,7 +32,7 @@ namespace ccl::parser
         private:
             auto initializeFirstSet() -> void;
             auto computeFirstSet() -> void;
-            auto firstSetComputationIteration(Symbol key, const isl::Vector<Symbol> &rule) -> bool;
+            auto firstSetComputationIteration(Symbol key, const Rule &rule) -> bool;
         };
     }// namespace detail
 

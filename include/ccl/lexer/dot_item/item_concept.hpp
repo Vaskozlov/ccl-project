@@ -28,6 +28,7 @@ namespace ccl::lexer::dot_item
             bool isPostfix{};
             bool sequenceIsMultiline{};
             bool noEscapingSymbols{};
+            bool isHiddenFromParser{};
         };
 
     private:
@@ -92,6 +93,11 @@ namespace ccl::lexer::dot_item
         void setPostfix() noexcept
         {
             flags.isPostfix = true;
+        }
+
+        void hideFromParser() noexcept
+        {
+            flags.isHiddenFromParser = true;
         }
 
         auto reverse() noexcept -> void

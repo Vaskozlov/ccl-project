@@ -2,10 +2,10 @@
 
 namespace ccl::parser
 {
-    auto LrParserGenerator::gotoFunction(const isl::Set<LrItem> &items, Symbol symbol) const
-        -> isl::Set<LrItem>
+    auto LrParserGenerator::gotoFunction(
+        const isl::UnorderedSet<LrItem> &items, Symbol symbol) const -> isl::UnorderedSet<LrItem>
     {
-        auto moved = isl::Set<LrItem>{};
+        auto moved = isl::UnorderedSet<LrItem>{};
 
         for (const auto &item : items) {
             if (item.isDotInTheEnd()) {
@@ -24,11 +24,11 @@ namespace ccl::parser
 
     auto LrParserGenerator::doCanonicalCollectionConstructionIterationOnItem(
         Id &closure_id, const CanonicalCollection &cc, const LrItem &item,
-        isl::Set<CanonicalCollection> &pending_collections) -> bool
+        isl::Vector<CanonicalCollection> &pending_collections) -> bool
     {
         auto has_new_sets = false;
 
-        for (std::size_t i = item.getDotLocation(); i != item.length(); ++i) {
+        for (std::size_t i = item.getDotLocation(); i != item.size(); ++i) {
             auto goto_result = gotoFunction(cc.items, item.at(i));
             auto temp_cc_id = closure_id;
 
@@ -37,16 +37,16 @@ namespace ccl::parser
                 .id = temp_cc_id,
             };
 
-            if (auto cc_it = canonicalCollection.find(temp_cc);
+            if (auto cc_it = std::ranges::find(canonicalCollection, temp_cc);
                 cc_it != canonicalCollection.end()) {
                 temp_cc_id = cc_it->id;
-            } else if (auto pending_it = pending_collections.find(temp_cc);
+            } else if (auto pending_it = std::ranges::find(pending_collections, temp_cc);
                        pending_it != pending_collections.end()) {
                 temp_cc_id = pending_it->id;
             } else {
                 ++closure_id;
                 has_new_sets = true;
-                pending_collections.emplace(std::move(temp_cc));
+                pending_collections.emplace_back(std::move(temp_cc));
             }
 
             transitions.try_emplace({cc.id, item.at(i)}, temp_cc_id);
@@ -59,7 +59,7 @@ namespace ccl::parser
         Id &closure_id, isl::Set<Id> &marked_collections) -> bool
     {
         auto has_new_sets = false;
-        auto pending_collections = isl::Set<CanonicalCollection>{};
+        auto pending_collections = isl::Vector<CanonicalCollection>{};
 
         for (const auto &cc : canonicalCollection) {
             if (marked_collections.contains(cc.id)) {
@@ -76,7 +76,7 @@ namespace ccl::parser
         }
 
         for (const auto &collection : pending_collections) {
-            canonicalCollection.emplace(collection);
+            canonicalCollection.emplace_back(collection);
         }
 
         return has_new_sets;
@@ -87,7 +87,7 @@ namespace ccl::parser
         auto closure_id = Id{1};
         auto marked_collections = isl::Set<Id>{};
 
-        canonicalCollection.emplace(CanonicalCollection{
+        canonicalCollection.emplace_back(CanonicalCollection{
             .items = computeClosure({start_item}),
             .id = 0,
         });

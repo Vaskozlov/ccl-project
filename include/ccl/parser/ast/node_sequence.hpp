@@ -8,11 +8,11 @@
 
 namespace ccl::parser::ast
 {
-    template<template<class> class T>
+    template<template<class> class SmartPointer>
     class NodeSequence : public NodeOfNodes
     {
     private:
-        isl::Vector<T<Node>> nodes;
+        isl::Vector<SmartPointer<Node>> nodes;
 
         [[nodiscard]] auto getNodes() const -> isl::Vector<const Node *> override
         {
@@ -26,12 +26,17 @@ namespace ccl::parser::ast
           : NodeOfNodes{node_type_id}
         {}
 
-        [[nodiscard]] auto addNode(T<Node> node)
+        explicit NodeSequence(Id node_type_id, isl::Vector<SmartPointer<Node>> initial_nodes)
+          : NodeOfNodes{node_type_id}
+          , nodes{std::move(initial_nodes)}
+        {}
+
+        auto addNode(SmartPointer<Node> node) -> void
         {
             nodes.emplace_back(std::move(node));
         }
 
-        [[nodiscard]] auto getNodes() -> isl::Vector<T<Node>> &
+        [[nodiscard]] auto getNodes() -> isl::Vector<SmartPointer<Node>> &
         {
             return nodes;
         }
@@ -56,9 +61,30 @@ namespace ccl::parser::ast
             return nodes.at(index).get();
         }
 
-        auto joinWithNode(T<Node> node) -> void
+        [[nodiscard]] auto front() CCL_LIFETIMEBOUND -> Node *
         {
-            if (auto *casted = isl::as<NodeSequence<T> *>(node.get()); casted != nullptr) {
+            return nodes.front().get();
+        }
+
+        [[nodiscard]] auto front() const CCL_LIFETIMEBOUND -> const Node *
+        {
+            return nodes.front().get();
+        }
+
+        [[nodiscard]] auto back() CCL_LIFETIMEBOUND -> Node *
+        {
+            return nodes.back().get();
+        }
+
+        [[nodiscard]] auto back() const CCL_LIFETIMEBOUND -> const Node *
+        {
+            return nodes.back().get();
+        }
+
+        auto joinWithNode(SmartPointer<Node> node) -> void
+        {
+            if (auto *casted = isl::as<NodeSequence<SmartPointer> *>(node.get());
+                casted != nullptr) {
                 for (auto &elem : casted->nodes) {
                     addNode(std::move(elem));
                 }

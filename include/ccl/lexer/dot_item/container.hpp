@@ -146,6 +146,8 @@ namespace ccl::lexer::dot_item
 
         auto completePreviousItemInitialization() -> void;
 
+        auto hideFromParser() -> void;
+
         auto addPrefixPostfix() -> void;
 
         auto addRepetition(Closure new_repetition) -> void;

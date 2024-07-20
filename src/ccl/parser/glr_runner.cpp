@@ -88,7 +88,7 @@ namespace ccl::parser::detail
         const auto &lr_item = action.getReducingItem();
         auto reduced_item =
             isl::makeUnique<ast::ShNodeSequence>(isl::as<Symbol>(lr_item.getProductionType()));
-        const auto number_of_elements_to_take_from_stack = lr_item.length();
+        const auto number_of_elements_to_take_from_stack = lr_item.size();
 
         for (std::size_t i = 0; i != number_of_elements_to_take_from_stack; ++i) {
             reduced_item->addNode(nodesStack.top());

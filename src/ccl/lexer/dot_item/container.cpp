@@ -116,11 +116,13 @@ namespace ccl::lexer::dot_item
                 return ParsingResult::failure();
             }
 
-            if (parsing_result.getNode() == nullptr) {
+            const auto is_hidden_item = item->getFlags().isHiddenFromParser;
+
+            if (parsing_result.getNode() == nullptr && !is_hidden_item) {
                 node_sequence->addNode(isl::makeUnique<parser::ast::StringNode>(
                     getId(),
                     local_iterator.getRemaining().substr(0, parsing_result.getBytesCount())));
-            } else {
+            } else if (!is_hidden_item) {
                 if (isl::is<RuleReference *>(item.get())) {
                     node_sequence->addNode(parsing_result.getAndReleaseNode());
                 } else {

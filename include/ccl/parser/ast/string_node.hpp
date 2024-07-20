@@ -7,7 +7,7 @@ namespace ccl::parser::ast
 {
     class StringNode : public Node
     {
-    private:
+    protected:
         std::string repr;
 
     public:

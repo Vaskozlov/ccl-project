@@ -30,13 +30,13 @@ namespace ccl::parser
 
     auto detail::FirstSetEvaluator::computeFirstSet() -> void
     {
-        applyFixedPointAlgorithmOnAllRules([this](Symbol key, const isl::Vector<Symbol> &rule) {
+        applyFixedPointAlgorithmOnAllRules([this](Symbol key, const Rule &rule) {
             return firstSetComputationIteration(key, rule);
         });
     }
 
-    auto detail::FirstSetEvaluator::firstSetComputationIteration(
-        Symbol key, const isl::Vector<Symbol> &rule) -> bool
+    auto detail::FirstSetEvaluator::firstSetComputationIteration(Symbol key, const Rule &rule)
+        -> bool
     {
         const auto front_element = rule.front();
         const auto back_element = rule.back();

@@ -3,7 +3,7 @@
 namespace ccl::parser
 {
     auto LrParserGenerator::doClosureComputationIteration(
-        isl::Set<LrItem> &s, const LrItem &item) const -> bool
+        isl::UnorderedSet<LrItem> &s, const LrItem &item) const -> bool
     {
         if (item.isDotInTheEnd()) {
             return false;
@@ -17,7 +17,7 @@ namespace ccl::parser
             return false;
         }
 
-        const auto has_symbol_after_current = (index + 1 == item.length());
+        const auto has_symbol_after_current = (index + 1 == item.size());
         const auto next_symbol =
             has_symbol_after_current ? item.getLookAhead() : item.at(index + 1);
 
@@ -33,7 +33,8 @@ namespace ccl::parser
         return has_modifications;
     }
 
-    auto LrParserGenerator::computeClosure(isl::Set<LrItem> s) const -> isl::Set<LrItem>
+    auto LrParserGenerator::computeClosure(isl::UnorderedSet<LrItem> s) const
+        -> isl::UnorderedSet<LrItem>
     {
         auto has_modifications = true;
 

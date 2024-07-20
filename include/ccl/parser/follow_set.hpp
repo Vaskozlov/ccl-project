@@ -37,7 +37,7 @@ namespace ccl::parser
 
             auto computeFollowSet() -> void;
 
-            auto followSetComputationIteration(Symbol key, const isl::Vector<Symbol> &rule) -> bool;
+            auto followSetComputationIteration(Symbol key, const Rule &rule) -> bool;
 
             auto followSetNonTerminalCase(Symbol elem, isl::Set<Symbol> &trailer) -> bool;
         };

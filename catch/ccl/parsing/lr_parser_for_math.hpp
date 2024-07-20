@@ -9,32 +9,79 @@ namespace ccl::debug
     const inline ccl::parser::GrammarRulesStorage MathRules{
         {GrammarSymbol::GOAL,
          {
-             {GrammarSymbol::EXPR},
+             ccl::parser::Rule{
+                 {
+                     GrammarSymbol::EXPR,
+                 },
+             },
          }},
         {GrammarSymbol::EXPR,
          {
-             {GrammarSymbol::EXPR, GrammarSymbol::ADD, GrammarSymbol::TERM},
-             {GrammarSymbol::TERM},
+             ccl::parser::Rule{
+                 {
+                     GrammarSymbol::EXPR,
+                     GrammarSymbol::ADD,
+                     GrammarSymbol::TERM,
+                 },
+             },
+             ccl::parser::Rule{
+                 {
+                     GrammarSymbol::TERM,
+                 },
+             },
          }},
         {GrammarSymbol::TERM,
          {
-             {GrammarSymbol::TERM, GrammarSymbol::MUL, GrammarSymbol::VALUE},
-             {GrammarSymbol::VALUE},
+             ccl::parser::Rule{
+                 {
+                     GrammarSymbol::TERM,
+                     GrammarSymbol::MUL,
+                     GrammarSymbol::VALUE,
+                 },
+             },
+             ccl::parser::Rule{
+                 {
+                     GrammarSymbol::VALUE,
+                 },
+             },
          }},
         {GrammarSymbol::VALUE,
          {
-             {GrammarSymbol::FACTOR},
-             {GrammarSymbol::SUB, GrammarSymbol::VALUE},
+             ccl::parser::Rule{
+                 {
+                     GrammarSymbol::FACTOR,
+                 },
+             },
+             ccl::parser::Rule{
+                 {
+                     GrammarSymbol::SUB,
+                     GrammarSymbol::VALUE,
+                 },
+             },
          }},
         {GrammarSymbol::FACTOR,
          {
-             {GrammarSymbol::NAME},
-             {GrammarSymbol::NUMBER},
-             {GrammarSymbol::ANGLE_OPEN, GrammarSymbol::EXPR, GrammarSymbol::ANGLE_CLOSE},
+             ccl::parser::Rule{
+                 {
+                     GrammarSymbol::NAME,
+                 },
+             },
+             ccl::parser::Rule{
+                 {
+                     GrammarSymbol::NUMBER,
+                 },
+             },
+             ccl::parser::Rule{
+                 {
+                     GrammarSymbol::ANGLE_OPEN,
+                     GrammarSymbol::EXPR,
+                     GrammarSymbol::ANGLE_CLOSE,
+                 },
+             },
          }}};
 
-    const inline parser::LrItem MathStartItem =
-        parser::LrItem{{GrammarSymbol::EXPR}, 0, GrammarSymbol::GOAL, GrammarSymbol::EOI};
+    const inline parser::LrItem MathStartItem = parser::LrItem{
+        ccl::parser::Rule{{GrammarSymbol::EXPR}}, 0, GrammarSymbol::GOAL, GrammarSymbol::EOI};
 
     const inline parser::LrParser MathParser{
         MathStartItem, GrammarSymbol::EPSILON, AllSymbols, Terminals, MathRules};

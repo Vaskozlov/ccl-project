@@ -66,17 +66,21 @@ namespace ccl::parser
         isl::Stack<ast::UnNodePtr> &nodes_stack) const -> void
     {
         const auto &lr_item = action.getReducingItem();
-        auto reduced_item =
-            isl::makeUnique<ast::UnNodeSequence>(isl::as<Symbol>(lr_item.getProductionType()));
-        const auto number_of_elements_to_take_from_stack = lr_item.length();
+        const auto production = lr_item.getProductionType();
+        auto items_in_production = isl::Vector<ast::UnNodePtr>();
+        const auto number_of_elements_to_take_from_stack = lr_item.size();
 
         for (std::size_t i = 0; i != number_of_elements_to_take_from_stack; ++i) {
-            reduced_item->addNode(std::move(nodes_stack.top()));
+            items_in_production.emplace_back(std::move(nodes_stack.top()));
             nodes_stack.pop();
             state_stack.pop();
         }
 
-        reduced_item->reverse();
+        std::ranges::reverse(items_in_production);
+
+        const auto &rule = lr_item.getRule();
+        auto reduced_item =
+            rule.template construct<isl::UniquePtr>(production, std::move(items_in_production));
 
         nodes_stack.emplace(std::move(reduced_item));
         state_stack.emplace(gotoTable.at({
