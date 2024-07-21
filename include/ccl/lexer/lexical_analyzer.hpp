@@ -57,6 +57,18 @@ namespace ccl::lexer
             return anyPlaceItems;
         }
 
+        auto addContainer(isl::string_view rule_name, isl::UniquePtr<Container> new_container)
+            -> void
+        {
+            allItemsMap.try_emplace(rule_name, new_container.get());
+
+            if (new_container->isAnyPlaceItem()) {
+                anyPlaceItems.items.emplace_back(std::move(new_container));
+            } else {
+                items.emplace_back(std::move(new_container));
+            }
+        }
+
         [[nodiscard]] auto getIgnoredIds() const CCL_LIFETIMEBOUND -> const isl::Vector<Id> &
         {
             return ignoredIds;

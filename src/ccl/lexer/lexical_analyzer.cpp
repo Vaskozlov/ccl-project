@@ -20,13 +20,7 @@ namespace ccl::lexer
         auto container = isl::makeUnique<Container>(
             *this, TextIterator{rule.repr, exceptionHandler, filename}, id, true);
 
-        allItemsMap.try_emplace(rule.name, container.get());
-
-        if (container->isAnyPlaceItem()) {
-            anyPlaceItems.items.emplace_back(std::move(container));
-        } else if (!container->empty()) {
-            items.emplace_back(std::move(container));
-        }
+        addContainer(rule.name, std::move(container));
     }
 
     auto
