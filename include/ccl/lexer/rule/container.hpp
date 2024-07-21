@@ -52,17 +52,9 @@ namespace ccl::lexer::rule
             LexicalAnalyzer &lexical_analyzer, Id item_id, bool main_item = false,
             bool is_special = false);
 
-        Container(const Container &other);
-        Container(Container &&) noexcept = default;
-
         auto addItem(isl::UniquePtr<RuleBlockInterface> new_item) -> void
         {
             items.emplace_back(std::move(new_item));
-        }
-
-        auto addItem(isl::SharedPtr<RuleBlockInterface> new_item) -> void
-        {
-            items.emplace_back(new_item->clone());
         }
 
         [[nodiscard]] auto beginScan(
@@ -98,11 +90,6 @@ namespace ccl::lexer::rule
         [[nodiscard]] auto getItems() const noexcept CCL_LIFETIMEBOUND -> const DotItemsStorage &
         {
             return items;
-        }
-
-        [[nodiscard]] auto clone() const -> isl::UniquePtr<RuleBlockInterface> override
-        {
-            return isl::makeUnique<Container>(isl::as<const Container &>(*this));
         }
 
     private:

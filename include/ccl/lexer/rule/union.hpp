@@ -32,11 +32,6 @@ namespace ccl::lexer::rule
             return storedSymbols.empty();
         }
 
-        [[nodiscard]] auto clone() const -> isl::UniquePtr<RuleBlockInterface> override
-        {
-            return isl::makeUnique<Union>(storedSymbols);
-        }
-
     private:
         [[nodiscard]] auto
             scanIteration(const ForkedGenerator &text_iterator) const -> ScanResult override;

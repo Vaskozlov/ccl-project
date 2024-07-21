@@ -128,8 +128,6 @@ namespace ccl::lexer::rule
 
         [[nodiscard]] virtual auto
             parseIteration(const ForkedGenerator &text_iterator) const -> ParsingResult = 0;
-
-        [[nodiscard]] virtual auto clone() const -> isl::UniquePtr<RuleBlockInterface> = 0;
     };
 
     class RuleBlock : public isl::UniquePtr<RuleBlockInterface>

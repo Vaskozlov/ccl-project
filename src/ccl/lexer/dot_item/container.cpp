@@ -51,17 +51,6 @@ namespace ccl::lexer::rule
       , flags{.isMain = main_item, .isSpecial = is_special}
     {}
 
-    Container::Container(const Container &other)
-      : RuleBlockInterface{other.getId(), other.getFlags()}
-      , lexicalAnalyzer{other.lexicalAnalyzer}
-      , anyPlaceItems{other.anyPlaceItems}
-      , flags{other.flags}
-    {
-        for (const auto &elem : other.items) {
-            items.emplace_back(elem->clone());
-        }
-    }
-
     auto Container::beginScan(
         TextIterator &text_iterator, Token &token, ScanType special_scan) const -> bool
     {

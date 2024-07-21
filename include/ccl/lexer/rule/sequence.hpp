@@ -47,11 +47,6 @@ namespace ccl::lexer::rule
             return sequenceValue.empty();
         }
 
-        [[nodiscard]] auto clone() const -> isl::UniquePtr<RuleBlockInterface> override
-        {
-            return isl::makeUnique<Sequence>(sequenceValue);
-        }
-
     private:
         [[nodiscard]] auto
             scanIteration(const ForkedGenerator &text_iterator) const -> ScanResult override;
