@@ -52,7 +52,12 @@ namespace ccl::lexer
             ExceptionHandler &exception_handler, const std::initializer_list<Rule> &rules,
             isl::string_view filename = {}, isl::Vector<Id> ignored_ids = {});
 
-        [[nodiscard]] auto getIgnoredIds() const -> const isl::Vector<Id> &
+        [[nodiscard]] auto shareAnyPlaceItems() CCL_LIFETIMEBOUND -> AnyPlaceItems &
+        {
+            return anyPlaceItems;
+        }
+
+        [[nodiscard]] auto getIgnoredIds() const CCL_LIFETIMEBOUND -> const isl::Vector<Id> &
         {
             return ignoredIds;
         }
@@ -87,6 +92,12 @@ namespace ccl::lexer
             getItems() const noexcept -> const isl::Vector<isl::UniquePtr<Container>> &
         {
             return items;
+        }
+
+        [[nodiscard]] auto generateIdForItem() -> std::size_t
+        {
+            // TODO: implement
+            return 0;
         }
 
     private:

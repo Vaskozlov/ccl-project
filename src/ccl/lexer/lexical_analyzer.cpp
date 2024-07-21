@@ -18,7 +18,7 @@ namespace ccl::lexer
     auto LexicalAnalyzer::createContainer(Rule rule, Id id, isl::string_view filename) -> void
     {
         auto container = isl::makeUnique<Container>(
-            *this, TextIterator{rule.repr, exceptionHandler, filename}, anyPlaceItems, id, true);
+            *this, TextIterator{rule.repr, exceptionHandler, filename}, id, true);
 
         allItemsMap.try_emplace(rule.name, container.get());
 

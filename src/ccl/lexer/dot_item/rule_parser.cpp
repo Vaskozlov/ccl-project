@@ -167,8 +167,8 @@ namespace ccl::lexer::rule
 
         ruleIterator.setEnd(text.begin() + bracket_index);
 
-        auto new_container = Container{lexicalAnalyzer, ruleIterator, anyPlaceItems,
-                                       getId(),         false,        container.isAnyPlaceItem()};
+        auto new_container =
+            Container{lexicalAnalyzer, ruleIterator, getId(), false, container.isAnyPlaceItem()};
         ruleIterator.setEnd(saved_end);
 
         return RuleBlock{std::move(new_container)};
@@ -366,8 +366,8 @@ namespace ccl::lexer::rule
         throw UnrecoverableError{"unrecoverable error in ContainerType"};
     }
 
-    auto RuleBlockInterface::AnyPlaceItems::checkForSpecial(const ForkedGenerator &text_iterator) const
-        -> bool
+    auto RuleBlockInterface::AnyPlaceItems::checkForSpecial(
+        const ForkedGenerator &text_iterator) const -> bool
     {
         return std::ranges::any_of(
             items, [&text_iterator](const isl::UniquePtr<Container> &special_item) {
@@ -375,12 +375,13 @@ namespace ccl::lexer::rule
             });
     }
 
-    auto RuleBlockInterface::AnyPlaceItems::isSuccessfulScan(TextIterator &text_iterator, Token &token)
-        const -> bool
+    auto RuleBlockInterface::AnyPlaceItems::isSuccessfulScan(
+        TextIterator &text_iterator,
+        Token &token) const -> bool
     {
         return std::ranges::any_of(
             items, [&text_iterator, &token](const isl::UniquePtr<Container> &special_item) {
                 return special_item->beginScan(text_iterator, token, ScanType::SPECIAL);
             });
     }
-}// namespace ccl::lexer::dot_item
+}// namespace ccl::lexer::rule

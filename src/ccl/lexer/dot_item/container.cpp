@@ -21,26 +21,45 @@ namespace ccl::lexer::rule
     }
 
     Container::Container(
-        LexicalAnalyzer &lexical_analyzer, TextIterator &rule_iterator,
-        AnyPlaceItems &special_items, Id item_id, bool main_item, bool is_special)
+        LexicalAnalyzer &lexical_analyzer, TextIterator &rule_iterator, Id item_id, bool main_item,
+        bool is_special)
       : RuleBlockInterface{item_id}
-      , anyPlaceItems{special_items}
       , lexicalAnalyzer{lexical_analyzer}
+      , anyPlaceItems{lexicalAnalyzer.shareAnyPlaceItems()}
       , flags{.isMain = main_item, .isSpecial = is_special}
     {
         parseRule(rule_iterator);
     }
 
     Container::Container(
-        LexicalAnalyzer &lexical_analyzer, const TextIterator &rule_iterator,
-        AnyPlaceItems &special_items, Id item_id, bool main_item, bool is_special)
+        LexicalAnalyzer &lexical_analyzer, const TextIterator &rule_iterator, Id item_id,
+        bool main_item, bool is_special)
       : RuleBlockInterface{item_id}
-      , anyPlaceItems{special_items}
       , lexicalAnalyzer{lexical_analyzer}
+      , anyPlaceItems{lexical_analyzer.shareAnyPlaceItems()}
       , flags{.isMain = main_item, .isSpecial = is_special}
     {
         auto text_iterator_copy = rule_iterator;
         parseRule(text_iterator_copy);
+    }
+
+    Container::Container(
+        LexicalAnalyzer &lexical_analyzer, Id item_id, bool main_item, bool is_special)
+      : RuleBlockInterface{item_id}
+      , lexicalAnalyzer{lexical_analyzer}
+      , anyPlaceItems{lexical_analyzer.shareAnyPlaceItems()}
+      , flags{.isMain = main_item, .isSpecial = is_special}
+    {}
+
+    Container::Container(const Container &other)
+      : RuleBlockInterface{other.getId(), other.getFlags()}
+      , lexicalAnalyzer{other.lexicalAnalyzer}
+      , anyPlaceItems{other.anyPlaceItems}
+      , flags{other.flags}
+    {
+        for (const auto &elem : other.items) {
+            items.emplace_back(elem->clone());
+        }
     }
 
     auto Container::beginScan(
@@ -142,4 +161,4 @@ namespace ccl::lexer::rule
         // TODO: use function instead
         RuleParser{*this, rule_iterator};
     }
-}// namespace ccl::lexer::dot_item
+}// namespace ccl::lexer::rule

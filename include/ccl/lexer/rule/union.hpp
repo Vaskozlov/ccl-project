@@ -6,6 +6,9 @@
 
 namespace ccl::lexer::rule
 {
+    auto parseUnionDecl(isl::string_view union_decl)
+        -> isl::Pair<std::bitset<isl::UtfSet::asciiStorageSize>, isl::Vector<isl::Range<char32_t>>>;
+
     class Union final : public RuleBlockInterface
     {
     private:
@@ -27,6 +30,11 @@ namespace ccl::lexer::rule
         [[nodiscard]] auto empty() const noexcept -> bool override
         {
             return storedSymbols.empty();
+        }
+
+        [[nodiscard]] auto clone() const -> isl::UniquePtr<RuleBlockInterface> override
+        {
+            return isl::makeUnique<Union>(storedSymbols);
         }
 
     private:

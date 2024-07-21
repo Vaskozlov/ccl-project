@@ -9,12 +9,11 @@ TEST_CASE("BinaryExpressionWith2Elements", "[BinaryExpression]")
     using namespace ccl;
 
     auto text_iterator = text::TextIterator{"[1] | \"2\""};
-    auto special_items = lexer::AnyPlaceItems{};
     auto empty_lexical_analyzer =
         ccl::lexer::LexicalAnalyzer(ccl::ExceptionHandler::instance(), {});
 
-    auto container = lexer::rule::Container(
-        empty_lexical_analyzer, text_iterator, special_items, debug::FirstUsableToken);
+    auto container =
+        lexer::rule::Container(empty_lexical_analyzer, text_iterator, debug::FirstUsableToken);
 
     const isl::Vector<lexer::rule::RuleBlock> &items = container.getItems();
 
@@ -31,11 +30,10 @@ TEST_CASE("BinaryExpressionWith3Elements", "[BinaryExpression]")
     using namespace ccl;
 
     auto text_iterator = text::TextIterator{"[1] | [2] | [3]"};
-    auto special_items = lexer::AnyPlaceItems{};
     auto empty_lexical_analyzer = lexer::LexicalAnalyzer(ExceptionHandler::instance(), {});
 
-    auto container = lexer::rule::Container(
-        empty_lexical_analyzer, text_iterator, special_items, debug::FirstUsableToken);
+    auto container =
+        lexer::rule::Container(empty_lexical_analyzer, text_iterator, debug::FirstUsableToken);
 
     const isl::Vector<lexer::rule::RuleBlock> &items = container.getItems();
 

@@ -2,6 +2,54 @@
 
 namespace ccl::lexer::rule
 {
+    auto parseUnionDecl(isl::string_view union_decl)
+        -> isl::Pair<std::bitset<isl::UtfSet::asciiStorageSize>, isl::Vector<isl::Range<char32_t>>>
+    {
+        static constexpr isl::StaticFlatmap<char32_t, char32_t, 3> special_symbols = {
+            {U'[', U'['},
+            {U']', U']'},
+            {U'-', U'-'},
+        };
+
+        const auto special_symbols_span = std::span{special_symbols.begin(), special_symbols.end()};
+
+        auto text_iterator = text::TextIterator{union_decl};
+        auto is_range = false;
+        auto previous_chr = U'\0';
+        [[maybe_unused]] auto skip_union_angle_open = text_iterator.advance();
+        auto result = isl::Pair<
+            std::bitset<isl::UtfSet::asciiStorageSize>, isl::Vector<isl::Range<char32_t>>>{};
+
+        while (true) {
+            auto [is_escaping, chr] =
+                text_iterator.nextCharWithEscapingSymbols(special_symbols_span);
+
+            if (!is_escaping && chr == U']') {
+                break;
+            }
+
+            if (!is_escaping && chr == U'-' && !is_range) {
+                is_range = true;
+                continue;
+            }
+
+            if (is_range) {
+                is_range = false;
+                result.second.emplace_back(previous_chr, chr);
+            } else {
+                if (chr < isl::UtfSet::asciiStorageSize) {
+                    result.first[chr] = true;
+                } else {
+                    result.second.emplace_back(chr, chr);
+                }
+            }
+
+            previous_chr = chr;
+        }
+
+        return result;
+    }
+
     Union::Union(TextIterator &rule_iterator, Id rule_id)
       : RuleBlockInterface{rule_id}
     {

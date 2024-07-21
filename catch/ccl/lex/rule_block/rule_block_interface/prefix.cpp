@@ -6,12 +6,11 @@ TEST_CASE("ContainerTwoPrefixesCreation", "[Container]")
 {
     using namespace ccl;
 
-    auto special_items = lexer::AnyPlaceItems{};
     auto empty_lexical_analyzer = lexer::LexicalAnalyzer(ExceptionHandler::instance(), {});
 
     auto container = lexer::rule::Container(
-        empty_lexical_analyzer, text::TextIterator{R"([a-z]*p[_]p"test")"}, special_items,
-        debug::FirstUsableToken, true);
+        empty_lexical_analyzer, text::TextIterator{R"([a-z]*p[_]p"test")"}, debug::FirstUsableToken,
+        true);
     DEBUG_VAR items = container.getItems();
 
     REQUIRE(items.at(0)->hasPrefix());

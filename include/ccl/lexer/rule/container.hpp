@@ -35,20 +35,35 @@ namespace ccl::lexer::rule
         };
 
         DotItemsStorage items;
-        AnyPlaceItems &anyPlaceItems;    // NOLINT reference
         LexicalAnalyzer &lexicalAnalyzer;// NOLINT reference
+        AnyPlaceItems &anyPlaceItems;    // NOLINT reference
         ContainerFlags flags;
 
     public:
         [[nodiscard]] Container(
-            LexicalAnalyzer &lexical_analyzer, TextIterator &rule_iterator,
-            AnyPlaceItems &special_items, Id item_id, bool main_item = false,
-            bool is_special = false);
+            LexicalAnalyzer &lexical_analyzer, TextIterator &rule_iterator, Id item_id,
+            bool main_item = false, bool is_special = false);
 
         [[nodiscard]] Container(
-            LexicalAnalyzer &lexical_analyzer, const TextIterator &rule_iterator,
-            AnyPlaceItems &special_items, Id item_id, bool main_item = false,
+            LexicalAnalyzer &lexical_analyzer, const TextIterator &rule_iterator, Id item_id,
+            bool main_item = false, bool is_special = false);
+
+        [[nodiscard]] Container(
+            LexicalAnalyzer &lexical_analyzer, Id item_id, bool main_item = false,
             bool is_special = false);
+
+        Container(const Container &other);
+        Container(Container &&) noexcept = default;
+
+        auto addItem(isl::UniquePtr<RuleBlockInterface> new_item) -> void
+        {
+            items.emplace_back(std::move(new_item));
+        }
+
+        auto addItem(isl::SharedPtr<RuleBlockInterface> new_item) -> void
+        {
+            items.emplace_back(new_item->clone());
+        }
 
         [[nodiscard]] auto beginScan(
             TextIterator &text_iterator, Token &token,
@@ -83,6 +98,11 @@ namespace ccl::lexer::rule
         [[nodiscard]] auto getItems() const noexcept CCL_LIFETIMEBOUND -> const DotItemsStorage &
         {
             return items;
+        }
+
+        [[nodiscard]] auto clone() const -> isl::UniquePtr<RuleBlockInterface> override
+        {
+            return isl::makeUnique<Container>(isl::as<const Container &>(*this));
         }
 
     private:
@@ -180,6 +200,6 @@ namespace ccl::lexer::rule
 
         [[nodiscard]] auto checkForSpecial(const ForkedGenerator &text_iterator) const -> bool;
     };
-}// namespace ccl::lexer::dot_item
+}// namespace ccl::lexer::rule
 
 #endif /* CCL_PROJECT_CONTAINER_HPP */

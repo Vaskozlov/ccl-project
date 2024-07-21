@@ -38,7 +38,12 @@ namespace ccl::lexer::rule
 
         [[nodiscard]] auto
             parseIteration(const ForkedGenerator &text_iterator) const -> ParsingResult override;
+
+        [[nodiscard]] auto clone() const -> isl::UniquePtr<RuleBlockInterface> override
+        {
+            return isl::makeUnique<RuleReference>(lexicalAnalyzer, this->getValue());
+        }
     };
-}// namespace ccl::lexer::dot_item
+}// namespace ccl::lexer::rule
 
 #endif /* CCL_PROJECT_RULE_REFERENCE_HPP */
