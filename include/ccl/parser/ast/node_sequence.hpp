@@ -11,7 +11,7 @@ namespace ccl::parser::ast
     template<template<class> class SmartPointer>
     class NodeSequence : public NodeOfNodes
     {
-    private:
+    protected:
         isl::Vector<SmartPointer<Node>> nodes;
 
         [[nodiscard]] auto getNodes() const -> isl::Vector<const Node *> override
