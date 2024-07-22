@@ -21,9 +21,8 @@ namespace ccl::parser::reader
     public:
         auto addRule(isl::string_view rule_name) -> std::size_t
         {
-            // TODO: use find
-            if (ruleNameToId.contains(rule_name)) {
-                return ruleNameToId.at(rule_name);
+            if (auto it = ruleNameToId.find(rule_name); it != ruleNameToId.end()) {
+                return it->second;
             }
 
             const auto rule_id = ruleIdGenerator.fetch_add(1U, std::memory_order_relaxed);
