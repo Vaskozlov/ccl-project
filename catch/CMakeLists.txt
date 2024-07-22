@@ -27,7 +27,6 @@ target_link_libraries(
         ccl-catch
         ccl
         fmt::fmt-header-only
-        Catch2::Catch2
         Catch2::Catch2WithMain
 )
 
