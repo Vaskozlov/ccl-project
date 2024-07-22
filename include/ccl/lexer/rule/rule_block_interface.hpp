@@ -136,12 +136,12 @@ namespace ccl::lexer::rule
         using isl::UniquePtr<RuleBlockInterface>::unique_ptr;
 
         explicit constexpr RuleBlock(isl::UniquePtr<RuleBlockInterface> block)
-          : isl::UniquePtr<RuleBlockInterface>::unique_ptr(std::move(block))
+          : isl::UniquePtr<RuleBlockInterface>::UniquePtr(std::move(block))
         {}
 
         template<std::derived_from<RuleBlockInterface> T>
         explicit constexpr RuleBlock(T dot_item)
-          : isl::UniquePtr<RuleBlockInterface>::unique_ptr(isl::makeUnique<T>(std::move(dot_item)))
+          : isl::UniquePtr<RuleBlockInterface>::UniquePtr(isl::makeUnique<T>(std::move(dot_item)))
         {}
     };
 }// namespace ccl::lexer::rule
