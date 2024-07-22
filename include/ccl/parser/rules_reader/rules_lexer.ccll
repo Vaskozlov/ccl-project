@@ -1,0 +1,43 @@
+NAMESPACE   = "ccl::parser::reader"
+VAR_NAME    = "RulesLexer"
+HANDLER     = "ccl::handler::Cmd::instance()"
+
+[SUCCESS]
+LEXER_START:                            "%LEXER%"
+PARSER_START:                           "%PARSER%"
+OR:                                     ![|]
+STAR:                                   ! [*]
+PLUS:                                   ! [+]
+EXCLAMATION_POINT:                      ! [!]
+CURLY_OPEN:                             ! [{]
+CURLY_CLOSE:                            ! [}]
+COMMA:                                  ! [,]
+NUMBER:                                 [0-9]+
+RULE_IDENTIFIER:                        'IDENTIFIER'p [ \t]* [:]
+IDENTIFIER:                             [a-zA-Z_][a-zA-Z0-9_]*
+RULE_REFERENCE:                         ! [<] [>]^* [>]
+STRING:                                 ! ["] (["]^ | "\\\"")* ["]
+UNION:                                  ! [\[] ([\]]^ | "\\]")* [\]]
+PREFIX_POSTFIX_OPERATOR:                ! [p]
+HIDE_OPERATOR:                          ! [h]
+NOT_OPERATOR:                           ! [^]
+COLUMN:                                 ! [:]
+
+[PARSER_TOKENS]
+GOAL:                                   [#]
+EPSILON:                                [#]
+LEXER_BLOCK:                            [#]
+LEXER_BLOCK_DEFINITION:                 [#]
+PARSER_BLOCK:                           [#]
+PARSER_BLOCK_DEFINITION:                [#]
+ANY_BLOCK:                              [#]
+LEXER_RULE:                             [#]
+PARSER_RULE:                            [#]
+PARSER_RULE_BODY:                       [#]
+PARSER_RULE_DECL:                       [#]
+PARSER_RULE_ALTERNATIVE:                [#]
+LEXER_RULE_BODY:                        [#]
+LEXER_RULE_BLOCK:                       [#]
+LEXER_RULE_DECL:                        [#]
+LEXER_RULE_OPTIONS:                     [#]
+LEXER_RULE_ALTERNATIVE:                 [#]
