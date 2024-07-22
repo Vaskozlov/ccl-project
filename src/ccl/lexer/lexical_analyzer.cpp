@@ -4,6 +4,10 @@
 
 namespace ccl::lexer
 {
+    LexicalAnalyzer::LexicalAnalyzer(ExceptionHandler &exception_handler)
+      : exceptionHandler{exception_handler}
+    {}
+
     LexicalAnalyzer::LexicalAnalyzer(
         ExceptionHandler &exception_handler, const std::initializer_list<Rule> &rules,
         isl::string_view filename, isl::Vector<std::size_t> ignored_ids)
@@ -15,7 +19,8 @@ namespace ccl::lexer
         }
     }
 
-    auto LexicalAnalyzer::createContainer(Rule rule, Id id, isl::string_view filename) -> void
+    auto
+        LexicalAnalyzer::createContainer(const Rule &rule, Id id, isl::string_view filename) -> void
     {
         auto container = isl::makeUnique<Container>(
             *this, TextIterator{rule.repr, exceptionHandler, filename}, id, true);

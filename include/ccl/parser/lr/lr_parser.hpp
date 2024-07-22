@@ -18,8 +18,8 @@ namespace ccl::parser
 
     public:
         explicit LrParser(
-            const LrItem &start_item, Symbol epsilon_symbol,
-            const isl::Set<Symbol> &grammar_symbols, const isl::Set<Symbol> &terminal_symbols,
+            const LrItem &start_item,
+            Symbol epsilon_symbol,
             const GrammarRulesStorage &parser_rules);
 
         [[nodiscard]] auto

@@ -83,8 +83,7 @@ namespace ccl::debug
     const inline parser::LrItem MathStartItem = parser::LrItem{
         ccl::parser::Rule{{GrammarSymbol::EXPR}}, 0, GrammarSymbol::GOAL, GrammarSymbol::EOI};
 
-    const inline parser::LrParser MathParser{
-        MathStartItem, GrammarSymbol::EPSILON, AllSymbols, Terminals, MathRules};
+    const inline parser::LrParser MathParser{MathStartItem, GrammarSymbol::EPSILON, MathRules};
 }// namespace ccl::debug
 
 #endif /* CCL_PROJECT_LR_PARSER_FOR_MATH_HPP */

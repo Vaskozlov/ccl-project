@@ -17,8 +17,6 @@ namespace ccl::parser
         isl::Vector<CanonicalCollection> canonicalCollection;
         isl::Map<TableEntry, State> transitions;
         const GrammarRulesStorage &grammarRules;
-        const isl::Set<Symbol> &allSymbols;
-        const isl::Set<Symbol> &terminalSymbols;
         Symbol goalProduction;
         Symbol endOfInput;
         Symbol epsilonSymbol;
@@ -27,7 +25,6 @@ namespace ccl::parser
     public:
         explicit LrParserGenerator(
             const LrItem &start_item, Symbol epsilon_symbol,
-            const isl::Set<Symbol> &grammar_symbols, const isl::Set<Symbol> &terminal_symbols,
             const GrammarRulesStorage &parser_rules);
 
         [[nodiscard]] auto getGotoTable() -> isl::Map<TableEntry, State> &
@@ -42,7 +39,7 @@ namespace ccl::parser
     private:
         [[nodiscard]] auto isTerminal(Symbol symbol) const noexcept -> bool
         {
-            return terminalSymbols.contains(symbol);
+            return grammarRules.isTerminal(symbol);
         }
 
         auto reduceAction(

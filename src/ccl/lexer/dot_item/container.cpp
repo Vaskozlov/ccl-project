@@ -26,7 +26,7 @@ namespace ccl::lexer::rule
       : RuleBlockInterface{item_id}
       , lexicalAnalyzer{lexical_analyzer}
       , anyPlaceItems{lexicalAnalyzer.shareAnyPlaceItems()}
-      , flags{.isMain = main_item, .isSpecial = is_special}
+      , flags{.isMain = main_item, .isAnyPlace = is_special}
     {
         parseRule(rule_iterator);
     }
@@ -37,7 +37,7 @@ namespace ccl::lexer::rule
       : RuleBlockInterface{item_id}
       , lexicalAnalyzer{lexical_analyzer}
       , anyPlaceItems{lexical_analyzer.shareAnyPlaceItems()}
-      , flags{.isMain = main_item, .isSpecial = is_special}
+      , flags{.isMain = main_item, .isAnyPlace = is_special}
     {
         auto text_iterator_copy = rule_iterator;
         parseRule(text_iterator_copy);
@@ -48,7 +48,7 @@ namespace ccl::lexer::rule
       : RuleBlockInterface{item_id}
       , lexicalAnalyzer{lexical_analyzer}
       , anyPlaceItems{lexical_analyzer.shareAnyPlaceItems()}
-      , flags{.isMain = main_item, .isSpecial = is_special}
+      , flags{.isMain = main_item, .isAnyPlace = is_special}
     {}
 
     auto Container::beginScan(

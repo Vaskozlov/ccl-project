@@ -9,9 +9,7 @@ namespace ccl::parser::detail
     class FirstAndFollowSetsCommon
     {
     protected:
-        const GrammarRulesStorage &grammarRules;    // NOLINT reference
-        const isl::Set<Symbol> &allSymbolsInGrammar;// NOLINT reference
-        const isl::Set<Symbol> &terminalSymbols;    // NOLINT reference
+        const GrammarRulesStorage &grammarRules;// NOLINT reference
 
         static auto insertRange(isl::Set<Symbol> &set, isl::RangeOf<Symbol> auto &&range) -> bool
         {
@@ -26,23 +24,18 @@ namespace ccl::parser::detail
         }
 
     public:
-        FirstAndFollowSetsCommon(
-            const isl::Set<Symbol> &grammar_symbols,
-            const isl::Set<Symbol> &terminal_symbols,
-            const GrammarRulesStorage &grammar_rules)
+        FirstAndFollowSetsCommon(const GrammarRulesStorage &grammar_rules)
           : grammarRules{grammar_rules}
-          , allSymbolsInGrammar{grammar_symbols}
-          , terminalSymbols{terminal_symbols}
         {}
 
-        [[nodiscard]] auto isTerminal(Symbol value) const -> bool
+        [[nodiscard]] auto isTerminal(Symbol symbol) const -> bool
         {
-            return terminalSymbols.contains(value);
+            return grammarRules.isTerminal(symbol);
         }
 
-        [[nodiscard]] auto isNonTerminal(Symbol value) const -> bool
+        [[nodiscard]] auto isNonTerminal(Symbol symbol) const -> bool
         {
-            return !isTerminal(value);
+            return !isTerminal(symbol);
         }
 
         template<typename F>

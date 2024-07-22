@@ -9,8 +9,7 @@ TEST_CASE("FirstSetComputation", "[FirstSet]")
     using namespace ccl::debug;
     using namespace ccl::parser;
 
-    auto first_set = evaluateFirstSet(
-        GrammarSymbol::EPSILON, AllSymbols, Terminals, GrammarForFirstFollowSetTest);
+    auto first_set = evaluateFirstSet(GrammarSymbol::EPSILON, GrammarForFirstFollowSetTest);
 
     const auto &goal_first_set = first_set.at(GrammarSymbol::GOAL);
     const auto &expr_first_set = first_set.at(GrammarSymbol::EXPR);

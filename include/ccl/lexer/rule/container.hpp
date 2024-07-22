@@ -31,7 +31,7 @@ namespace ccl::lexer::rule
         struct ContainerFlags
         {
             bool isMain{};
-            bool isSpecial{};
+            bool isAnyPlace{};
         };
 
         DotItemsStorage items;
@@ -84,7 +84,12 @@ namespace ccl::lexer::rule
 
         [[nodiscard]] auto isAnyPlaceItem() const noexcept -> bool
         {
-            return flags.isSpecial;
+            return flags.isAnyPlace;
+        }
+
+        auto makeAsAnyPlaceItem() -> void
+        {
+            flags.isAnyPlace = true;
         }
 
         [[nodiscard]] auto getItems() const noexcept CCL_LIFETIMEBOUND -> const DotItemsStorage &

@@ -9,8 +9,7 @@
 #define CCL_PARSER_RULE_CONSTRUCTOR_ARGUMENTS_DECL(PRODUCTION_NAME, NODES_ARGUMENT_NAME)           \
     <template<class> class SmartPointer>(                                                          \
         [[maybe_unused]] ccl::parser::Symbol PRODUCTION_NAME,                                      \
-        [[maybe_unused]] isl::Vector<SmartPointer<ccl::parser::ast::Node>>                         \
-            NODES_ARGUMENT_NAME)
+        [[maybe_unused]] isl::Vector<SmartPointer<ccl::parser::ast::Node>> NODES_ARGUMENT_NAME)
 
 
 namespace ccl::parser
@@ -20,6 +19,18 @@ namespace ccl::parser
     {
         using Ts::operator()...;
     };
+
+    template<typename... Ts>
+    concept ConstructableWithUnique =
+        requires(Symbol production, isl::Vector<ast::UnNodePtr> nodes) {
+            std::declval<RuleConstructor<Ts...>>().operator()(production, std::move(nodes));
+        };
+
+    template<typename... Ts>
+    concept ConstructableWithShared =
+        requires(Symbol production, isl::Vector<ast::ShNodePtr> nodes) {
+            std::declval<RuleConstructor<Ts...>>().operator()(production, std::move(nodes));
+        };
 
     class Rule : public isl::Vector<Symbol>
     {
@@ -32,18 +43,21 @@ namespace ccl::parser
         template<typename... Ts>
         explicit Rule(isl::Vector<Symbol> rule, RuleConstructor<Ts...> constructor)
           : isl::Vector<Symbol>{std::move(rule)}
-          , uniqueConstructor(
-                [constructor](Symbol production, isl::Vector<ast::UnNodePtr> nodes)
-                    -> ast::UnNodePtr {
-                    return constructor.template operator()<isl::UniquePtr>(
-                        production, std::move(nodes));
-                })
-          , sharedConstructor(
-                [constructor](Symbol production, isl::Vector<ast::ShNodePtr> nodes)
-                    -> ast::ShNodePtr {
-                    return constructor(production, std::move(nodes));
-                })
         {
+            if constexpr (ConstructableWithUnique<Ts...>) {
+                uniqueConstructor =
+                    [constructor](Symbol production, isl::Vector<ast::UnNodePtr> nodes) {
+                        return constructor(production, std::move(nodes));
+                    };
+            }
+
+            if constexpr (ConstructableWithShared<Ts...>) {
+                sharedConstructor =
+                    [constructor](Symbol production, isl::Vector<ast::ShNodePtr> nodes) {
+                        return constructor(production, std::move(nodes));
+                    };
+            }
+
             for (auto symbol : rule) {
                 ruleHash *= 31U;
                 ruleHash += symbol;

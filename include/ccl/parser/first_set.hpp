@@ -19,9 +19,7 @@ namespace ccl::parser
             using FirstAndFollowSetsCommon::isTerminal;
 
         public:
-            FirstSetEvaluator(
-                Symbol epsilon_symbol, const isl::Set<Symbol> &grammar_symbols,
-                const isl::Set<Symbol> &terminal_symbols, const GrammarRulesStorage &parser_rules);
+            FirstSetEvaluator(Symbol epsilon_symbol, const GrammarRulesStorage &parser_rules);
 
             [[nodiscard]] auto
                 getFirstSet() CCL_LIFETIMEBOUND -> isl::Map<Symbol, isl::Set<Symbol>> &
@@ -36,9 +34,8 @@ namespace ccl::parser
         };
     }// namespace detail
 
-    auto evaluateFirstSet(
-        Symbol epsilon, const isl::Set<Symbol> &grammar_symbols, const isl::Set<Symbol> &terminals,
-        const GrammarRulesStorage &rules) -> isl::Map<Symbol, isl::Set<Symbol>>;
+    auto evaluateFirstSet(Symbol epsilon, const GrammarRulesStorage &rules)
+        -> isl::Map<Symbol, isl::Set<Symbol>>;
 }// namespace ccl::parser
 
 #endif /* CCL_PROJECT_FIRST_SET_HPP */

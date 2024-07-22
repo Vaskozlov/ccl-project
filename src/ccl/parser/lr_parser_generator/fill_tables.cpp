@@ -37,11 +37,7 @@ namespace ccl::parser
             fillActionTableEntry(cc, item);
         }
 
-        for (const auto symbol : allSymbols) {
-            if (isTerminal(symbol)) {
-                continue;
-            }
-
+        for (const auto symbol : grammarRules.getNonTerminals()) {
             fillGotoTableEntry(cc, symbol);
         }
     }

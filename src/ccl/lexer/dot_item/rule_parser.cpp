@@ -247,7 +247,7 @@ namespace ccl::lexer::rule
             throwUnableToApply("special must be applied before anything else");
         }
 
-        container.flags.isSpecial = true;
+        container.flags.isAnyPlace = true;
     }
 
     CCL_INLINE auto Container::RuleParser::checkId() const -> void

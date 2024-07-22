@@ -4,9 +4,9 @@
 namespace ccl::parser
 {
     detail::FirstSetEvaluator::FirstSetEvaluator(
-        Symbol epsilon_symbol, const isl::Set<Symbol> &grammar_symbols,
-        const isl::Set<Symbol> &terminal_symbols, const GrammarRulesStorage &parser_rules)
-      : FirstAndFollowSetsCommon{grammar_symbols, terminal_symbols, parser_rules}
+        Symbol epsilon_symbol,
+        const GrammarRulesStorage &parser_rules)
+      : FirstAndFollowSetsCommon{parser_rules}
       , epsilonSymbol{epsilon_symbol}
     {
         initializeFirstSet();
@@ -15,7 +15,7 @@ namespace ccl::parser
 
     auto detail::FirstSetEvaluator::initializeFirstSet() -> void
     {
-        for (auto symbol : allSymbolsInGrammar) {
+        for (auto symbol : grammarRules.getGrammarSymbols()) {
             if (!lexer::isUsedDefinedTokenOrEoF(symbol)) {
                 continue;
             }
@@ -62,11 +62,10 @@ namespace ccl::parser
         return insertRange(firstSet.at(key), rhs);
     }
 
-    auto evaluateFirstSet(
-        Symbol epsilon, const isl::Set<Symbol> &grammar_symbols, const isl::Set<Symbol> &terminals,
-        const GrammarRulesStorage &rules) -> isl::Map<Symbol, isl::Set<Symbol>>
+    auto evaluateFirstSet(Symbol epsilon, const GrammarRulesStorage &rules)
+        -> isl::Map<Symbol, isl::Set<Symbol>>
     {
-        auto first_set = detail::FirstSetEvaluator(epsilon, grammar_symbols, terminals, rules);
+        auto first_set = detail::FirstSetEvaluator(epsilon, rules);
         return std::move(first_set.getFirstSet());
     }
 }// namespace ccl::parser

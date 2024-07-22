@@ -15,7 +15,6 @@ namespace ccl::debug
                 parser::Rule{
                     {
                         GrammarSymbol::EXPR,
-                        GrammarSymbol::EOI,
                     },
                 },
             },
@@ -103,25 +102,6 @@ namespace ccl::debug
             },
         },
     };
-
-    const inline isl::Set<Id> Terminals{
-        GrammarSymbol::NAME,       GrammarSymbol::NUMBER, GrammarSymbol::ANGLE_CLOSE,
-        GrammarSymbol::ANGLE_OPEN, GrammarSymbol::ADD,    GrammarSymbol::SUB,
-        GrammarSymbol::MUL,        GrammarSymbol::DIV,    GrammarSymbol::EPSILON,
-        GrammarSymbol::EOI,
-    };
-
-    const inline isl::Set<Id> AllSymbols = []() {
-        isl::Set<Id> result;
-
-        for (const auto &[token, repr] : math::ToStringMathLexerToken) {
-            if (lexer::isUsedDefinedTokenOrEoF(token)) {
-                result.emplace(token);
-            }
-        }
-
-        return result;
-    }();
 }// namespace ccl::debug
 
 template<>

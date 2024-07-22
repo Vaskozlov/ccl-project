@@ -39,11 +39,9 @@ namespace ccl::parser
     }
 
     GlrParser::GlrParser(
-        const LrItem &start_item, Symbol epsilon_symbol, const isl::Set<Symbol> &grammar_symbols,
-        const isl::Set<Symbol> &terminal_symbols, const GrammarRulesStorage &parser_rules)
+        const LrItem &start_item, Symbol epsilon_symbol, const GrammarRulesStorage &parser_rules)
     {
-        auto parser_generator = LrParserGenerator(
-            start_item, epsilon_symbol, grammar_symbols, terminal_symbols, parser_rules);
+        auto parser_generator = LrParserGenerator(start_item, epsilon_symbol, parser_rules);
 
         gotoTable = std::move(parser_generator.getGotoTable());
         actionTable = parser_generator.getGlrActionTable();

@@ -20,7 +20,6 @@ namespace ccl::parser
     public:
         explicit GlrParser(
             const LrItem &start_item, Symbol epsilon_symbol,
-            const isl::Set<Symbol> &grammar_symbols, const isl::Set<Symbol> &terminal_symbols,
             const GrammarRulesStorage &parser_rules);
 
         [[nodiscard]] auto parse(lexer::LexicalAnalyzer::Tokenizer &tokenizer) const

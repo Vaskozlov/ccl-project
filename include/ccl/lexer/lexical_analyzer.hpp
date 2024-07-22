@@ -40,6 +40,7 @@ namespace ccl::lexer
         AnyPlaceItems anyPlaceItems;
         isl::Vector<Id> ignoredIds;
         std::string skippedCharacters;
+        std::atomic<std::size_t> idCounter{0};
 
         // NOLINTNEXTLINE reference
         ExceptionHandler &exceptionHandler;
@@ -47,6 +48,8 @@ namespace ccl::lexer
     public:
         class Tokenizer;
         class PegParser;
+
+        [[nodiscard]] explicit LexicalAnalyzer(ExceptionHandler &exception_handler);
 
         [[nodiscard]] LexicalAnalyzer(
             ExceptionHandler &exception_handler, const std::initializer_list<Rule> &rules,
@@ -106,14 +109,13 @@ namespace ccl::lexer
             return items;
         }
 
-        [[nodiscard]] auto generateIdForItem() -> std::size_t
+        [[nodiscard]] auto generateIdForItem() noexcept -> std::size_t
         {
-            // TODO: implement
-            return 0;
+            return idCounter.fetch_add(1U, std::memory_order_relaxed);
         }
 
     private:
-        auto createContainer(Rule rule, Id id, isl::string_view filename) -> void;
+        auto createContainer(const Rule &rule, Id id, isl::string_view filename) -> void;
     };
 }// namespace ccl::lexer
 

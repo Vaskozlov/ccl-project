@@ -4,11 +4,9 @@ namespace ccl::parser
 {
     detail::FollowSetEvaluator::FollowSetEvaluator(
         Symbol start_symbol, Symbol end_of_input, Symbol epsilon_symbol,
-        const isl::Set<Symbol> &grammar_symbols, const isl::Set<Symbol> &terminal_symbols,
         const GrammarRulesStorage &parser_rules,
         const isl::Map<Symbol, isl::Set<Symbol>> &first_set)
-      : FirstAndFollowSetsCommon::
-            FirstAndFollowSetsCommon{grammar_symbols, terminal_symbols, parser_rules}
+      : FirstAndFollowSetsCommon::FirstAndFollowSetsCommon{parser_rules}
       , firstSet{first_set}
       , epsilonSymbol{epsilon_symbol}
     {
@@ -19,7 +17,7 @@ namespace ccl::parser
     auto detail::FollowSetEvaluator::initializeFollowSet(Symbol start_symbol, Symbol end_of_input)
         -> void
     {
-        for (auto symbol : allSymbolsInGrammar) {
+        for (auto symbol : grammarRules.getGrammarSymbols()) {
             if (isNonTerminal(symbol)) {
                 followSet.try_emplace(symbol);
             }
@@ -70,13 +68,11 @@ namespace ccl::parser
 
     auto evaluateFollowSet(
         Symbol start_symbol, Symbol end_of_input, Symbol epsilon_symbol,
-        const isl::Set<Symbol> &grammar_symbols, const isl::Set<Symbol> &terminals,
         const GrammarRulesStorage &rules,
         const isl::Map<Symbol, isl::Set<Symbol>> &first_set) -> isl::Map<Symbol, isl::Set<Symbol>>
     {
         auto follow_set = detail::FollowSetEvaluator(
-            start_symbol, end_of_input, epsilon_symbol, grammar_symbols, terminals, rules,
-            first_set);
+            start_symbol, end_of_input, epsilon_symbol, rules, first_set);
 
         return std::move(follow_set.getFollowSet());
     }
