@@ -16,6 +16,7 @@ namespace ccl::parser
         isl::Map<TableEntry, isl::Set<Action>> actionTable;
         isl::Vector<CanonicalCollection> canonicalCollection;
         isl::Map<TableEntry, State> transitions;
+        std::function<std::string(Id)> idToStringConverter;
         const GrammarRulesStorage &grammarRules;
         Symbol goalProduction;
         Symbol endOfInput;
@@ -25,7 +26,8 @@ namespace ccl::parser
     public:
         explicit LrParserGenerator(
             const LrItem &start_item, Symbol epsilon_symbol,
-            const GrammarRulesStorage &parser_rules);
+            const GrammarRulesStorage &parser_rules,
+            std::function<std::string(Id)> id_to_string_converter);
 
         [[nodiscard]] auto getGotoTable() -> isl::Map<TableEntry, State> &
         {

@@ -25,7 +25,7 @@ namespace ccl::parser::reader::ast
             return options;
         }
 
-        auto construct(lexer::LexicalAnalyzer &lexical_analyzer) const -> isl::UniqueAny override;
+        auto construct(RulesConstructor &rule_constructor) const -> isl::UniqueAny override;
     };
 }// namespace ccl::parser::reader::ast
 

@@ -3,14 +3,15 @@
 
 #include <ccl/parser/ast/node_sequence.hpp>
 #include <ccl/parser/ast/token_node.hpp>
+#include <ccl/parser/rules_reader/ast/lexer_block.hpp>
 #include <ccl/parser/rules_reader/ast/lexer_rule_options.hpp>
 
 namespace ccl::parser::reader::ast
 {
-    class ParserBlock : public parser::ast::NodeSequence<isl::UniquePtr>
+    class ParserBlock : public LexerBlock
     {
     public:
-        using parser::ast::NodeSequence<isl::UniquePtr>::NodeSequence;
+        using LexerBlock::LexerBlock;
     };
 }// namespace ccl::parser::reader::ast
 

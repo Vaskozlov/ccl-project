@@ -9,94 +9,105 @@ namespace ccl::debug
     using GrammarSymbol = math::MathLexerToken;
 
     const inline parser::GrammarRulesStorage GrammarForFirstFollowSetTest{
+        GrammarSymbol::EPSILON,
         {
-            GrammarSymbol::GOAL,
             {
-                parser::Rule{
-                    {
-                        GrammarSymbol::EXPR,
+                GrammarSymbol::GOAL,
+                {
+                    parser::Rule{
+                        {
+                            GrammarSymbol::EXPR,
+                        },
                     },
                 },
             },
-        },
-        {GrammarSymbol::EXPR,
-         {
-             parser::Rule{
-                 {
-                     GrammarSymbol::TERM,
-                     GrammarSymbol::EXPR_C,
-                 },
-             },
-         }},
-        {GrammarSymbol::EXPR_C,
-         {
-             parser::Rule{
-                 {
-                     GrammarSymbol::ADD,
-                     GrammarSymbol::TERM,
-                     GrammarSymbol::EXPR_C,
-                 },
-             },
-             parser::Rule{
-                 {
-                     GrammarSymbol::SUB,
-                     GrammarSymbol::TERM,
-                     GrammarSymbol::EXPR_C,
-                 },
-             },
-             parser::Rule{
-                 {GrammarSymbol::EPSILON},
-             },
-         }},
-        {GrammarSymbol::TERM,
-         {
-             parser::Rule{
-                 {
-                     GrammarSymbol::FACTOR,
-                     GrammarSymbol::TERM_C,
-                 },
-             },
-         }},
-        {
-            GrammarSymbol::TERM_C,
             {
-                parser::Rule{
-                    {
-                        GrammarSymbol::MUL,
-                        GrammarSymbol::FACTOR,
-                        GrammarSymbol::TERM_C,
+                GrammarSymbol::EXPR,
+                {
+                    parser::Rule{
+                        {
+                            GrammarSymbol::TERM,
+                            GrammarSymbol::EXPR_C,
+                        },
                     },
                 },
-                parser::Rule{
-                    {
-                        GrammarSymbol::DIV,
-                        GrammarSymbol::FACTOR,
-                        GrammarSymbol::TERM_C,
-                    },
-                },
-                parser::Rule{{
-                    GrammarSymbol::EPSILON,
-                }},
             },
-        },
-        {
-            GrammarSymbol::FACTOR,
             {
-                parser::Rule{
-                    {
-                        GrammarSymbol::ANGLE_OPEN,
-                        GrammarSymbol::EXPR,
-                        GrammarSymbol::ANGLE_CLOSE,
+                GrammarSymbol::EXPR_C,
+                {
+                    parser::Rule{
+                        {
+                            GrammarSymbol::ADD,
+                            GrammarSymbol::TERM,
+                            GrammarSymbol::EXPR_C,
+                        },
+                    },
+                    parser::Rule{
+                        {
+                            GrammarSymbol::SUB,
+                            GrammarSymbol::TERM,
+                            GrammarSymbol::EXPR_C,
+                        },
+                    },
+                    parser::Rule{
+                        {GrammarSymbol::EPSILON},
                     },
                 },
-                parser::Rule{
-                    {
-                        GrammarSymbol::NAME,
+            },
+            {
+                GrammarSymbol::TERM,
+                {
+                    parser::Rule{
+                        {
+                            GrammarSymbol::FACTOR,
+                            GrammarSymbol::TERM_C,
+                        },
                     },
                 },
-                parser::Rule{
-                    {
-                        GrammarSymbol::NUMBER,
+            },
+            {
+                GrammarSymbol::TERM_C,
+                {
+                    parser::Rule{
+                        {
+                            GrammarSymbol::MUL,
+                            GrammarSymbol::FACTOR,
+                            GrammarSymbol::TERM_C,
+                        },
+                    },
+                    parser::Rule{
+                        {
+                            GrammarSymbol::DIV,
+                            GrammarSymbol::FACTOR,
+                            GrammarSymbol::TERM_C,
+                        },
+                    },
+                    parser::Rule{
+                        {
+                            GrammarSymbol::EPSILON,
+                        },
+                    },
+                },
+            },
+            {
+                GrammarSymbol::FACTOR,
+                {
+                    parser::Rule{
+                        {
+                            GrammarSymbol::ANGLE_OPEN,
+                            GrammarSymbol::EXPR,
+                            GrammarSymbol::ANGLE_CLOSE,
+                        },
+                    },
+                    parser::Rule{
+                        {
+                            GrammarSymbol::NAME,
+                        },
+                    },
+                    parser::Rule{
+                        {
+                            GrammarSymbol::NUMBER,
+                        },
                     },
                 },
             },

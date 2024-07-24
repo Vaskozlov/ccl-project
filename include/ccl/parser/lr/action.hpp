@@ -69,15 +69,15 @@ namespace ccl::parser
         }
     };
 
-    template<typename T>
     struct ActionPrintWrapper
     {
         const Action &action;
+        std::function<std::string(Id)> idToStr;
     };
 }// namespace ccl::parser
 
-template<typename T>
-class fmt::formatter<ccl::parser::ActionPrintWrapper<T>> : public fmt::formatter<std::string_view>
+template<>
+class fmt::formatter<ccl::parser::ActionPrintWrapper> : public fmt::formatter<std::string_view>
 {
 private:
     template<class... Ts>
@@ -88,17 +88,20 @@ private:
 
 public:
     template<typename FmtContext>
-    constexpr auto format(
-        const ccl::parser::ActionPrintWrapper<T> &action_print_wrapper,
-        FmtContext &ctx) const -> decltype(auto)
+    constexpr auto
+        format(const ccl::parser::ActionPrintWrapper &action_print_wrapper, FmtContext &ctx) const
+        -> decltype(auto)
     {
+        using namespace ccl::parser;
+
         auto &action = action_print_wrapper.action;
         fmt::format_to(ctx.out(), "{} ", action.getParsingAction());
 
         return std::visit(
             overloaded{
-                [&ctx](const ccl::parser::LrItem &arg) {
-                    return fmt::format_to(ctx.out(), "{}", ccl::parser::LrItemPrintWrapper<T>(arg));
+                [&ctx, &action_print_wrapper](const LrItem &arg) {
+                    return fmt::format_to(
+                        ctx.out(), "{}", LrItemPrintWrapper(arg, action_print_wrapper.idToStr));
                 },
                 [&ctx](auto arg) {
                     return fmt::format_to(ctx.out(), "{}", arg);

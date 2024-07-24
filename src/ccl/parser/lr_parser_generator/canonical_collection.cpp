@@ -19,7 +19,7 @@ namespace ccl::parser
             }
         }
 
-        return computeClosure(moved);
+        return computeClosure(std::move(moved));
     }
 
     auto LrParserGenerator::doCanonicalCollectionConstructionIterationOnItem(

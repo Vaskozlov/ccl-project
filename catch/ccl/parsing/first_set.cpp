@@ -31,7 +31,6 @@ TEST_CASE("FirstSetComputation", "[FirstSet]")
         expr_c_first_set == isl::Set<Symbol>{
                                 GrammarSymbol::ADD,
                                 GrammarSymbol::SUB,
-                                GrammarSymbol::EPSILON,
                             });
 
     REQUIRE(term_first_set == goal_first_set);
@@ -40,7 +39,6 @@ TEST_CASE("FirstSetComputation", "[FirstSet]")
         term_c_first_set == isl::Set<Symbol>{
                                 GrammarSymbol::MUL,
                                 GrammarSymbol::DIV,
-                                GrammarSymbol::EPSILON,
                             });
 
     REQUIRE(factor_first_set == goal_first_set);

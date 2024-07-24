@@ -1,8 +1,8 @@
 #ifndef CCL_PROJECT_LR_ITEM_HPP
 #define CCL_PROJECT_LR_ITEM_HPP
 
+#include "ccl/parser/rule.hpp"
 #include <ccl/lexer/lexical_analyzer.hpp>
-#include <ccl/parser/lr/rule.hpp>
 #include <ccl/parser/types.hpp>
 
 namespace ccl::parser
@@ -73,10 +73,10 @@ namespace ccl::parser
             operator<=>(const LrItem &other) const noexcept -> std::weak_ordering = default;
     };
 
-    template<typename T>
     struct LrItemPrintWrapper
     {
         const LrItem &item;
+        std::function<std::string(Id)> idToStr;
     };
 }// namespace ccl::parser
 
@@ -89,34 +89,29 @@ struct std::hash<ccl::parser::LrItem>
     }
 };
 
-template<typename T>
-class fmt::formatter<ccl::parser::LrItemPrintWrapper<T>> : public fmt::formatter<std::string_view>
+template<>
+class fmt::formatter<ccl::parser::LrItemPrintWrapper> : public fmt::formatter<std::string_view>
 {
 public:
     template<typename FmtContext>
-    constexpr auto
-        format(const ccl::parser::LrItemPrintWrapper<T> &item_print_wrapper, FmtContext &ctx) const
+    auto format(const ccl::parser::LrItemPrintWrapper &item_print_wrapper, FmtContext &ctx) const
     {
         const auto &item = item_print_wrapper.item;
-        fmt::format_to(
-            ctx.out(),
-            "{} -> [",
-            ccl::lexer::lexerEnumToString(isl::as<T>(item.getProductionType())));
+        fmt::format_to(ctx.out(), "{} -> [", item_print_wrapper.idToStr(item.getProductionType()));
 
         for (std::size_t i = 0; i != item.size(); ++i) {
             if (i == item.getDotLocation()) {
                 fmt::format_to(ctx.out(), "\u2022");
             }
 
-            fmt::format_to(ctx.out(), "{} ", isl::as<T>(item.at(i)));
+            fmt::format_to(ctx.out(), "{} ", item_print_wrapper.idToStr(item.at(i)));
         }
 
         if (item.isDotInTheEnd()) {
             fmt::format_to(ctx.out(), "\u2022");
         }
 
-        return fmt::format_to(
-            ctx.out(), ", {}]", ccl::lexer::lexerEnumToString(isl::as<T>(item.getLookAhead())));
+        return fmt::format_to(ctx.out(), ", {}]", item_print_wrapper.idToStr(item.getLookAhead()));
     }
 };
 

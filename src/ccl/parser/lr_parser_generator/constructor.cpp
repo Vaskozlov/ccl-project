@@ -4,8 +4,10 @@
 namespace ccl::parser
 {
     LrParserGenerator::LrParserGenerator(
-        const LrItem &start_item, Symbol epsilon_symbol, const GrammarRulesStorage &parser_rules)
-      : grammarRules{parser_rules}
+        const LrItem &start_item, Symbol epsilon_symbol, const GrammarRulesStorage &parser_rules,
+        std::function<std::string(Id)> id_to_string_converter)
+      : idToStringConverter{std::move(id_to_string_converter)}
+      , grammarRules{parser_rules}
       , goalProduction{start_item.getProductionType()}
       , endOfInput{start_item.getLookAhead()}
       , epsilonSymbol{epsilon_symbol}

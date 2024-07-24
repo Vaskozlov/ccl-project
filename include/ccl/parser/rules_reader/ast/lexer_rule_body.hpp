@@ -13,23 +13,7 @@ namespace ccl::parser::reader::ast
     public:
         using parser::ast::NodeSequence<isl::UniquePtr>::NodeSequence;
 
-        auto construct(lexer::LexicalAnalyzer &lexical_analyzer) const -> isl::UniqueAny override
-        {
-            using namespace lexer::rule;
-
-            auto resulted_container =
-                isl::makeUnique<Container>(lexical_analyzer, lexical_analyzer.generateIdForItem());
-
-            for (const auto &node : this->nodes) {
-                const auto *node_as_rules_reader =
-                    dynamic_cast<const RulesReaderNode *>(node.get());
-                auto new_block = node_as_rules_reader->construct(lexical_analyzer);
-
-                resulted_container->addItem(isl::anyCast<RuleBlockInterface>(new_block));
-            }
-
-            return isl::UniqueAny{std::move(resulted_container)};
-        }
+        auto construct(RulesConstructor &rule_constructor) const -> isl::UniqueAny override;
     };
 }// namespace ccl::parser::reader::ast
 

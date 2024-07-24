@@ -7,22 +7,19 @@
 
 namespace ccl::parser::reader::ast
 {
-    class ParserRuleDecl : public parser::ast::UnNodeSequence
+    class ParserRuleDecl
+      : public parser::ast::UnNodeSequence
+      , public RulesReaderNode
     {
     public:
         using parser::ast::UnNodeSequence::NodeSequence;
 
-        [[nodiscard]] auto getDeclarationName() const -> const parser::ast::TokenNode *
-        {
-            const auto *value_node = this->front();
-            return isl::as<const parser::ast::TokenNode *>(value_node);
-        }
+        [[nodiscard]] auto getDeclarationName() const -> isl::string_view;
 
-        [[nodiscard]] auto getRules() const -> const ast::LexerRuleBlock *
-        {
-            const auto *value_node = this->back();
-            return isl::as<const ast::LexerRuleBlock *>(value_node);
-        }
+        [[nodiscard]] auto getAlternatives() const -> const ast::ParserRuleAlternatives *;
+
+        [[nodiscard]] auto
+            construct(RulesConstructor &rule_constructor) const -> isl::UniqueAny override;
     };
 }// namespace ccl::parser::reader::ast
 

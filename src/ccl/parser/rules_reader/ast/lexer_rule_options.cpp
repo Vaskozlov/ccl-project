@@ -41,8 +41,7 @@ namespace ccl::parser::reader::ast
         options.emplace_back(option);
     }
 
-    auto LexerRuleOptions::construct(lexer::LexicalAnalyzer &lexical_analyzer) const
-        -> isl::UniqueAny
+    auto LexerRuleOptions::construct(RulesConstructor &rule_constructor) const -> isl::UniqueAny
     {
         return std::nullopt;
     }

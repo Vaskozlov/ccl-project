@@ -1,9 +1,9 @@
 #ifndef CCL_PROJECT_RULE_HPP
 #define CCL_PROJECT_RULE_HPP
 
-#include <ccl/parser/ast/node.hpp>
-#include <ccl/parser/ast/node_sequence.hpp>
-#include <ccl/parser/types.hpp>
+#include "ccl/parser/ast/node.hpp"
+#include "ccl/parser/ast/node_sequence.hpp"
+#include "types.hpp"
 #include <functional>
 
 #define CCL_PARSER_RULE_CONSTRUCTOR_ARGUMENTS_DECL(PRODUCTION_NAME, NODES_ARGUMENT_NAME)           \
@@ -99,6 +99,18 @@ namespace ccl::parser
             }
         }
     };
+
+    struct RuleWithId : Rule
+    {
+        Id id;
+
+        auto operator==(const RuleWithId &other) const -> bool
+        {
+            return static_cast<const std::vector<Symbol> &>(*this) ==
+                       static_cast<const std::vector<Symbol> &>(other) &&
+                   id == other.id;
+        }
+    };
 }// namespace ccl::parser
 
 template<>
@@ -107,6 +119,15 @@ struct std::hash<ccl::parser::Rule>
     auto operator()(const ccl::parser::Rule &rule) const noexcept -> std::size_t
     {
         return rule.getHash();
+    }
+};
+
+template<>
+struct std::hash<ccl::parser::RuleWithId>
+{
+    auto operator()(const ccl::parser::RuleWithId &rule) const noexcept -> std::size_t
+    {
+        return isl::hash::combine(rule.getHash(), rule.id);
     }
 };
 

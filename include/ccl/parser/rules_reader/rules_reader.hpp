@@ -3,6 +3,7 @@
 
 #include <ccl/parser/lr/lr_parser.hpp>
 #include <ccl/parser/rules_reader/reader_options.hpp>
+#include <ccl/parser/rules_reader/rules_constructor.hpp>
 #include <ccl/parser/rules_reader/rules_lexer.hpp>
 
 namespace ccl::parser::reader
@@ -10,6 +11,7 @@ namespace ccl::parser::reader
     class RulesReader
     {
     private:
+        RulesConstructor rulesConstructor;
         isl::Vector<ReaderOption> readerOptions{
             ReaderOption::WARNINGS_ENABLE,
             ReaderOption::SUGGESTIONS_ENABLE,
@@ -17,6 +19,11 @@ namespace ccl::parser::reader
 
     public:
         RulesReader(isl::string_view input, isl::string_view filename = {});
+
+        [[nodiscard]] auto getRulesConstructor() -> RulesConstructor &
+        {
+            return rulesConstructor;
+        }
     };
 }// namespace ccl::parser::reader
 

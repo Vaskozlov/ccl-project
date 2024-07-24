@@ -2,6 +2,7 @@
 #define CCL_PROJECT_RULES_READER_NODE_HPP
 
 #include <ccl/lexer/lexical_analyzer.hpp>
+#include <ccl/parser/rules_reader/rules_constructor.hpp>
 #include <isl/unique_any.hpp>
 
 namespace ccl::parser::reader::ast
@@ -19,8 +20,7 @@ namespace ccl::parser::reader::ast
         auto operator=(const RulesReaderNode &) -> void = delete;
         auto operator=(RulesReaderNode &&) -> void = delete;
 
-        virtual auto
-            construct(lexer::LexicalAnalyzer &lexical_analyzer) const -> isl::UniqueAny = 0;
+        virtual auto construct(RulesConstructor &rule_constructor) const -> isl::UniqueAny = 0;
     };
 }// namespace ccl::parser::reader::ast
 

@@ -2,9 +2,11 @@
 #define CCL_PROJECT_RULES_INFO_HPP
 
 #include <atomic>
+#include <ccl/handler/cmd.hpp>
 #include <ccl/lexer/lexical_analyzer.hpp>
 #include <ccl/lexer/rule/container.hpp>
 #include <ccl/parser/grammar_rules_storage.hpp>
+#include <ccl/parser/lr/detail/lr_item.hpp>
 #include <isl/isl.hpp>
 
 namespace ccl::parser::reader
@@ -12,14 +14,14 @@ namespace ccl::parser::reader
     class RulesConstructor
     {
     private:
-        isl::Map<std::size_t, std::string> ruleIdToName;
-        isl::Map<isl::string_view, std::size_t> ruleNameToId;
-        std::atomic<std::size_t> ruleIdGenerator;
-        lexer::LexicalAnalyzer lexicalAnalyzer;
-        GrammarRulesStorage grammarRulesStorage;
+        lexer::LexicalAnalyzer lexicalAnalyzer{handler::Cmd::instance()};
+        isl::Map<Id, std::string> ruleIdToName;
+        isl::Map<isl::string_view, Id> ruleNameToId;
+        std::atomic<Id> ruleIdGenerator{lexer::ReservedTokenMaxValue + 1};
+        GrammarRulesStorage grammarRulesStorage{addRule("EPSILON")};
 
     public:
-        auto addRule(isl::string_view rule_name) -> std::size_t
+        auto addRule(isl::string_view rule_name) -> Id
         {
             if (auto it = ruleNameToId.find(rule_name); it != ruleNameToId.end()) {
                 return it->second;
@@ -33,26 +35,57 @@ namespace ccl::parser::reader
             return rule_id;
         }
 
-        [[nodiscard]] auto getRuleName(std::size_t rule_id) const -> const std::string &
+        auto finishGrammar() -> void
+        {
+            grammarRulesStorage.finishGrammar();
+        }
+
+        auto getStartItem() const -> LrItem
+        {
+            const auto goal_id = getRuleId("GOAL");
+            return LrItem{grammarRulesStorage.at(goal_id).front(), 0, goal_id, 0};
+        }
+
+        auto getIdToNameTranslationFunction() const CCL_LIFETIMEBOUND
+            -> std::function<std::string(Id)>
+        {
+            return [this](Id rule_id) {
+                return ruleIdToName.at(rule_id);
+            };
+        }
+
+        [[nodiscard]] auto getRuleName(Id rule_id) const -> const std::string &
         {
             return ruleIdToName.at(rule_id);
         }
 
-        [[nodiscard]] auto getRuleId(isl::string_view rule_name) const -> std::size_t
+        [[nodiscard]] auto getRuleId(isl::string_view rule_name) const -> Id
         {
             return ruleNameToId.at(rule_name);
+        }
+
+        [[nodiscard]] auto hasRule(isl::string_view rule_name) const -> bool
+        {
+            return ruleNameToId.contains(rule_name);
         }
 
         auto addLexerRule(isl::string_view name, isl::UniquePtr<lexer::rule::Container> container)
             -> void
         {
-            addRule(name);
+            auto rule_id = addRule(name);
+            container->setId(rule_id);
             lexicalAnalyzer.addContainer(name, std::move(container));
         }
 
         auto addParserRule(isl::string_view name, parser::Rule rule) -> void
         {
             const auto rule_id = addRule(name);
+            grammarRulesStorage.try_emplace(rule_id);
+            grammarRulesStorage.at(rule_id).emplace_back(std::move(rule));
+        }
+
+        auto addParserRule(Id rule_id, parser::Rule rule) -> void
+        {
             grammarRulesStorage.try_emplace(rule_id);
             grammarRulesStorage.at(rule_id).emplace_back(std::move(rule));
         }

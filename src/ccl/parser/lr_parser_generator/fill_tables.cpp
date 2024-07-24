@@ -5,14 +5,26 @@ namespace ccl::parser
 {
     auto LrParserGenerator::getLrActionTable() const -> isl::Map<TableEntry, Action>
     {
+        auto has_errors = false;
         auto result = isl::Map<TableEntry, Action>{};
 
         for (const auto &[key, actions] : actionTable) {
             if (actions.size() != 1) {
-                throw std::logic_error("Grammar is not suitable for LR parser");
+                fmt::println("State: {}", key.state);
+                fmt::println("Lookahead: {}", idToStringConverter(key.lookAhead));
+
+                for (const auto &action : actions) {
+                    fmt::println("Action: {}", ActionPrintWrapper(action, idToStringConverter));
+                }
+
+                has_errors = true;
             }
 
             result.try_emplace(key, *actions.begin());
+        }
+
+        if (has_errors) {
+            throw std::logic_error("Grammar is not suitable for LR parser");
         }
 
         return result;

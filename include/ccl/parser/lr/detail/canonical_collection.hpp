@@ -16,30 +16,32 @@ namespace ccl::parser
         }
     };
 
-    template<typename T>
     struct CanonicalCollectionPrintWrapper
     {
         const CanonicalCollection &canonicalCollection;
+        std::function<std::string(Id)> idToStringConversionFunction;
     };
 }// namespace ccl::parser
 
-template<typename T>
-class fmt::formatter<ccl::parser::CanonicalCollectionPrintWrapper<T>>
+template<>
+class fmt::formatter<ccl::parser::CanonicalCollectionPrintWrapper>
   : public fmt::formatter<std::string_view>
 {
 public:
     template<typename FmtContext>
     constexpr auto format(
-        const ccl::parser::CanonicalCollectionPrintWrapper<T> &collection_print_wrapper,
+        const ccl::parser::CanonicalCollectionPrintWrapper &collection_print_wrapper,
         FmtContext &ctx) const
     {
         const auto &collection = collection_print_wrapper.canonicalCollection;
 
         return fmt::format_to(
             ctx.out(), "{}: {}", collection.id,
-            std::views::transform(collection.items, [](const ccl::parser::LrItem &item) {
-                return ccl::parser::LrItemPrintWrapper<T>(item);
-            }));
+            std::views::transform(
+                collection.items, [&collection_print_wrapper](const ccl::parser::LrItem &item) {
+                    return ccl::parser::LrItemPrintWrapper(
+                        item, collection_print_wrapper.idToStringConversionFunction);
+                }));
     }
 };
 

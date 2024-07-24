@@ -1,7 +1,7 @@
 #ifndef CCL_PROJECT_GRAMMAR_RULES_STORAGE_HPP
 #define CCL_PROJECT_GRAMMAR_RULES_STORAGE_HPP
 
-#include <ccl/parser/lr/rule.hpp>
+#include "rule.hpp"
 #include <ccl/parser/types.hpp>
 #include <isl/generator.hpp>
 
@@ -10,36 +10,25 @@ namespace ccl::parser
     class GrammarRulesStorage : public isl::Map<Symbol, isl::Vector<Rule>>
     {
     private:
+        using AlternativesConstRuleIterator = typename isl::Vector<Rule>::const_iterator;
+
         isl::Set<Symbol> nonTerminals;
-        isl::Set<Symbol> grammarSymbols{0};
+        isl::Set<Symbol> grammarSymbols;
+        isl::Set<Symbol> possiblyEmptyRules;
+        Symbol epsilonSymbol;
 
     public:
-        GrammarRulesStorage() = default;
+        explicit GrammarRulesStorage(Symbol epsilon);
 
         GrammarRulesStorage(
-            const std::initializer_list<std::pair<Symbol, isl::Vector<Rule>>> &initial_data)
-          : isl::Map<Symbol, isl::Vector<Rule>>{initial_data}
-        {
-            finishGrammar();
-        }
+            Symbol epsilon,
+            const std::initializer_list<isl::Pair<Symbol, isl::Vector<Rule>>> &initial_data);
 
-        auto finishGrammar() -> void
-        {
-            for (const auto &[key, rules] : *this) {
-                nonTerminals.emplace(key);
-                grammarSymbols.emplace(key);
+        auto finishGrammar() -> void;
 
-                for (const auto &rule : rules) {
-                    registerAllRuleSymbols(rule);
-                }
-            }
-        }
-
-        auto getTerminalsRange() -> auto
+        [[nodiscard]] auto getEpsilon() const noexcept -> Symbol
         {
-            return std::ranges::filter_view(grammarSymbols, [this](Symbol symbol) {
-                return isTerminal(symbol);
-            });
+            return epsilonSymbol;
         }
 
         [[nodiscard]] auto getNonTerminals() const noexcept -> const isl::Set<Symbol> &
@@ -57,6 +46,15 @@ namespace ccl::parser
             return !nonTerminals.contains(symbol);
         }
 
+        [[nodiscard]] auto rulesIterator() -> isl::Generator<isl::Pair<Symbol, Rule &>>
+        {
+            for (auto &[key, rule_alternatives] : *this) {
+                for (auto &rule : rule_alternatives) {
+                    co_yield isl::Pair<Symbol, Rule &>{key, rule};
+                }
+            }
+        }
+
         [[nodiscard]] auto rulesIterator() const -> isl::Generator<isl::Pair<Symbol, const Rule &>>
         {
             for (const auto &[key, rule_alternatives] : *this) {
@@ -66,13 +64,31 @@ namespace ccl::parser
             }
         }
 
-    private:
-        auto registerAllRuleSymbols(const Rule &rule) -> void
+        [[nodiscard]] auto rulesIteratorWithIterators() const
+            -> isl::Generator<isl::Pair<Symbol, AlternativesConstRuleIterator>>
         {
-            for (const auto symbol : rule) {
-                grammarSymbols.emplace(symbol);
+            for (const auto &[key, rule_alternatives] : *this) {
+                for (auto rule_it = rule_alternatives.cbegin(); rule_it != rule_alternatives.cend();
+                     ++rule_it) {
+                    co_yield isl::Pair<Symbol, AlternativesConstRuleIterator>{key, rule_it};
+                }
             }
         }
+
+    private:
+        auto registerAllRuleSymbols(const Rule &rule) -> void;
+
+        auto findAndFixEmptyRules() -> void;
+
+        auto findEmptyRules() -> void;
+
+        auto fixEmptyRules() -> void;
+
+        auto fixEmptyRulesIteration(
+            Symbol &production, std::optional<Rule> &rule_to_add,
+            std::optional<Rule> &rule_to_remove,
+            isl::UnorderedMap<Symbol, isl::UnorderedMap<Rule, std::size_t>> &fixed_rules_part)
+            -> bool;
     };
 }// namespace ccl::parser
 

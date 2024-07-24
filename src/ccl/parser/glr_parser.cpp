@@ -41,7 +41,8 @@ namespace ccl::parser
     GlrParser::GlrParser(
         const LrItem &start_item, Symbol epsilon_symbol, const GrammarRulesStorage &parser_rules)
     {
-        auto parser_generator = LrParserGenerator(start_item, epsilon_symbol, parser_rules);
+        auto parser_generator =
+            LrParserGenerator(start_item, epsilon_symbol, parser_rules, nullptr);
 
         gotoTable = std::move(parser_generator.getGotoTable());
         actionTable = parser_generator.getGlrActionTable();

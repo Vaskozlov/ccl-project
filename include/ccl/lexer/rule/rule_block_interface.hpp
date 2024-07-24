@@ -79,6 +79,11 @@ namespace ccl::lexer::rule
             return flags.isPostfix;
         }
 
+        void setId(Id new_id) noexcept
+        {
+            id = new_id;
+        }
+
         void setPrefix() noexcept
         {
             flags.isPrefix = true;

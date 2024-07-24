@@ -15,14 +15,7 @@ namespace ccl::parser::reader::ast
     public:
         using parser::ast::NodeSequence<isl::UniquePtr>::NodeSequence;
 
-        auto construct(lexer::LexicalAnalyzer &lexical_analyzer) const -> isl::UniqueAny override
-        {
-            for (const auto &node : this->nodes) {
-                dynamic_cast<RulesReaderNode *>(node.get())->construct(lexical_analyzer);
-            }
-
-            return std::nullopt;
-        }
+        auto construct(RulesConstructor &rule_constructor) const -> isl::UniqueAny override;
     };
 }// namespace ccl::parser::reader::ast
 

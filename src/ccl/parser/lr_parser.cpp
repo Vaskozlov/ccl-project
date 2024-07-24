@@ -9,9 +9,12 @@ namespace ccl::parser
     LrParser::LrParser(
         const LrItem &start_item,
         Symbol epsilon_symbol,
-        const GrammarRulesStorage &parser_rules)
+        const GrammarRulesStorage &parser_rules,
+        std::function<std::string(Id)>
+            id_to_string_converter)
     {
-        auto parser_generator = LrParserGenerator(start_item, epsilon_symbol, parser_rules);
+        auto parser_generator =
+            LrParserGenerator(start_item, epsilon_symbol, parser_rules, id_to_string_converter);
 
         gotoTable = std::move(parser_generator.getGotoTable());
         actionTable = parser_generator.getLrActionTable();
