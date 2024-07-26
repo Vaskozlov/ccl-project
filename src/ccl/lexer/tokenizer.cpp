@@ -19,7 +19,7 @@ namespace ccl::lexer
 
     auto Tokenizer::shouldIgnoreToken(const Token &token) const -> bool
     {
-        const isl::Vector<Id> &ignored_ids = lexicalAnalyzer.ignoredIds;
+        const std::vector<Id> &ignored_ids = lexicalAnalyzer.ignoredIds;
         return std::ranges::find(ignored_ids, token.getId()) != ignored_ids.end();
     }
 

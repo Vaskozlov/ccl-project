@@ -35,10 +35,10 @@ namespace ccl::lexer
             {}
         };
 
-        isl::Map<isl::string_view, Container *> allItemsMap;
-        isl::Vector<isl::UniquePtr<Container>> items;
+        std::map<isl::string_view, Container *> allItemsMap;
+        std::vector<isl::UniquePtr<Container>> items;
         AnyPlaceItems anyPlaceItems;
-        isl::Vector<Id> ignoredIds;
+        std::vector<Id> ignoredIds;
         std::string skippedCharacters;
         std::atomic<std::size_t> idCounter{0};
 
@@ -53,7 +53,7 @@ namespace ccl::lexer
 
         [[nodiscard]] LexicalAnalyzer(
             ExceptionHandler &exception_handler, const std::initializer_list<Rule> &rules,
-            isl::string_view filename = {}, isl::Vector<Id> ignored_ids = {});
+            isl::string_view filename = {}, std::vector<Id> ignored_ids = {});
 
         [[nodiscard]] auto shareAnyPlaceItems() CCL_LIFETIMEBOUND -> AnyPlaceItems &
         {
@@ -72,7 +72,7 @@ namespace ccl::lexer
             }
         }
 
-        [[nodiscard]] auto getIgnoredIds() const CCL_LIFETIMEBOUND -> const isl::Vector<Id> &
+        [[nodiscard]] auto getIgnoredIds() const CCL_LIFETIMEBOUND -> const std::vector<Id> &
         {
             return ignoredIds;
         }
@@ -104,7 +104,7 @@ namespace ccl::lexer
             isl::string_view filename = {}) CCL_LIFETIMEBOUND -> PegParser;
 
         [[nodiscard]] auto
-            getItems() const noexcept -> const isl::Vector<isl::UniquePtr<Container>> &
+            getItems() const noexcept -> const std::vector<isl::UniquePtr<Container>> &
         {
             return items;
         }

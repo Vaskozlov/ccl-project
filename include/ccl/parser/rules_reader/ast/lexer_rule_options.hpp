@@ -12,7 +12,7 @@ namespace ccl::parser::reader::ast
       , public RulesReaderNode
     {
     private:
-        isl::Vector<RulesLexerToken> options;
+        std::vector<RulesLexerToken> options;
 
     public:
         LexerRuleOptions(
@@ -20,7 +20,7 @@ namespace ccl::parser::reader::ast
 
         auto addOption(RulesLexerToken option) -> void;
 
-        [[nodiscard]] auto getOptions() const noexcept -> const isl::Vector<RulesLexerToken> &
+        [[nodiscard]] auto getOptions() const noexcept -> const std::vector<RulesLexerToken> &
         {
             return options;
         }

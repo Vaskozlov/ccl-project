@@ -7,7 +7,7 @@
 namespace ccl::lexer::rule
 {
     auto parseUnionDecl(isl::string_view union_decl)
-        -> isl::Pair<std::bitset<isl::UtfSet::asciiStorageSize>, isl::Vector<isl::Range<char32_t>>>;
+        -> isl::Pair<std::bitset<isl::UtfSet::asciiStorageSize>, std::vector<isl::Range<char32_t>>>;
 
     class Union final : public RuleBlockInterface
     {

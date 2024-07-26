@@ -123,7 +123,7 @@ namespace ccl::lexer::gen
 
     auto StaticGenerator::generateRuleNames() -> void
     {
-        auto generated_rules = isl::Set<isl::string_view>{};
+        auto generated_rules = std::set<isl::string_view>{};
 
         auto output_rule = [this](isl::string_view value) {
             codeGenerator << endl << '{' << enumName << "::" << value;
@@ -176,8 +176,8 @@ namespace ccl::lexer::gen
 
     auto StaticGenerator::generateEnumCases() -> void
     {
-        auto generated_blocks = isl::Set<isl::string_view>{};
-        auto generated_enum_cases = isl::Set<isl::string_view>{};
+        auto generated_blocks = std::set<isl::string_view>{};
+        auto generated_enum_cases = std::set<isl::string_view>{};
         const auto &blocks = ccllParser.getBlocks();
         const auto &rules = ccllParser.getRules();
 

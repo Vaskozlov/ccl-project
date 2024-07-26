@@ -11,7 +11,7 @@ namespace ccl::parser::detail
     protected:
         const GrammarRulesStorage &grammarRules;// NOLINT reference
 
-        static auto insertRange(isl::Set<Symbol> &set, isl::RangeOf<Symbol> auto &&range) -> bool
+        static auto insertRange(std::set<Symbol> &set, isl::RangeOf<Symbol> auto &&range) -> bool
         {
             auto has_inserted_element = false;
 

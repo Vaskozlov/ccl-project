@@ -1,12 +1,12 @@
-#include "ccl/parser/lr/detail//lr_parser_generator.hpp"
+#include "ccl/parser/lr/detail/lr_parser_generator.hpp"
 #include <ranges>
 
 namespace ccl::parser
 {
-    auto LrParserGenerator::getLrActionTable() const -> isl::Map<TableEntry, Action>
+    auto LrParserGenerator::getLrActionTable() const -> std::map<TableEntry, Action>
     {
         auto has_errors = false;
-        auto result = isl::Map<TableEntry, Action>{};
+        auto result = std::map<TableEntry, Action>{};
 
         for (const auto &[key, actions] : actionTable) {
             if (actions.size() != 1) {
@@ -14,7 +14,12 @@ namespace ccl::parser
                 fmt::println("Lookahead: {}", idToStringConverter(key.lookAhead));
 
                 for (const auto &action : actions) {
-                    fmt::println("Action: {}", ActionPrintWrapper(action, idToStringConverter));
+                    fmt::println(
+                        "Action: {}",
+                        ActionPrintWrapper{
+                            .action = action,
+                            .idToStr = idToStringConverter,
+                        });
                 }
 
                 has_errors = true;
@@ -31,12 +36,12 @@ namespace ccl::parser
     }
 
     [[nodiscard]] auto
-        LrParserGenerator::getGlrActionTable() const -> isl::Map<TableEntry, isl::Vector<Action>>
+        LrParserGenerator::getGlrActionTable() const -> std::map<TableEntry, std::vector<Action>>
     {
-        auto result = isl::Map<TableEntry, isl::Vector<Action>>{};
+        auto result = std::map<TableEntry, std::vector<Action>>{};
 
         for (const auto &[key, actions] : actionTable) {
-            result.try_emplace(key, isl::Vector<Action>{actions});
+            result.try_emplace(key, actions.begin(), actions.end());
         }
 
         return result;

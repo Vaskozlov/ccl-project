@@ -21,7 +21,7 @@ namespace ccl::parser
             }
 
             if (isTerminal(symbol)) {
-                firstSet.try_emplace(symbol, isl::Set<Symbol>{symbol});
+                firstSet.try_emplace(symbol, std::set<Symbol>{symbol});
             } else {
                 firstSet.try_emplace(symbol);
             }
@@ -63,7 +63,7 @@ namespace ccl::parser
     }
 
     auto evaluateFirstSet(Symbol epsilon, const GrammarRulesStorage &rules)
-        -> isl::Map<Symbol, isl::Set<Symbol>>
+        -> std::map<Symbol, std::set<Symbol>>
     {
         auto first_set = detail::FirstSetEvaluator(epsilon, rules);
         return std::move(first_set.getFirstSet());

@@ -17,7 +17,8 @@ namespace ccl::parser::reader::ast
 
     private:
         auto addStringToLexicalAnalyzer(
-            isl::string_view str, RulesConstructor &rule_constructor) const -> void;
+            isl::string_view str, RulesConstructor &rule_constructor,
+            bool is_any_place_string) const -> void;
     };
 }// namespace ccl::parser::reader::ast
 

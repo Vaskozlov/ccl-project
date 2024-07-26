@@ -9,7 +9,7 @@ namespace ccl::parser::ast
     class NodeOfNodes : public Node
     {
     private:
-        [[nodiscard]] virtual auto getNodes() const -> isl::Vector<const Node *> = 0;
+        [[nodiscard]] virtual auto getNodesPointers() const -> std::vector<const Node *> = 0;
 
     public:
         using Node::Node;

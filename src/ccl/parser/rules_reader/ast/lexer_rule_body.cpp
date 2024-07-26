@@ -14,7 +14,7 @@ namespace ccl::parser::reader::ast
             const auto *node_as_rules_reader = dynamic_cast<const RulesReaderNode *>(node.get());
             auto new_block = node_as_rules_reader->construct(rule_constructor);
 
-            resulted_container->addItem(isl::anyCast<RuleBlockInterface>(new_block));
+            resulted_container->addItem(isl::get<isl::UniquePtr<RuleBlockInterface>>(new_block));
         }
 
         return isl::UniqueAny{std::move(resulted_container)};

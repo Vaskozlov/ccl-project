@@ -12,13 +12,13 @@ namespace ccl::parser::reader
     {
     private:
         RulesConstructor rulesConstructor;
-        isl::Vector<ReaderOption> readerOptions{
+        std::vector<ReaderOption> readerOptions{
             ReaderOption::WARNINGS_ENABLE,
             ReaderOption::SUGGESTIONS_ENABLE,
         };
 
     public:
-        RulesReader(isl::string_view input, isl::string_view filename = {});
+        explicit RulesReader(isl::string_view input, isl::string_view filename = {});
 
         [[nodiscard]] auto getRulesConstructor() -> RulesConstructor &
         {

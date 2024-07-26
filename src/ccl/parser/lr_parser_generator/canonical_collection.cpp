@@ -3,9 +3,9 @@
 namespace ccl::parser
 {
     auto LrParserGenerator::gotoFunction(
-        const isl::UnorderedSet<LrItem> &items, Symbol symbol) const -> isl::UnorderedSet<LrItem>
+        const std::unordered_set<LrItem> &items, Symbol symbol) const -> std::unordered_set<LrItem>
     {
-        auto moved = isl::UnorderedSet<LrItem>{};
+        auto moved = std::unordered_set<LrItem>{};
 
         for (const auto &item : items) {
             if (item.isDotInTheEnd()) {
@@ -24,7 +24,7 @@ namespace ccl::parser
 
     auto LrParserGenerator::doCanonicalCollectionConstructionIterationOnItem(
         Id &closure_id, const CanonicalCollection &cc, const LrItem &item,
-        isl::Vector<CanonicalCollection> &pending_collections) -> bool
+        std::vector<CanonicalCollection> &pending_collections) -> bool
     {
         auto has_new_sets = false;
 
@@ -56,10 +56,10 @@ namespace ccl::parser
     }
 
     auto LrParserGenerator::doCanonicalCollectionConstructionIteration(
-        Id &closure_id, isl::Set<Id> &marked_collections) -> bool
+        Id &closure_id, std::set<Id> &marked_collections) -> bool
     {
         auto has_new_sets = false;
-        auto pending_collections = isl::Vector<CanonicalCollection>{};
+        auto pending_collections = std::vector<CanonicalCollection>{};
 
         for (const auto &cc : canonicalCollection) {
             if (marked_collections.contains(cc.id)) {
@@ -85,7 +85,7 @@ namespace ccl::parser
     auto LrParserGenerator::constructCanonicalCollection(const LrItem &start_item) -> void
     {
         auto closure_id = Id{1};
-        auto marked_collections = isl::Set<Id>{};
+        auto marked_collections = std::set<Id>{};
 
         canonicalCollection.emplace_back(CanonicalCollection{
             .items = computeClosure({start_item}),

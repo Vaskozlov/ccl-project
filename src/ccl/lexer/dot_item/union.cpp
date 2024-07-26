@@ -3,7 +3,7 @@
 namespace ccl::lexer::rule
 {
     auto parseUnionDecl(isl::string_view union_decl)
-        -> isl::Pair<std::bitset<isl::UtfSet::asciiStorageSize>, isl::Vector<isl::Range<char32_t>>>
+        -> isl::Pair<std::bitset<isl::UtfSet::asciiStorageSize>, std::vector<isl::Range<char32_t>>>
     {
         static constexpr isl::StaticFlatmap<char32_t, char32_t, 3> special_symbols = {
             {U'[', U'['},
@@ -18,7 +18,7 @@ namespace ccl::lexer::rule
         auto previous_chr = U'\0';
         [[maybe_unused]] auto skip_union_angle_open = text_iterator.advance();
         auto result = isl::Pair<
-            std::bitset<isl::UtfSet::asciiStorageSize>, isl::Vector<isl::Range<char32_t>>>{};
+            std::bitset<isl::UtfSet::asciiStorageSize>, std::vector<isl::Range<char32_t>>>{};
 
         while (true) {
             auto [is_escaping, chr] =

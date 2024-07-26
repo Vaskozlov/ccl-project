@@ -12,16 +12,16 @@ namespace ccl::parser
     class LrParserGenerator
     {
     private:
-        isl::Map<TableEntry, State> gotoTable;
-        isl::Map<TableEntry, isl::Set<Action>> actionTable;
-        isl::Vector<CanonicalCollection> canonicalCollection;
-        isl::Map<TableEntry, State> transitions;
+        std::map<TableEntry, State> gotoTable;
+        std::map<TableEntry, std::set<Action>> actionTable;
+        std::vector<CanonicalCollection> canonicalCollection;
+        std::map<TableEntry, State> transitions;
         std::function<std::string(Id)> idToStringConverter;
         const GrammarRulesStorage &grammarRules;
         Symbol goalProduction;
         Symbol endOfInput;
         Symbol epsilonSymbol;
-        isl::Map<Symbol, isl::Set<Symbol>> firstSet;
+        std::map<Symbol, std::set<Symbol>> firstSet;
 
     public:
         explicit LrParserGenerator(
@@ -29,14 +29,14 @@ namespace ccl::parser
             const GrammarRulesStorage &parser_rules,
             std::function<std::string(Id)> id_to_string_converter);
 
-        [[nodiscard]] auto getGotoTable() -> isl::Map<TableEntry, State> &
+        [[nodiscard]] auto getGotoTable() -> std::map<TableEntry, State> &
         {
             return gotoTable;
         }
 
-        [[nodiscard]] auto getLrActionTable() const -> isl::Map<TableEntry, Action>;
+        [[nodiscard]] auto getLrActionTable() const -> std::map<TableEntry, Action>;
 
-        [[nodiscard]] auto getGlrActionTable() const -> isl::Map<TableEntry, isl::Vector<Action>>;
+        [[nodiscard]] auto getGlrActionTable() const -> std::map<TableEntry, std::vector<Action>>;
 
     private:
         [[nodiscard]] auto isTerminal(Symbol symbol) const noexcept -> bool
@@ -46,25 +46,25 @@ namespace ccl::parser
 
         auto reduceAction(
             const Action &action,
-            isl::Vector<State> &state_stack,
-            isl::Vector<ast::UnNodePtr> &nodes_stack) const -> void;
+            std::vector<State> &state_stack,
+            std::vector<ast::UnNodePtr> &nodes_stack) const -> void;
 
-        auto gotoFunction(const isl::UnorderedSet<LrItem> &items, Symbol symbol) const
-            -> isl::UnorderedSet<LrItem>;
+        auto gotoFunction(const std::unordered_set<LrItem> &items, Symbol symbol) const
+            -> std::unordered_set<LrItem>;
 
         auto doCanonicalCollectionConstructionIterationOnItem(
             Id &closure_id, const CanonicalCollection &cc, const LrItem &item,
-            isl::Vector<CanonicalCollection> &pending_collections) -> bool;
+            std::vector<CanonicalCollection> &pending_collections) -> bool;
 
         auto doCanonicalCollectionConstructionIteration(
-            Id &closure_id, isl::Set<Id> &marked_collections) -> bool;
+            Id &closure_id, std::set<Id> &marked_collections) -> bool;
 
         auto constructCanonicalCollection(const LrItem &start_item) -> void;
 
-        auto doClosureComputationIteration(isl::UnorderedSet<LrItem> &s, const LrItem &item) const
+        auto doClosureComputationIteration(std::unordered_set<LrItem> &s, const LrItem &item) const
             -> bool;
 
-        auto computeClosure(isl::UnorderedSet<LrItem> s) const -> isl::UnorderedSet<LrItem>;
+        auto computeClosure(std::unordered_set<LrItem> s) const -> std::unordered_set<LrItem>;
 
         auto fillTablesUsingCanonicalCollection(const CanonicalCollection &cc) -> void;
 

@@ -7,14 +7,14 @@
 
 namespace ccl::parser
 {
-    class GrammarRulesStorage : public isl::Map<Symbol, isl::Vector<Rule>>
+    class GrammarRulesStorage : public std::map<Symbol, std::vector<Rule>>
     {
     private:
-        using AlternativesConstRuleIterator = typename isl::Vector<Rule>::const_iterator;
+        using AlternativesConstRuleIterator = typename std::vector<Rule>::const_iterator;
 
-        isl::Set<Symbol> nonTerminals;
-        isl::Set<Symbol> grammarSymbols;
-        isl::Set<Symbol> possiblyEmptyRules;
+        std::set<Symbol> nonTerminals;
+        std::set<Symbol> grammarSymbols;
+        std::set<Symbol> possiblyEmptyRules;
         Symbol epsilonSymbol;
 
     public:
@@ -22,7 +22,7 @@ namespace ccl::parser
 
         GrammarRulesStorage(
             Symbol epsilon,
-            const std::initializer_list<isl::Pair<Symbol, isl::Vector<Rule>>> &initial_data);
+            const std::initializer_list<isl::Pair<Symbol, std::vector<Rule>>> &initial_data);
 
         auto finishGrammar() -> void;
 
@@ -31,12 +31,12 @@ namespace ccl::parser
             return epsilonSymbol;
         }
 
-        [[nodiscard]] auto getNonTerminals() const noexcept -> const isl::Set<Symbol> &
+        [[nodiscard]] auto getNonTerminals() const noexcept -> const std::set<Symbol> &
         {
             return nonTerminals;
         }
 
-        [[nodiscard]] auto getGrammarSymbols() const noexcept -> const isl::Set<Symbol> &
+        [[nodiscard]] auto getGrammarSymbols() const noexcept -> const std::set<Symbol> &
         {
             return grammarSymbols;
         }
@@ -89,7 +89,7 @@ namespace ccl::parser
         auto fixEmptyRulesIteration(
             Symbol &production, std::optional<Rule> &rule_to_add,
             std::optional<Rule> &rule_to_remove,
-            isl::UnorderedMap<Symbol, isl::UnorderedMap<Rule, std::size_t>> &fixed_rules_part)
+            std::unordered_map<Symbol, std::unordered_map<Rule, std::size_t>> &fixed_rules_part)
             -> bool;
     };
 }// namespace ccl::parser

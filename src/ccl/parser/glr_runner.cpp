@@ -34,7 +34,7 @@ namespace ccl::parser::detail
         return SHIFT;
     }
 
-    auto Runner::hostNewRunnersIfMoreThanOneAction(const isl::Vector<Action> &actions) -> void
+    auto Runner::hostNewRunnersIfMoreThanOneAction(const std::vector<Action> &actions) -> void
     {
         for (const auto &action : actions | std::views::drop(1)) {
             auto new_runner = *this;

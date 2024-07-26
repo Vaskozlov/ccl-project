@@ -49,7 +49,7 @@ namespace ccl::parser
     }
 
     auto GlrParser::parse(lexer::LexicalAnalyzer::Tokenizer &tokenizer) const
-        -> isl::Vector<ast::ShNodePtr>
+        -> std::vector<ast::ShNodePtr>
     {
         auto runners_common = detail::RunnersCommon{
             .newRunnersInShiftState = {},

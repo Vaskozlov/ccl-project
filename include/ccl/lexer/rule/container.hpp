@@ -24,7 +24,7 @@ namespace ccl::lexer::rule
     {
         using RuleBlockInterface::canBeOptimized;
         using typename RuleBlockInterface::TextIterator;
-        using DotItemsStorage = isl::Vector<RuleBlock>;
+        using DotItemsStorage = std::vector<RuleBlock>;
 
         class RuleParser;
 
@@ -185,7 +185,7 @@ namespace ccl::lexer::rule
     class RuleBlockInterface::AnyPlaceItems
     {
     public:
-        isl::Vector<isl::UniquePtr<Container>> items;
+        std::vector<isl::UniquePtr<Container>> items;
 
         [[nodiscard]] auto
             isSuccessfulScan(TextIterator &text_iterator, Token &token) const -> bool;
