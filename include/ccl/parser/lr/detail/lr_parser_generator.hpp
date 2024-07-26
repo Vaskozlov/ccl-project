@@ -49,8 +49,8 @@ namespace ccl::parser
             std::vector<State> &state_stack,
             std::vector<ast::UnNodePtr> &nodes_stack) const -> void;
 
-        auto gotoFunction(const isl::UnorderedSet<LrItem> &items, Symbol symbol) const
-            -> isl::UnorderedSet<LrItem>;
+        auto gotoFunction(const std::unordered_set<LrItem> &items, Symbol symbol) const
+            -> std::unordered_set<LrItem>;
 
         auto doCanonicalCollectionConstructionIterationOnItem(
             Id &closure_id, const CanonicalCollection &cc, const LrItem &item,
@@ -61,10 +61,10 @@ namespace ccl::parser
 
         auto constructCanonicalCollection(const LrItem &start_item) -> void;
 
-        auto doClosureComputationIteration(isl::UnorderedSet<LrItem> &s, const LrItem &item) const
+        auto doClosureComputationIteration(std::unordered_set<LrItem> &s, const LrItem &item) const
             -> bool;
 
-        auto computeClosure(isl::UnorderedSet<LrItem> s) const -> isl::UnorderedSet<LrItem>;
+        auto computeClosure(std::unordered_set<LrItem> s) const -> std::unordered_set<LrItem>;
 
         auto fillTablesUsingCanonicalCollection(const CanonicalCollection &cc) -> void;
 

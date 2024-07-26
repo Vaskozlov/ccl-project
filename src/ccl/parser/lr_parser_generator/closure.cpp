@@ -3,7 +3,7 @@
 namespace ccl::parser
 {
     auto LrParserGenerator::doClosureComputationIteration(
-        isl::UnorderedSet<LrItem> &s, const LrItem &item) const -> bool
+        std::unordered_set<LrItem> &s, const LrItem &item) const -> bool
     {
         if (item.isDotInTheEnd()) {
             return false;
@@ -33,8 +33,8 @@ namespace ccl::parser
         return has_modifications;
     }
 
-    auto LrParserGenerator::computeClosure(isl::UnorderedSet<LrItem> s) const
-        -> isl::UnorderedSet<LrItem>
+    auto LrParserGenerator::computeClosure(std::unordered_set<LrItem> s) const
+        -> std::unordered_set<LrItem>
     {
         auto has_modifications = true;
 

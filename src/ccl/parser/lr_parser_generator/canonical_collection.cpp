@@ -3,9 +3,9 @@
 namespace ccl::parser
 {
     auto LrParserGenerator::gotoFunction(
-        const isl::UnorderedSet<LrItem> &items, Symbol symbol) const -> isl::UnorderedSet<LrItem>
+        const std::unordered_set<LrItem> &items, Symbol symbol) const -> std::unordered_set<LrItem>
     {
-        auto moved = isl::UnorderedSet<LrItem>{};
+        auto moved = std::unordered_set<LrItem>{};
 
         for (const auto &item : items) {
             if (item.isDotInTheEnd()) {
