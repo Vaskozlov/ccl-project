@@ -157,5 +157,5 @@ TEST_CASE("non_filled_handlers_bad_grammar_computation", "[NON_FILLED_HANDLERS]"
     const auto set = grammar_storage
         .getNotFilledHandlers(start_symbol, end_symbol);
 
-    REQUIRE(set->size() == 2);
+    REQUIRE(set.size() == 2);
 }
