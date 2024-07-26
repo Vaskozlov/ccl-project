@@ -14,7 +14,7 @@ namespace ccl::parser::ast
     protected:
         isl::Vector<SmartPointer<Node>> nodes;
 
-        [[nodiscard]] auto getNodes() const -> isl::Vector<const Node *> override
+        [[nodiscard]] auto getNodesPointers() const -> isl::Vector<const Node *> override
         {
             return isl::Vector<const Node *>{std::views::transform(nodes, [](const auto &node) {
                 return node.get();
