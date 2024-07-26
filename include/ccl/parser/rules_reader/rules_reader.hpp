@@ -18,7 +18,7 @@ namespace ccl::parser::reader
         };
 
     public:
-        RulesReader(isl::string_view input, isl::string_view filename = {});
+        explicit RulesReader(isl::string_view input, isl::string_view filename = {});
 
         [[nodiscard]] auto getRulesConstructor() -> RulesConstructor &
         {
