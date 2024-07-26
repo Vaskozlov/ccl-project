@@ -13,7 +13,7 @@ namespace ccl::parser::ast
                          id_converter(getType()))
                   << std::endl;
 
-        const auto &nodes = getNodes();
+        const auto &nodes = getNodesPointers();
 
         for (const auto *node : nodes | std::ranges::views::take(nodes.size() - 1)) {
             node->print(expanded_prefix, true, id_converter);

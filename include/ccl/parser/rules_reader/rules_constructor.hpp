@@ -15,8 +15,8 @@ namespace ccl::parser::reader
     {
     private:
         lexer::LexicalAnalyzer lexicalAnalyzer{handler::Cmd::instance()};
-        isl::Map<Id, std::string> ruleIdToName;
-        isl::Map<isl::string_view, Id> ruleNameToId;
+        std::map<Id, std::string> ruleIdToName;
+        std::map<isl::string_view, Id> ruleNameToId;
         std::atomic<Id> ruleIdGenerator{lexer::ReservedTokenMaxValue + 1};
         GrammarRulesStorage grammarRulesStorage{addRule("EPSILON")};
 

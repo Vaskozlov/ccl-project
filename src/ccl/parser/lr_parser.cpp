@@ -24,8 +24,8 @@ namespace ccl::parser
     {
         using enum ccl::parser::ParsingAction;
 
-        auto state_stack = isl::Stack<State>{};
-        auto nodes_stack = isl::Stack<ast::UnNodePtr>{};
+        auto state_stack = Stack<State>{};
+        auto nodes_stack = Stack<ast::UnNodePtr>{};
         const auto *word = &tokenizer.yield();
 
         state_stack.push(0);
@@ -65,12 +65,12 @@ namespace ccl::parser
 
     auto LrParser::reduceAction(
         const Action &action,
-        isl::Stack<State> &state_stack,
-        isl::Stack<ast::UnNodePtr> &nodes_stack) const -> void
+        Stack<State> &state_stack,
+        Stack<ast::UnNodePtr> &nodes_stack) const -> void
     {
         const auto &lr_item = action.getReducingItem();
         const auto production = lr_item.getProductionType();
-        auto items_in_production = isl::Vector<ast::UnNodePtr>();
+        auto items_in_production = std::vector<ast::UnNodePtr>();
         const auto number_of_elements_to_take_from_stack = lr_item.size();
 
         for (std::size_t i = 0; i != number_of_elements_to_take_from_stack; ++i) {

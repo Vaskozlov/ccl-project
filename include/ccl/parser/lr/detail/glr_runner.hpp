@@ -13,9 +13,9 @@ namespace ccl::parser::detail
     {
         std::forward_list<Runner> newRunnersInShiftState;
         std::forward_list<Runner> newRunnersInReduceState;
-        isl::Vector<ast::ShNodePtr> acceptedNodes;
-        const isl::Map<TableEntry, State> &gotoTable;
-        const isl::Map<TableEntry, isl::Vector<Action>> &actionTable;
+        std::vector<ast::ShNodePtr> acceptedNodes;
+        const std::map<TableEntry, State> &gotoTable;
+        const std::map<TableEntry, std::vector<Action>> &actionTable;
         isl::SharedPtr<ast::TokenNode> word;
     };
 
@@ -28,7 +28,7 @@ namespace ccl::parser::detail
 
         auto poll() -> ParsingAction;
 
-        auto hostNewRunnersIfMoreThanOneAction(const isl::Vector<Action> &actions) -> void;
+        auto hostNewRunnersIfMoreThanOneAction(const std::vector<Action> &actions) -> void;
 
         auto runAction(const Action &action) -> void;
 

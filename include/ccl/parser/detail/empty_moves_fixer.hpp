@@ -8,10 +8,10 @@ namespace ccl::parser::detail
     class EmptyRulesFixer
     {
     private:
-        isl::UnorderedMap<Symbol, isl::UnorderedMap<Rule, std::size_t>> scannedParts;
-        isl::Set<Symbol> possiblyEmptyRules;
-        isl::Vector<isl::Pair<Symbol, Rule>> pendingRulesToAdd;
-        isl::Vector<isl::Pair<Symbol, Rule>> pendingRulesToRemove;
+        std::unordered_map<Symbol, std::unordered_map<Rule, std::size_t>> scannedParts;
+        std::set<Symbol> possiblyEmptyRules;
+        std::vector<isl::Pair<Symbol, Rule>> pendingRulesToAdd;
+        std::vector<isl::Pair<Symbol, Rule>> pendingRulesToRemove;
         GrammarRulesStorage &storage;
 
     public:

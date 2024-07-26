@@ -37,11 +37,12 @@ namespace ccl::parser::reader
         IDENTIFIER = 4294967307ULL,
         RULE_REFERENCE = 4294967308ULL,
         STRING = 4294967309ULL,
-        UNION = 4294967310ULL,
-        PREFIX_POSTFIX_OPERATOR = 4294967311ULL,
-        HIDE_OPERATOR = 4294967312ULL,
-        NOT_OPERATOR = 4294967313ULL,
-        COLUMN = 4294967314ULL,
+        ANY_PLACE_STRING = 4294967310ULL,
+        UNION = 4294967311ULL,
+        PREFIX_POSTFIX_OPERATOR = 4294967312ULL,
+        HIDE_OPERATOR = 4294967313ULL,
+        NOT_OPERATOR = 4294967314ULL,
+        COLUMN = 4294967315ULL,
         GOAL = 8589934592ULL,
         EPSILON = 8589934593ULL,
         LEXER_BLOCK = 8589934594ULL,
@@ -79,6 +80,7 @@ namespace ccl::parser::reader
             {RulesLexerToken::IDENTIFIER, R"( [a-zA-Z_][a-zA-Z0-9_]* )"},
             {RulesLexerToken::RULE_REFERENCE, R"( ! [<] [>]^* [>] )"},
             {RulesLexerToken::STRING, R"( ! ["] (["]^ | "\\\"")* ["] )"},
+            {RulesLexerToken::ANY_PLACE_STRING, R"( ! ['] ([']^ | "\\\"")* ['] )"},
             {RulesLexerToken::UNION, R"( ! [\[] ([\]]^ | "\\]")* [\]] )"},
             {RulesLexerToken::PREFIX_POSTFIX_OPERATOR, R"( ! [p] )"},
             {RulesLexerToken::HIDE_OPERATOR, R"( ! [h] )"},
@@ -103,7 +105,7 @@ namespace ccl::parser::reader
             {RulesLexerToken::LEXER_RULE_ALTERNATIVE, R"( [#] )"},
         }};
 
-    inline constexpr isl::StaticFlatmap<ccl::Id, isl::string_view, 39> ToStringRulesLexerToken{
+    inline constexpr isl::StaticFlatmap<ccl::Id, isl::string_view, 40> ToStringRulesLexerToken{
         {RulesLexerToken::EOI, "EOI"},
         {RulesLexerToken::BAD_TOKEN, "BAD_TOKEN"},
         {RulesLexerToken::CUT, "CUT"},
@@ -121,6 +123,7 @@ namespace ccl::parser::reader
         {RulesLexerToken::IDENTIFIER, "IDENTIFIER"},
         {RulesLexerToken::RULE_REFERENCE, "RULE_REFERENCE"},
         {RulesLexerToken::STRING, "STRING"},
+        {RulesLexerToken::ANY_PLACE_STRING, "ANY_PLACE_STRING"},
         {RulesLexerToken::UNION, "UNION"},
         {RulesLexerToken::PREFIX_POSTFIX_OPERATOR, "PREFIX_POSTFIX_OPERATOR"},
         {RulesLexerToken::HIDE_OPERATOR, "HIDE_OPERATOR"},

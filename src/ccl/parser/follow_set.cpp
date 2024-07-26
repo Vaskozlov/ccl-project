@@ -5,7 +5,7 @@ namespace ccl::parser
     detail::FollowSetEvaluator::FollowSetEvaluator(
         Symbol start_symbol, Symbol end_of_input, Symbol epsilon_symbol,
         const GrammarRulesStorage &parser_rules,
-        const isl::Map<Symbol, isl::Set<Symbol>> &first_set)
+        const std::map<Symbol, std::set<Symbol>> &first_set)
       : FirstAndFollowSetsCommon::FirstAndFollowSetsCommon{parser_rules}
       , firstSet{first_set}
       , epsilonSymbol{epsilon_symbol}
@@ -51,7 +51,7 @@ namespace ccl::parser
     }
 
     auto detail::FollowSetEvaluator::followSetNonTerminalCase(
-        Symbol elem, isl::Set<Symbol> &trailer) -> bool
+        Symbol elem, std::set<Symbol> &trailer) -> bool
     {
         auto has_modifications = insertRange(followSet[elem], trailer);
         auto elem_first_set = firstSet.at(elem);
@@ -69,7 +69,7 @@ namespace ccl::parser
     auto evaluateFollowSet(
         Symbol start_symbol, Symbol end_of_input, Symbol epsilon_symbol,
         const GrammarRulesStorage &rules,
-        const isl::Map<Symbol, isl::Set<Symbol>> &first_set) -> isl::Map<Symbol, isl::Set<Symbol>>
+        const std::map<Symbol, std::set<Symbol>> &first_set) -> std::map<Symbol, std::set<Symbol>>
     {
         auto follow_set = detail::FollowSetEvaluator(
             start_symbol, end_of_input, epsilon_symbol, rules, first_set);

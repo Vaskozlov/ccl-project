@@ -10,8 +10,8 @@ namespace ccl::parser
         class FollowSetEvaluator : private FirstAndFollowSetsCommon
         {
         private:
-            isl::Map<Symbol, isl::Set<Symbol>> followSet;
-            const isl::Map<Symbol, isl::Set<Symbol>> &firstSet;
+            std::map<Symbol, std::set<Symbol>> followSet;
+            const std::map<Symbol, std::set<Symbol>> &firstSet;
             Symbol epsilonSymbol;
 
             using FirstAndFollowSetsCommon::applyFixedPointAlgorithmOnAllRules;
@@ -23,10 +23,10 @@ namespace ccl::parser
             FollowSetEvaluator(
                 Symbol start_symbol, Symbol end_of_input, Symbol epsilon_symbol,
                 const GrammarRulesStorage &parser_rules,
-                const isl::Map<Symbol, isl::Set<Symbol>> &first_set);
+                const std::map<Symbol, std::set<Symbol>> &first_set);
 
             [[nodiscard]] auto
-                getFollowSet() CCL_LIFETIMEBOUND -> isl::Map<Symbol, isl::Set<Symbol>> &
+                getFollowSet() CCL_LIFETIMEBOUND -> std::map<Symbol, std::set<Symbol>> &
             {
                 return followSet;
             }
@@ -38,14 +38,14 @@ namespace ccl::parser
 
             auto followSetComputationIteration(Symbol key, const Rule &rule) -> bool;
 
-            auto followSetNonTerminalCase(Symbol elem, isl::Set<Symbol> &trailer) -> bool;
+            auto followSetNonTerminalCase(Symbol elem, std::set<Symbol> &trailer) -> bool;
         };
     }// namespace detail
 
     auto evaluateFollowSet(
         Symbol start_symbol, Symbol end_of_input, Symbol epsilon_symbol,
         const GrammarRulesStorage &rules,
-        const isl::Map<Symbol, isl::Set<Symbol>> &first_set) -> isl::Map<Symbol, isl::Set<Symbol>>;
+        const std::map<Symbol, std::set<Symbol>> &first_set) -> std::map<Symbol, std::set<Symbol>>;
 }// namespace ccl::parser
 
 

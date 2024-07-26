@@ -10,7 +10,7 @@ namespace ccl::lexer
 
     LexicalAnalyzer::LexicalAnalyzer(
         ExceptionHandler &exception_handler, const std::initializer_list<Rule> &rules,
-        isl::string_view filename, isl::Vector<std::size_t> ignored_ids)
+        isl::string_view filename, std::vector<std::size_t> ignored_ids)
       : ignoredIds{std::move(ignored_ids)}
       , exceptionHandler{exception_handler}
     {

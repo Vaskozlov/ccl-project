@@ -36,8 +36,8 @@ namespace ccl::lexer
         friend class LexicalAnalyzer;
         friend class rule::Container;
 
-        isl::Vector<isl::string_view> prefixes;
-        isl::Vector<isl::string_view> postfixes;
+        std::vector<isl::string_view> prefixes;
+        std::vector<isl::string_view> postfixes;
         TokenEnvironment environment;
         isl::string_view repr;
         Id id{};
@@ -113,13 +113,13 @@ namespace ccl::lexer
         }
 
         [[nodiscard]] auto
-            getPrefixes() const noexcept CCL_LIFETIMEBOUND -> const isl::Vector<isl::string_view> &
+            getPrefixes() const noexcept CCL_LIFETIMEBOUND -> const std::vector<isl::string_view> &
         {
             return prefixes;
         }
 
         [[nodiscard]] auto
-            getPostfixes() const noexcept CCL_LIFETIMEBOUND -> const isl::Vector<isl::string_view> &
+            getPostfixes() const noexcept CCL_LIFETIMEBOUND -> const std::vector<isl::string_view> &
         {
             return postfixes;
         }

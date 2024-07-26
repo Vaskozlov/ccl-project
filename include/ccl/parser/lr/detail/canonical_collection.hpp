@@ -7,7 +7,7 @@ namespace ccl::parser
 {
     struct CanonicalCollection
     {
-        isl::UnorderedSet<LrItem> items;
+        std::unordered_set<LrItem> items;
         Id id{};
 
         [[nodiscard]] auto operator==(const CanonicalCollection &other) const noexcept -> bool

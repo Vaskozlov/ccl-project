@@ -4,6 +4,7 @@
 #include <ccl/parser/ast/node_sequence.hpp>
 #include <ccl/parser/ast/token_node.hpp>
 #include <ccl/parser/rules_reader/ast/lexer_rule_block.hpp>
+#include <ccl/parser/rules_reader/ast/parser_rule_alternatives.hpp>
 
 namespace ccl::parser::reader::ast
 {
