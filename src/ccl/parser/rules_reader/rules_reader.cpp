@@ -430,6 +430,12 @@ namespace ccl::parser::reader
                     },
                     Rule{
                         {
+                            RulesLexerToken::ANY_PLACE_STRING,
+                        },
+                        DefaultNodeConstructor<ast::ParserRuleBody>,
+                    },
+                    Rule{
+                        {
                             RulesLexerToken::PARSER_RULE_BODY,
                             RulesLexerToken::IDENTIFIER,
                         },
@@ -439,6 +445,13 @@ namespace ccl::parser::reader
                         {
                             RulesLexerToken::PARSER_RULE_BODY,
                             RulesLexerToken::STRING,
+                        },
+                        AppendToTheLastNodeIfTElseDefaultAppend<ast::ParserRuleAlternatives>,
+                    },
+                    Rule{
+                        {
+                            RulesLexerToken::PARSER_RULE_BODY,
+                            RulesLexerToken::ANY_PLACE_STRING,
                         },
                         AppendToTheLastNodeIfTElseDefaultAppend<ast::ParserRuleAlternatives>,
                     },
@@ -455,6 +468,14 @@ namespace ccl::parser::reader
                             RulesLexerToken::PARSER_RULE_BODY,
                             RulesLexerToken::OR,
                             RulesLexerToken::STRING,
+                        },
+                        ConstructParserRuleAlternative,
+                    },
+                    Rule{
+                        {
+                            RulesLexerToken::PARSER_RULE_BODY,
+                            RulesLexerToken::OR,
+                            RulesLexerToken::ANY_PLACE_STRING,
                         },
                         ConstructParserRuleAlternative,
                     },
