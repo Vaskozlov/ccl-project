@@ -29,6 +29,18 @@ CPMAddPackage(
         GIT_TAG main
 )
 
+include(${isl_SOURCE_DIR}/cmake/CompilerOptions.cmake)
+include(${isl_SOURCE_DIR}/cmake/InterproceduralOptimization.cmake)
+include(${isl_SOURCE_DIR}/cmake/ProjectOptions.cmake)
+
+include_directories(${isl_SOURCE_DIR}/include)
+
+CPMAddPackage(
+        NAME Catch2
+        GITHUB_REPOSITORY catchorg/Catch2
+        GIT_TAG devel
+)
+
 CPMAddPackage(
         NAME hpx
         GITHUB_REPOSITORY STEllAR-GROUP/hpx
@@ -44,10 +56,7 @@ CPMAddPackage(
         "HPX_WITH_STATIC_LINKING ON"
         "HPX_WITH_CXX_STANDARD 23"
         "HPX_WITH_MODULES_AS_STATIC_LIBRARIES OFF"
+        "HPX_WITH_FETCH_HWLOC ON"
+        "HPX_WITH_FETCH_BOOST ON"
+        "HPX_WITH_FETCH_ASIO ON"
 )
-
-include(${isl_SOURCE_DIR}/cmake/CompilerOptions.cmake)
-include(${isl_SOURCE_DIR}/cmake/InterproceduralOptimization.cmake)
-include(${isl_SOURCE_DIR}/cmake/ProjectOptions.cmake)
-
-include_directories(${isl_SOURCE_DIR}/include)
