@@ -1,4 +1,4 @@
-#include "ccl/parser/lr/detail//lr_parser_generator.hpp"
+#include "ccl/parser/lr/detail/lr_parser_generator.hpp"
 #include <ranges>
 
 namespace ccl::parser
@@ -14,7 +14,12 @@ namespace ccl::parser
                 fmt::println("Lookahead: {}", idToStringConverter(key.lookAhead));
 
                 for (const auto &action : actions) {
-                    fmt::println("Action: {}", ActionPrintWrapper(action, idToStringConverter));
+                    fmt::println(
+                        "Action: {}",
+                        ActionPrintWrapper{
+                            .action = action,
+                            .idToStr = idToStringConverter,
+                        });
                 }
 
                 has_errors = true;
@@ -36,7 +41,7 @@ namespace ccl::parser
         auto result = std::map<TableEntry, std::vector<Action>>{};
 
         for (const auto &[key, actions] : actionTable) {
-            result.try_emplace(key, std::vector<Action>{actions.begin(), actions.end()});
+            result.try_emplace(key, actions.begin(), actions.end());
         }
 
         return result;

@@ -41,8 +41,8 @@ namespace ccl::parser
     private:
         auto reduceAction(
             const Action &action,
-            isl::Stack<State> &state_stack,
-            isl::Stack<ast::UnNodePtr> &nodes_stack) const -> void;
+            Stack<State> &state_stack,
+            Stack<ast::UnNodePtr> &nodes_stack) const -> void;
     };
 }// namespace ccl::parser
 
