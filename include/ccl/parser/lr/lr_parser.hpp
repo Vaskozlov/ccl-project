@@ -13,8 +13,8 @@ namespace ccl::parser
     class LrParser
     {
     private:
-        isl::Map<TableEntry, State> gotoTable;
-        isl::Map<TableEntry, Action> actionTable;
+        std::map<TableEntry, State> gotoTable;
+        std::map<TableEntry, Action> actionTable;
 
     public:
         explicit LrParser(
@@ -28,12 +28,12 @@ namespace ccl::parser
         [[nodiscard]] auto
             parse(lexer::LexicalAnalyzer::Tokenizer &tokenizer) const -> ast::UnNodePtr;
 
-        [[nodiscard]] auto getGotoTable() const noexcept -> const isl::Map<TableEntry, State> &
+        [[nodiscard]] auto getGotoTable() const noexcept -> const std::map<TableEntry, State> &
         {
             return gotoTable;
         }
 
-        [[nodiscard]] auto getActionTable() const noexcept -> const isl::Map<TableEntry, Action> &
+        [[nodiscard]] auto getActionTable() const noexcept -> const std::map<TableEntry, Action> &
         {
             return actionTable;
         }

@@ -12,13 +12,15 @@ namespace ccl::parser::ast
     class NodeSequence : public NodeOfNodes
     {
     protected:
-        isl::Vector<SmartPointer<Node>> nodes;
+        std::vector<SmartPointer<Node>> nodes;
 
-        [[nodiscard]] auto getNodesPointers() const -> isl::Vector<const Node *> override
+        [[nodiscard]] auto getNodesPointers() const -> std::vector<const Node *> override
         {
-            return isl::Vector<const Node *>{std::views::transform(nodes, [](const auto &node) {
+            auto range = std::views::transform(nodes, [](const auto &node) {
                 return node.get();
-            })};
+            });
+
+            return std::vector<const Node *>{range.begin(), range.end()};
         }
 
     public:
@@ -26,7 +28,7 @@ namespace ccl::parser::ast
           : NodeOfNodes{node_type_id}
         {}
 
-        explicit NodeSequence(Id node_type_id, isl::Vector<SmartPointer<Node>> initial_nodes)
+        explicit NodeSequence(Id node_type_id, std::vector<SmartPointer<Node>> initial_nodes)
           : NodeOfNodes{node_type_id}
           , nodes{std::move(initial_nodes)}
         {}
@@ -36,7 +38,7 @@ namespace ccl::parser::ast
             nodes.emplace_back(std::move(node));
         }
 
-        [[nodiscard]] auto getNodes() -> isl::Vector<SmartPointer<Node>> &
+        [[nodiscard]] auto getNodes() -> std::vector<SmartPointer<Node>> &
         {
             return nodes;
         }

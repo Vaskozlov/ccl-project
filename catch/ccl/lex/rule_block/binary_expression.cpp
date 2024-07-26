@@ -15,7 +15,7 @@ TEST_CASE("BinaryExpressionWith2Elements", "[BinaryExpression]")
     auto container =
         lexer::rule::Container(empty_lexical_analyzer, text_iterator, debug::FirstUsableToken);
 
-    const isl::Vector<lexer::rule::RuleBlock> &items = container.getItems();
+    const std::vector<lexer::rule::RuleBlock> &items = container.getItems();
 
     const auto *binary_operation =
         isl::as<const lexer::rule::BinaryExpressionBase *>(items.at(0).get());
@@ -35,7 +35,7 @@ TEST_CASE("BinaryExpressionWith3Elements", "[BinaryExpression]")
     auto container =
         lexer::rule::Container(empty_lexical_analyzer, text_iterator, debug::FirstUsableToken);
 
-    const isl::Vector<lexer::rule::RuleBlock> &items = container.getItems();
+    const std::vector<lexer::rule::RuleBlock> &items = container.getItems();
 
     const auto *first_binary_operation =
         isl::as<const lexer::rule::BinaryExpressionBase *>(items.at(0).get());

@@ -14,8 +14,8 @@ namespace ccl::parser
     class GlrParser
     {
     private:
-        isl::Map<TableEntry, State> gotoTable;
-        isl::Map<TableEntry, isl::Vector<Action>> actionTable;
+        std::map<TableEntry, State> gotoTable;
+        std::map<TableEntry, std::vector<Action>> actionTable;
 
     public:
         explicit GlrParser(
@@ -23,15 +23,15 @@ namespace ccl::parser
             const GrammarRulesStorage &parser_rules);
 
         [[nodiscard]] auto parse(lexer::LexicalAnalyzer::Tokenizer &tokenizer) const
-            -> isl::Vector<ast::ShNodePtr>;
+            -> std::vector<ast::ShNodePtr>;
 
-        [[nodiscard]] auto getGotoTable() const noexcept -> const isl::Map<TableEntry, State> &
+        [[nodiscard]] auto getGotoTable() const noexcept -> const std::map<TableEntry, State> &
         {
             return gotoTable;
         }
 
         [[nodiscard]] auto
-            getActionTable() const noexcept -> const isl::Map<TableEntry, isl::Vector<Action>> &
+            getActionTable() const noexcept -> const std::map<TableEntry, std::vector<Action>> &
         {
             return actionTable;
         }

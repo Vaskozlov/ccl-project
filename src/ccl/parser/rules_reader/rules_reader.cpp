@@ -16,12 +16,12 @@ namespace ccl::parser::reader
 {
     template<class T>
     static const auto DefaultNodeConstructor =
-        [](Symbol production, isl::Vector<parser::ast::UnNodePtr> nodes) {
+        [](Symbol production, std::vector<parser::ast::UnNodePtr> nodes) {
             return isl::makeUnique<T>(production, std::move(nodes));
         };
 
     static const auto DefaultAppender =
-        [](Symbol /* unused */, isl::Vector<parser::ast::UnNodePtr> nodes) {
+        [](Symbol /* unused */, std::vector<parser::ast::UnNodePtr> nodes) {
             auto rule_body = std::move(nodes.front());
             auto *casted_rule_body = isl::as<parser::ast::UnNodeSequence *>(rule_body.get());
 
@@ -31,7 +31,7 @@ namespace ccl::parser::reader
 
 
     static const auto DefaultLexerOptionsConstructor =
-        [](Symbol production, isl::Vector<parser::ast::UnNodePtr> nodes) {
+        [](Symbol production, std::vector<parser::ast::UnNodePtr> nodes) {
             const auto &first_node = nodes.front();
             const auto *casted_first_node = isl::as<parser::ast::TokenNode *>(first_node.get());
 
@@ -42,7 +42,7 @@ namespace ccl::parser::reader
         };
 
     static const auto AppendLexerOptionsConstructor =
-        [](Symbol /* unused */, isl::Vector<parser::ast::UnNodePtr> nodes) {
+        [](Symbol /* unused */, std::vector<parser::ast::UnNodePtr> nodes) {
             auto lexer_options = std::move(nodes.front());
             const auto &new_option = nodes.back();
 
@@ -56,12 +56,12 @@ namespace ccl::parser::reader
         };
 
     static const auto ReplaceUpperBlockWithLastElementFromCurrent =
-        [](Symbol /* unused */, isl::Vector<parser::ast::UnNodePtr> nodes) {
+        [](Symbol /* unused */, std::vector<parser::ast::UnNodePtr> nodes) {
             return std::move(nodes.back());
         };
 
     static const auto ConstructParserRuleAlternative =
-        [](Symbol /* unused */, isl::Vector<parser::ast::UnNodePtr> nodes)
+        [](Symbol /* unused */, std::vector<parser::ast::UnNodePtr> nodes)
         -> parser::ast::UnNodePtr {
         auto first_node = std::move(nodes.front());
 
@@ -90,7 +90,7 @@ namespace ccl::parser::reader
     template<class T>
     static const auto AppendToTheLastNodeIfTElseDefaultAppend =
         [](ccl::parser::Symbol production,
-           isl::Vector<isl::UniquePtr<ccl::parser::ast::Node>>
+           std::vector<isl::UniquePtr<ccl::parser::ast::Node>>
                nodes) {
             auto &rule_body = nodes.front();
             auto *casted_rule_body = isl::as<T *>(rule_body.get());

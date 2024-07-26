@@ -42,10 +42,10 @@ namespace ccl::lexer::parser
             }
         };
 
-        isl::Vector<Rule> rules;
-        isl::Vector<Token> tokenStack;
-        isl::Map<Token, isl::string_view, CompareTokensByRepr> directives;
-        isl::Map<isl::string_view, BlockInfo> ruleBlocks{{"NONE", {0, ReservedTokenMaxValue + 1}}};
+        std::vector<Rule> rules;
+        std::vector<Token> tokenStack;
+        std::map<Token, isl::string_view, CompareTokensByRepr> directives;
+        std::map<isl::string_view, BlockInfo> ruleBlocks{{"NONE", {0, ReservedTokenMaxValue + 1}}};
         AnyPlaceItems anyPlaceItems;
         isl::string_view currentBlock{"NONE"};
         Tokenizer &tokenizer;
@@ -54,19 +54,19 @@ namespace ccl::lexer::parser
     public:
         explicit CcllParser(Tokenizer &input_tokenizer);
 
-        [[nodiscard]] auto getRules() const CCL_LIFETIMEBOUND -> const isl::Vector<Rule> &
+        [[nodiscard]] auto getRules() const CCL_LIFETIMEBOUND -> const std::vector<Rule> &
         {
             return rules;
         }
 
         [[nodiscard]] auto
-            getBlocks() const CCL_LIFETIMEBOUND -> const isl::Map<isl::string_view, BlockInfo> &
+            getBlocks() const CCL_LIFETIMEBOUND -> const std::map<isl::string_view, BlockInfo> &
         {
             return ruleBlocks;
         }
 
         [[nodiscard]] auto getDirectives() const CCL_LIFETIMEBOUND
-            -> const isl::Map<Token, isl::string_view, CompareTokensByRepr> &
+            -> const std::map<Token, isl::string_view, CompareTokensByRepr> &
         {
             return directives;
         }

@@ -34,7 +34,7 @@ namespace ccl::codegen
         };
 
     private:
-        isl::Map<Id, std::string> generatedCode;
+        std::map<Id, std::string> generatedCode;
         Id streamId{};
         std::size_t scopesCounter{};
         std::size_t scopeSize{4};

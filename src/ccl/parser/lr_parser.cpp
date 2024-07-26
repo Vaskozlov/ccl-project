@@ -70,7 +70,7 @@ namespace ccl::parser
     {
         const auto &lr_item = action.getReducingItem();
         const auto production = lr_item.getProductionType();
-        auto items_in_production = isl::Vector<ast::UnNodePtr>();
+        auto items_in_production = std::vector<ast::UnNodePtr>();
         const auto number_of_elements_to_take_from_stack = lr_item.size();
 
         for (std::size_t i = 0; i != number_of_elements_to_take_from_stack; ++i) {

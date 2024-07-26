@@ -9,7 +9,7 @@
 #define CCL_PARSER_RULE_CONSTRUCTOR_ARGUMENTS_DECL(PRODUCTION_NAME, NODES_ARGUMENT_NAME)           \
     <template<class> class SmartPointer>(                                                          \
         [[maybe_unused]] ccl::parser::Symbol PRODUCTION_NAME,                                      \
-        [[maybe_unused]] isl::Vector<SmartPointer<ccl::parser::ast::Node>> NODES_ARGUMENT_NAME)
+        [[maybe_unused]] std::vector<SmartPointer<ccl::parser::ast::Node>> NODES_ARGUMENT_NAME)
 
 
 namespace ccl::parser
@@ -22,37 +22,37 @@ namespace ccl::parser
 
     template<typename... Ts>
     concept ConstructableWithUnique =
-        requires(Symbol production, isl::Vector<ast::UnNodePtr> nodes) {
+        requires(Symbol production, std::vector<ast::UnNodePtr> nodes) {
             std::declval<RuleConstructor<Ts...>>().operator()(production, std::move(nodes));
         };
 
     template<typename... Ts>
     concept ConstructableWithShared =
-        requires(Symbol production, isl::Vector<ast::ShNodePtr> nodes) {
+        requires(Symbol production, std::vector<ast::ShNodePtr> nodes) {
             std::declval<RuleConstructor<Ts...>>().operator()(production, std::move(nodes));
         };
 
-    class Rule : public isl::Vector<Symbol>
+    class Rule : public std::vector<Symbol>
     {
     private:
-        std::function<ast::UnNodePtr(Symbol, isl::Vector<ast::UnNodePtr>)> uniqueConstructor;
-        std::function<ast::ShNodePtr(Symbol, isl::Vector<ast::ShNodePtr>)> sharedConstructor;
+        std::function<ast::UnNodePtr(Symbol, std::vector<ast::UnNodePtr>)> uniqueConstructor;
+        std::function<ast::ShNodePtr(Symbol, std::vector<ast::ShNodePtr>)> sharedConstructor;
         std::size_t ruleHash{};
 
         template<typename... Ts>
-        explicit Rule(isl::Vector<Symbol> rule, RuleConstructor<Ts...> constructor)
-          : isl::Vector<Symbol>{std::move(rule)}
+        explicit Rule(std::vector<Symbol> rule, RuleConstructor<Ts...> constructor)
+          : std::vector<Symbol>{std::move(rule)}
         {
             if constexpr (ConstructableWithUnique<Ts...>) {
                 uniqueConstructor =
-                    [constructor](Symbol production, isl::Vector<ast::UnNodePtr> nodes) {
+                    [constructor](Symbol production, std::vector<ast::UnNodePtr> nodes) {
                         return constructor(production, std::move(nodes));
                     };
             }
 
             if constexpr (ConstructableWithShared<Ts...>) {
                 sharedConstructor =
-                    [constructor](Symbol production, isl::Vector<ast::ShNodePtr> nodes) {
+                    [constructor](Symbol production, std::vector<ast::ShNodePtr> nodes) {
                         return constructor(production, std::move(nodes));
                     };
             }
@@ -65,7 +65,7 @@ namespace ccl::parser
 
     public:
         template<typename... Ts>
-        explicit Rule(isl::Vector<Symbol> rule)
+        explicit Rule(std::vector<Symbol> rule)
           : Rule{
                 std::move(rule),
                 RuleConstructor{
@@ -78,7 +78,7 @@ namespace ccl::parser
         {}
 
         template<typename... Ts>
-        explicit Rule(isl::Vector<Symbol> rule, Ts &&...constructors)
+        explicit Rule(std::vector<Symbol> rule, Ts &&...constructors)
           : Rule{std::move(rule), RuleConstructor{std::forward<Ts>(constructors)...}}
         {}
 
@@ -88,7 +88,7 @@ namespace ccl::parser
         }
 
         template<template<class> class SmartPointer>
-        [[nodiscard]] auto construct(Symbol production, isl::Vector<SmartPointer<ast::Node>> nodes)
+        [[nodiscard]] auto construct(Symbol production, std::vector<SmartPointer<ast::Node>> nodes)
             const -> SmartPointer<ast::Node>
         {
             if constexpr (std::same_as<SmartPointer<ast::Node>, ast::UnNodePtr>) {

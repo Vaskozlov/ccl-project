@@ -19,7 +19,7 @@ TEST_CASE("FirstSetComputation", "[FirstSet]")
     const auto &factor_first_set = first_set.at(GrammarSymbol::FACTOR);
 
     REQUIRE(
-        goal_first_set == isl::Set<Symbol>{
+        goal_first_set == std::set<Symbol>{
                               GrammarSymbol::ANGLE_OPEN,
                               GrammarSymbol::NUMBER,
                               GrammarSymbol::NAME,
@@ -28,7 +28,7 @@ TEST_CASE("FirstSetComputation", "[FirstSet]")
     REQUIRE(expr_first_set == goal_first_set);
 
     REQUIRE(
-        expr_c_first_set == isl::Set<Symbol>{
+        expr_c_first_set == std::set<Symbol>{
                                 GrammarSymbol::ADD,
                                 GrammarSymbol::SUB,
                             });
@@ -36,7 +36,7 @@ TEST_CASE("FirstSetComputation", "[FirstSet]")
     REQUIRE(term_first_set == goal_first_set);
 
     REQUIRE(
-        term_c_first_set == isl::Set<Symbol>{
+        term_c_first_set == std::set<Symbol>{
                                 GrammarSymbol::MUL,
                                 GrammarSymbol::DIV,
                             });

@@ -12,7 +12,7 @@ namespace ccl::parser::reader
     {
     private:
         RulesConstructor rulesConstructor;
-        isl::Vector<ReaderOption> readerOptions{
+        std::vector<ReaderOption> readerOptions{
             ReaderOption::WARNINGS_ENABLE,
             ReaderOption::SUGGESTIONS_ENABLE,
         };

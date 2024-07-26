@@ -11,8 +11,8 @@ namespace ccl::parser
 
     GrammarRulesStorage::GrammarRulesStorage(
         Symbol epsilon,
-        const std::initializer_list<isl::Pair<Symbol, isl::Vector<Rule>>> &initial_data)
-      : isl::Map<Symbol, isl::Vector<Rule>>{initial_data}
+        const std::initializer_list<isl::Pair<Symbol, std::vector<Rule>>> &initial_data)
+      : std::map<Symbol, std::vector<Rule>>{initial_data.begin(), initial_data.end()}
       , grammarSymbols{0, epsilon}
       , possiblyEmptyRules{epsilon}
       , epsilonSymbol{epsilon}
