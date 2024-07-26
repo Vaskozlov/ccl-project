@@ -39,7 +39,6 @@ namespace ccl::parser
         std::function<ast::ShNodePtr(Symbol, isl::Vector<ast::ShNodePtr>)> sharedConstructor;
         std::size_t ruleHash{};
 
-    private:
         template<typename... Ts>
         explicit Rule(isl::Vector<Symbol> rule, RuleConstructor<Ts...> constructor)
           : isl::Vector<Symbol>{std::move(rule)}
