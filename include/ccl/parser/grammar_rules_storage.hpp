@@ -75,7 +75,7 @@ namespace ccl::parser
             }
         }
 
-        [[nodiscard]] auto getNotFilledHandlers(Symbol start_symbol, Symbol end_symbol) const noexcept -> isl::Set<Symbol>;
+        [[nodiscard]] auto getNotFilledHandlers(Symbol start_symbol, Symbol end_symbol) const noexcept -> std::set<Symbol>;
 
     private:
         auto registerAllRuleSymbols(const Rule &rule) -> void;

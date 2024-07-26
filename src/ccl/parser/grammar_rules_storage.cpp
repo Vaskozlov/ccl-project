@@ -21,12 +21,12 @@ namespace ccl::parser
     }
 
     auto GrammarRulesStorage::getNotFilledHandlers(Symbol start_symbol, Symbol end_symbol)
-        const noexcept -> isl::Set<Symbol>
+        const noexcept -> std::set<Symbol>
     {
         const auto first_set = evaluateFirstSet(epsilonSymbol, *this);
         const auto follow_set = evaluateFollowSet(start_symbol, end_symbol, epsilonSymbol, *this, first_set);
 
-        auto result_set = isl::Set<Symbol>{};
+        auto result_set = std::set<Symbol>{};
 
         for (const auto non_terminal_symbol : getNonTerminals()) {
             if (follow_set.at(non_terminal_symbol).size() == 0) {
