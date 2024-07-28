@@ -77,9 +77,12 @@ namespace ccl::parser
             }
         }
 
+        [[nodiscard]] auto tryToGetInitializedFollowSet() const -> std::optional<std::map<Symbol, std::set<Symbol>>>;
+
         [[nodiscard]] auto getNotFilledHandlers(Symbol start_symbol, Symbol end_symbol) -> std::set<Symbol>;
 
-        [[nodiscard]] auto getFollowSetLazily(Symbol start_symbol, Symbol end_symbol) -> std::map<Symbol, std::set<Symbol>>;
+        auto initializeFollowSetLazily(Symbol start_symbol, Symbol end_symbol)
+            -> std::map<Symbol, std::set<Symbol>>;
 
     private:
         auto registerAllRuleSymbols(const Rule &rule) -> void;

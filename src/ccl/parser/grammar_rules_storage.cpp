@@ -19,8 +19,28 @@ namespace ccl::parser
     {
         finishGrammar();
     }
-    auto GrammarRulesStorage::getFollowSetLazily(Symbol start_symbol, Symbol end_symbol)
-        -> std::map<Symbol, std::set<Symbol>>
+    /**
+     *
+     * @return optional of a follow set. Will be empty if follow set wasn't initialized.\n
+     * see  <i>initializeFollowSetLazily(const Symbol start_symbol, const Symbol
+     * end_symbol)</i>
+     */
+    auto GrammarRulesStorage::tryToGetInitializedFollowSet()
+        const -> std::optional<std::map<Symbol, std::set<Symbol>>>
+    {
+        return lazilyInitializedFollowSet;
+    }
+
+    /**
+     * Function will compute follow set if it wasn't initialized.
+     * Otherwise just returns initialized follow set.
+     *
+     * @param start_symbol start symbol, usually a GOAL symbol.
+     * @param end_symbol symbol at the end of input
+     * @return initialized follow set.
+     */
+    auto GrammarRulesStorage::initializeFollowSetLazily(const Symbol start_symbol, const Symbol end_symbol)
+            -> std::map<Symbol, std::set<Symbol>>
     {
         if (!lazilyInitializedFollowSet.has_value()) {
             const auto first_set = evaluateFirstSet(epsilonSymbol, *this);
@@ -33,12 +53,11 @@ namespace ccl::parser
         return lazilyInitializedFollowSet.value();
     }
 
-
     auto GrammarRulesStorage::getNotFilledHandlers(const Symbol start_symbol,
         const Symbol end_symbol) -> std::set<Symbol>
     {
 
-        auto follow_set = getFollowSetLazily(start_symbol, end_symbol);
+        auto follow_set = initializeFollowSetLazily(start_symbol, end_symbol);
 
         auto result_set = std::set<Symbol>();
 
