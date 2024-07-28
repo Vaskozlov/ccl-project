@@ -70,6 +70,30 @@ namespace ccl::parser
         return result_set;
     }
 
+    /**
+     * @param production production symbol
+     * @return <b>if follow set is initialized,</b> this function return optional of a set of unused
+     * symbols in given production: allGrammarSymbols \ followSet(production)\n <b>otherwise,</b>
+     * empty optional. Use <i>initializeFollowSetLazily(const Symbol start_symbol, const Symbol
+     * end_symbol)</i> to initialize follow set.
+     */
+    auto GrammarRulesStorage::getUnusedSymbolsForProduction(const Symbol production) const
+        -> std::optional<std::set<Symbol>>
+    {
+        if (!lazilyInitializedFollowSet.has_value()) {
+            return {};
+        }
+
+        auto result_set = std::set(getGrammarSymbols());
+
+        for (auto used_symbol : lazilyInitializedFollowSet.value().at(production)) {
+            result_set.erase(used_symbol);
+        }
+
+        return result_set;
+    }
+
+
     auto GrammarRulesStorage::registerAllRuleSymbols(const Rule &rule) -> void
     {
         for (const auto symbol : rule) {

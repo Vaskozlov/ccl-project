@@ -84,6 +84,9 @@ namespace ccl::parser
         auto initializeFollowSetLazily(Symbol start_symbol, Symbol end_symbol)
             -> std::map<Symbol, std::set<Symbol>>;
 
+        [[nodiscard]] auto getUnusedSymbolsForProduction(Symbol production) const
+            -> std::optional<std::set<Symbol>>;
+
     private:
         auto registerAllRuleSymbols(const Rule &rule) -> void;
 
