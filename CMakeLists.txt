@@ -4,6 +4,7 @@ project(ccl-project VERSION 0.0.2.1 LANGUAGES CXX)
 
 include(GNUInstallDirs)
 include(FetchContent)
+include(CMakePackageConfigHelpers)
 
 include(cmake/Libraries.cmake)
 include(cmake/ProjectOptions.cmake)
@@ -29,8 +30,6 @@ install(EXPORT cclTargets
         NAMESPACE ccl::
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/ccl
 )
-
-include(CMakePackageConfigHelpers)
 
 set_property(TARGET ccl PROPERTY VERSION ${version})
 
