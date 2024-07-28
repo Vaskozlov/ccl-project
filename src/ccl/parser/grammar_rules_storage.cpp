@@ -43,7 +43,7 @@ namespace ccl::parser
         auto result_set = std::set<Symbol>();
 
         for (const auto non_terminal_symbol : getNonTerminals()) {
-            if (follow_set.at(non_terminal_symbol).size() == 0) {
+            if (follow_set.at(non_terminal_symbol).empty()) {
                 result_set.emplace(non_terminal_symbol);
             }
         }
