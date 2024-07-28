@@ -3,7 +3,7 @@
 /*
  * Try with grammar that we know already works
  */
-TEST_CASE("non_filled_handlers_math_grammar_computation", "[NON_FILLED_HANDLERS]") {
+TEST_CASE("NonFilledHandlersMathGrammarComputation", "[NonFilledHandlers]") {
 
     constexpr auto start_symbol = ccl::debug::GrammarSymbol::GOAL;
     constexpr auto end_symbol = ccl::debug::GrammarSymbol::EOI;
@@ -17,7 +17,7 @@ TEST_CASE("non_filled_handlers_math_grammar_computation", "[NON_FILLED_HANDLERS]
 /*
  * Try with bad grammar
  */
-TEST_CASE("non_filled_handlers_bad_grammar_computation", "[NON_FILLED_HANDLERS]") {
+TEST_CASE("NonFilledHandlersBadGrammarComputation", "[NonFilledHandlers]") {
 
     using GrammarSymbol = ccl::debug::GrammarSymbol;
     using Rule = ccl::parser::Rule;
