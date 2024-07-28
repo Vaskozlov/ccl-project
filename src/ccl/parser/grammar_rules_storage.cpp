@@ -19,14 +19,28 @@ namespace ccl::parser
     {
         finishGrammar();
     }
-
-    auto GrammarRulesStorage::getNotFilledHandlers(Symbol start_symbol, Symbol end_symbol)
-        const noexcept -> std::set<Symbol>
+    auto GrammarRulesStorage::getFollowSetLazily(Symbol start_symbol, Symbol end_symbol)
+        -> std::map<Symbol, std::set<Symbol>>
     {
-        const auto first_set = evaluateFirstSet(epsilonSymbol, *this);
-        const auto follow_set = evaluateFollowSet(start_symbol, end_symbol, epsilonSymbol, *this, first_set);
+        if (!lazilyInitializedFollowSet.has_value()) {
+            const auto first_set = evaluateFirstSet(epsilonSymbol, *this);
+            auto follow_set =
+                evaluateFollowSet(start_symbol, end_symbol, epsilonSymbol, *this, first_set);
 
-        auto result_set = std::set<Symbol>{};
+            lazilyInitializedFollowSet = follow_set;
+        }
+
+        return lazilyInitializedFollowSet.value();
+    }
+
+
+    auto GrammarRulesStorage::getNotFilledHandlers(const Symbol start_symbol,
+        const Symbol end_symbol) -> std::set<Symbol>
+    {
+
+        auto follow_set = getFollowSetLazily(start_symbol, end_symbol);
+
+        auto result_set = std::set<Symbol>();
 
         for (const auto non_terminal_symbol : getNonTerminals()) {
             if (follow_set.at(non_terminal_symbol).size() == 0) {

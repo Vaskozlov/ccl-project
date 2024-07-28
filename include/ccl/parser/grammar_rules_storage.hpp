@@ -17,6 +17,8 @@ namespace ccl::parser
         std::set<Symbol> possiblyEmptyRules;
         Symbol epsilonSymbol;
 
+        std::optional<map<Symbol, std::set<Symbol>>> lazilyInitializedFollowSet;
+
     public:
         explicit GrammarRulesStorage(Symbol epsilon);
 
@@ -75,7 +77,9 @@ namespace ccl::parser
             }
         }
 
-        [[nodiscard]] auto getNotFilledHandlers(Symbol start_symbol, Symbol end_symbol) const noexcept -> std::set<Symbol>;
+        [[nodiscard]] auto getNotFilledHandlers(Symbol start_symbol, Symbol end_symbol) -> std::set<Symbol>;
+
+        [[nodiscard]] auto getFollowSetLazily(Symbol start_symbol, Symbol end_symbol) -> std::map<Symbol, std::set<Symbol>>;
 
     private:
         auto registerAllRuleSymbols(const Rule &rule) -> void;

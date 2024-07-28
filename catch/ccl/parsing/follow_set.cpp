@@ -10,18 +10,14 @@ TEST_CASE("FollowSetComputation", "[FollowSet]")
     using namespace ccl::debug;
     using namespace ccl::parser;
 
-    auto first_set = evaluateFirstSet(GrammarSymbol::EPSILON, GrammarForFirstFollowSetTest);
+    auto follow_set = GrammarForFirstFollowSetTest.getFollowSetLazily(GrammarSymbol::GOAL, GrammarSymbol::EOI);
 
-    auto follow_Set = evaluateFollowSet(
-        GrammarSymbol::GOAL, GrammarSymbol::EOI, GrammarSymbol::EPSILON,
-        GrammarForFirstFollowSetTest, first_set);
-
-    const auto &goal_follow_set = follow_Set.at(GrammarSymbol::GOAL);
-    const auto &expr_follow_set = follow_Set.at(GrammarSymbol::EXPR);
-    const auto &expr_c_follow_set = follow_Set.at(GrammarSymbol::EXPR_C);
-    const auto &term_follow_set = follow_Set.at(GrammarSymbol::TERM);
-    const auto &term_c_follow_set = follow_Set.at(GrammarSymbol::TERM_C);
-    const auto &factor_follow_set = follow_Set.at(GrammarSymbol::FACTOR);
+    const auto &goal_follow_set = follow_set.at(GrammarSymbol::GOAL);
+    const auto &expr_follow_set = follow_set.at(GrammarSymbol::EXPR);
+    const auto &expr_c_follow_set = follow_set.at(GrammarSymbol::EXPR_C);
+    const auto &term_follow_set = follow_set.at(GrammarSymbol::TERM);
+    const auto &term_c_follow_set = follow_set.at(GrammarSymbol::TERM_C);
+    const auto &factor_follow_set = follow_set.at(GrammarSymbol::FACTOR);
 
     REQUIRE(
         goal_follow_set == std::set<Symbol>{

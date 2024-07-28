@@ -10,7 +10,7 @@ TEST_CASE("non_filled_handlers_math_grammar_computation", "[NON_FILLED_HANDLERS]
     const auto set =
         ccl::debug::GrammarForFirstFollowSetTest.getNotFilledHandlers(start_symbol, end_symbol);
 
-    REQUIRE(set->size() == 0);
+    REQUIRE(set.size() == 0);
 }
 
 
@@ -29,7 +29,7 @@ TEST_CASE("non_filled_handlers_bad_grammar_computation", "[NON_FILLED_HANDLERS]"
     auto DUMMY_TOKEN_TWO = 67890ULL;
 
 
-    const auto grammar_storage = ccl::parser::GrammarRulesStorage{
+    auto grammar_storage = ccl::parser::GrammarRulesStorage{
         GrammarSymbol::EPSILON,
         {
             {
