@@ -8,7 +8,7 @@ namespace ccl::debug
 {
     using GrammarSymbol = math::MathLexerToken;
 
-    inline parser::GrammarRulesStorage GrammarForFirstFollowSetTest{
+    const inline parser::GrammarRulesStorage GrammarForFirstFollowSetTest{
         GrammarSymbol::EPSILON,
         {
             {

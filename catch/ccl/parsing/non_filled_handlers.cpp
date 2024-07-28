@@ -7,10 +7,11 @@ TEST_CASE("NonFilledHandlersMathGrammarComputation", "[NonFilledHandlers]") {
 
     constexpr auto start_symbol = ccl::debug::GrammarSymbol::GOAL;
     constexpr auto end_symbol = ccl::debug::GrammarSymbol::EOI;
-    const auto set =
-        ccl::debug::GrammarForFirstFollowSetTest.getNotFilledHandlers(start_symbol, end_symbol);
+    auto math_grammar = ccl::parser::GrammarRulesStorage(ccl::debug::GrammarForFirstFollowSetTest);
 
-    REQUIRE(set.size() == 0);
+    const auto set = math_grammar.getNotFilledHandlers(start_symbol, end_symbol);
+
+    REQUIRE(set.empty());
 }
 
 
