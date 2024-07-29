@@ -138,7 +138,7 @@ namespace ccl::lexer::rule
     class RuleBlock : public isl::UniquePtr<RuleBlockInterface>
     {
     public:
-        using isl::UniquePtr<RuleBlockInterface>::unique_ptr;
+        using isl::UniquePtr<RuleBlockInterface>::UniquePtr;
 
         explicit constexpr RuleBlock(isl::UniquePtr<RuleBlockInterface> block)
           : isl::UniquePtr<RuleBlockInterface>::UniquePtr(std::move(block))
