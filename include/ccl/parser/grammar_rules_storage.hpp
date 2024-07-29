@@ -3,7 +3,7 @@
 
 #include "rule.hpp"
 #include <ccl/parser/types.hpp>
-#include <isl/generator.hpp>
+#include <isl/coroutine/generator.hpp>
 
 namespace ccl::parser
 {
@@ -23,6 +23,14 @@ namespace ccl::parser
         GrammarRulesStorage(
             Symbol epsilon,
             const std::initializer_list<isl::Pair<Symbol, std::vector<Rule>>> &initial_data);
+
+        GrammarRulesStorage(GrammarRulesStorage &&) = delete;
+        GrammarRulesStorage(const GrammarRulesStorage &) = delete;
+
+        ~GrammarRulesStorage() = default;
+
+        auto operator=(GrammarRulesStorage &&) -> void = delete;
+        auto operator=(const GrammarRulesStorage &) -> void = delete;
 
         auto finishGrammar() -> void;
 
