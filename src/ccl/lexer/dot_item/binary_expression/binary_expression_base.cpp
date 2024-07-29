@@ -12,4 +12,4 @@ namespace ccl::lexer::rule
     {
         return rhsItem->empty() && lhsItem->empty();
     }
-}// namespace ccl::lexer::dot_item
+}// namespace ccl::lexer::rule

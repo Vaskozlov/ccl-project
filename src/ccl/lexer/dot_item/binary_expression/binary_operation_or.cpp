@@ -20,4 +20,4 @@ namespace ccl::lexer::rule
 
         return lhs_result;
     }
-}// namespace ccl::lexer::dot_item
+}// namespace ccl::lexer::rule

@@ -92,4 +92,4 @@ namespace ccl::lexer::rule
     {
         return ParserScanner(closure, *this, text_iterator).scan();
     }
-}// namespace ccl::lexer::dot_item
+}// namespace ccl::lexer::rule

@@ -75,4 +75,4 @@ namespace ccl::lexer::rule
             AnalysisStage::LEXICAL_ANALYSIS, "expected '{' at the beginning of repetition range");
         throw UnrecoverableError{"unrecoverable error in Repetition"};
     }
-}// namespace ccl::lexer::dot_item
+}// namespace ccl::lexer::rule
