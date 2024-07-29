@@ -20,4 +20,4 @@ namespace ccl::lexer::rule
         // TODO: add check at regex analysis time
         throw std::runtime_error{"Not supported operation"};
     }
-}// namespace ccl::lexer::dot_item
+}// namespace ccl::lexer::rule

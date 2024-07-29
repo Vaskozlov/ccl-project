@@ -1,0 +1,7 @@
+def main(int a)
+{
+    return a + 10 + 3;
+}
+
+var test = main(20);
+var t = print(test);
