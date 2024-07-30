@@ -79,6 +79,7 @@ namespace ccl::parser
                 },
                 item);
         } else {
+            // TODO: skip terminals
             auto entry = TableEntry{
                 .state = cc.id,
                 .lookAhead = item.at(item.getDotLocation()),
