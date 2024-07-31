@@ -60,6 +60,8 @@ namespace astlang::interpreter
     public:
         static auto fromNode(ccl::parser::ast::Node *node) -> Type;
 
+        Type() = default;
+
         Type(CoreType main_type, std::vector<Type> sub_types = {})
           : subTypes{std::move(sub_types)}
           , mainType{main_type}
@@ -87,6 +89,7 @@ namespace astlang::interpreter
     };
 
 }// namespace astlang::interpreter
+
 
 template<>
 struct fmt::formatter<astlang::interpreter::Type> : public fmt::formatter<std::string_view>

@@ -79,13 +79,13 @@ namespace ccl::parser
                 },
                 item);
         } else {
-            auto sumbol_at_dot = item.at(item.getDotLocation());
+            const auto sumbol_at_dot = item.at(item.getDotLocation());
 
             if (!isTerminal(sumbol_at_dot)) {
                 return;
             }
 
-            auto entry = TableEntry{
+            const auto entry = TableEntry{
                 .state = cc.id,
                 .lookAhead = sumbol_at_dot,
             };

@@ -14,7 +14,10 @@ namespace astlang::ast::function::call
 
         auto
             compute(interpreter::Interpreter &interpreter) -> interpreter::EvaluationResult override
-        {}
+        {
+            return interpreter::EvaluationResult{
+                .value = std::nullopt, .type = interpreter::Type::VOID};
+        }
     };
 }// namespace astlang::ast::function::call
 
