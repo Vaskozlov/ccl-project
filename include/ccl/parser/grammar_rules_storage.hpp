@@ -8,14 +8,14 @@
 
 namespace ccl::parser
 {
-    class GrammarRulesStorage : public std::map<Symbol, std::list<Rule>>
+    class GrammarRulesStorage : public std::map<Symbol, std::vector<Rule>>
     {
     private:
-        using AlternativesConstRuleIterator = typename std::list<Rule>::const_iterator;
+        using AlternativesConstRuleIterator = typename std::vector<Rule>::const_iterator;
 
-        std::set<Symbol> nonTerminals;
-        std::set<Symbol> grammarSymbols;
-        std::set<Symbol> possiblyEmptyRules;
+        std::unordered_set<Symbol> nonTerminals;
+        std::unordered_set<Symbol> grammarSymbols;
+        std::unordered_set<Symbol> possiblyEmptyRules;
         Symbol epsilonSymbol;
 
     public:
@@ -23,7 +23,7 @@ namespace ccl::parser
 
         GrammarRulesStorage(
             Symbol epsilon,
-            const std::initializer_list<isl::Pair<Symbol, std::list<Rule>>> &initial_data);
+            const std::initializer_list<isl::Pair<Symbol, std::vector<Rule>>> &initial_data);
 
         GrammarRulesStorage(GrammarRulesStorage &&) = delete;
         GrammarRulesStorage(const GrammarRulesStorage &) = delete;
@@ -40,12 +40,12 @@ namespace ccl::parser
             return epsilonSymbol;
         }
 
-        [[nodiscard]] auto getNonTerminals() const noexcept -> const std::set<Symbol> &
+        [[nodiscard]] auto getNonTerminals() const noexcept -> const std::unordered_set<Symbol> &
         {
             return nonTerminals;
         }
 
-        [[nodiscard]] auto getGrammarSymbols() const noexcept -> const std::set<Symbol> &
+        [[nodiscard]] auto getGrammarSymbols() const noexcept -> const std::unordered_set<Symbol> &
         {
             return grammarSymbols;
         }

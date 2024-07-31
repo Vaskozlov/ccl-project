@@ -58,8 +58,7 @@ namespace ccl::parser
             }
 
             for (auto symbol : rule) {
-                ruleHash *= 31U;
-                ruleHash += symbol;
+                ruleHash = isl::hash::combine(ruleHash, symbol);
             }
         }
 
@@ -105,8 +104,7 @@ namespace ccl::parser
 
         auto operator==(const RuleWithId &other) const -> bool
         {
-            return static_cast<const std::vector<Symbol> &>(*this) ==
-                       static_cast<const std::vector<Symbol> &>(other) &&
+            return static_cast<const Rule &>(*this) == static_cast<const Rule &>(other) &&
                    id == other.id;
         }
     };
