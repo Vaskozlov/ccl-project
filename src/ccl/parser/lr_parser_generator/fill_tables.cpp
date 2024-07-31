@@ -79,10 +79,15 @@ namespace ccl::parser
                 },
                 item);
         } else {
-            // TODO: skip terminals
-            auto entry = TableEntry{
+            const auto symbol_at_dot = item.at(item.getDotLocation());
+
+            if (!isTerminal(symbol_at_dot)) {
+                return;
+            }
+
+            const auto entry = TableEntry{
                 .state = cc.id,
-                .lookAhead = item.at(item.getDotLocation()),
+                .lookAhead = symbol_at_dot,
             };
 
             insertIntoActionTable(entry, transitions.at(entry));
