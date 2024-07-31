@@ -89,6 +89,6 @@ namespace ccl::lexer::rule
             return static_cast<const CRTP &>(*this);
         }
     };
-}// namespace ccl::lexer::dot_item
+}// namespace ccl::lexer::rule
 
 #endif /* CCL_PROJECT_SCANNER_TEMPLATE_HPP */

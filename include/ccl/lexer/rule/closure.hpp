@@ -48,6 +48,6 @@ namespace ccl::lexer::rule
         [[noreturn]] static auto
             throwUnexpectedCharacter(text::TextIterator &text_iterator, char32_t chr) -> void;
     };
-}// namespace ccl::lexer::dot_item
+}// namespace ccl::lexer::rule
 
 #endif /* CCL_PROJECT_CLOSURE_HPP */

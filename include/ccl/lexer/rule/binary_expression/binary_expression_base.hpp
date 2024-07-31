@@ -40,6 +40,6 @@ namespace ccl::lexer::rule
             return rhsItem;
         }
     };
-}// namespace ccl::lexer::dot_item
+}// namespace ccl::lexer::rule
 
 #endif /* CCL_PROJECT_BINARY_EXPRESSION_BASE_HPP */

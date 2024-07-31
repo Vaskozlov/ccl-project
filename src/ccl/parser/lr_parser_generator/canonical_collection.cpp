@@ -78,11 +78,10 @@ namespace ccl::parser
         auto closure_id = Id{1};
         auto marked_collections = std::set<Id>{};
 
-        canonicalCollection.emplace_back(
-            CanonicalCollection{
-                .items = computeClosure({start_item}),
-                .id = 0,
-            });
+        canonicalCollection.emplace_back(CanonicalCollection{
+            .items = computeClosure({start_item}),
+            .id = 0,
+        });
 
         CCL_REPEAT_WHILE(doCanonicalCollectionConstructionIteration(closure_id, marked_collections))
     }

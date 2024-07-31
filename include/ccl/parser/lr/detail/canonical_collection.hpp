@@ -1,8 +1,8 @@
 #ifndef CCL_PROJECT_CANONICAL_COLLECTION_HPP
 #define CCL_PROJECT_CANONICAL_COLLECTION_HPP
 
-#include <list>
 #include <ccl/parser/lr/detail/lr_item.hpp>
+#include <list>
 
 namespace ccl::parser
 {
