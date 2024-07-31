@@ -79,9 +79,15 @@ namespace ccl::parser
                 },
                 item);
         } else {
+            auto sumbol_at_dot = item.at(item.getDotLocation());
+
+            if (!isTerminal(sumbol_at_dot)) {
+                return;
+            }
+
             auto entry = TableEntry{
                 .state = cc.id,
-                .lookAhead = item.at(item.getDotLocation()),
+                .lookAhead = sumbol_at_dot,
             };
 
             insertIntoActionTable(entry, transitions.at(entry));
