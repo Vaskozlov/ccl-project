@@ -1,13 +1,14 @@
 #ifndef CCL_PROJECT_CANONICAL_COLLECTION_HPP
 #define CCL_PROJECT_CANONICAL_COLLECTION_HPP
 
+#include <list>
 #include <ccl/parser/lr/detail/lr_item.hpp>
 
 namespace ccl::parser
 {
     struct CanonicalCollection
     {
-        std::unordered_set<LrItem> items;
+        std::list<LrItem> items;
         Id id{};
 
         [[nodiscard]] auto operator==(const CanonicalCollection &other) const noexcept -> bool

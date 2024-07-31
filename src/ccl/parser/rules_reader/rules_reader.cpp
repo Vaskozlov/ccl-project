@@ -486,8 +486,10 @@ namespace ccl::parser::reader
 
     RulesReader::RulesReader(isl::string_view input, isl::string_view filename)
     {
-        auto start_item = LrItem{
-            Rule{{RulesLexerToken::ANY_BLOCK}}, 0, RulesLexerToken::GOAL, RulesLexerToken::EOI};
+        static auto initial_rule = Rule{{RulesLexerToken::ANY_BLOCK}};
+
+        auto start_item =
+            LrItem{std::addressof(initial_rule), 0, RulesLexerToken::GOAL, RulesLexerToken::EOI};
 
         auto tokenizer = RulesLexer.getTokenizer(input, filename);
         auto lr_parser = LrParser(start_item, RulesLexerToken::EPSILON, RulesGrammar);

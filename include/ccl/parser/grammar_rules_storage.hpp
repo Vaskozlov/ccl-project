@@ -4,13 +4,14 @@
 #include "rule.hpp"
 #include <ccl/parser/types.hpp>
 #include <isl/coroutine/generator.hpp>
+#include <list>
 
 namespace ccl::parser
 {
-    class GrammarRulesStorage : public std::map<Symbol, std::vector<Rule>>
+    class GrammarRulesStorage : public std::map<Symbol, std::list<Rule>>
     {
     private:
-        using AlternativesConstRuleIterator = typename std::vector<Rule>::const_iterator;
+        using AlternativesConstRuleIterator = typename std::list<Rule>::const_iterator;
 
         std::set<Symbol> nonTerminals;
         std::set<Symbol> grammarSymbols;
@@ -22,7 +23,7 @@ namespace ccl::parser
 
         GrammarRulesStorage(
             Symbol epsilon,
-            const std::initializer_list<isl::Pair<Symbol, std::vector<Rule>>> &initial_data);
+            const std::initializer_list<isl::Pair<Symbol, std::list<Rule>>> &initial_data);
 
         GrammarRulesStorage(GrammarRulesStorage &&) = delete;
         GrammarRulesStorage(const GrammarRulesStorage &) = delete;

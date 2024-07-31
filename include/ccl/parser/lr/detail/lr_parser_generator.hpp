@@ -6,6 +6,8 @@
 #include <ccl/parser/lr/action.hpp>
 #include <ccl/parser/lr/detail/canonical_collection.hpp>
 #include <ccl/parser/lr/detail/table_entry.hpp>
+#include <ccl/runtime.hpp>
+#include <list>
 
 namespace ccl::parser
 {
@@ -14,7 +16,7 @@ namespace ccl::parser
     private:
         std::map<TableEntry, State> gotoTable;
         std::map<TableEntry, std::set<Action>> actionTable;
-        std::vector<CanonicalCollection> canonicalCollection;
+        std::list<CanonicalCollection> canonicalCollection;
         std::map<TableEntry, State> transitions;
         std::function<std::string(Id)> idToStringConverter;
         const GrammarRulesStorage &grammarRules;
@@ -49,22 +51,19 @@ namespace ccl::parser
             std::vector<State> &state_stack,
             std::vector<ast::UnNodePtr> &nodes_stack) const -> void;
 
-        auto gotoFunction(const std::unordered_set<LrItem> &items, Symbol symbol) const
-            -> std::unordered_set<LrItem>;
+        auto gotoFunction(const std::list<LrItem> &items, Symbol symbol) const -> std::list<LrItem>;
 
         auto doCanonicalCollectionConstructionIterationOnItem(
-            Id &closure_id, const CanonicalCollection &cc, const LrItem &item,
-            std::vector<CanonicalCollection> &pending_collections) -> bool;
+            Id &closure_id, const CanonicalCollection &cc, const LrItem &item) -> bool;
 
         auto doCanonicalCollectionConstructionIteration(
             Id &closure_id, std::set<Id> &marked_collections) -> bool;
 
         auto constructCanonicalCollection(const LrItem &start_item) -> void;
 
-        auto doClosureComputationIteration(std::unordered_set<LrItem> &s, const LrItem &item) const
-            -> bool;
+        auto doClosureComputationIteration(const LrItem &item) const -> isl::Generator<LrItem>;
 
-        auto computeClosure(std::unordered_set<LrItem> s) const -> std::unordered_set<LrItem>;
+        auto computeClosure(std::list<LrItem> s) const -> std::list<LrItem>;
 
         auto fillTablesUsingCanonicalCollection(const CanonicalCollection &cc) -> void;
 

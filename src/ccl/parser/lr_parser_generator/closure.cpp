@@ -2,19 +2,18 @@
 
 namespace ccl::parser
 {
-    auto LrParserGenerator::doClosureComputationIteration(
-        std::unordered_set<LrItem> &s, const LrItem &item) const -> bool
+    auto LrParserGenerator::doClosureComputationIteration(const LrItem &item) const
+        -> isl::Generator<LrItem>
     {
         if (item.isDotInTheEnd()) {
-            return false;
+            co_return;
         }
 
-        auto has_modifications = false;
         const auto index = item.getDotLocation();
         const auto symbol = item.at(index);
 
         if (isTerminal(symbol)) {
-            return false;
+            co_return;
         }
 
         const auto has_symbol_after_current = (index + 1 == item.size());
@@ -24,17 +23,15 @@ namespace ccl::parser
         const auto &first_set_of_next_symbol = firstSet.at(next_symbol);
 
         for (const auto first_symbol : first_set_of_next_symbol) {
-            for (const auto &alternatives : grammarRules.at(symbol)) {
-                auto [it, has_inserted] = s.emplace(alternatives, 0, symbol, first_symbol);
-                has_modifications = has_modifications || has_inserted;
+            auto &rules = grammarRules.at(symbol);
+
+            for (auto &rule : rules) {
+                co_yield LrItem{std::addressof(rule), 0, symbol, first_symbol};
             }
         }
-
-        return has_modifications;
     }
 
-    auto LrParserGenerator::computeClosure(std::unordered_set<LrItem> s) const
-        -> std::unordered_set<LrItem>
+    auto LrParserGenerator::computeClosure(std::list<LrItem> s) const -> std::list<LrItem>
     {
         auto has_modifications = true;
 
@@ -42,7 +39,15 @@ namespace ccl::parser
             has_modifications = false;
 
             for (const auto &item : s) {
-                has_modifications = doClosureComputationIteration(s, item) || has_modifications;
+                auto items_generator = doClosureComputationIteration(item);
+
+                for (auto &generated_item : items_generator) {
+                    if (std::ranges::find(s, generated_item) != s.end()) {
+                        continue;
+                    }
+
+                    s.emplace_back(std::move(generated_item));
+                }
             }
         }
 

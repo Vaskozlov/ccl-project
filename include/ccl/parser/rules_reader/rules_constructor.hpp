@@ -43,7 +43,7 @@ namespace ccl::parser::reader
         auto getStartItem() const -> LrItem
         {
             const auto goal_id = getRuleId("GOAL");
-            return LrItem{grammarRulesStorage.at(goal_id).front(), 0, goal_id, 0};
+            return LrItem{std::addressof(grammarRulesStorage.at(goal_id).front()), 0, goal_id, 0};
         }
 
         auto getIdToNameTranslationFunction() const CCL_LIFETIMEBOUND
