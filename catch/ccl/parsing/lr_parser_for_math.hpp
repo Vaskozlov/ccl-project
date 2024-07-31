@@ -94,8 +94,10 @@ namespace ccl::debug
         },
     };
 
-    const inline parser::LrItem MathStartItem = parser::LrItem{
-        ccl::parser::Rule{{GrammarSymbol::EXPR}}, 0, GrammarSymbol::GOAL, GrammarSymbol::EOI};
+    const inline ccl::parser::Rule InitialRule{{GrammarSymbol::EXPR}};
+
+    const inline parser::LrItem MathStartItem =
+        parser::LrItem{std::addressof(InitialRule), 0, GrammarSymbol::GOAL, GrammarSymbol::EOI};
 
     const inline parser::LrParser MathParser{MathStartItem, GrammarSymbol::EPSILON, MathRules};
 }// namespace ccl::debug
