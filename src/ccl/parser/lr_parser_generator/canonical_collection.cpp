@@ -22,17 +22,25 @@ namespace ccl::parser
         return computeClosure(std::move(moved));
     }
 
-    auto LrParserGenerator::doCanonicalCollectionConstructionIterationOnItem(
-        isl::thread::IdGenerator &closure_id, const CanonicalCollection &cc,
-        const LrItem &item) -> bool
+    auto LrParserGenerator::generateGotoResults(const CanonicalCollection &cc, const LrItem &item)
+        -> std::vector<std::pair<Symbol, std::list<LrItem>>>
     {
-        auto has_changes = false;
         auto goto_results = std::vector<std::pair<Symbol, std::list<LrItem>>>{};
 
         for (std::size_t i = item.getDotLocation(); i != item.size(); ++i) {
             const auto symbol = item.at(i);
             goto_results.emplace_back(symbol, gotoFunction(cc.items, symbol));
         }
+
+        return goto_results;
+    }
+
+    auto LrParserGenerator::doCanonicalCollectionConstructionIterationOnItem(
+        isl::thread::IdGenerator &closure_id, const CanonicalCollection &cc,
+        const LrItem &item) -> bool
+    {
+        auto has_changes = false;
+        auto goto_results = generateGotoResults(cc, item);
 
         for (auto &[symbol, goto_result] : goto_results) {
             auto temp_cc_id = closure_id.next();

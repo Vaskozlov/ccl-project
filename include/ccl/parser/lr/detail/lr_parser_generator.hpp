@@ -55,6 +55,9 @@ namespace ccl::parser
 
         auto gotoFunction(const std::list<LrItem> &items, Symbol symbol) const -> std::list<LrItem>;
 
+        auto generateGotoResults(const CanonicalCollection &cc, const LrItem &item)
+            -> std::vector<std::pair<Symbol, std::list<LrItem>>>;
+
         auto doCanonicalCollectionConstructionIterationOnItem(
             isl::thread::IdGenerator &closure_id, const CanonicalCollection &cc,
             const LrItem &item) -> bool;
