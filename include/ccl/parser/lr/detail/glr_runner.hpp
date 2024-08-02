@@ -14,8 +14,8 @@ namespace ccl::parser::detail
         std::forward_list<Runner> newRunnersInShiftState;
         std::forward_list<Runner> newRunnersInReduceState;
         std::vector<ast::ShNodePtr> acceptedNodes;
-        const std::map<TableEntry, State> &gotoTable;
-        const std::map<TableEntry, std::vector<Action>> &actionTable;
+        const std::unordered_map<TableEntry, State> &gotoTable;
+        const std::unordered_map<TableEntry, std::vector<Action>> &actionTable;
         isl::SharedPtr<ast::TokenNode> word;
     };
 
@@ -24,7 +24,7 @@ namespace ccl::parser::detail
     public:
         isl::WeakStack<State> stateStack;
         isl::WeakStack<ast::ShNodePtr> nodesStack;
-        RunnersCommon &common;
+        RunnersCommon *common;
 
         auto poll() -> ParsingAction;
 

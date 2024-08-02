@@ -14,8 +14,8 @@ namespace ccl::parser
     class GlrParser
     {
     private:
-        std::map<TableEntry, State> gotoTable;
-        std::map<TableEntry, std::vector<Action>> actionTable;
+        std::unordered_map<TableEntry, State> gotoTable;
+        std::unordered_map<TableEntry, std::vector<Action>> actionTable;
 
     public:
         explicit GlrParser(
@@ -25,13 +25,14 @@ namespace ccl::parser
         [[nodiscard]] auto parse(lexer::LexicalAnalyzer::Tokenizer &tokenizer) const
             -> std::vector<ast::ShNodePtr>;
 
-        [[nodiscard]] auto getGotoTable() const noexcept -> const std::map<TableEntry, State> &
+        [[nodiscard]] auto
+            getGotoTable() const noexcept -> const std::unordered_map<TableEntry, State> &
         {
             return gotoTable;
         }
 
-        [[nodiscard]] auto
-            getActionTable() const noexcept -> const std::map<TableEntry, std::vector<Action>> &
+        [[nodiscard]] auto getActionTable() const noexcept
+            -> const std::unordered_map<TableEntry, std::vector<Action>> &
         {
             return actionTable;
         }

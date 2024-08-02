@@ -11,7 +11,8 @@ namespace ccl::parser::detail
     protected:
         const GrammarRulesStorage &grammarRules;// NOLINT reference
 
-        static auto insertRange(std::set<Symbol> &set, isl::RangeOf<Symbol> auto &&range) -> bool
+        template<template<class> class Set>
+        static auto insertRange(Set<Symbol> &set, isl::RangeOf<Symbol> auto &&range) -> bool
         {
             auto has_inserted_element = false;
 
@@ -24,7 +25,7 @@ namespace ccl::parser::detail
         }
 
     public:
-        FirstAndFollowSetsCommon(const GrammarRulesStorage &grammar_rules)
+        explicit FirstAndFollowSetsCommon(const GrammarRulesStorage &grammar_rules)
           : grammarRules{grammar_rules}
         {}
 

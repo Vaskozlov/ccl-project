@@ -8,7 +8,7 @@
 
 namespace ccl::parser
 {
-    class GrammarRulesStorage : public std::map<Symbol, std::vector<Rule>>
+    class GrammarRulesStorage : public std::unordered_map<Symbol, std::vector<Rule>>
     {
     private:
         using AlternativesConstRuleIterator = typename std::vector<Rule>::const_iterator;
@@ -88,16 +88,6 @@ namespace ccl::parser
         auto registerAllRuleSymbols(const Rule &rule) -> void;
 
         auto findAndFixEmptyRules() -> void;
-
-        auto findEmptyRules() -> void;
-
-        auto fixEmptyRules() -> void;
-
-        auto fixEmptyRulesIteration(
-            Symbol &production, std::optional<Rule> &rule_to_add,
-            std::optional<Rule> &rule_to_remove,
-            std::unordered_map<Symbol, std::unordered_map<Rule, std::size_t>> &fixed_rules_part)
-            -> bool;
     };
 }// namespace ccl::parser
 

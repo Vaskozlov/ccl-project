@@ -12,7 +12,7 @@ namespace ccl::parser
     GrammarRulesStorage::GrammarRulesStorage(
         Symbol epsilon,
         const std::initializer_list<isl::Pair<Symbol, std::vector<Rule>>> &initial_data)
-      : std::map<Symbol, std::vector<Rule>>{initial_data.begin(), initial_data.end()}
+      : std::unordered_map<Symbol, std::vector<Rule>>{initial_data.begin(), initial_data.end()}
       , grammarSymbols{0, epsilon}
       , possiblyEmptyRules{epsilon}
       , epsilonSymbol{epsilon}
@@ -43,7 +43,7 @@ namespace ccl::parser
 
     auto GrammarRulesStorage::findAndFixEmptyRules() -> void
     {
-        auto empty_moves_fixer = detail::EmptyRulesFixer{*this};
+        auto empty_moves_fixer = detail::EmptyMovesFixer{*this};
         empty_moves_fixer.apply();
     }
 }// namespace ccl::parser

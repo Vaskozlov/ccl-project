@@ -14,7 +14,6 @@ namespace ccl::parser
         std::size_t dotLocation{};
         Symbol production{};
         Symbol lookAhead{};
-        std::size_t itemHash{};
 
     public:
         explicit LrItem(
@@ -26,7 +25,6 @@ namespace ccl::parser
           , dotLocation{std::min(dot_location, rule->size())}
           , production{item_name}
           , lookAhead{look_ahead}
-          , itemHash{isl::hash::combine(rule->getHash(), dotLocation, production, lookAhead)}
         {}
 
         [[nodiscard]] auto getProductionType() const noexcept -> Symbol
@@ -49,11 +47,6 @@ namespace ccl::parser
             return *rule;
         }
 
-        [[nodiscard]] auto getHash() const noexcept -> std::size_t
-        {
-            return itemHash;
-        }
-
         [[nodiscard]] auto isDotInTheEnd() const noexcept -> bool
         {
             return dotLocation == rule->size();
@@ -71,17 +64,12 @@ namespace ccl::parser
 
         [[nodiscard]] auto operator==(const LrItem &other) const noexcept -> bool
         {
-            return itemHash == other.itemHash && dotLocation == other.dotLocation &&
-                   lookAhead == other.lookAhead && production == other.production &&
-                   *rule == *other.rule;
+            return dotLocation == other.dotLocation && lookAhead == other.lookAhead &&
+                   production == other.production && *rule == *other.rule;
         }
 
         [[nodiscard]] auto operator<=>(const LrItem &other) const noexcept -> std::weak_ordering
         {
-            if (const auto cmp = itemHash <=> other.itemHash; cmp != 0) {
-                return cmp;
-            }
-
             if (const auto cmp = dotLocation <=> other.dotLocation; cmp != 0) {
                 return cmp;
             }
@@ -104,15 +92,6 @@ namespace ccl::parser
         std::function<std::string(Id)> idToStr;
     };
 }// namespace ccl::parser
-
-template<>
-struct std::hash<ccl::parser::LrItem>
-{
-    auto operator()(const ccl::parser::LrItem &item) const noexcept -> std::size_t
-    {
-        return item.getHash();
-    }
-};
 
 template<>
 class fmt::formatter<ccl::parser::LrItemPrintWrapper> : public fmt::formatter<std::string_view>

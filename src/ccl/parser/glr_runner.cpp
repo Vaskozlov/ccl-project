@@ -10,14 +10,14 @@ namespace ccl::parser::detail
         const auto new_state = stateStack.top();
         const auto entry = TableEntry{
             .state = new_state,
-            .lookAhead = common.word->getToken().getId(),
+            .lookAhead = common->word->getToken().getId(),
         };
 
-        if (!common.actionTable.contains(entry)) {
+        if (!common->actionTable.contains(entry)) {
             return FAILED;
         }
 
-        const auto &actions = common.actionTable.at(entry);
+        const auto &actions = common->actionTable.at(entry);
         hostNewRunnersIfMoreThanOneAction(actions);
 
         const auto &current_runner_action = actions.front();
@@ -42,15 +42,15 @@ namespace ccl::parser::detail
 
             switch (action.getParsingAction()) {
             case SHIFT:
-                common.newRunnersInShiftState.emplace_front(std::move(new_runner));
+                common->newRunnersInShiftState.emplace_front(std::move(new_runner));
                 break;
 
             case REDUCE:
-                common.newRunnersInReduceState.emplace_front(std::move(new_runner));
+                common->newRunnersInReduceState.emplace_front(std::move(new_runner));
                 break;
 
             case ACCEPT:
-                common.acceptedNodes.emplace_back(new_runner.nodesStack.top());
+                common->acceptedNodes.emplace_back(new_runner.nodesStack.top());
                 break;
 
             case FAILED:
@@ -66,7 +66,7 @@ namespace ccl::parser::detail
     {
         switch (action.getParsingAction()) {
         case SHIFT:
-            nodesStack.emplace(common.word);
+            nodesStack.emplace(common->word);
             stateStack.emplace(action.getShiftingState());
             break;
 
@@ -75,7 +75,7 @@ namespace ccl::parser::detail
             break;
 
         case ACCEPT:
-            common.acceptedNodes.emplace_back(nodesStack.top());
+            common->acceptedNodes.emplace_back(nodesStack.top());
             break;
 
         default:
@@ -99,7 +99,7 @@ namespace ccl::parser::detail
         reduced_item->reverse();
 
         nodesStack.emplace(std::move(reduced_item));
-        stateStack.emplace(common.gotoTable.at({
+        stateStack.emplace(common->gotoTable.at({
             stateStack.top(),
             lr_item.getProductionType(),
         }));

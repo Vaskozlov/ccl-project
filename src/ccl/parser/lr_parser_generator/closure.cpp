@@ -23,9 +23,9 @@ namespace ccl::parser
         const auto &first_set_of_next_symbol = firstSet.at(next_symbol);
 
         for (const auto first_symbol : first_set_of_next_symbol) {
-            auto &rules = grammarRules.at(symbol);
+            const auto &rules = grammarRules.at(symbol);
 
-            for (auto &rule : rules) {
+            for (const auto &rule : rules) {
                 co_yield LrItem{std::addressof(rule), 0, symbol, first_symbol};
             }
         }
@@ -46,7 +46,7 @@ namespace ccl::parser
                         continue;
                     }
 
-                    s.emplace_back(std::move(generated_item));
+                    s.emplace_back(generated_item);
                 }
             }
         }

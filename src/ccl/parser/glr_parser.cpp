@@ -65,7 +65,7 @@ namespace ccl::parser
         parsing_runners.emplace_front(Runner{
             .stateStack = {0},
             .nodesStack = {},
-            .common = runners_common,
+            .common = std::addressof(runners_common),
         });
 
         const auto *new_token = isl::as<lexer::Token *>(nullptr);

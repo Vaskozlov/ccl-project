@@ -24,12 +24,12 @@ TEST_CASE("FollowSetComputation", "[FollowSet]")
     const auto &factor_follow_set = follow_Set.at(GrammarSymbol::FACTOR);
 
     REQUIRE(
-        goal_follow_set == std::set<Symbol>{
+        goal_follow_set == std::unordered_set<Symbol>{
                                GrammarSymbol::EOI,
                            });
 
     REQUIRE(
-        expr_follow_set == std::set<Symbol>{
+        expr_follow_set == std::unordered_set<Symbol>{
                                GrammarSymbol::EOI,
                                GrammarSymbol::ANGLE_CLOSE,
                            });
@@ -37,7 +37,7 @@ TEST_CASE("FollowSetComputation", "[FollowSet]")
     REQUIRE(expr_c_follow_set == expr_follow_set);
 
     REQUIRE(
-        term_follow_set == std::set<Symbol>{
+        term_follow_set == std::unordered_set<Symbol>{
                                GrammarSymbol::EOI,
                                GrammarSymbol::ANGLE_CLOSE,
                                GrammarSymbol::ADD,
@@ -47,7 +47,7 @@ TEST_CASE("FollowSetComputation", "[FollowSet]")
     REQUIRE(term_c_follow_set == term_follow_set);
 
     REQUIRE(
-        factor_follow_set == std::set<Symbol>{
+        factor_follow_set == std::unordered_set<Symbol>{
                                  GrammarSymbol::EOI,
                                  GrammarSymbol::ANGLE_CLOSE,
                                  GrammarSymbol::ADD,

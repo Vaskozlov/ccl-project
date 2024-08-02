@@ -3,10 +3,10 @@
 
 namespace ccl::parser
 {
-    auto LrParserGenerator::getLrActionTable() const -> std::map<TableEntry, Action>
+    auto LrParserGenerator::getLrActionTable() const -> std::unordered_map<TableEntry, Action>
     {
         auto has_errors = false;
-        auto result = std::map<TableEntry, Action>{};
+        auto result = std::unordered_map<TableEntry, Action>{};
 
         for (const auto &[key, actions] : actionTable) {
             if (actions.size() != 1) {
@@ -35,10 +35,10 @@ namespace ccl::parser
         return result;
     }
 
-    [[nodiscard]] auto
-        LrParserGenerator::getGlrActionTable() const -> std::map<TableEntry, std::vector<Action>>
+    [[nodiscard]] auto LrParserGenerator::getGlrActionTable() const
+        -> std::unordered_map<TableEntry, std::vector<Action>>
     {
-        auto result = std::map<TableEntry, std::vector<Action>>{};
+        auto result = std::unordered_map<TableEntry, std::vector<Action>>{};
 
         for (const auto &[key, actions] : actionTable) {
             result.try_emplace(key, actions.begin(), actions.end());
@@ -96,7 +96,10 @@ namespace ccl::parser
 
     auto LrParserGenerator::fillGotoTableEntry(const CanonicalCollection &cc, Symbol symbol) -> void
     {
-        auto entry = TableEntry{.state = cc.id, .lookAhead = symbol};
+        const auto entry = TableEntry{
+            .state = cc.id,
+            .lookAhead = symbol,
+        };
 
         if (!transitions.contains(entry)) {
             return;
@@ -123,12 +126,9 @@ namespace ccl::parser
 
     auto LrParserGenerator::insertIntoGotoTable(TableEntry entry, State state) -> void
     {
-        if (!gotoTable.contains(entry)) {
-            gotoTable.try_emplace(entry, state);
-            return;
-        }
+        auto [it, inserted] = gotoTable.try_emplace(entry, state);
 
-        if (gotoTable.at(entry) != state) {
+        if (!inserted) {
             throw std::logic_error("Goto table conflict");
         }
     }

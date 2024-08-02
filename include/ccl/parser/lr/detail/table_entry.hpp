@@ -21,6 +21,15 @@ namespace ccl::parser
     };
 }// namespace ccl::parser
 
+template<>
+class std::hash<ccl::parser::TableEntry>
+{
+public:
+    auto operator()(const ccl::parser::TableEntry &entry) const -> std::size_t
+    {
+        return isl::hash::combine(entry.state, entry.lookAhead);
+    }
+};
 
 template<typename T>
 class fmt::formatter<ccl::parser::TableEntryPrintHelper<T>>

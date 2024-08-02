@@ -37,7 +37,6 @@ namespace ccl::parser
     private:
         std::function<ast::UnNodePtr(Symbol, std::vector<ast::UnNodePtr>)> uniqueConstructor;
         std::function<ast::ShNodePtr(Symbol, std::vector<ast::ShNodePtr>)> sharedConstructor;
-        std::size_t ruleHash{};
 
         template<typename... Ts>
         explicit Rule(std::vector<Symbol> rule, RuleConstructor<Ts...> constructor)
@@ -55,10 +54,6 @@ namespace ccl::parser
                     [constructor](Symbol production, std::vector<ast::ShNodePtr> nodes) {
                         return constructor(production, std::move(nodes));
                     };
-            }
-
-            for (auto symbol : rule) {
-                ruleHash = isl::hash::combine(ruleHash, symbol);
             }
         }
 
@@ -81,10 +76,11 @@ namespace ccl::parser
           : Rule{std::move(rule), RuleConstructor{std::forward<Ts>(constructors)...}}
         {}
 
-        [[nodiscard]] auto getHash() const noexcept -> std::size_t
-        {
-            return ruleHash;
-        }
+        Rule(const Rule &other) = default;
+        Rule(Rule &&other) noexcept = default;
+
+        auto operator=(const Rule &) -> Rule & = default;
+        auto operator=(Rule &&) noexcept -> Rule & = default;
 
         template<template<class> class SmartPointer>
         [[nodiscard]] auto construct(Symbol production, std::vector<SmartPointer<ast::Node>> nodes)
@@ -97,35 +93,6 @@ namespace ccl::parser
             }
         }
     };
-
-    struct RuleWithId : Rule
-    {
-        Id id;
-
-        auto operator==(const RuleWithId &other) const -> bool
-        {
-            return static_cast<const Rule &>(*this) == static_cast<const Rule &>(other) &&
-                   id == other.id;
-        }
-    };
 }// namespace ccl::parser
-
-template<>
-struct std::hash<ccl::parser::Rule>
-{
-    auto operator()(const ccl::parser::Rule &rule) const noexcept -> std::size_t
-    {
-        return rule.getHash();
-    }
-};
-
-template<>
-struct std::hash<ccl::parser::RuleWithId>
-{
-    auto operator()(const ccl::parser::RuleWithId &rule) const noexcept -> std::size_t
-    {
-        return isl::hash::combine(rule.getHash(), rule.id);
-    }
-};
 
 #endif /* CCL_PROJECT_RULE_HPP */

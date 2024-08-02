@@ -2,18 +2,18 @@
 
 namespace ccl::parser::detail
 {
-    EmptyRulesFixer::EmptyRulesFixer(GrammarRulesStorage &grammar_storage)
+    EmptyMovesFixer::EmptyMovesFixer(GrammarRulesStorage &grammar_storage)
       : possiblyEmptyRules({grammar_storage.getEpsilon()})
       , storage{grammar_storage}
     {}
 
-    auto EmptyRulesFixer::apply() -> void
+    auto EmptyMovesFixer::apply() -> void
     {
         findEmptyRules();
         fixEmptyRules();
     }
 
-    auto EmptyRulesFixer::fixRule(Symbol key, const Rule &rule, std::size_t current_symbol_index)
+    auto EmptyMovesFixer::fixRule(Symbol key, const Rule &rule, std::size_t current_symbol_index)
         -> void
     {
         for (auto i = current_symbol_index; i < rule.size(); ++i) {
@@ -36,7 +36,7 @@ namespace ccl::parser::detail
         }
     }
 
-    auto EmptyRulesFixer::findEmptyRules() -> void
+    auto EmptyMovesFixer::findEmptyRules() -> void
     {
         auto has_changes = true;
         auto is_symbol_in_possible_empty = [this](Symbol symbol) {
@@ -55,7 +55,7 @@ namespace ccl::parser::detail
         }
     }
 
-    auto EmptyRulesFixer::fixEmptyRules() -> void
+    auto EmptyMovesFixer::fixEmptyRules() -> void
     {
         for (const auto &[key, rule] : storage.rulesIterator()) {
             fixRule(key, rule, 0);

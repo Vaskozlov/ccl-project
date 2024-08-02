@@ -8,22 +8,23 @@
 #include <ccl/parser/lr/detail/table_entry.hpp>
 #include <ccl/runtime.hpp>
 #include <list>
+#include <queue>
 
 namespace ccl::parser
 {
     class LrParserGenerator
     {
     private:
-        std::map<TableEntry, State> gotoTable;
-        std::map<TableEntry, std::set<Action>> actionTable;
+        std::unordered_map<TableEntry, State> gotoTable;
+        std::unordered_map<TableEntry, std::set<Action>> actionTable;
         std::list<CanonicalCollection> canonicalCollection;
-        std::map<TableEntry, State> transitions;
+        std::unordered_map<TableEntry, State> transitions;
         std::function<std::string(Id)> idToStringConverter;
         const GrammarRulesStorage &grammarRules;
         Symbol goalProduction;
         Symbol endOfInput;
         Symbol epsilonSymbol;
-        std::map<Symbol, std::set<Symbol>> firstSet;
+        std::unordered_map<Symbol, std::unordered_set<Symbol>> firstSet;
 
     public:
         explicit LrParserGenerator(
@@ -31,14 +32,15 @@ namespace ccl::parser
             const GrammarRulesStorage &parser_rules,
             std::function<std::string(Id)> id_to_string_converter);
 
-        [[nodiscard]] auto getGotoTable() -> std::map<TableEntry, State> &
+        [[nodiscard]] auto getGotoTable() -> std::unordered_map<TableEntry, State> &
         {
             return gotoTable;
         }
 
-        [[nodiscard]] auto getLrActionTable() const -> std::map<TableEntry, Action>;
+        [[nodiscard]] auto getLrActionTable() const -> std::unordered_map<TableEntry, Action>;
 
-        [[nodiscard]] auto getGlrActionTable() const -> std::map<TableEntry, std::vector<Action>>;
+        [[nodiscard]] auto
+            getGlrActionTable() const -> std::unordered_map<TableEntry, std::vector<Action>>;
 
     private:
         [[nodiscard]] auto isTerminal(Symbol symbol) const noexcept -> bool
@@ -54,10 +56,12 @@ namespace ccl::parser
         auto gotoFunction(const std::list<LrItem> &items, Symbol symbol) const -> std::list<LrItem>;
 
         auto doCanonicalCollectionConstructionIterationOnItem(
-            Id &closure_id, const CanonicalCollection &cc, const LrItem &item) -> bool;
+            isl::thread::IdGenerator &closure_id, const CanonicalCollection &cc,
+            const LrItem &item) -> bool;
 
         auto doCanonicalCollectionConstructionIteration(
-            Id &closure_id, std::set<Id> &marked_collections) -> bool;
+            isl::thread::IdGenerator &closure_id,
+            std::set<Id> &marked_collections) -> bool;
 
         auto constructCanonicalCollection(const LrItem &start_item) -> void;
 

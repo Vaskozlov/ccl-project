@@ -2,5 +2,5 @@
 
 namespace ccl::runtime
 {
-    isl::thread::Pool GlobalThreadPool{4};
+    isl::thread::Pool GlobalThreadPool{std::thread::hardware_concurrency() / 2};
 }
