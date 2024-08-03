@@ -6,7 +6,7 @@
 
 namespace math
 {
-    enum MathLexerToken : ccl::Id;
+    enum MathLexerToken : ccl::SmallId;
 }
 
 template<>
@@ -15,7 +15,7 @@ CCL_DECL auto ccl::lexer::lexerEnumToString<math::MathLexerToken>(math::MathLexe
 
 namespace math
 {
-    enum MathLexerToken : ccl::Id
+    enum MathLexerToken : ccl::SmallId
     {
         NONE = 0ULL,
         EOI = 0ULL,
@@ -61,7 +61,7 @@ namespace math
             {MathLexerToken::FACTOR, R"( [0] )"},
         }};
 
-    inline constexpr isl::StaticFlatmap<ccl::Id, isl::string_view, 19> ToStringMathLexerToken{
+    inline constexpr isl::StaticFlatmap<ccl::SmallId, isl::string_view, 19> ToStringMathLexerToken{
         {MathLexerToken::EOI, "EOI"},
         {MathLexerToken::BAD_TOKEN, "BAD_TOKEN"},
         {MathLexerToken::CUT, "CUT"},

@@ -12,12 +12,33 @@ namespace ccl::parser
     GrammarRulesStorage::GrammarRulesStorage(
         Symbol epsilon,
         const std::initializer_list<isl::Pair<Symbol, std::vector<Rule>>> &initial_data)
-      : std::unordered_map<Symbol, std::vector<Rule>>{initial_data.begin(), initial_data.end()}
+      : Self{initial_data.begin(), initial_data.end()}
       , grammarSymbols{0, epsilon}
       , possiblyEmptyRules{epsilon}
       , epsilonSymbol{epsilon}
     {
         finishGrammar();
+    }
+
+    auto GrammarRulesStorage::tryEmplace(Symbol key, Rule rule) -> bool
+    {
+        auto [it, inserted] = Self::try_emplace(key);
+
+        if (std::ranges::find(it->second, rule) == it->second.end()) {
+            it->second.emplace_back(std::move(rule));
+            return true;
+        }
+
+        return false;
+    }
+
+    auto GrammarRulesStorage::eraseRule(Symbol key, const Rule &rule) -> void
+    {
+        auto it = Self::find(key);
+
+        if (it != Self::end()) {
+            it->second.erase(std::ranges::find(it->second, rule));
+        }
     }
 
     auto GrammarRulesStorage::registerAllRuleSymbols(const Rule &rule) -> void

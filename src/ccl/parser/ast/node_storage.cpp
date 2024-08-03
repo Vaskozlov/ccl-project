@@ -5,7 +5,7 @@ namespace ccl::parser::ast
 {
     auto NodeOfNodes::print(
         const std::string &prefix, bool is_left,
-        std::function<std::string(Id)> id_converter) const -> void
+        std::function<std::string(SmallId)> id_converter) const -> void
     {
         const auto expanded_prefix = expandPrefix(prefix, is_left);
         std::cout << fmt::format(

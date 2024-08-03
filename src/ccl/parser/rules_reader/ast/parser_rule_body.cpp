@@ -8,7 +8,7 @@ namespace ccl::parser::reader::ast
 {
     auto ParserRuleBody::construct(RulesConstructor &rule_constructor) const -> isl::UniqueAny
     {
-        auto result = std::vector<Id>{};
+        auto result = std::vector<SmallId>{};
 
         for (const auto &node : nodes) {
             const auto *node_as_token = dynamic_cast<const parser::ast::TokenNode *>(node.get());

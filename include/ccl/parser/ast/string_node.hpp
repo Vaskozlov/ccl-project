@@ -11,14 +11,14 @@ namespace ccl::parser::ast
         std::string repr;
 
     public:
-        explicit StringNode(Id node_type_id, isl::string_view value_repr)
+        explicit StringNode(SmallId node_type_id, isl::string_view value_repr)
           : Node{node_type_id}
           , repr{value_repr}
         {}
 
         auto print(
             const std::string &prefix, bool is_left,
-            std::function<std::string(Id)> id_converter) const -> void override;
+            std::function<std::string(SmallId)> id_converter) const -> void override;
     };
 }// namespace ccl::parser::ast
 

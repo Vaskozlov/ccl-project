@@ -33,15 +33,15 @@ namespace ccl::lexer::rule
 
     private:
         Closure closure{1, 1};
-        Id id{};
+        SmallId id{};
         Flags flags;
 
     public:
-        [[nodiscard]] explicit RuleBlockInterface(Id item_id)
+        [[nodiscard]] explicit RuleBlockInterface(SmallId item_id)
           : id{item_id}
         {}
 
-        [[nodiscard]] RuleBlockInterface(Id item_id, Flags item_flags)
+        [[nodiscard]] RuleBlockInterface(SmallId item_id, Flags item_flags)
           : id{item_id}
           , flags{item_flags}
         {}
@@ -79,7 +79,7 @@ namespace ccl::lexer::rule
             return flags.isPostfix;
         }
 
-        void setId(Id new_id) noexcept
+        void setId(SmallId new_id) noexcept
         {
             id = new_id;
         }
@@ -115,7 +115,7 @@ namespace ccl::lexer::rule
             return !isReversed() && fromZeroAccuracies && empty();
         }
 
-        [[nodiscard]] auto getId() const noexcept -> Id
+        [[nodiscard]] auto getId() const noexcept -> SmallId
         {
             return id;
         }

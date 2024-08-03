@@ -5,7 +5,7 @@ namespace ccl::parser::ast
 {
     auto StringNode::print(
         const std::string &prefix, bool is_left,
-        std::function<std::string(Id)> id_converter) const -> void
+        std::function<std::string(SmallId)> id_converter) const -> void
     {
         std::cout << fmt::format(
                          "{}-{}: {}", getPrintingPrefix(prefix, is_left), id_converter(getType()),

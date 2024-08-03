@@ -6,14 +6,14 @@
 namespace ccl::lexer
 {
     // NOLINTNEXTLINE
-    enum struct ReservedTokenType : Id
+    enum struct ReservedTokenType : SmallId
     {
         EOI = 0,
         BAD_TOKEN = 1,
         CUT = 2
     };
 
-    constexpr inline std::size_t ReservedTokenMaxValue = 2;
+    constexpr inline SmallId ReservedTokenMaxValue = 2;
 
     namespace rule
     {
@@ -40,23 +40,23 @@ namespace ccl::lexer
         std::vector<isl::string_view> postfixes;
         TokenEnvironment environment;
         isl::string_view repr;
-        Id id{};
+        SmallId id{};
 
     public:
         Token() = default;
 
-        [[nodiscard]] explicit Token(Id token_id);
+        [[nodiscard]] explicit Token(SmallId token_id);
 
         [[nodiscard]] Token(
-            TokenEnvironment &&token_environment, isl::string_view token_repr, Id token_id);
+            TokenEnvironment &&token_environment, isl::string_view token_repr, SmallId token_id);
 
         [[nodiscard]] Token(
             TokenEnvironment &&token_environment, typename isl::string_view::iterator text_begin,
-            Id token_id);
+            SmallId token_id);
 
-        [[nodiscard]] Token(const text::TextIterator &text_iterator, Id token_id);
+        [[nodiscard]] Token(const text::TextIterator &text_iterator, SmallId token_id);
 
-        [[nodiscard]] auto getId() const noexcept -> std::size_t
+        [[nodiscard]] auto getId() const noexcept -> SmallId
         {
             return id;
         }
@@ -137,7 +137,7 @@ namespace ccl::lexer
         [[nodiscard]] auto cut(std::size_t first, std::size_t length) const -> Token;
 
     private:
-        auto clear(Id new_id) noexcept -> void;
+        auto clear(SmallId new_id) noexcept -> void;
 
         auto setReprLength(std::size_t length) noexcept -> void
         {

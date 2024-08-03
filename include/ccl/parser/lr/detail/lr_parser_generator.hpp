@@ -15,22 +15,47 @@ namespace ccl::parser
     class LrParserGenerator
     {
     private:
+        struct GotoResult
+        {
+            std::vector<LrItem> items;
+            Symbol symbol;
+            SmallId canonicalCollectionId;
+        };
+
+        enum class PipePopStatus : u8
+        {
+            SUCCEED,
+            PIPE_EMPTY,
+            PIPE_CLOSED
+        };
+
+        using CanonicalCollectionIterator = typename std::list<CanonicalCollection>::iterator;
+
         std::unordered_map<TableEntry, State> gotoTable;
         std::unordered_map<TableEntry, std::set<Action>> actionTable;
-        std::list<CanonicalCollection> canonicalCollection;
+
         std::unordered_map<TableEntry, State> transitions;
-        std::function<std::string(Id)> idToStringConverter;
+        std::list<CanonicalCollection> canonicalCollection;
+        CanonicalCollectionIterator lastPolledCanonicalCollection;
+
+        std::function<std::string(SmallId)> idToStringConverter;
+
         const GrammarRulesStorage &grammarRules;
         Symbol goalProduction;
         Symbol endOfInput;
         Symbol epsilonSymbol;
+
         std::unordered_map<Symbol, std::unordered_set<Symbol>> firstSet;
+        std::map<std::vector<LrItem>, std::vector<LrItem>> closureComputationOnItemsCache;
+        std::unordered_map<LrItem, std::vector<LrItem>> closureComputationCache;
+
+        runtime::Pipe<GotoResult, 1024> pipe;
 
     public:
         explicit LrParserGenerator(
             const LrItem &start_item, Symbol epsilon_symbol,
             const GrammarRulesStorage &parser_rules,
-            std::function<std::string(Id)> id_to_string_converter);
+            std::function<std::string(SmallId)> id_to_string_converter);
 
         [[nodiscard]] auto getGotoTable() -> std::unordered_map<TableEntry, State> &
         {
@@ -48,29 +73,31 @@ namespace ccl::parser
             return grammarRules.isTerminal(symbol);
         }
 
+        auto pushIntoPipe(GotoResult &value) -> void;
+
+        [[nodiscard]] auto tryPopFromPipe(GotoResult &value) noexcept -> PipePopStatus;
+
         auto reduceAction(
             const Action &action,
             std::vector<State> &state_stack,
             std::vector<ast::UnNodePtr> &nodes_stack) const -> void;
 
-        auto gotoFunction(const std::list<LrItem> &items, Symbol symbol) const -> std::list<LrItem>;
+        auto moveCollectionItemsOverSymbol(
+            const CanonicalCollection &canonical_collection,
+            Symbol symbol) -> std::vector<LrItem>;
 
-        auto generateGotoResults(const CanonicalCollection &cc, const LrItem &item)
-            -> std::vector<std::pair<Symbol, std::list<LrItem>>>;
+        auto moveCollectionItemsOverRemainingSymbols(
+            const CanonicalCollection &canonical_collection) -> void;
 
-        auto doCanonicalCollectionConstructionIterationOnItem(
-            isl::thread::IdGenerator &closure_id, const CanonicalCollection &cc,
-            const LrItem &item) -> bool;
+        auto pollCanonicalCollection() -> isl::Task<>;
 
-        auto doCanonicalCollectionConstructionIteration(
-            isl::thread::IdGenerator &closure_id,
-            std::set<Id> &marked_collections) -> bool;
+        auto fillCanonicalCollection(isl::thread::IdGenerator &closure_id) -> bool;
 
         auto constructCanonicalCollection(const LrItem &start_item) -> void;
 
-        auto doClosureComputationIteration(const LrItem &item) const -> isl::Generator<LrItem>;
+        auto computeClosure(const LrItem &item) -> const std::vector<LrItem> &;
 
-        auto computeClosure(std::list<LrItem> s) const -> std::list<LrItem>;
+        auto computeClosureOnItems(std::vector<LrItem> s) -> const std::vector<LrItem> &;
 
         auto fillTablesUsingCanonicalCollection(const CanonicalCollection &cc) -> void;
 

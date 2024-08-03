@@ -19,7 +19,7 @@ namespace ccl::lexer
 
     auto Tokenizer::shouldIgnoreToken(const Token &token) const -> bool
     {
-        const std::vector<Id> &ignored_ids = lexicalAnalyzer.ignoredIds;
+        const auto &ignored_ids = lexicalAnalyzer.ignoredIds;
         return std::ranges::find(ignored_ids, token.getId()) != ignored_ids.end();
     }
 
@@ -100,12 +100,12 @@ namespace ccl::lexer
 
     CCL_INLINE auto Tokenizer::constructEoiToken(Token &token) const -> void
     {
-        token = {textIterator, static_cast<Id>(ReservedTokenType::EOI)};
+        token = {textIterator, std::to_underlying(ReservedTokenType::EOI)};
     }
 
     CCL_INLINE auto Tokenizer::constructBadToken(Token &token) -> void
     {
-        token = {textIterator, static_cast<Id>(ReservedTokenType::BAD_TOKEN)};
+        token = {textIterator, std::to_underlying(ReservedTokenType::BAD_TOKEN)};
 
         while (!isLayoutOrEoF(textIterator.getNextCarriageValue())) {
             textIterator.advance();

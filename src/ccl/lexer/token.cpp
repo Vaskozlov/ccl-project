@@ -51,11 +51,12 @@ namespace ccl::lexer
       , workingLine{text_iterator.getWorkingLine()}
     {}
 
-    Token::Token(Id token_id)
+    Token::Token(SmallId token_id)
       : id{token_id}
     {}
 
-    Token::Token(TokenEnvironment &&token_environment, isl::string_view token_repr, Id token_id)
+    Token::Token(
+        TokenEnvironment &&token_environment, isl::string_view token_repr, SmallId token_id)
       : environment{std::move(token_environment)}
       , repr{token_repr}
       , id{token_id}
@@ -63,17 +64,17 @@ namespace ccl::lexer
 
     Token::Token(
         TokenEnvironment &&token_environment, typename isl::string_view::iterator text_begin,
-        Id token_id)
+        SmallId token_id)
       : Token{std::move(token_environment), {text_begin, isl::as<std::size_t>(0)}, token_id}
     {}
 
-    Token::Token(const text::TextIterator &text_iterator, Id token_id)
+    Token::Token(const text::TextIterator &text_iterator, SmallId token_id)
       : environment{text_iterator}
       , repr{text_iterator.getRemaining()}
       , id{token_id}
     {}
 
-    auto Token::clear(Id new_id) noexcept -> void
+    auto Token::clear(SmallId new_id) noexcept -> void
     {
         id = new_id;
         prefixes.clear();

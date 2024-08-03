@@ -22,10 +22,9 @@ namespace ccl::parser
 }// namespace ccl::parser
 
 template<>
-class std::hash<ccl::parser::TableEntry>
+struct std::hash<ccl::parser::TableEntry>
 {
-public:
-    auto operator()(const ccl::parser::TableEntry &entry) const -> std::size_t
+    [[nodiscard]] auto operator()(const ccl::parser::TableEntry &entry) const noexcept -> uint64_t
     {
         return isl::hash::combine(entry.state, entry.lookAhead);
     }

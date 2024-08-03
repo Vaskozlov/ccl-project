@@ -26,14 +26,14 @@ namespace ccl::parser::reader::ast
         if (alternatives == nullptr) {
             auto not_casted_rule =
                 dynamic_cast<const RulesReaderNode *>(back())->construct(rule_constructor);
-            auto rule = isl::get<std::vector<Id>>(not_casted_rule);
+            auto rule = isl::get<std::vector<SmallId>>(not_casted_rule);
 
             rule_constructor.addParserRule(production_id, parser::Rule{{rule}});
             return std::nullopt;
         }
 
         auto not_casted_rules = alternatives->construct(rule_constructor);
-        const auto rules = isl::get<std::vector<std::vector<Id>>>(not_casted_rules);
+        const auto rules = isl::get<std::vector<std::vector<SmallId>>>(not_casted_rules);
 
         for (const auto &alternative : rules) {
             rule_constructor.addParserRule(production_id, parser::Rule{alternative});

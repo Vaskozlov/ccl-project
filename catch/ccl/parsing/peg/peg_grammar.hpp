@@ -6,7 +6,7 @@
 
 namespace tparser
 {
-    enum class TestParserToken : ccl::Id;
+    enum class TestParserToken : ccl::SmallId;
 }
 
 template<>
@@ -15,7 +15,7 @@ CCL_DECL auto ccl::lexer::lexerEnumToString<tparser::TestParserToken>(
 
 namespace tparser
 {
-    enum class TestParserToken : ccl::Id
+    enum class TestParserToken : ccl::SmallId
     {
         NONE = 0,
         EOI = 0,

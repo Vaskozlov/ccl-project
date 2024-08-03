@@ -6,13 +6,10 @@ namespace ccl::lexer::parser
     static auto EmptyLexicalAnalyzer = lexer::LexicalAnalyzer(ExceptionHandler::instance(), {});
 
     CcllParser::Rule::Rule(
-        BlockInfo &block_info,
-        isl::string_view rule_name,
-        isl::string_view rule_definition)
+        SmallId rule_id, isl::string_view rule_name, isl::string_view rule_definition)
       : name{rule_name}
       , definition{rule_definition}
-      , blockId{block_info.blockId}
-      , id{block_info.lastId++}
+      , id{static_cast<u32>(rule_id)}
     {}
 
     CcllParser::CcllParser(Tokenizer &input_tokenizer)
@@ -26,7 +23,6 @@ namespace ccl::lexer::parser
         while (const Token &token = tokenizer.yield()) {
             switch (isl::as<CcllAnalyzerToken>(token.getId())) {
             case CcllAnalyzerToken::GROUP_DECLARATION:
-                completeGroup(token);
                 break;
 
             case CcllAnalyzerToken::BAD_GROUP_DECLARATION_ONLY_BRACKET:
@@ -77,20 +73,6 @@ namespace ccl::lexer::parser
         return {};
     }
 
-    auto CcllParser::completeGroup(const Token &token) -> void
-    {
-        const auto &prefixes = token.getPrefixes();
-        const auto &group_name = prefixes.at(1);
-
-        currentBlock = group_name;
-
-        if (!ruleBlocks.contains(currentBlock)) {
-            const auto block_id = isl::as<u16>(previousBlockId);
-            ++previousBlockId;
-
-            ruleBlocks.try_emplace(ruleBlocks.end(), currentBlock, BlockInfo{block_id, 0});
-        }
-    }
 
     auto CcllParser::completeRule(const Token &token) -> void
     {
@@ -101,7 +83,7 @@ namespace ccl::lexer::parser
         auto rule = postfixes.at(0);
 
         checkRule(token);
-        rules.emplace_back(ruleBlocks[currentBlock], name, rule);
+        rules.emplace_back(idGenerator.next(), name, rule);
     }
 
     auto CcllParser::completeDirective(const Token &token) -> void

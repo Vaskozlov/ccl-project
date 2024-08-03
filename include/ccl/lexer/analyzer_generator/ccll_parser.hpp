@@ -2,6 +2,7 @@
 #define CCL_PROJECT_CCLL_PARSER_HPP
 
 #include <ccl/lexer/analyzer_generator/analyzer_generator.hpp>
+#include <isl/thread/id_generator.hpp>
 #include <stack>
 
 namespace ccl::lexer::parser
@@ -11,25 +12,16 @@ namespace ccl::lexer::parser
     public:
         using Tokenizer = typename LexicalAnalyzer::Tokenizer;
 
-        struct BlockInfo
-        {
-            u16 blockId{};
-            u16 lastId{};
-        };
-
         class Rule
         {
         public:
             isl::string_view name;
             isl::string_view definition;
-            u16 blockId{};
-            u16 id{};
+            u32 id{};
 
             Rule() = default;
 
-            Rule(
-                BlockInfo &block_info, isl::string_view rule_name,
-                isl::string_view rule_definition);
+            Rule(SmallId rule_id, isl::string_view rule_name, isl::string_view rule_definition);
         };
 
     private:
@@ -45,11 +37,9 @@ namespace ccl::lexer::parser
         std::vector<Rule> rules;
         std::vector<Token> tokenStack;
         std::map<Token, isl::string_view, CompareTokensByRepr> directives;
-        std::map<isl::string_view, BlockInfo> ruleBlocks{{"NONE", {0, ReservedTokenMaxValue + 1}}};
         AnyPlaceItems anyPlaceItems;
-        isl::string_view currentBlock{"NONE"};
         Tokenizer &tokenizer;
-        std::size_t previousBlockId{1};
+        isl::thread::IdGenerator idGenerator{ReservedTokenMaxValue + 1};
 
     public:
         explicit CcllParser(Tokenizer &input_tokenizer);
@@ -57,12 +47,6 @@ namespace ccl::lexer::parser
         [[nodiscard]] auto getRules() const CCL_LIFETIMEBOUND -> const std::vector<Rule> &
         {
             return rules;
-        }
-
-        [[nodiscard]] auto
-            getBlocks() const CCL_LIFETIMEBOUND -> const std::map<isl::string_view, BlockInfo> &
-        {
-            return ruleBlocks;
         }
 
         [[nodiscard]] auto getDirectives() const CCL_LIFETIMEBOUND
@@ -76,7 +60,6 @@ namespace ccl::lexer::parser
     private:
         auto completeRule(const Token &token) -> void;
         auto completeDirective(const Token &token) -> void;
-        auto completeGroup(const Token &token) -> void;
 
         auto checkRule(const Token &token) -> void;
 

@@ -10,7 +10,7 @@ namespace ccl::parser
         const LrItem &start_item,
         Symbol epsilon_symbol,
         const GrammarRulesStorage &parser_rules,
-        std::function<std::string(Id)>
+        std::function<std::string(SmallId)>
             id_to_string_converter)
     {
         auto parser_generator =
@@ -81,9 +81,9 @@ namespace ccl::parser
 
         std::ranges::reverse(items_in_production);
 
-        const auto &rule = lr_item.getRule();
+        const auto *rule = lr_item.getRulePtr();
         auto reduced_item =
-            rule.template construct<isl::UniquePtr>(production, std::move(items_in_production));
+            rule->template construct<isl::UniquePtr>(production, std::move(items_in_production));
 
         nodes_stack.emplace(std::move(reduced_item));
         state_stack.emplace(gotoTable.at({

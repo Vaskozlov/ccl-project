@@ -26,7 +26,7 @@ namespace ccl::lexer::rule
         RuleBlock lhsItem;
 
     public:
-        [[nodiscard]] BinaryExpressionBase(RuleBlock lhs, RuleBlock rhs, Id item_id);
+        [[nodiscard]] BinaryExpressionBase(RuleBlock lhs, RuleBlock rhs, SmallId item_id);
 
         [[nodiscard]] auto empty() const noexcept -> bool override;
 

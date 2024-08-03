@@ -30,12 +30,12 @@ namespace ccl::codegen
 
         struct CCL_TRIVIAL_ABI StreamId
         {
-            Id streamId = 0;
+            SmallId streamId = 0;
         };
 
     private:
-        std::map<Id, std::string> generatedCode;
-        Id streamId{};
+        std::map<SmallId, std::string> generatedCode;
+        SmallId streamId{};
         std::size_t scopesCounter{};
         std::size_t scopeSize{4};
 
@@ -97,7 +97,7 @@ namespace ccl::codegen
         return {.size = size};
     }
 
-    constexpr auto setStream(Id stream_id) noexcept -> BasicCodeGenerator::StreamId
+    constexpr auto setStream(SmallId stream_id) noexcept -> BasicCodeGenerator::StreamId
     {
         return {.streamId = stream_id};
     }

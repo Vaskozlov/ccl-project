@@ -8,8 +8,8 @@ namespace astlang::interpreter
     class Stack
     {
     private:
-        isl::NoexceptMovableMap<std::string, EvaluationResult> globalScope;
-        std::vector<isl::NoexceptMovableMap<std::string, EvaluationResult>> localScopes;
+        std::unordered_map<std::string, EvaluationResult> globalScope;
+        std::vector<std::unordered_map<std::string, EvaluationResult>> localScopes;
 
     public:
         auto read(const std::string &name) -> EvaluationResult &

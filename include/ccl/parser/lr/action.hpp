@@ -60,7 +60,7 @@ namespace ccl::parser
 
         [[nodiscard]] auto getShiftingState() const noexcept -> State
         {
-            return std::get<Id>(data);
+            return std::get<State>(data);
         }
 
         [[nodiscard]] auto getReducingItem() const noexcept CCL_LIFETIMEBOUND -> const LrItem &
@@ -72,7 +72,7 @@ namespace ccl::parser
     struct ActionPrintWrapper
     {
         const Action &action;
-        std::function<std::string(Id)> idToStr;
+        std::function<std::string(SmallId)> idToStr;
     };
 }// namespace ccl::parser
 

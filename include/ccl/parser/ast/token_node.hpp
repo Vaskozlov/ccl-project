@@ -11,7 +11,7 @@ namespace ccl::parser::ast
         lexer::Token token;
 
     public:
-        explicit TokenNode(Id node_type_id, lexer::Token l_token)
+        explicit TokenNode(SmallId node_type_id, lexer::Token l_token)
           : Node{node_type_id}
           , token{std::move(l_token)}
         {}
@@ -23,7 +23,7 @@ namespace ccl::parser::ast
 
         auto print(
             const std::string &prefix, bool is_left,
-            std::function<std::string(Id)> id_converter) const -> void override;
+            std::function<std::string(SmallId)> id_converter) const -> void override;
     };
 }// namespace ccl::parser::ast
 

@@ -12,7 +12,7 @@ namespace ccl::lexer
 
 namespace ccl::lexer::rule
 {
-    enum struct ScanType : Id
+    enum struct ScanType : SmallId
     {
         BASIC,
         SPECIAL
@@ -41,15 +41,15 @@ namespace ccl::lexer::rule
 
     public:
         [[nodiscard]] Container(
-            LexicalAnalyzer &lexical_analyzer, TextIterator &rule_iterator, Id item_id,
+            LexicalAnalyzer &lexical_analyzer, TextIterator &rule_iterator, SmallId item_id,
             bool main_item = false, bool is_special = false);
 
         [[nodiscard]] Container(
-            LexicalAnalyzer &lexical_analyzer, const TextIterator &rule_iterator, Id item_id,
+            LexicalAnalyzer &lexical_analyzer, const TextIterator &rule_iterator, SmallId item_id,
             bool main_item = false, bool is_special = false);
 
         [[nodiscard]] Container(
-            LexicalAnalyzer &lexical_analyzer, Id item_id, bool main_item = false,
+            LexicalAnalyzer &lexical_analyzer, SmallId item_id, bool main_item = false,
             bool is_special = false);
 
         auto addItem(isl::UniquePtr<RuleBlockInterface> new_item) -> void
@@ -122,7 +122,7 @@ namespace ccl::lexer::rule
         RuleParser(Container &target_container, TextIterator &text_iterator);
 
     private:
-        [[nodiscard]] auto getId() const noexcept -> Id
+        [[nodiscard]] auto getId() const noexcept -> SmallId
         {
             return container.getId();
         }

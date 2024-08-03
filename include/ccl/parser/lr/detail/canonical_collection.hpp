@@ -8,8 +8,8 @@ namespace ccl::parser
 {
     struct CanonicalCollection
     {
-        std::list<LrItem> items;
-        Id id{};
+        std::vector<LrItem> items;
+        State id{};
 
         [[nodiscard]] auto operator==(const CanonicalCollection &other) const noexcept -> bool
         {
@@ -20,7 +20,7 @@ namespace ccl::parser
     struct CanonicalCollectionPrintWrapper
     {
         const CanonicalCollection &canonicalCollection;
-        std::function<std::string(Id)> idToStringConversionFunction;
+        std::function<std::string(SmallId)> idToStringConversionFunction;
     };
 }// namespace ccl::parser
 

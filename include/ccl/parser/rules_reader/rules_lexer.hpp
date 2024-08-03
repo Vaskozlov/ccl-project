@@ -6,7 +6,7 @@
 
 namespace ccl::parser::reader
 {
-    enum RulesLexerToken : ccl::Id;
+    enum RulesLexerToken : ccl::u32;
 }
 
 template<>
@@ -15,51 +15,48 @@ CCL_DECL auto ccl::lexer::lexerEnumToString<ccl::parser::reader::RulesLexerToken
 
 namespace ccl::parser::reader
 {
-    enum RulesLexerToken : ccl::Id
+    enum RulesLexerToken : ccl::u32
     {
-        NONE = 0ULL,
-        PARSER_TOKENS = 8589934592ULL,
-        SUCCESS = 4294967296ULL,
         EOI = 0ULL,
         BAD_TOKEN = 1ULL,
         CUT = 2ULL,
-        LEXER_START = 4294967296ULL,
-        PARSER_START = 4294967297ULL,
-        OR = 4294967298ULL,
-        STAR = 4294967299ULL,
-        PLUS = 4294967300ULL,
-        EXCLAMATION_POINT = 4294967301ULL,
-        CURLY_OPEN = 4294967302ULL,
-        CURLY_CLOSE = 4294967303ULL,
-        COMMA = 4294967304ULL,
-        NUMBER = 4294967305ULL,
-        RULE_IDENTIFIER = 4294967306ULL,
-        IDENTIFIER = 4294967307ULL,
-        RULE_REFERENCE = 4294967308ULL,
-        STRING = 4294967309ULL,
-        ANY_PLACE_STRING = 4294967310ULL,
-        UNION = 4294967311ULL,
-        PREFIX_POSTFIX_OPERATOR = 4294967312ULL,
-        HIDE_OPERATOR = 4294967313ULL,
-        NOT_OPERATOR = 4294967314ULL,
-        COLUMN = 4294967315ULL,
-        GOAL = 8589934592ULL,
-        EPSILON = 8589934593ULL,
-        LEXER_BLOCK = 8589934594ULL,
-        LEXER_BLOCK_DEFINITION = 8589934595ULL,
-        PARSER_BLOCK = 8589934596ULL,
-        PARSER_BLOCK_DEFINITION = 8589934597ULL,
-        ANY_BLOCK = 8589934598ULL,
-        LEXER_RULE = 8589934599ULL,
-        PARSER_RULE = 8589934600ULL,
-        PARSER_RULE_BODY = 8589934601ULL,
-        PARSER_RULE_DECL = 8589934602ULL,
-        PARSER_RULE_ALTERNATIVE = 8589934603ULL,
-        LEXER_RULE_BODY = 8589934604ULL,
-        LEXER_RULE_BLOCK = 8589934605ULL,
-        LEXER_RULE_DECL = 8589934606ULL,
-        LEXER_RULE_OPTIONS = 8589934607ULL,
-        LEXER_RULE_ALTERNATIVE = 8589934608ULL,
+        LEXER_START = 3ULL,
+        PARSER_START = 4ULL,
+        OR = 5ULL,
+        STAR = 6ULL,
+        PLUS = 7ULL,
+        EXCLAMATION_POINT = 8ULL,
+        CURLY_OPEN = 9ULL,
+        CURLY_CLOSE = 10ULL,
+        COMMA = 11ULL,
+        NUMBER = 12ULL,
+        RULE_IDENTIFIER = 13ULL,
+        IDENTIFIER = 14ULL,
+        RULE_REFERENCE = 15ULL,
+        STRING = 16ULL,
+        ANY_PLACE_STRING = 17ULL,
+        UNION = 18ULL,
+        PREFIX_POSTFIX_OPERATOR = 19ULL,
+        HIDE_OPERATOR = 20ULL,
+        NOT_OPERATOR = 21ULL,
+        COLUMN = 22ULL,
+        GOAL = 23ULL,
+        EPSILON = 24ULL,
+        LEXER_BLOCK = 25ULL,
+        LEXER_BLOCK_DEFINITION = 26ULL,
+        PARSER_BLOCK = 27ULL,
+        PARSER_BLOCK_DEFINITION = 28ULL,
+        ANY_BLOCK = 29ULL,
+        LEXER_RULE = 30ULL,
+        PARSER_RULE = 31ULL,
+        PARSER_RULE_BODY = 32ULL,
+        PARSER_RULE_DECL = 33ULL,
+        PARSER_RULE_ALTERNATIVE = 34ULL,
+        LEXER_RULE_BODY = 35ULL,
+        LEXER_RULE_BLOCK = 36ULL,
+        LEXER_RULE_DECL = 37ULL,
+        LEXER_RULE_OPTIONS = 38ULL,
+        LEXER_RULE_ALTERNATIVE = 39ULL,
     };
 
     // NOLINTNEXTLINE
@@ -105,7 +102,7 @@ namespace ccl::parser::reader
             {RulesLexerToken::LEXER_RULE_ALTERNATIVE, R"( [#] )"},
         }};
 
-    inline constexpr isl::StaticFlatmap<ccl::Id, isl::string_view, 40> ToStringRulesLexerToken{
+    inline constexpr isl::StaticFlatmap<ccl::SmallId, isl::string_view, 40> ToStringRulesLexerToken{
         {RulesLexerToken::EOI, "EOI"},
         {RulesLexerToken::BAD_TOKEN, "BAD_TOKEN"},
         {RulesLexerToken::CUT, "CUT"},

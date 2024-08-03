@@ -55,7 +55,7 @@ namespace astlang::interpreter
             return variables.globalRead(name);
         }
 
-        [[nodiscard]] auto getRuleId(isl::string_view rule_name) const -> Id
+        [[nodiscard]] auto getRuleId(isl::string_view rule_name) const -> SmallId
         {
             return constructor.getRuleId(rule_name);
         }

@@ -17,9 +17,9 @@ namespace ccl::lexer::rule
     public:
         using typename RuleBlockInterface::TextIterator;
 
-        [[nodiscard]] explicit Union(TextIterator &rule_iterator, Id rule_id = 0);
+        [[nodiscard]] explicit Union(TextIterator &rule_iterator, SmallId rule_id = 0);
 
-        [[nodiscard]] explicit Union(isl::UtfSet stored_symbols, Id rule_id = 0);
+        [[nodiscard]] explicit Union(isl::UtfSet stored_symbols, SmallId rule_id = 0);
 
         [[nodiscard]] auto
             getStoredSymbols() const noexcept CCL_LIFETIMEBOUND -> const isl::UtfSet &

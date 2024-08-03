@@ -16,7 +16,7 @@ namespace ccl::parser::reader::ast
 
     public:
         LexerRuleOptions(
-            Id node_type_id, const std::initializer_list<RulesLexerToken> &rule_options);
+            SmallId node_type_id, const std::initializer_list<RulesLexerToken> &rule_options);
 
         auto addOption(RulesLexerToken option) -> void;
 

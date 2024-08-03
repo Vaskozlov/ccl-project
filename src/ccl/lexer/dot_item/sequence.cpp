@@ -4,14 +4,14 @@ namespace ccl::lexer::rule
 {
     Sequence::Sequence(
         SequenceFlags sequence_flags, isl::string_view sequence_begin_and_end,
-        TextIterator &rule_iterator, Id item_id)
+        TextIterator &rule_iterator, SmallId item_id)
       : Sequence{
             sequence_flags, sequence_begin_and_end, sequence_begin_and_end, rule_iterator, item_id}
     {}
 
     Sequence::Sequence(
         SequenceFlags sequence_flags, isl::string_view sequence_starter,
-        isl::string_view sequence_ender, TextIterator &rule_iterator, Id item_id)
+        isl::string_view sequence_ender, TextIterator &rule_iterator, SmallId item_id)
       : RuleBlockInterface{item_id, Flags{
                                .sequenceIsMultiline=sequence_flags.multiline,
                                .noEscapingSymbols=sequence_flags.noEscaping
@@ -53,7 +53,7 @@ namespace ccl::lexer::rule
         }
     }
 
-    Sequence::Sequence(std::string value, Id item_id)
+    Sequence::Sequence(std::string value, SmallId item_id)
       : RuleBlockInterface{item_id}
       , sequenceValue{std::move(value)}
     {}

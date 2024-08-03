@@ -7,25 +7,22 @@
 
 namespace ccl::parser
 {
-    class LrItem
+    struct LrItem
     {
-    private:
         const Rule *rule;
         std::size_t dotLocation{};
         Symbol production{};
         Symbol lookAhead{};
 
-    public:
-        explicit LrItem(
-            const Rule *item_rule,
-            std::size_t dot_location,
-            Symbol item_name,
-            Symbol look_ahead)
-          : rule{std::move(item_rule)}
-          , dotLocation{std::min(dot_location, rule->size())}
-          , production{item_name}
-          , lookAhead{look_ahead}
-        {}
+        [[nodiscard]] auto begin() const -> decltype(auto)
+        {
+            return rule->begin();
+        }
+
+        [[nodiscard]] auto end() const -> decltype(auto)
+        {
+            return rule->end();
+        }
 
         [[nodiscard]] auto getProductionType() const noexcept -> Symbol
         {
@@ -42,14 +39,14 @@ namespace ccl::parser
             return lookAhead;
         }
 
-        [[nodiscard]] auto getRule() const noexcept CCL_LIFETIMEBOUND -> const Rule &
+        [[nodiscard]] auto getRulePtr() const noexcept CCL_LIFETIMEBOUND -> const Rule *
         {
-            return *rule;
+            return rule;
         }
 
         [[nodiscard]] auto isDotInTheEnd() const noexcept -> bool
         {
-            return dotLocation == rule->size();
+            return dotLocation >= rule->size();
         }
 
         [[nodiscard]] auto at(std::size_t index) const CCL_LIFETIMEBOUND -> Symbol
@@ -62,61 +59,33 @@ namespace ccl::parser
             return rule->size();
         }
 
-        [[nodiscard]] auto operator==(const LrItem &other) const noexcept -> bool
-        {
-            return dotLocation == other.dotLocation && lookAhead == other.lookAhead &&
-                   production == other.production && *rule == *other.rule;
-        }
-
-        [[nodiscard]] auto operator<=>(const LrItem &other) const noexcept -> std::weak_ordering
-        {
-            if (const auto cmp = dotLocation <=> other.dotLocation; cmp != 0) {
-                return cmp;
-            }
-
-            if (const auto cmp = production <=> other.production; cmp != 0) {
-                return cmp;
-            }
-
-            if (const auto cmp = lookAhead <=> other.lookAhead; cmp != 0) {
-                return cmp;
-            }
-
-            return *rule <=> *other.rule;
-        }
+        [[nodiscard]] auto
+            operator<=>(const LrItem &other) const noexcept -> std::weak_ordering = default;
     };
 
     struct LrItemPrintWrapper
     {
         const LrItem &item;
-        std::function<std::string(Id)> idToStr;
+        std::function<std::string(SmallId)> idToStr;
     };
 }// namespace ccl::parser
+
+template<>
+struct std::hash<ccl::parser::LrItem>
+{
+    auto operator()(const ccl::parser::LrItem &item) const -> std::size_t
+    {
+        return isl::hash::combine(
+            reinterpret_cast<std::size_t>(item.rule), item.dotLocation, item.lookAhead);
+    }
+};
 
 template<>
 class fmt::formatter<ccl::parser::LrItemPrintWrapper> : public fmt::formatter<std::string_view>
 {
 public:
-    template<typename FmtContext>
-    auto format(const ccl::parser::LrItemPrintWrapper &item_print_wrapper, FmtContext &ctx) const
-    {
-        const auto &item = item_print_wrapper.item;
-        fmt::format_to(ctx.out(), "{} -> [", item_print_wrapper.idToStr(item.getProductionType()));
-
-        for (std::size_t i = 0; i != item.size(); ++i) {
-            if (i == item.getDotLocation()) {
-                fmt::format_to(ctx.out(), "\u2022");
-            }
-
-            fmt::format_to(ctx.out(), "{} ", item_print_wrapper.idToStr(item.at(i)));
-        }
-
-        if (item.isDotInTheEnd()) {
-            fmt::format_to(ctx.out(), "\u2022");
-        }
-
-        return fmt::format_to(ctx.out(), ", {}]", item_print_wrapper.idToStr(item.getLookAhead()));
-    }
+    auto format(const ccl::parser::LrItemPrintWrapper &item_print_wrapper, format_context &ctx)
+        const -> typename format_context::iterator;
 };
 
 #endif /* CCL_PROJECT_LR_ITEM_HPP */

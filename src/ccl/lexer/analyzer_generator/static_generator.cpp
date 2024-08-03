@@ -20,7 +20,7 @@ namespace ccl::lexer::gen
     }();
 
     constexpr static auto BuiltinRules =
-        isl::StaticFlatmap<isl::string_view, Id, ReservedTokenMaxValue + 1>{
+        isl::StaticFlatmap<isl::string_view, SmallId, ReservedTokenMaxValue + 1>{
             {"EOI", 0},
             {"BAD_TOKEN", 1},
             {"CUT", 2}};
@@ -90,7 +90,7 @@ namespace ccl::lexer::gen
                 codeGenerator << pop_scope << endl << '}' << endl << endl;
             }};
 
-            codeGenerator << "enum " << enumName << " : ccl::Id;";
+            codeGenerator << "enum " << enumName << " : ccl::u32;";
         }
 
         codeGenerator
@@ -137,7 +137,8 @@ namespace ccl::lexer::gen
         const auto &rules = ccllParser.getRules();
 
         codeGenerator << fmt::format(
-            "inline constexpr isl::StaticFlatmap<ccl::Id, isl::string_view, {}> ToString{}Token\n",
+            "inline constexpr isl::StaticFlatmap<ccl::SmallId, isl::string_view, {}> "
+            "ToString{}Token\n",
             BuiltinRules.size() + rules.size(), variableName);
         codeGenerator << '{' << push_scope;
 
@@ -163,7 +164,7 @@ namespace ccl::lexer::gen
 
     auto StaticGenerator::generateEnum() -> void
     {
-        codeGenerator << "enum " << enumName << " : ccl::Id {";
+        codeGenerator << "enum " << enumName << " : ccl::u32 {";
         codeGenerator << push_scope;
 
         auto enum_definition = isl::Raii{[this]() {
@@ -178,23 +179,11 @@ namespace ccl::lexer::gen
     {
         auto generated_blocks = std::set<isl::string_view>{};
         auto generated_enum_cases = std::set<isl::string_view>{};
-        const auto &blocks = ccllParser.getBlocks();
         const auto &rules = ccllParser.getRules();
 
-        const auto output_enum_case = [this](isl::string_view name, Id id) {
-            codeGenerator << endl << name << " = " << fmt::to_string(id) << "ULL,";
+        const auto output_enum_case = [this](isl::string_view name, SmallId id) {
+            codeGenerator << endl << name << " = " << fmt::to_string(id) << ',';
         };
-
-        for (const auto &[block_name, block_info] : blocks) {
-            if (generated_blocks.contains(block_name)) {
-                continue;
-            }
-
-            auto block_id = isl::as<Id>(block_info.blockId) << ShiftSize;
-
-            generated_blocks.emplace(block_name);
-            output_enum_case(block_name, block_id);
-        }
 
         for (const auto &[rule_name, rule_id] : BuiltinRules) {
             generated_enum_cases.emplace(rule_name);
@@ -206,10 +195,8 @@ namespace ccl::lexer::gen
                 continue;
             }
 
-            auto id = (isl::as<Id>(rule.blockId) << ShiftSize) + rule.id;
-
             generated_enum_cases.emplace(rule.name);
-            output_enum_case(rule.name, id);
+            output_enum_case(rule.name, rule.id);
         }
     }
 

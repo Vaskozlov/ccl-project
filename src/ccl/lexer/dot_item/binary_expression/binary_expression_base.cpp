@@ -2,7 +2,7 @@
 
 namespace ccl::lexer::rule
 {
-    BinaryExpressionBase::BinaryExpressionBase(RuleBlock lhs, RuleBlock rhs, Id item_id)
+    BinaryExpressionBase::BinaryExpressionBase(RuleBlock lhs, RuleBlock rhs, SmallId item_id)
       : RuleBlockInterface{item_id}
       , rhsItem{std::move(rhs)}
       , lhsItem{std::move(lhs)}

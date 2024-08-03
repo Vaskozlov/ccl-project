@@ -27,7 +27,7 @@ namespace ccl::parser::reader::ast
     };
 
     LexerRuleOptions::LexerRuleOptions(
-        Id node_type_id, const std::initializer_list<RulesLexerToken> &rule_options)
+        SmallId node_type_id, const std::initializer_list<RulesLexerToken> &rule_options)
       : parser::ast::StringNode{node_type_id, ""}
     {
         for (const auto option : rule_options) {

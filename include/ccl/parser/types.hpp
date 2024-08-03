@@ -5,8 +5,8 @@
 
 namespace ccl::parser
 {
-    using State = std::size_t;
-    using Symbol = std::size_t;
+    using State = SmallId;
+    using Symbol = SmallId;
 
     template<typename T>
     using Stack = std::stack<T, std::vector<T>>;

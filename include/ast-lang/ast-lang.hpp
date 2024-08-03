@@ -22,7 +22,7 @@ namespace astlang
     using u32 = ccl::u32;
     using u64 = ccl::u64;
 
-    using Id = ccl::Id;
+    using SmallId = ccl::SmallId;
     using State = ccl::parser::State;
     using Symbol = ccl::parser::Symbol;
 

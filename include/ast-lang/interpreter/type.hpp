@@ -13,7 +13,7 @@ namespace astlang::interpreter
     class Type
     {
     public:
-        enum CoreType : Id
+        enum CoreType : SmallId
         {
             ERROR,
             ANY,

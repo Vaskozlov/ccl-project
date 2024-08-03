@@ -23,24 +23,24 @@ namespace ccl::lexer
 
         struct CCL_TRIVIAL_ABI Rule
         {
-            Id id{};
             isl::string_view repr;
             isl::string_view name;
+            u32 id{};
 
             template<typename T>
             constexpr Rule(T rule_id, isl::string_view rule_repr)
-              : id{isl::as<Id>(rule_id)}
-              , repr{rule_repr}
+              : repr{rule_repr}
               , name{lexerEnumToString<T>(rule_id)}
+              , id{isl::as<u32>(rule_id)}
             {}
         };
 
         std::map<isl::string_view, Container *> allItemsMap;
         std::vector<isl::UniquePtr<Container>> items;
         AnyPlaceItems anyPlaceItems;
-        std::vector<Id> ignoredIds;
+        std::vector<u32> ignoredIds;
         std::string skippedCharacters;
-        std::atomic<std::size_t> idCounter{0};
+        std::atomic<u32> idCounter{0};
 
         // NOLINTNEXTLINE reference
         ExceptionHandler &exceptionHandler;
@@ -53,7 +53,7 @@ namespace ccl::lexer
 
         [[nodiscard]] LexicalAnalyzer(
             ExceptionHandler &exception_handler, const std::initializer_list<Rule> &rules,
-            isl::string_view filename = {}, std::vector<Id> ignored_ids = {});
+            isl::string_view filename = {}, std::vector<u32> ignored_ids = {});
 
         [[nodiscard]] auto shareAnyPlaceItems() CCL_LIFETIMEBOUND -> AnyPlaceItems &
         {
@@ -72,7 +72,7 @@ namespace ccl::lexer
             }
         }
 
-        [[nodiscard]] auto getIgnoredIds() const CCL_LIFETIMEBOUND -> const std::vector<Id> &
+        [[nodiscard]] auto getIgnoredIds() const CCL_LIFETIMEBOUND -> const std::vector<u32> &
         {
             return ignoredIds;
         }
@@ -109,13 +109,13 @@ namespace ccl::lexer
             return items;
         }
 
-        [[nodiscard]] auto generateIdForItem() noexcept -> std::size_t
+        [[nodiscard]] auto generateIdForItem() noexcept -> SmallId
         {
-            return idCounter.fetch_add(1U, std::memory_order_relaxed);
+            return static_cast<SmallId>(idCounter.fetch_add(1U, std::memory_order_relaxed));
         }
 
     private:
-        auto createContainer(const Rule &rule, Id id, isl::string_view filename) -> void;
+        auto createContainer(const Rule &rule, u32 id, isl::string_view filename) -> void;
     };
 }// namespace ccl::lexer
 

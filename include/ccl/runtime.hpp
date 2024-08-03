@@ -3,6 +3,7 @@
 
 #include <isl/coroutine/generator.hpp>
 #include <isl/thread/id_generator.hpp>
+#include <isl/thread/lockfree/spsc_pipe.hpp>
 #include <isl/thread/pool.hpp>
 
 namespace ccl::runtime
@@ -15,6 +16,9 @@ namespace ccl::runtime
     {
         return pool->submit(std::move(task));
     }
+
+    template<typename T, std::size_t N = 512>
+    using Pipe = isl::thread::lock_free::SpscPipe<T, N>;
 }// namespace ccl::runtime
 
 #endif /* CCL_PROJECT_RUNTIME_HPP */

@@ -62,17 +62,11 @@ namespace ccl::parser::detail
         }
 
         for (auto &[key, rule] : pendingRulesToAdd) {
-            auto &rules = storage.at(key);
-            rules.emplace_back(std::move(rule));
+            storage.tryEmplace(key, std::move(rule));
         }
 
         for (const auto &[key, rule] : pendingRulesToRemove) {
-            auto &rules = storage.at(key);
-            auto rule_it_to_remove = std::ranges::find(rules, rule);
-
-            if (rule_it_to_remove != rules.end()) {
-                rules.erase(rule_it_to_remove);
-            }
+            storage.eraseRule(key, rule);
         }
     }
 }// namespace ccl::parser::detail

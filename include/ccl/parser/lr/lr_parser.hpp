@@ -21,7 +21,7 @@ namespace ccl::parser
             const LrItem &start_item,
             Symbol epsilon_symbol,
             const GrammarRulesStorage &parser_rules,
-            std::function<std::string(Id)> id_to_string_converter = [](Id id) {
+            std::function<std::string(SmallId)> id_to_string_converter = [](auto id) {
                 return std::to_string(id);
             });
 

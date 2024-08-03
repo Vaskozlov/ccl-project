@@ -13,13 +13,13 @@ namespace astlang::ast
         static auto reconstructNode(ccl::parser::ast::UnNodeSequence *node)
             -> isl::UniquePtr<ccl::parser::ast::Node>
         {
-            return isl::makeUnique<T>(isl::as<Id>(node->getType()), std::move(node->getNodes()));
+            return isl::makeUnique<T>(node->getType(), std::move(node->getNodes()));
         }
 
     public:
         using Node::Node;
         using ConvertionTable = isl::StaticFlatmap<
-            Id,
+            SmallId,
             isl::UniquePtr<ccl::parser::ast::Node> (*)(ccl::parser::ast::UnNodeSequence *),
             35>;
 

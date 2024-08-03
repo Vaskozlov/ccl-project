@@ -24,11 +24,11 @@ namespace ccl::parser::ast
         }
 
     public:
-        explicit NodeSequence(Id node_type_id)
+        explicit NodeSequence(SmallId node_type_id)
           : NodeOfNodes{node_type_id}
         {}
 
-        explicit NodeSequence(Id node_type_id, std::vector<SmartPointer<Node>> initial_nodes)
+        explicit NodeSequence(SmallId node_type_id, std::vector<SmartPointer<Node>> initial_nodes)
           : NodeOfNodes{node_type_id}
           , nodes{std::move(initial_nodes)}
         {}
