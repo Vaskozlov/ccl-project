@@ -1,8 +1,11 @@
 #include <ast-lang/ast/expression/factor.hpp>
 #include <ast-lang/interpreter/interpreter.hpp>
+#include <charconv>
 
 namespace astlang::ast::expression
 {
+    using namespace interpreter;
+
     static auto constructNumber(NodePtr node) -> EvaluationResult
     {
         const auto *token_node = node.tokenNode;
@@ -12,7 +15,10 @@ namespace astlang::ast::expression
         auto value = isl::ssize_t{};
         std::from_chars(repr.data(), repr.data() + repr.size(), value);
 
-        return interpreter::EvaluationResult{isl::UniqueAny(std::move(value)), Type::INT};
+        return EvaluationResult{
+            .value = isl::makeAny<isl::ssize_t>(value),
+            .type = Type::INT,
+        };
     }
 
     static auto constructString(NodePtr node) -> EvaluationResult
@@ -45,15 +51,15 @@ namespace astlang::ast::expression
         auto node = NodePtr{this->front()};
         auto node_type = node.cclNode->getType();
 
-        if (node_type == interpreter.getRuleId("NUMBER")) {
+        if (node_type == interpreter.NUMBER) {
             return constructNumber(NodePtr{node});
         }
 
-        if (node_type == interpreter.getRuleId("STRING")) {
+        if (node_type == interpreter.STRING) {
             return constructString(NodePtr{node});
         }
 
-        if (node_type == interpreter.getRuleId("IDENTIFIER")) {
+        if (node_type == interpreter.IDENTIFIER) {
             auto &read_result = readVariable(interpreter, NodePtr{node});
 
             return EvaluationResult{
@@ -63,11 +69,11 @@ namespace astlang::ast::expression
             };
         }
 
-        if (node_type == interpreter.getRuleId("FUNCTION_CALL")) {
+        if (node_type == interpreter.FUNCTION_CALL) {
             return node.astlangNode->compute(interpreter);
         }
 
-        if (node_type == interpreter.getRuleId("METHOD_CALL")) {
+        if (node_type == interpreter.METHOD_CALL) {
             return node.astlangNode->compute(interpreter);
         }
 

@@ -468,6 +468,10 @@ namespace ccl::parser::reader
     };
 
     RulesReader::RulesReader(isl::string_view input, isl::string_view filename)
+      : readerOptions{
+            ReaderOption::WARNINGS_ENABLE,
+            ReaderOption::SUGGESTIONS_ENABLE,
+        }
     {
         static auto initial_rule = Rule{{RulesLexerToken::ANY_BLOCK}};
 

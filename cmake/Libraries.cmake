@@ -15,6 +15,12 @@ CPMAddPackage(
 )
 
 CPMAddPackage(
+        NAME unordered_dense
+        GITHUB_REPOSITORY martinus/unordered_dense
+        GIT_TAG main
+)
+
+CPMAddPackage(
         NAME cxxopts
         GITHUB_REPOSITORY jarro2783/cxxopts
         GIT_TAG master

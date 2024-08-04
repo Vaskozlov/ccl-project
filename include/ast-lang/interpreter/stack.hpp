@@ -1,6 +1,7 @@
 #ifndef CCL_PROJECT_STACK_HPP
 #define CCL_PROJECT_STACK_HPP
 
+#include <ankerl/unordered_dense.h>
 #include <ast-lang/interpreter/evaluation_result.hpp>
 
 namespace astlang::interpreter
@@ -8,8 +9,8 @@ namespace astlang::interpreter
     class Stack
     {
     private:
-        std::unordered_map<std::string, EvaluationResult> globalScope;
-        std::vector<std::unordered_map<std::string, EvaluationResult>> localScopes;
+        ankerl::unordered_dense::map<std::string, EvaluationResult> globalScope;
+        std::vector<ankerl::unordered_dense::map<std::string, EvaluationResult>> localScopes;
 
     public:
         auto read(const std::string &name) -> EvaluationResult &

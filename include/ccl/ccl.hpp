@@ -43,6 +43,7 @@ namespace ccl
     using u64 = isl::u64;
 
     using SmallId = u32;
+    using Id = u64;
 
     using f32 = isl::f32;
     using f64 = isl::f64;

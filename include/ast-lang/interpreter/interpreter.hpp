@@ -16,6 +16,19 @@ namespace astlang::interpreter
         ccl::parser::reader::RulesConstructor &constructor;
 
     public:
+        const SmallId NUMBER = constructor.getRuleId("NUMBER");
+        const SmallId STRING = constructor.getRuleId("STRING");
+        const SmallId IDENTIFIER = constructor.getRuleId("IDENTIFIER");
+        const SmallId FUNCTION_CALL = constructor.getRuleId("FUNCTION_CALL");
+        const SmallId METHOD_CALL = constructor.getRuleId("METHOD_CALL");
+        const SmallId EXPRESSION = constructor.getRuleId("EXPRESSION");
+        const SmallId FACTOR = constructor.getRuleId("FACTOR");
+        const SmallId TERM = constructor.getRuleId("TERM");
+        const SmallId PLUS = constructor.getRuleId("\'+\'");
+        const SmallId MINUS = constructor.getRuleId("\'-\'");
+        const SmallId MULTIPLY = constructor.getRuleId("\'*\'");
+        const SmallId DIVIDE = constructor.getRuleId("\'/\'");
+
         explicit Interpreter(ccl::parser::reader::RulesConstructor &rules_constructor)
           : constructor(rules_constructor)
         {}

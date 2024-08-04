@@ -17,7 +17,7 @@ namespace ccl::lexer::parser
         public:
             isl::string_view name;
             isl::string_view definition;
-            u32 id{};
+            SmallId id{};
 
             Rule() = default;
 

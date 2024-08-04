@@ -7,25 +7,26 @@ namespace astlang::ast::expression
 
     auto Term::compute(Interpreter &interpreter) -> EvaluationResult
     {
-        auto front_node = NodePtr{this->front()};
+        auto front_node = NodePtr{front()};
 
-        if (this->size() == 1) {
+        if (size() == 1) {
             return front_node.astlangNode->compute(interpreter);
         }
 
-        auto middle_node = NodePtr{this->at(1)};
-        auto back_node = NodePtr{this->back()};
+        auto middle_node = NodePtr{at(1)};
+        auto back_node = NodePtr{back()};
+
         auto arguments = FunctionCallArguments{};
         arguments.reserve(2);
 
         arguments.emplace_back(front_node.astlangNode->compute(interpreter));
         arguments.emplace_back(back_node.astlangNode->compute(interpreter));
 
-        if (middle_node.cclNode->getType() == interpreter.getRuleId("\'*\'")) {
+        if (middle_node.cclNode->getType() == interpreter.MULTIPLY) {
             return interpreter.call("__multiply__", std::move(arguments));
         }
 
-        if (middle_node.cclNode->getType() == interpreter.getRuleId("\'/\'")) {
+        if (middle_node.cclNode->getType() == interpreter.DIVIDE) {
             return interpreter.call("__divide__", std::move(arguments));
         }
 

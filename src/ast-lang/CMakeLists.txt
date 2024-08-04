@@ -26,12 +26,14 @@ add_dependencies(
         astlang
         ccl
         fmt::fmt-header-only
+        unordered_dense::unordered_dense
 )
 
 target_link_libraries(
         astlang
         ccl
         fmt::fmt-header-only
+        unordered_dense::unordered_dense
 )
 
 if (CCL_PRECOMPILED_HEADERS)

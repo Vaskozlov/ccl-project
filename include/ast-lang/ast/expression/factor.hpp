@@ -3,7 +3,6 @@
 
 #include <ast-lang/ast/node.hpp>
 #include <ccl/text/remove_escaping.hpp>
-#include <charconv>
 
 namespace astlang::ast::expression
 {
@@ -12,12 +11,10 @@ namespace astlang::ast::expression
     public:
         using Node::Node;
 
-        auto compute(interpreter::Interpreter &interpreter)
-            -> interpreter::EvaluationResult override;
+        auto compute(Interpreter &interpreter) -> EvaluationResult override;
 
     private:
-        auto computeExpression(interpreter::Interpreter &interpreter)
-            -> interpreter::EvaluationResult;
+        auto computeExpression(Interpreter &interpreter) -> EvaluationResult;
     };
 }// namespace astlang::ast::expression
 

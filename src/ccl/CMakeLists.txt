@@ -26,12 +26,14 @@ add_dependencies(
         ccl
         isl
         fmt::fmt-header-only
+        unordered_dense::unordered_dense
 )
 
 target_link_libraries(
         ccl
         isl
         fmt::fmt-header-only
+        unordered_dense::unordered_dense
 )
 
 if (CCL_PRECOMPILED_HEADERS)

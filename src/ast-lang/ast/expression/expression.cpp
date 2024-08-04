@@ -3,27 +3,29 @@
 
 namespace astlang::ast::expression
 {
+    using namespace interpreter;
+
     auto Expression::compute(Interpreter &interpreter) -> EvaluationResult
     {
-        auto front_node = NodePtr{this->front()};
+        auto front_node = NodePtr{front()};
 
         if (this->size() == 1) {
             return front_node.astlangNode->compute(interpreter);
         }
 
-        auto middle_node = NodePtr{this->at(1)};
-        auto back_node = NodePtr{this->back()};
-        auto arguments = interpreter::FunctionCallArguments{};
+        auto middle_node = NodePtr{at(1)};
+        auto back_node = NodePtr{back()};
+        auto arguments = FunctionCallArguments{};
         arguments.reserve(2);
 
         arguments.emplace_back(front_node.astlangNode->compute(interpreter));
         arguments.emplace_back(back_node.astlangNode->compute(interpreter));
 
-        if (middle_node.cclNode->getType() == interpreter.getRuleId("\'+\'")) {
+        if (middle_node.cclNode->getType() == interpreter.PLUS) {
             return interpreter.call("__addition__", std::move(arguments));
         }
 
-        if (middle_node.cclNode->getType() == interpreter.getRuleId("\'-\'")) {
+        if (middle_node.cclNode->getType() == interpreter.MINUS) {
             return interpreter.call("__subtraction__", std::move(arguments));
         }
 
