@@ -1,5 +1,5 @@
-#ifndef CCL_PROJECT_GOAL_HPP
-#define CCL_PROJECT_GOAL_HPP
+#ifndef CCL_PROJECT_ASTLANG_GOAL_HPP
+#define CCL_PROJECT_ASTLANG_GOAL_HPP
 
 #include <ast-lang/ast/node.hpp>
 
@@ -18,4 +18,4 @@ namespace astlang::ast
     };
 }// namespace astlang::ast
 
-#endif /* CCL_PROJECT_GOAL_HPP */
+#endif /* CCL_PROJECT_ASTLANG_GOAL_HPP */

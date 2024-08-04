@@ -7,29 +7,16 @@ namespace astlang::ast::expression
 
     auto Term::compute(Interpreter &interpreter) -> EvaluationResult
     {
-        auto front_node = NodePtr{front()};
-
-        if (size() == 1) {
-            return front_node.astlangNode->compute(interpreter);
-        }
-
-        auto middle_node = NodePtr{at(1)};
-        auto back_node = NodePtr{back()};
-
-        auto arguments = FunctionCallArguments{};
-        arguments.reserve(2);
-
-        arguments.emplace_back(front_node.astlangNode->compute(interpreter));
-        arguments.emplace_back(back_node.astlangNode->compute(interpreter));
-
-        if (middle_node.cclNode->getType() == interpreter.MULTIPLY) {
-            return interpreter.call("__multiply__", std::move(arguments));
-        }
-
-        if (middle_node.cclNode->getType() == interpreter.DIVIDE) {
-            return interpreter.call("__divide__", std::move(arguments));
-        }
-
-        throw std::runtime_error("Invalid term expression");
+        return computeBinaryExpression(
+            interpreter, {
+                             {
+                                 interpreter.MULTIPLY,
+                                 "__multiply__",
+                             },
+                             {
+                                 interpreter.DIVIDE,
+                                 "__divide__",
+                             },
+                         });
     }
 }// namespace astlang::ast::expression

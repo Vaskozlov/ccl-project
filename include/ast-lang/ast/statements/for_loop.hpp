@@ -1,5 +1,5 @@
-#ifndef CCL_PROJECT_FOR_LOOP_HPP
-#define CCL_PROJECT_FOR_LOOP_HPP
+#ifndef CCL_PROJECT_ASTLANG_FOR_LOOP_HPP
+#define CCL_PROJECT_ASTLANG_FOR_LOOP_HPP
 
 #include <ast-lang/ast/node.hpp>
 
@@ -12,10 +12,9 @@ namespace astlang::ast::statement
 
         auto compute(Interpreter &interpreter) -> EvaluationResult override
         {
-            return interpreter::EvaluationResult{
-                .value = std::nullopt, .type = interpreter::Type::VOID};
+            return EvaluationResult{.value = std::nullopt, .type = interpreter::Type::VOID};
         }
     };
 }// namespace astlang::ast::statement
 
-#endif /* CCL_PROJECT_FOR_LOOP_HPP */
+#endif /* CCL_PROJECT_ASTLANG_FOR_LOOP_HPP */

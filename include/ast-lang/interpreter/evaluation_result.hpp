@@ -1,5 +1,5 @@
-#ifndef CCL_PROJECT_EVALUATION_RESULT_HPP
-#define CCL_PROJECT_EVALUATION_RESULT_HPP
+#ifndef CCL_PROJECT_ASTLANG_EVALUATION_RESULT_HPP
+#define CCL_PROJECT_ASTLANG_EVALUATION_RESULT_HPP
 
 #include <ast-lang/interpreter/type.hpp>
 #include <isl/unique_any.hpp>
@@ -34,4 +34,4 @@ namespace astlang
     }
 }// namespace astlang
 
-#endif /* CCL_PROJECT_EVALUATION_RESULT_HPP */
+#endif /* CCL_PROJECT_ASTLANG_EVALUATION_RESULT_HPP */

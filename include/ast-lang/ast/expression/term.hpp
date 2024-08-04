@@ -1,17 +1,17 @@
-#ifndef CCL_PROJECT_TERM_HPP
-#define CCL_PROJECT_TERM_HPP
+#ifndef CCL_PROJECT_ASTLANG_TERM_HPP
+#define CCL_PROJECT_ASTLANG_TERM_HPP
 
-#include <ast-lang/ast/node.hpp>
+#include <ast-lang/ast/expression/binary_expression_base.hpp>
 
 namespace astlang::ast::expression
 {
-    class Term : public Node
+    class Term : public BinaryExpressionBase
     {
     public:
-        using Node::Node;
+        using BinaryExpressionBase::BinaryExpressionBase;
 
         auto compute(Interpreter &interpreter) -> EvaluationResult override;
     };
 }// namespace astlang::ast::expression
 
-#endif /* CCL_PROJECT_TERM_HPP */
+#endif /* CCL_PROJECT_ASTLANG_TERM_HPP */

@@ -1,5 +1,5 @@
-#ifndef CCL_PROJECT_INTERPRETER_HPP
-#define CCL_PROJECT_INTERPRETER_HPP
+#ifndef CCL_PROJECT_ASTLANG_INTERPRETER_HPP
+#define CCL_PROJECT_ASTLANG_INTERPRETER_HPP
 
 #include <ast-lang/interpreter/functions.hpp>
 #include <ast-lang/interpreter/stack.hpp>
@@ -21,13 +21,39 @@ namespace astlang::interpreter
         const SmallId IDENTIFIER = constructor.getRuleId("IDENTIFIER");
         const SmallId FUNCTION_CALL = constructor.getRuleId("FUNCTION_CALL");
         const SmallId METHOD_CALL = constructor.getRuleId("METHOD_CALL");
-        const SmallId EXPRESSION = constructor.getRuleId("EXPRESSION");
+
+        const SmallId VALUE = constructor.getRuleId("VALUE");
         const SmallId FACTOR = constructor.getRuleId("FACTOR");
         const SmallId TERM = constructor.getRuleId("TERM");
+        const SmallId EXPRESSION = constructor.getRuleId("EXPRESSION");
+        const SmallId COMPARISON = constructor.getRuleId("COMPARISON");
+        const SmallId EQUALITY = constructor.getRuleId("EQUALITY");
+        const SmallId BITWISE_AND_EXPRESSION = constructor.getRuleId("BITWISE_AND_EXPRESSION");
+        const SmallId BITWISE_XOR_EXPRESSION = constructor.getRuleId("BITWISE_XOR_EXPRESSION");
+        const SmallId BITWISE_OR_EXPRESSION = constructor.getRuleId("BITWISE_OR_EXPRESSION");
+        const SmallId LOGICAL_AND_EXPRESSION = constructor.getRuleId("LOGICAL_AND_EXPRESSION");
+        const SmallId LOGICAL_OR_EXPRESSION = constructor.getRuleId("LOGICAL_OR_EXPRESSION");
+
         const SmallId PLUS = constructor.getRuleId("\'+\'");
         const SmallId MINUS = constructor.getRuleId("\'-\'");
+
         const SmallId MULTIPLY = constructor.getRuleId("\'*\'");
         const SmallId DIVIDE = constructor.getRuleId("\'/\'");
+
+        const SmallId LESS = constructor.getRuleId("\'<\'");
+        const SmallId LESS_EQUAL = constructor.getRuleId("\'<=\'");
+        const SmallId GREATER = constructor.getRuleId("\'>\'");
+        const SmallId GREATER_EQUAL = constructor.getRuleId("\'>=\'");
+
+        const SmallId EQUAL = constructor.getRuleId("\'==\'");
+        const SmallId NOT_EQUAL = constructor.getRuleId("\'!=\'");
+
+        const SmallId LOGICAL_AND = constructor.getRuleId("\'&&\'");
+        const SmallId LOGICAL_OR = constructor.getRuleId("\'||\'");
+
+        const SmallId BITWISE_AND = constructor.getRuleId("\'&\'");
+        const SmallId BITWISE_OR = constructor.getRuleId("\'|\'");
+        const SmallId BITWISE_XOR = constructor.getRuleId("\'^\'");
 
         explicit Interpreter(ccl::parser::reader::RulesConstructor &rules_constructor)
           : constructor(rules_constructor)
@@ -105,4 +131,4 @@ namespace astlang::interpreter
     };
 }// namespace astlang::interpreter
 
-#endif /* CCL_PROJECT_INTERPRETER_HPP */
+#endif /* CCL_PROJECT_ASTLANG_INTERPRETER_HPP */

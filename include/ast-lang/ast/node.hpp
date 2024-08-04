@@ -20,7 +20,7 @@ namespace astlang::ast
         using ConstructionFunction =
             isl::UniquePtr<ccl::parser::ast::Node> (*)(ccl::parser::ast::UnNodeSequence *);
 
-        using ConvertionTable = isl::StaticFlatmap<SmallId, ConstructionFunction, 35>;
+        using ConvertionTable = isl::StaticFlatmap<SmallId, ConstructionFunction, 50>;
 
         template<typename T>
         static auto reconstructNode(ccl::parser::ast::UnNodeSequence *node)
@@ -33,6 +33,8 @@ namespace astlang::ast
         using Interpreter = interpreter::Interpreter;
         using EvaluationResult = interpreter::EvaluationResult;
         using ccl::parser::ast::UnNodeSequence::NodeSequence;
+
+        virtual auto optimize() -> isl::UniquePtr<ccl::parser::ast::Node>;
 
         virtual auto compute(Interpreter &interpreter) -> EvaluationResult = 0;
 

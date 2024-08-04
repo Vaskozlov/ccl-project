@@ -1,5 +1,5 @@
-#ifndef CCL_PROJECT_PARSER_RULE_BODY_HPP
-#define CCL_PROJECT_PARSER_RULE_BODY_HPP
+#ifndef CCL_PROJECT_ASTLANG_PARSER_RULE_BODY_HPP
+#define CCL_PROJECT_ASTLANG_PARSER_RULE_BODY_HPP
 
 #include <ast-lang/ast/node.hpp>
 
@@ -19,4 +19,4 @@ namespace astlang::ast
 }// namespace astlang::ast
 
 
-#endif /* CCL_PROJECT_PARSER_RULE_BODY_HPP */
+#endif /* CCL_PROJECT_ASTLANG_PARSER_RULE_BODY_HPP */

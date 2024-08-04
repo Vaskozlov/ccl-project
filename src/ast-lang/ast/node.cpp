@@ -1,5 +1,12 @@
+#include <ast-lang/ast/expression/bitwise_and.hpp>
+#include <ast-lang/ast/expression/bitwise_or.hpp>
+#include <ast-lang/ast/expression/bitwise_xor.hpp>
+#include <ast-lang/ast/expression/comparison.hpp>
+#include <ast-lang/ast/expression/equality.hpp>
 #include <ast-lang/ast/expression/expression.hpp>
 #include <ast-lang/ast/expression/factor.hpp>
+#include <ast-lang/ast/expression/logical_and.hpp>
+#include <ast-lang/ast/expression/logical_or.hpp>
 #include <ast-lang/ast/expression/term.hpp>
 #include <ast-lang/ast/expression/value.hpp>
 #include <ast-lang/ast/function_call/arguments.hpp>
@@ -35,6 +42,11 @@
 namespace astlang::ast
 {
     using namespace ccl::parser;
+
+    auto Node::optimize() -> isl::UniquePtr<ccl::parser::ast::Node>
+    {
+        return nullptr;
+    }
 
     auto Node::convertCclTreeToAstlang(reader::RulesConstructor &constructor, Node *node) -> void
     {
@@ -130,6 +142,34 @@ namespace astlang::ast
             {
                 constructor.getRuleId("RETURN_STATEMENT"),
                 reconstructNode<statement::ReturnStatement>,
+            },
+            {
+                constructor.getRuleId("LOGICAL_OR_EXPRESSION"),
+                reconstructNode<expression::LogicalOr>,
+            },
+            {
+                constructor.getRuleId("LOGICAL_AND_EXPRESSION"),
+                reconstructNode<expression::LogicalAnd>,
+            },
+            {
+                constructor.getRuleId("BITWISE_OR_EXPRESSION"),
+                reconstructNode<expression::BitwiseOr>,
+            },
+            {
+                constructor.getRuleId("BITWISE_XOR_EXPRESSION"),
+                reconstructNode<expression::BitwiseXor>,
+            },
+            {
+                constructor.getRuleId("BITWISE_AND_EXPRESSION"),
+                reconstructNode<expression::BitwiseAnd>,
+            },
+            {
+                constructor.getRuleId("EQUALITY"),
+                reconstructNode<expression::Equality>,
+            },
+            {
+                constructor.getRuleId("COMPARISON"),
+                reconstructNode<expression::Comparison>,
             },
             {
                 constructor.getRuleId("EXPRESSION"),

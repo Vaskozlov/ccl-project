@@ -1,5 +1,5 @@
-#ifndef CCL_PROJECT_ARGUMENTS_HPP
-#define CCL_PROJECT_ARGUMENTS_HPP
+#ifndef CCL_PROJECT_ASTLANG_ARGUMENTS_HPP
+#define CCL_PROJECT_ASTLANG_ARGUMENTS_HPP
 
 #include <ast-lang/ast/node.hpp>
 
@@ -14,4 +14,4 @@ namespace astlang::ast::function::call
     };
 }// namespace astlang::ast::function::call
 
-#endif /* CCL_PROJECT_ARGUMENTS_HPP */
+#endif /* CCL_PROJECT_ASTLANG_ARGUMENTS_HPP */

@@ -1,5 +1,5 @@
-#ifndef CCL_PROJECT_AST_LANG_HPP
-#define CCL_PROJECT_AST_LANG_HPP
+#ifndef CCL_PROJECT_ASTLANG_AST_LANG_HPP
+#define CCL_PROJECT_ASTLANG_AST_LANG_HPP
 
 #include <ccl/ccl.hpp>
 #include <ccl/parser/types.hpp>
@@ -30,4 +30,4 @@ namespace astlang
     using f64 = ccl::f64;
 }// namespace astlang
 
-#endif /* CCL_PROJECT_AST_LANG_HPP */
+#endif /* CCL_PROJECT_ASTLANG_AST_LANG_HPP */

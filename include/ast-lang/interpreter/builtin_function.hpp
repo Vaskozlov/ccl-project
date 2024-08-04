@@ -1,5 +1,5 @@
-#ifndef CCL_PROJECT_BUILTIN_FUNCTION_HPP
-#define CCL_PROJECT_BUILTIN_FUNCTION_HPP
+#ifndef CCL_PROJECT_ASTLANG_BUILTIN_FUNCTION_HPP
+#define CCL_PROJECT_ASTLANG_BUILTIN_FUNCTION_HPP
 
 #include <ast-lang/interpreter/function_interface.hpp>
 #include <functional>
@@ -22,4 +22,4 @@ namespace astlang::interpreter
     };
 }// namespace astlang::interpreter
 
-#endif /* CCL_PROJECT_BUILTIN_FUNCTION_HPP */
+#endif /* CCL_PROJECT_ASTLANG_BUILTIN_FUNCTION_HPP */

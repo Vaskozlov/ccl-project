@@ -1,5 +1,5 @@
-#ifndef CCL_PROJECT_FACTOR_HPP
-#define CCL_PROJECT_FACTOR_HPP
+#ifndef CCL_PROJECT_ASTLANG_FACTOR_HPP
+#define CCL_PROJECT_ASTLANG_FACTOR_HPP
 
 #include <ast-lang/ast/node.hpp>
 #include <ccl/text/remove_escaping.hpp>
@@ -18,4 +18,4 @@ namespace astlang::ast::expression
     };
 }// namespace astlang::ast::expression
 
-#endif /* CCL_PROJECT_FACTOR_HPP */
+#endif /* CCL_PROJECT_ASTLANG_FACTOR_HPP */

@@ -1,5 +1,5 @@
-#ifndef CCL_PROJECT_VALUE_HPP
-#define CCL_PROJECT_VALUE_HPP
+#ifndef CCL_PROJECT_ASTLANG_VALUE_HPP
+#define CCL_PROJECT_ASTLANG_VALUE_HPP
 
 #include <ast-lang/ast/node.hpp>
 
@@ -14,4 +14,4 @@ namespace astlang::ast::expression
     };
 }// namespace astlang::ast::expression
 
-#endif /* CCL_PROJECT_VALUE_HPP */
+#endif /* CCL_PROJECT_ASTLANG_VALUE_HPP */

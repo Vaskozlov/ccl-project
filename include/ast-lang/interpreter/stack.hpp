@@ -1,5 +1,5 @@
-#ifndef CCL_PROJECT_STACK_HPP
-#define CCL_PROJECT_STACK_HPP
+#ifndef CCL_PROJECT_ASTLANG_STACK_HPP
+#define CCL_PROJECT_ASTLANG_STACK_HPP
 
 #include <ankerl/unordered_dense.h>
 #include <ast-lang/interpreter/evaluation_result.hpp>
@@ -83,4 +83,4 @@ namespace astlang::interpreter
     };
 }// namespace astlang::interpreter
 
-#endif /* CCL_PROJECT_STACK_HPP */
+#endif /* CCL_PROJECT_ASTLANG_STACK_HPP */

@@ -1,5 +1,5 @@
-#ifndef CCL_PROJECT_FUNCTION_DEFINITION_HPP
-#define CCL_PROJECT_FUNCTION_DEFINITION_HPP
+#ifndef CCL_PROJECT_ASTLANG_FUNCTION_DEFINITION_HPP
+#define CCL_PROJECT_ASTLANG_FUNCTION_DEFINITION_HPP
 
 #include <ast-lang/ast/node.hpp>
 
@@ -15,4 +15,4 @@ namespace astlang::ast::function::decl
 }// namespace astlang::ast::function::decl
 
 
-#endif /* CCL_PROJECT_FUNCTION_DEFINITION_HPP */
+#endif /* CCL_PROJECT_ASTLANG_FUNCTION_DEFINITION_HPP */

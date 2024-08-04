@@ -1,5 +1,5 @@
-#ifndef CCL_PROJECT_RETURN_STATEMENT_HPP
-#define CCL_PROJECT_RETURN_STATEMENT_HPP
+#ifndef CCL_PROJECT_ASTLANG_RETURN_STATEMENT_HPP
+#define CCL_PROJECT_ASTLANG_RETURN_STATEMENT_HPP
 
 #include <ast-lang/ast/node.hpp>
 
@@ -14,4 +14,4 @@ namespace astlang::ast::statement
     };
 }// namespace astlang::ast::statement
 
-#endif /* CCL_PROJECT_RETURN_STATEMENT_HPP */
+#endif /* CCL_PROJECT_ASTLANG_RETURN_STATEMENT_HPP */

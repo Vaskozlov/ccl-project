@@ -1,5 +1,5 @@
-#ifndef CCL_PROJECT_RETURN_TYPE_HPP
-#define CCL_PROJECT_RETURN_TYPE_HPP
+#ifndef CCL_PROJECT_ASTLANG_RETURN_TYPE_HPP
+#define CCL_PROJECT_ASTLANG_RETURN_TYPE_HPP
 
 #include <ast-lang/ast/node.hpp>
 
@@ -14,4 +14,4 @@ namespace astlang::ast::function::decl
     };
 }// namespace astlang::ast::function::decl
 
-#endif /* CCL_PROJECT_RETURN_TYPE_HPP */
+#endif /* CCL_PROJECT_ASTLANG_RETURN_TYPE_HPP */

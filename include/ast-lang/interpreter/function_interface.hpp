@@ -1,5 +1,5 @@
-#ifndef CCL_PROJECT_FUNCTION_INTERFACE_HPP
-#define CCL_PROJECT_FUNCTION_INTERFACE_HPP
+#ifndef CCL_PROJECT_ASTLANG_FUNCTION_INTERFACE_HPP
+#define CCL_PROJECT_ASTLANG_FUNCTION_INTERFACE_HPP
 
 #include <ast-lang/interpreter/evaluation_result.hpp>
 
@@ -32,4 +32,4 @@ namespace astlang::interpreter
     };
 }// namespace astlang::interpreter
 
-#endif /* CCL_PROJECT_FUNCTION_INTERFACE_HPP */
+#endif /* CCL_PROJECT_ASTLANG_FUNCTION_INTERFACE_HPP */
