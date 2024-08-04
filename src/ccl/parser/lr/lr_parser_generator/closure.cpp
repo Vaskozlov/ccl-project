@@ -73,7 +73,6 @@ namespace ccl::parser
         }
 
         it->second = std::move(s);
-
         return it->second;
     }
 }// namespace ccl::parser

@@ -27,7 +27,7 @@ namespace ccl::parser::reader::ast
         auto rule_name = getDeclarationName();
 
         const auto *last_node = this->back();
-        const auto *rule_node = dynamic_cast<const RulesReaderNode *>(last_node);
+        const auto *rule_node = static_cast<const RulesReaderNode *>(last_node);
 
         auto rule = rule_node->construct(rule_constructor);
         auto rule_as_container = isl::get<isl::UniquePtr<lexer::rule::Container>>(rule);

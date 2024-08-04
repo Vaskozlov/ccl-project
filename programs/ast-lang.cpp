@@ -49,10 +49,6 @@ auto main() -> int
     auto tokenizer = lexical_analyzer.getTokenizer(input);
     auto to_str = constructor.getIdToNameTranslationFunction();
 
-    //        while (const auto &token = tokenizer.yield()) {
-    //            fmt::println("{}", to_str(token.getId()));
-    //        }
-
     auto lr_parser = LrParser{first_item, grammar.getEpsilon(), grammar, to_str};
     auto node = lr_parser.parse(tokenizer);
 

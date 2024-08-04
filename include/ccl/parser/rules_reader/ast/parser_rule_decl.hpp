@@ -8,12 +8,10 @@
 
 namespace ccl::parser::reader::ast
 {
-    class ParserRuleDecl
-      : public parser::ast::UnNodeSequence
-      , public RulesReaderNode
+    class ParserRuleDecl : public RulesReaderNode
     {
     public:
-        using parser::ast::UnNodeSequence::NodeSequence;
+        using RulesReaderNode::RulesReaderNode;
 
         [[nodiscard]] auto getDeclarationName() const -> isl::string_view;
 

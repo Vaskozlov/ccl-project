@@ -7,23 +7,10 @@
 
 namespace ccl::parser::reader::ast
 {
-    class LexerRuleOptions
-      : public parser::ast::StringNode
-      , public RulesReaderNode
+    class LexerRuleOptions : public RulesReaderNode
     {
-    private:
-        std::vector<RulesLexerToken> options;
-
     public:
-        LexerRuleOptions(
-            SmallId node_type_id, const std::initializer_list<RulesLexerToken> &rule_options);
-
-        auto addOption(RulesLexerToken option) -> void;
-
-        [[nodiscard]] auto getOptions() const noexcept -> const std::vector<RulesLexerToken> &
-        {
-            return options;
-        }
+        using RulesReaderNode::RulesReaderNode;
 
         auto construct(RulesConstructor &rule_constructor) const -> isl::UniqueAny override;
     };

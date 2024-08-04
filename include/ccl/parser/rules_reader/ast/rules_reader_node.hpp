@@ -7,18 +7,10 @@
 
 namespace ccl::parser::reader::ast
 {
-    class RulesReaderNode
+    class RulesReaderNode : public parser::ast::UnNodeSequence
     {
     public:
-        RulesReaderNode() = default;
-
-        RulesReaderNode(const RulesReaderNode &) = delete;
-        RulesReaderNode(RulesReaderNode &&) noexcept = default;
-
-        virtual ~RulesReaderNode() = default;
-
-        auto operator=(const RulesReaderNode &) -> void = delete;
-        auto operator=(RulesReaderNode &&) -> void = delete;
+        using parser::ast::UnNodeSequence::NodeSequence;
 
         virtual auto construct(RulesConstructor &rule_constructor) const -> isl::UniqueAny = 0;
     };

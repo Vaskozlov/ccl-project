@@ -6,12 +6,10 @@
 
 namespace ccl::parser::reader::ast
 {
-    class ParserRuleBody
-      : public parser::ast::UnNodeSequence
-      , public RulesReaderNode
+    class ParserRuleBody : public RulesReaderNode
     {
     public:
-        using parser::ast::NodeSequence<isl::UniquePtr>::NodeSequence;
+        using RulesReaderNode::RulesReaderNode;
 
         auto construct(RulesConstructor &rule_constructor) const -> isl::UniqueAny override;
 

@@ -1,4 +1,5 @@
 #include "ccl/parser/detail/empty_moves_fixer.hpp"
+#include "ccl/parser/rules_reader/rules_lexer.hpp"
 #include <ccl/parser/grammar_rules_storage.hpp>
 
 namespace ccl::parser
@@ -12,11 +13,16 @@ namespace ccl::parser
     GrammarRulesStorage::GrammarRulesStorage(
         Symbol epsilon,
         const std::initializer_list<isl::Pair<Symbol, std::vector<Rule>>> &initial_data)
-      : Self{initial_data.begin(), initial_data.end()}
-      , grammarSymbols{0, epsilon}
+      : grammarSymbols{0, epsilon}
       , possiblyEmptyRules{epsilon}
       , epsilonSymbol{epsilon}
     {
+        for (const auto &[key, alternatives] : initial_data) {
+            for (const auto &rule : alternatives) {
+                tryEmplace(key, rule);
+            }
+        }
+
         finishGrammar();
     }
 

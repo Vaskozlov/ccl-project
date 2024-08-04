@@ -12,12 +12,10 @@
 
 namespace ccl::parser::reader::ast
 {
-    class LexerRuleBlock
-      : public parser::ast::NodeSequence<isl::UniquePtr>
-      , public RulesReaderNode
+    class LexerRuleBlock : public RulesReaderNode
     {
     public:
-        using parser::ast::NodeSequence<isl::UniquePtr>::NodeSequence;
+        using RulesReaderNode::RulesReaderNode;
 
         [[nodiscard]] auto getValue() const -> const parser::ast::TokenNode *;
 
@@ -25,7 +23,9 @@ namespace ccl::parser::reader::ast
 
         auto construct(RulesConstructor &rule_constructor) const -> isl::UniqueAny override;
 
-        auto applyOptions(lexer::rule::RuleBlockInterface *rule_block) const -> void;
+        auto applyOptions(
+            RulesConstructor &rule_constructor,
+            lexer::rule::RuleBlockInterface *rule_block) const -> void;
     };
 }// namespace ccl::parser::reader::ast
 

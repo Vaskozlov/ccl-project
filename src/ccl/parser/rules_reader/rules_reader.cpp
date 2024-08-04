@@ -2,6 +2,7 @@
 #include <ccl/parser/lr/glr_parser.hpp>
 #include <ccl/parser/rules_reader/ast/any_block.hpp>
 #include <ccl/parser/rules_reader/ast/lexer_block.hpp>
+#include <ccl/parser/rules_reader/ast/lexer_rule_alternative.hpp>
 #include <ccl/parser/rules_reader/ast/lexer_rule_block.hpp>
 #include <ccl/parser/rules_reader/ast/lexer_rule_body.hpp>
 #include <ccl/parser/rules_reader/ast/lexer_rule_decl.hpp>
@@ -29,35 +30,58 @@ namespace ccl::parser::reader
             return rule_body;
         };
 
-
-    static const auto DefaultLexerOptionsConstructor =
-        [](Symbol production, std::vector<parser::ast::UnNodePtr> nodes) {
-            const auto &first_node = nodes.front();
-            const auto *casted_first_node = isl::as<parser::ast::TokenNode *>(first_node.get());
-
-            return isl::makeUnique<ast::LexerRuleOptions>(
-                production,
-                std::initializer_list<RulesLexerToken>{
-                    isl::as<RulesLexerToken>(casted_first_node->getType())});
-        };
-
-    static const auto AppendLexerOptionsConstructor =
-        [](Symbol /* unused */, std::vector<parser::ast::UnNodePtr> nodes) {
-            auto lexer_options = std::move(nodes.front());
-            const auto &new_option = nodes.back();
-
-            const auto *casted_option_node = isl::as<parser::ast::TokenNode *>(new_option.get());
-            auto *casted_lexer_options_node = isl::as<ast::LexerRuleOptions *>(lexer_options.get());
-
-            casted_lexer_options_node->addOption(
-                isl::as<RulesLexerToken>(casted_option_node->getType()));
-
-            return lexer_options;
-        };
-
     static const auto ReplaceUpperBlockWithLastElementFromCurrent =
         [](Symbol /* unused */, std::vector<parser::ast::UnNodePtr> nodes) {
             return std::move(nodes.back());
+        };
+
+    static const auto ConstructLexerGroup =
+        [](Symbol production, std::vector<parser::ast::UnNodePtr> nodes) {
+            auto result = isl::makeUnique<ast::LexerRuleBlock>(production);
+
+            result->addNode(std::move(nodes.at(1)));
+
+            if (nodes.size() == 4) {
+                result->addNode(std::move(nodes.back()));
+            }
+
+            return result;
+        };
+
+    static const auto ConstructLexerRuleAlternative =
+        [](Symbol production, std::vector<parser::ast::UnNodePtr> nodes) {
+            auto lhs_node = std::move(nodes.front());
+            auto rhs_node = std::move(nodes.back());
+
+            auto alternative =
+                isl::makeUnique<ast::LexerRuleAlternative>(RulesLexerToken::LEXER_RULE_ALTERNATIVE);
+
+            alternative->addNode(std::move(lhs_node));
+            alternative->addNode(std::move(rhs_node));
+
+            auto result = DefaultNodeConstructor<ast::LexerRuleBody>(production, {});
+            result->addNode(std::move(alternative));
+
+            return result;
+        };
+
+    static const auto ConstructLexerRuleAlternativeWithAppend =
+        [](Symbol production, std::vector<parser::ast::UnNodePtr> nodes) {
+            auto lhs_node = std::move(nodes.at(1));
+            auto rhs_node = std::move(nodes.back());
+
+            auto result = isl::makeUnique<ast::LexerRuleAlternative>(production);
+
+            result->addNode(std::move(lhs_node));
+            result->addNode(std::move(rhs_node));
+
+            auto front_node = std::move(nodes.front());
+
+            nodes.clear();
+            nodes.emplace_back(std::move(front_node));
+            nodes.emplace_back(std::move(result));
+
+            return DefaultAppender(production, std::move(nodes));
         };
 
     static const auto ConstructParserRuleAlternative =
@@ -221,6 +245,14 @@ namespace ccl::parser::reader
                         },
                         DefaultAppender,
                     },
+                    Rule{
+                        {
+                            RulesLexerToken::LEXER_RULE_BODY,
+                            RulesLexerToken::OR,
+                            RulesLexerToken::LEXER_RULE_BLOCK,
+                        },
+                        ConstructLexerRuleAlternative,
+                    },
                 },
             },
             {
@@ -229,19 +261,7 @@ namespace ccl::parser::reader
                     Rule{
                         {
                             RulesLexerToken::UNION,
-                        },
-                        DefaultNodeConstructor<ast::LexerRuleBlock>,
-                    },
-                    Rule{
-                        {
-                            RulesLexerToken::UNION,
                             RulesLexerToken::LEXER_RULE_OPTIONS,
-                        },
-                        DefaultNodeConstructor<ast::LexerRuleBlock>,
-                    },
-                    Rule{
-                        {
-                            RulesLexerToken::STRING,
                         },
                         DefaultNodeConstructor<ast::LexerRuleBlock>,
                     },
@@ -255,15 +275,18 @@ namespace ccl::parser::reader
                     Rule{
                         {
                             RulesLexerToken::RULE_REFERENCE,
+                            RulesLexerToken::LEXER_RULE_OPTIONS,
                         },
                         DefaultNodeConstructor<ast::LexerRuleBlock>,
                     },
                     Rule{
                         {
-                            RulesLexerToken::RULE_REFERENCE,
+                            RulesLexerToken::ANGLE_OPEN,
+                            RulesLexerToken::LEXER_RULE_BODY,
+                            RulesLexerToken::ANGLE_CLOSE,
                             RulesLexerToken::LEXER_RULE_OPTIONS,
                         },
-                        DefaultNodeConstructor<ast::LexerRuleBlock>,
+                        ConstructLexerGroup,
                     },
                 },
             },
@@ -272,82 +295,51 @@ namespace ccl::parser::reader
                 {
                     Rule{
                         {
-                            RulesLexerToken::PLUS,
+                            RulesLexerToken::EPSILON,
                         },
-                        DefaultLexerOptionsConstructor,
+                        DefaultNodeConstructor<ast::LexerRuleOptions>,
                     },
                     Rule{
                         {
-                            RulesLexerToken::LEXER_RULE_OPTIONS,
                             RulesLexerToken::PLUS,
+                            RulesLexerToken::LEXER_RULE_OPTIONS,
                         },
-                        AppendLexerOptionsConstructor,
+                        DefaultNodeConstructor<ast::LexerRuleOptions>,
                     },
                     Rule{
                         {
                             RulesLexerToken::STAR,
-                        },
-                        DefaultLexerOptionsConstructor,
-                    },
-                    Rule{
-                        {
                             RulesLexerToken::LEXER_RULE_OPTIONS,
-                            RulesLexerToken::STAR,
                         },
-                        AppendLexerOptionsConstructor,
+                        DefaultNodeConstructor<ast::LexerRuleOptions>,
                     },
                     Rule{
                         {
                             RulesLexerToken::PREFIX_POSTFIX_OPERATOR,
-                        },
-                        DefaultLexerOptionsConstructor,
-                    },
-                    Rule{
-                        {
                             RulesLexerToken::LEXER_RULE_OPTIONS,
-                            RulesLexerToken::PREFIX_POSTFIX_OPERATOR,
                         },
-                        DefaultLexerOptionsConstructor,
+                        DefaultNodeConstructor<ast::LexerRuleOptions>,
                     },
                     Rule{
                         {
                             RulesLexerToken::HIDE_OPERATOR,
-                        },
-                        DefaultLexerOptionsConstructor,
-                    },
-                    Rule{
-                        {
                             RulesLexerToken::LEXER_RULE_OPTIONS,
-                            RulesLexerToken::HIDE_OPERATOR,
                         },
-                        AppendLexerOptionsConstructor,
+                        DefaultNodeConstructor<ast::LexerRuleOptions>,
                     },
                     Rule{
                         {
                             RulesLexerToken::NOT_OPERATOR,
-                        },
-                        DefaultLexerOptionsConstructor,
-                    },
-                    Rule{
-                        {
                             RulesLexerToken::LEXER_RULE_OPTIONS,
-                            RulesLexerToken::NOT_OPERATOR,
                         },
-                        AppendLexerOptionsConstructor,
+                        DefaultNodeConstructor<ast::LexerRuleOptions>,
                     },
                     Rule{
                         {
                             RulesLexerToken::CURLY_OPEN,
                             RulesLexerToken::NUMBER,
                             RulesLexerToken::CURLY_CLOSE,
-                        },
-                    },
-                    Rule{
-                        {
                             RulesLexerToken::LEXER_RULE_OPTIONS,
-                            RulesLexerToken::CURLY_OPEN,
-                            RulesLexerToken::NUMBER,
-                            RulesLexerToken::CURLY_CLOSE,
                         },
                     },
                     Rule{
@@ -357,16 +349,7 @@ namespace ccl::parser::reader
                             RulesLexerToken::COMMA,
                             RulesLexerToken::NUMBER,
                             RulesLexerToken::CURLY_CLOSE,
-                        },
-                    },
-                    Rule{
-                        {
                             RulesLexerToken::LEXER_RULE_OPTIONS,
-                            RulesLexerToken::CURLY_OPEN,
-                            RulesLexerToken::NUMBER,
-                            RulesLexerToken::COMMA,
-                            RulesLexerToken::NUMBER,
-                            RulesLexerToken::CURLY_CLOSE,
                         },
                     },
                 },

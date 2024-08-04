@@ -49,7 +49,7 @@ namespace ccl::parser
         std::map<std::vector<LrItem>, std::vector<LrItem>> closureComputationOnItemsCache;
         std::unordered_map<LrItem, std::vector<LrItem>> closureComputationCache;
 
-        runtime::Pipe<GotoResult, 1024> pipe;
+        runtime::Pipe<GotoResult, 512> pipe;
 
     public:
         explicit LrParserGenerator(

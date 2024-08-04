@@ -26,23 +26,23 @@ namespace ccl::parser::reader::ast
         },
     };
 
-    LexerRuleOptions::LexerRuleOptions(
-        SmallId node_type_id, const std::initializer_list<RulesLexerToken> &rule_options)
-      : parser::ast::StringNode{node_type_id, ""}
-    {
-        for (const auto option : rule_options) {
-            addOption(option);
-        }
-    }
-
-    auto LexerRuleOptions::addOption(RulesLexerToken option) -> void
-    {
-        repr.push_back(OptionToRep.at(option));
-        options.emplace_back(option);
-    }
-
     auto LexerRuleOptions::construct(RulesConstructor &rule_constructor) const -> isl::UniqueAny
     {
-        return std::nullopt;
+        const auto *front_node = this->front();
+        auto options =
+            std::vector<RulesLexerToken>{static_cast<RulesLexerToken>(front_node->getType())};
+
+        if (this->size() > 1) {
+            const auto *other_options_node = this->back();
+            const auto *casted_other_options =
+                static_cast<const LexerRuleOptions *>(other_options_node);
+
+            auto other_options = isl::get<std::vector<RulesLexerToken>>(
+                casted_other_options->construct(rule_constructor));
+
+            options.insert(options.end(), other_options.begin(), other_options.end());
+        }
+
+        return isl::UniqueAny{std::move(options)};
     }
 }// namespace ccl::parser::reader::ast

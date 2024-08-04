@@ -53,18 +53,12 @@ namespace ccl::parser
 
     auto LrParserGenerator::pollCanonicalCollection() -> isl::Task<>
     {
-        auto collection_end = canonicalCollection.begin();
+        auto collection_end = canonicalCollection.end();
         auto max_polled_it_copy = lastPolledCanonicalCollection;
 
-        while (collection_end != canonicalCollection.end()) {
-            collection_end = canonicalCollection.end();
-
-            for (auto it = max_polled_it_copy; it != collection_end; ++it) {
-                max_polled_it_copy = it;
-                moveCollectionItemsOverRemainingSymbols(*it);
-            }
-
-            std::atomic_thread_fence(std::memory_order_acq_rel);
+        for (auto it = max_polled_it_copy; it != collection_end; ++it) {
+            max_polled_it_copy = it;
+            moveCollectionItemsOverRemainingSymbols(*it);
         }
 
         lastPolledCanonicalCollection = max_polled_it_copy;
@@ -99,7 +93,7 @@ namespace ccl::parser
             auto pop_result = tryPopFromPipe(result);
 
             if (pop_result == PipePopStatus::PIPE_EMPTY) {
-                std::this_thread::sleep_for(500us);
+                std::this_thread::sleep_for(100us);
                 continue;
             }
 
