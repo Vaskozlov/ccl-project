@@ -25,6 +25,7 @@ isl_set_project_warnings(
 add_dependencies(
         astlang
         ccl
+        isl
         fmt::fmt-header-only
         unordered_dense::unordered_dense
 )
@@ -32,6 +33,7 @@ add_dependencies(
 target_link_libraries(
         astlang
         ccl
+        isl
         fmt::fmt-header-only
         unordered_dense::unordered_dense
 )

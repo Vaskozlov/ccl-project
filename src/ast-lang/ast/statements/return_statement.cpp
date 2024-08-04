@@ -1,4 +1,5 @@
 #include <ast-lang/ast/statements/return_statement.hpp>
+#include <ast-lang/interpreter/interpreter.hpp>
 
 namespace astlang::ast::statement
 {

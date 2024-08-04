@@ -1,4 +1,5 @@
 #include <ast-lang/ast/global_declarations.hpp>
+#include <ast-lang/interpreter/interpreter.hpp>
 
 namespace astlang::ast
 {

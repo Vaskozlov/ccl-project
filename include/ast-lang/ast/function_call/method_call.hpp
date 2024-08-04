@@ -2,6 +2,8 @@
 #define CCL_PROJECT_METHOD_CALL_HPP
 
 #include <ast-lang/ast/node.hpp>
+#include <ast-lang/interpreter/evaluation_result.hpp>
+#include <ast-lang/interpreter/type.hpp>
 
 namespace astlang::ast::function::call
 {

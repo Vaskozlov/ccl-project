@@ -1,4 +1,5 @@
 #include <ast-lang/ast/function_decl/arguments.hpp>
+#include <ast-lang/interpreter/interpreter.hpp>
 
 namespace astlang::ast::function::decl
 {
