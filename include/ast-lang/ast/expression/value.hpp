@@ -1,16 +1,14 @@
 #ifndef CCL_PROJECT_VALUE_HPP
 #define CCL_PROJECT_VALUE_HPP
 
-#include <ast-lang/ast/node_sequence.hpp>
+#include <ast-lang/ast/node.hpp>
 
 namespace astlang::ast::expression
 {
-    class Value
-      : public ccl::parser::ast::UnNodeSequence
-      , public NodeSequence
+    class Value : public Node
     {
     public:
-        using ccl::parser::ast::UnNodeSequence::NodeSequence;
+        using Node::Node;
 
         auto compute(interpreter::Interpreter &interpreter)
             -> interpreter::EvaluationResult override;

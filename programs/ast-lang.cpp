@@ -4,7 +4,7 @@
 #include <ast-lang/ast/function_decl/arguments.hpp>
 #include <ast-lang/ast/function_decl/declaration.hpp>
 #include <ast-lang/ast/global_declarations.hpp>
-#include <ast-lang/ast/node_sequence.hpp>
+#include <ast-lang/ast/node.hpp>
 #include <ast-lang/ast/statements/statements.hpp>
 #include <ast-lang/interpreter/builtin_function.hpp>
 #include <ast-lang/interpreter/interpreter.hpp>
@@ -57,8 +57,8 @@ auto main() -> int
     auto global_declarations_node = isl::makeUnique<astlang::ast::GlobalDeclarations>(
         node->getType(), std::move(result_as_sequence->getNodes()));
 
-    astlang::ast::NodeSequence::convertCclTreeToAstlang(
-        constructor, dynamic_cast<astlang::ast::NodeSequence *>(global_declarations_node.get()));
+    astlang::ast::Node::convertCclTreeToAstlang(
+        constructor, dynamic_cast<astlang::ast::Node *>(global_declarations_node.get()));
 
     auto interpreter = astlang::interpreter::Interpreter{constructor};
 

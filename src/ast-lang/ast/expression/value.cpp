@@ -3,8 +3,6 @@
 
 namespace astlang::ast::expression
 {
-    using namespace astlang::interpreter;
-
     auto Value::compute(Interpreter &interpreter) -> EvaluationResult
     {
         auto front_node = NodePtr{this->front()};
@@ -14,7 +12,7 @@ namespace astlang::ast::expression
         }
 
         auto back_node = NodePtr{this->back()};
-        auto arguments = FunctionCallArguments{};
+        auto arguments = interpreter::FunctionCallArguments{};
         arguments.reserve(1);
 
         arguments.emplace_back(back_node.astlangNode->compute(interpreter));

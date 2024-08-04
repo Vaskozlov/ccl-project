@@ -3,8 +3,6 @@
 
 namespace astlang::ast::expression
 {
-    using namespace astlang::interpreter;
-
     static auto constructNumber(NodePtr node) -> EvaluationResult
     {
         const auto *token_node = node.tokenNode;

@@ -1,19 +1,16 @@
 #ifndef CCL_PROJECT_STATEMENT_HPP
 #define CCL_PROJECT_STATEMENT_HPP
 
-#include <ast-lang/ast/node_sequence.hpp>
+#include <ast-lang/ast/node.hpp>
 
 namespace astlang::ast::statement
 {
-    class Statement
-      : public ccl::parser::ast::UnNodeSequence
-      , public NodeSequence
+    class Statement : public Node
     {
     public:
-        using ccl::parser::ast::UnNodeSequence::NodeSequence;
+        using Node::Node;
 
-        auto
-            compute(interpreter::Interpreter &interpreter) -> interpreter::EvaluationResult override
+        auto compute(Interpreter &interpreter) -> EvaluationResult override
         {
             return NodePtr(this->front()).astlangNode->compute(interpreter);
         }

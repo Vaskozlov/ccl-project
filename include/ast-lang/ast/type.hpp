@@ -1,19 +1,16 @@
 #ifndef CCL_PROJECT_ASTLANG_TYPE_HPP
 #define CCL_PROJECT_ASTLANG_TYPE_HPP
 
-#include <ast-lang/ast/node_sequence.hpp>
+#include <ast-lang/ast/node.hpp>
 
 namespace astlang::ast
 {
-    class Type
-      : public ccl::parser::ast::UnNodeSequence
-      , public NodeSequence
+    class Type : public Node
     {
     public:
-        using ccl::parser::ast::UnNodeSequence::NodeSequence;
+        using Node::Node;
 
-        auto
-            compute(interpreter::Interpreter &interpreter) -> interpreter::EvaluationResult override
+        auto compute(Interpreter &interpreter) -> EvaluationResult override
         {
             return interpreter::EvaluationResult{
                 .value = std::nullopt, .type = interpreter::Type::VOID};

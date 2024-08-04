@@ -1,16 +1,14 @@
 #ifndef CCL_PROJECT_GLOBAL_DECLARATION_HPP
 #define CCL_PROJECT_GLOBAL_DECLARATION_HPP
 
-#include <ast-lang/ast/node_sequence.hpp>
+#include <ast-lang/ast/node.hpp>
 
 namespace astlang::ast
 {
-    class GlobalDeclaration
-      : public ccl::parser::ast::UnNodeSequence
-      , public NodeSequence
+    class GlobalDeclaration : public Node
     {
     public:
-        using ccl::parser::ast::UnNodeSequence::NodeSequence;
+        using Node::Node;
 
         auto compute(interpreter::Interpreter &interpreter)
             -> interpreter::EvaluationResult override;

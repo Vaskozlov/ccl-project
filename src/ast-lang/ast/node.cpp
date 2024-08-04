@@ -15,7 +15,6 @@
 #include <ast-lang/ast/lexer/lexer_rule.hpp>
 #include <ast-lang/ast/lexer/lexer_rule_body.hpp>
 #include <ast-lang/ast/node.hpp>
-#include <ast-lang/ast/node_sequence.hpp>
 #include <ast-lang/ast/parser/parser_functions.hpp>
 #include <ast-lang/ast/parser/parser_rule.hpp>
 #include <ast-lang/ast/parser/parser_rule_body.hpp>
@@ -35,9 +34,9 @@
 
 namespace astlang::ast
 {
-    auto NodeSequence::convertCclTreeToAstlang(
-        ccl::parser::reader::RulesConstructor &constructor,
-        NodeSequence *node) -> void
+    using namespace ccl::parser;
+
+    auto Node::convertCclTreeToAstlang(reader::RulesConstructor &constructor, Node *node) -> void
     {
         const auto conversion_table = ConvertionTable{
             {
@@ -169,7 +168,7 @@ namespace astlang::ast
         node->castChildrenToAstLangNode(conversion_table);
     }
 
-    auto NodeSequence::castChildrenToAstLangNode(const ConvertionTable &conversion_table) -> void
+    auto Node::castChildrenToAstLangNode(const ConvertionTable &conversion_table) -> void
     {
         auto *self_as_sequence = dynamic_cast<ccl::parser::ast::UnNodeSequence *>(this);
 
@@ -186,7 +185,7 @@ namespace astlang::ast
         self_as_sequence->getNodes() = std::move(new_self_nodes);
     }
 
-    auto NodeSequence::castToAstLangNode(
+    auto Node::castToAstLangNode(
         const ConvertionTable &conversion_table,
         isl::UniquePtr<ccl::parser::ast::Node>
             node) -> isl::UniquePtr<ccl::parser::ast::Node>
@@ -198,7 +197,7 @@ namespace astlang::ast
         }
 
         auto new_node = conversion_table[node_as_sequence->getType()](node_as_sequence);
-        dynamic_cast<NodeSequence *>(new_node.get())->castChildrenToAstLangNode(conversion_table);
+        dynamic_cast<Node *>(new_node.get())->castChildrenToAstLangNode(conversion_table);
 
         return new_node;
     }
