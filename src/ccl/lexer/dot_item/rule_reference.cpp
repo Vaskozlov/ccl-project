@@ -4,24 +4,24 @@ namespace ccl::lexer::rule
 {
     RuleReference::RuleReference(
         LexicalAnalyzer &lexical_analyzer, isl::string_view sequence_starter,
-        isl::string_view sequence_ender, RuleBlockInterface::TextIterator &rule_iterator,
-        SmallId item_id)
-      : Sequence{SequenceFlags{.multiline = false, .noEscaping = false}, sequence_starter, sequence_ender, rule_iterator, item_id,}
+        isl::string_view sequence_ender, RuleBlockInterface::TextIterator &rule_iterator)
+      : Sequence{SequenceFlags{.multiline = false, .noEscaping = false,}, sequence_starter, sequence_ender, rule_iterator,}
       , lexicalAnalyzer{lexical_analyzer}
     {}
 
     RuleReference::RuleReference(
         LexicalAnalyzer &lexical_analyzer, isl::string_view sequence_begin_and_end,
-        RuleBlockInterface::TextIterator &rule_iterator, SmallId item_id)
+        RuleBlockInterface::TextIterator &rule_iterator)
       : RuleReference{
-            lexical_analyzer, sequence_begin_and_end, sequence_begin_and_end, rule_iterator,
-            item_id,
+            lexical_analyzer,
+            sequence_begin_and_end,
+            sequence_begin_and_end,
+            rule_iterator,
         }
     {}
 
-    RuleReference::RuleReference(
-        LexicalAnalyzer &lexical_analyzer, std::string rule_name, SmallId item_id)
-      : Sequence{std::move(rule_name), item_id}
+    RuleReference::RuleReference(LexicalAnalyzer &lexical_analyzer, std::string rule_name)
+      : Sequence{std::move(rule_name)}
       , lexicalAnalyzer{lexical_analyzer}
     {}
 

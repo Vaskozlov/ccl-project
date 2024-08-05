@@ -1,16 +1,16 @@
 #ifndef CCL_PROJECT_ASTLANG_VALUE_HPP
 #define CCL_PROJECT_ASTLANG_VALUE_HPP
 
-#include <ast-lang/ast/node.hpp>
+#include <ast-lang/ast/expression/basic_value.hpp>
 
 namespace astlang::ast::expression
 {
-    class Value : public Node
+    class Value : public BasicValue
     {
     public:
-        using Node::Node;
+        using BasicValue::BasicValue;
 
-        auto compute(Interpreter &interpreter) -> EvaluationResult override;
+        auto compute(Interpreter &interpreter) const -> EvaluationResult override;
     };
 }// namespace astlang::ast::expression
 

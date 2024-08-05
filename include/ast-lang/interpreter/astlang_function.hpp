@@ -9,16 +9,16 @@ namespace astlang::interpreter
     class AstlangFunction : public FunctionInterface
     {
     private:
-        astlang::ast::Node *functionBody;
+        const astlang::ast::Node *functionBody;
 
     public:
         explicit AstlangFunction(
-            std::vector<std::string> arguments_names, astlang::ast::Node *function_body)
+            std::vector<std::string> arguments_names, const astlang::ast::Node *function_body)
           : FunctionInterface{std::move(arguments_names)}
           , functionBody(function_body)
         {}
 
-        auto doCall(Interpreter &interpreter) -> EvaluationResult override
+        auto doCall(Interpreter &interpreter) const -> EvaluationResult override
         {
             return functionBody->compute(interpreter);
         }

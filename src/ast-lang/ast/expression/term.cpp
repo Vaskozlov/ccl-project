@@ -5,17 +5,17 @@ namespace astlang::ast::expression
 {
     using namespace astlang::interpreter;
 
-    auto Term::compute(Interpreter &interpreter) -> EvaluationResult
+    auto Term::compute(Interpreter &interpreter) const -> EvaluationResult
     {
         return computeBinaryExpression(
             interpreter, {
                              {
                                  interpreter.MULTIPLY,
-                                 "__multiply__",
+                                 "__multiplication__",
                              },
                              {
                                  interpreter.DIVIDE,
-                                 "__divide__",
+                                 "__division__",
                              },
                          });
     }

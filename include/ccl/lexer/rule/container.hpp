@@ -41,16 +41,15 @@ namespace ccl::lexer::rule
 
     public:
         [[nodiscard]] Container(
-            LexicalAnalyzer &lexical_analyzer, TextIterator &rule_iterator, SmallId item_id,
-            bool main_item = false, bool is_special = false);
-
-        [[nodiscard]] Container(
-            LexicalAnalyzer &lexical_analyzer, const TextIterator &rule_iterator, SmallId item_id,
-            bool main_item = false, bool is_special = false);
-
-        [[nodiscard]] Container(
-            LexicalAnalyzer &lexical_analyzer, SmallId item_id, bool main_item = false,
+            LexicalAnalyzer &lexical_analyzer, TextIterator &rule_iterator, bool main_item = false,
             bool is_special = false);
+
+        [[nodiscard]] Container(
+            LexicalAnalyzer &lexical_analyzer, const TextIterator &rule_iterator,
+            bool main_item = false, bool is_special = false);
+
+        [[nodiscard]] Container(
+            LexicalAnalyzer &lexical_analyzer, bool main_item = false, bool is_special = false);
 
         auto addItem(isl::UniquePtr<RuleBlockInterface> new_item) -> void
         {
@@ -131,8 +130,6 @@ namespace ccl::lexer::rule
         {
             return container.isReversed();
         }
-
-        auto checkId() const -> void;
 
         auto recognizeAction() -> void;
 

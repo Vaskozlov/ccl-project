@@ -36,8 +36,10 @@ namespace ccl::parser::reader::ast
         }
 
         auto rule_id = rule_constructor.addRule(str);
+
         auto container = isl::makeUnique<lexer::rule::Container>(
-            rule_constructor.getLexicalAnalyzer(), rule_id, false, is_any_place_string);
+            rule_constructor.getLexicalAnalyzer(), false, is_any_place_string);
+        container->setId(rule_id);
 
         auto str_without_quotes = str.substr(1, str.size() - 2);
         container->addItem(

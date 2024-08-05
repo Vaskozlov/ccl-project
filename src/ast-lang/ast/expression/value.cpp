@@ -3,15 +3,15 @@
 
 namespace astlang::ast::expression
 {
-    auto Value::compute(Interpreter &interpreter) -> EvaluationResult
+    auto Value::compute(Interpreter &interpreter) const -> EvaluationResult
     {
-        auto front_node = NodePtr{this->front()};
+        auto front_node = ConstNodePtr{this->front()};
 
         if (this->size() == 1) {
             return front_node.astlangNode->compute(interpreter);
         }
 
-        auto back_node = NodePtr{this->back()};
+        auto back_node = ConstNodePtr{this->back()};
         auto arguments = interpreter::FunctionCallArguments{};
         arguments.reserve(1);
 
@@ -22,7 +22,7 @@ namespace astlang::ast::expression
         }
 
         if (front_node.cclNode->getType() == interpreter.getRuleId("\"-\"")) {
-            return interpreter.call("__negate__", std::move(arguments));
+            return interpreter.call("__negation__", std::move(arguments));
         }
 
         throw std::runtime_error("Invalid value expression");

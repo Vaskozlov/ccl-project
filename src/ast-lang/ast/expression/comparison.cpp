@@ -5,7 +5,7 @@ namespace astlang::ast::expression
 {
     using namespace interpreter;
 
-    auto Comparison::compute(Interpreter &interpreter) -> EvaluationResult
+    auto Comparison::compute(Interpreter &interpreter) const -> EvaluationResult
     {
         return computeBinaryExpression(
             interpreter, {

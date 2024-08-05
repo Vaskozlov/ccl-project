@@ -23,10 +23,26 @@ namespace ccl::lexer
         -> void
     {
         auto container = isl::makeUnique<Container>(
-            *this, TextIterator{rule.repr, exceptionHandler, filename}, id, true);
+            *this, TextIterator{rule.repr, exceptionHandler, filename}, true);
 
-        idCounter = std::max(idCounter.load(), id + 1);
+        container->setId(id);
         addContainer(rule.name, std::move(container));
+    }
+
+    auto LexicalAnalyzer::addContainer(
+        isl::string_view rule_name, isl::UniquePtr<Container> new_container) -> void
+    {
+        if (new_container->getId() <= ReservedTokenMaxValue) {
+            throw UnrecoverableError{"Reserved token id is used for a custom token"};
+        }
+
+        allItemsMap.try_emplace(rule_name, new_container.get());
+
+        if (new_container->isAnyPlaceItem()) {
+            anyPlaceItems.items.emplace_back(std::move(new_container));
+        } else {
+            items.emplace_back(std::move(new_container));
+        }
     }
 
     auto

@@ -1,6 +1,7 @@
 #ifndef CCL_PROJECT_LR_PARSER_GENERATOR_HPP
 #define CCL_PROJECT_LR_PARSER_GENERATOR_HPP
 
+#include <ankerl/unordered_dense.h>
 #include <ccl/parser/ast/node.hpp>
 #include <ccl/parser/grammar_rules_storage.hpp>
 #include <ccl/parser/lr/action.hpp>
@@ -8,7 +9,6 @@
 #include <ccl/parser/lr/detail/table_entry.hpp>
 #include <ccl/runtime.hpp>
 #include <list>
-#include <queue>
 
 namespace ccl::parser
 {
@@ -46,8 +46,11 @@ namespace ccl::parser
         Symbol epsilonSymbol;
 
         std::unordered_map<Symbol, std::unordered_set<Symbol>> firstSet;
-        std::map<std::vector<LrItem>, std::vector<LrItem>> closureComputationOnItemsCache;
-        std::unordered_map<LrItem, std::vector<LrItem>> closureComputationCache;
+
+        ankerl::unordered_dense::map<std::vector<LrItem>, std::vector<LrItem>>
+            closureComputationOnItemsCache;
+
+        ankerl::unordered_dense::map<LrItem, std::vector<LrItem>> closureComputationCache;
 
         runtime::Pipe<GotoResult, 512> pipe;
 

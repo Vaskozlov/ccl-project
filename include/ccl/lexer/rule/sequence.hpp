@@ -24,13 +24,13 @@ namespace ccl::lexer::rule
     public:
         [[nodiscard]] Sequence(
             SequenceFlags sequence_flags, isl::string_view sequence_starter,
-            isl::string_view sequence_ender, TextIterator &rule_iterator, SmallId item_id = 0);
+            isl::string_view sequence_ender, TextIterator &rule_iterator);
 
         [[nodiscard]] Sequence(
             SequenceFlags sequence_flags, isl::string_view sequence_begin_and_end,
-            TextIterator &rule_iterator, SmallId item_id = 0);
+            TextIterator &rule_iterator);
 
-        [[nodiscard]] Sequence(std::string value, SmallId item_id = 0);
+        [[nodiscard]] explicit Sequence(std::string value);
 
         [[nodiscard]] auto getValue() noexcept CCL_LIFETIMEBOUND -> std::string &
         {

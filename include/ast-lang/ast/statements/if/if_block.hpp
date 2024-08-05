@@ -10,11 +10,7 @@ namespace astlang::ast::statement::if_statement
     public:
         using Node::Node;
 
-        auto compute(Interpreter &interpreter) -> EvaluationResult override
-        {
-            return interpreter::EvaluationResult{
-                .value = std::nullopt, .type = interpreter::Type::VOID};
-        }
+        auto compute(Interpreter &interpreter) const -> EvaluationResult override;
     };
 }// namespace astlang::ast::statement::if_statement
 

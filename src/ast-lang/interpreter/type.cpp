@@ -2,10 +2,10 @@
 
 namespace astlang::interpreter
 {
-    auto Type::fromNode(ccl::parser::ast::Node *node) -> Type
+    auto Type::fromNode(const ccl::parser::ast::Node *node) -> Type
     {
-        auto node_ptr = ast::NodePtr{node};
-        auto front_node = ast::NodePtr{node_ptr.nodeSequence->front()};
+        auto node_ptr = ast::ConstNodePtr{node};
+        auto front_node = ast::ConstNodePtr{node_ptr.nodeSequence->front()};
         auto front_token = front_node.tokenNode->getToken();
         auto main_type = StringToCoreType.at(front_token.getRepr());
 

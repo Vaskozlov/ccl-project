@@ -5,10 +5,10 @@ namespace astlang::ast::function::decl
 {
     using namespace astlang::interpreter;
 
-    auto Argument::compute(Interpreter &interpreter) -> EvaluationResult
+    auto Argument::compute(Interpreter &interpreter) const -> EvaluationResult
     {
-        auto front_node = NodePtr{this->front()};
-        auto name_node = NodePtr{this->back()};
+        auto front_node = ConstNodePtr{this->front()};
+        auto name_node = ConstNodePtr{this->back()};
 
         auto type = Type::fromNode(front_node.cclNode);
         auto &name_token = name_node.tokenNode->getToken();

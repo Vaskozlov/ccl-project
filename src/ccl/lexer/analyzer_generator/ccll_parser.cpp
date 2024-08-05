@@ -114,7 +114,7 @@ namespace ccl::lexer::parser
         text_iterator.skip(line_repr.find(':').value() + 1);
 
         [[maybe_unused]] auto run_rule_scan_to_check_correctness =
-            rule::Container{EmptyLexicalAnalyzer, text_iterator, ReservedTokenMaxValue + 1, true};
+            rule::Container{EmptyLexicalAnalyzer, text_iterator, true};
     }
 
     auto CcllParser::parsingError(isl::string_view message, isl::string_view suggestion) -> void

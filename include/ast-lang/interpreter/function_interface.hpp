@@ -28,7 +28,7 @@ namespace astlang::interpreter
 
         auto call(Interpreter &interpreter, FunctionCallArguments arguments) -> EvaluationResult;
 
-        virtual auto doCall(Interpreter &interpreter) -> EvaluationResult = 0;
+        virtual auto doCall(Interpreter &interpreter) const -> EvaluationResult = 0;
     };
 }// namespace astlang::interpreter
 

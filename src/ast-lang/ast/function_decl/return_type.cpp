@@ -5,9 +5,9 @@ namespace astlang::ast::function::decl
 {
     using namespace astlang::interpreter;
 
-    auto ReturnType::compute(Interpreter & /* unused */) -> EvaluationResult
+    auto ReturnType::compute(Interpreter & /* unused */) const -> EvaluationResult
     {
-        auto return_type_node = NodePtr{this->back()};
+        auto return_type_node = ConstNodePtr{this->back()};
         auto type = Type::fromNode(return_type_node.cclNode);
 
         return EvaluationResult{

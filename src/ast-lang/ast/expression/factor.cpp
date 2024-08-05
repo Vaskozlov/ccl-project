@@ -6,10 +6,9 @@ namespace astlang::ast::expression
 {
     using namespace interpreter;
 
-    static auto constructNumber(NodePtr node) -> EvaluationResult
+    static auto constructNumber(ConstNodePtr node) -> EvaluationResult
     {
-        const auto *token_node = node.tokenNode;
-        const auto &token = token_node->getToken();
+        const auto &token = node.tokenNode->getToken();
         const auto repr = token.getRepr();
 
         auto value = isl::ssize_t{};
@@ -21,10 +20,9 @@ namespace astlang::ast::expression
         };
     }
 
-    static auto constructString(NodePtr node) -> EvaluationResult
+    static auto constructString(ConstNodePtr node) -> EvaluationResult
     {
-        const auto *token_node = node.tokenNode;
-        const auto &token = token_node->getToken();
+        const auto &token = node.tokenNode->getToken();
         const auto repr = token.getRepr();
         const auto repr_without_quotes = repr.substr(1, repr.size() - 2);
         auto repr_with_escaping = ccl::text::removeEscaping(repr_without_quotes, {});
@@ -33,34 +31,45 @@ namespace astlang::ast::expression
             isl::makeAny<std::string>(repr_with_escaping), Type::STRING};
     }
 
-    static auto readVariable(Interpreter &interpreter, NodePtr node) -> EvaluationResult &
+    static auto readVariable(Interpreter &interpreter, ConstNodePtr node) -> EvaluationResult &
     {
-        const auto *token_node = node.tokenNode;
-        const auto &token = token_node->getToken();
-        const auto repr = token.getRepr();
-
-        return interpreter.read(std::string{repr});
+        const auto &token = node.tokenNode->getToken();
+        return interpreter.read(std::string{token.getRepr()});
     }
 
-    auto Factor::compute(Interpreter &interpreter) -> EvaluationResult
+    static auto constructBoolean(Interpreter &interpreter, ConstNodePtr node) -> EvaluationResult
+    {
+        const auto &token = node.tokenNode->getToken();
+
+        return EvaluationResult{
+            .value = isl::makeAny<bool>(token.getId() == interpreter.TRUE),
+            .type = Type::BOOL,
+        };
+    }
+
+    auto Factor::compute(Interpreter &interpreter) const -> EvaluationResult
     {
         if (this->size() != 1) {
             return computeExpression(interpreter);
         }
 
-        auto node = NodePtr{this->front()};
+        auto node = ConstNodePtr{this->front()};
         auto node_type = node.cclNode->getType();
 
         if (node_type == interpreter.NUMBER) {
-            return constructNumber(NodePtr{node});
+            return constructNumber(ConstNodePtr{node});
+        }
+
+        if (node_type == interpreter.TRUE || node_type == interpreter.FALSE) {
+            return constructBoolean(interpreter, ConstNodePtr{node});
         }
 
         if (node_type == interpreter.STRING) {
-            return constructString(NodePtr{node});
+            return constructString(ConstNodePtr{node});
         }
 
         if (node_type == interpreter.IDENTIFIER) {
-            auto &read_result = readVariable(interpreter, NodePtr{node});
+            auto &read_result = readVariable(interpreter, ConstNodePtr{node});
 
             return EvaluationResult{
                 .value = isl::makeAny<EvaluationResult *>(&read_result),
@@ -80,9 +89,9 @@ namespace astlang::ast::expression
         throw std::runtime_error("Unknown factor type");
     }
 
-    auto Factor::computeExpression(Interpreter &interpreter) -> EvaluationResult
+    auto Factor::computeExpression(Interpreter &interpreter) const -> EvaluationResult
     {
-        auto middle_node = NodePtr{this->at(1)};
+        auto middle_node = ConstNodePtr{this->at(1)};
         return middle_node.astlangNode->compute(interpreter);
     }
 }// namespace astlang::ast::expression

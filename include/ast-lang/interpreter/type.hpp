@@ -18,6 +18,7 @@ namespace astlang::interpreter
             ERROR,
             ANY,
             VOID,
+            BOOL,
             INT,
             UINT,
             FLOAT,
@@ -27,7 +28,7 @@ namespace astlang::interpreter
         };
 
     private:
-        static constexpr isl::StaticFlatmap<CoreType, isl::string_view, 9> CoreTypeToString{
+        static constexpr isl::StaticFlatmap<CoreType, isl::string_view, 10> CoreTypeToString{
             {
                 {ERROR, "error"},
                 {INT, "int"},
@@ -38,10 +39,11 @@ namespace astlang::interpreter
                 {LIST, "list"},
                 {VOID, "void"},
                 {ANY, "any"},
+                {BOOL, "bool"},
             },
         };
 
-        static constexpr isl::StaticFlatmap<isl::string_view, CoreType, 8> StringToCoreType{
+        static constexpr isl::StaticFlatmap<isl::string_view, CoreType, 9> StringToCoreType{
             {
                 {"int", INT},
                 {"uint", UINT},
@@ -51,6 +53,7 @@ namespace astlang::interpreter
                 {"list", LIST},
                 {"void", VOID},
                 {"any", ANY},
+                {"bool", BOOL},
             },
         };
 
@@ -58,7 +61,7 @@ namespace astlang::interpreter
         CoreType mainType{};
 
     public:
-        static auto fromNode(ccl::parser::ast::Node *node) -> Type;
+        static auto fromNode(const ccl::parser::ast::Node *node) -> Type;
 
         Type() = default;
 

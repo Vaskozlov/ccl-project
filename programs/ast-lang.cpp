@@ -16,17 +16,35 @@ using namespace astlang::interpreter;
 
 template<typename LHS_T, typename RHS_T, typename RESULT_T>
 auto createBinaryFunction(
-    Interpreter &interpreter, const std::string &name, Type return_type, Type lhs_type,
-    Type rhs_type, std::function<RESULT_T(const LHS_T &, const RHS_T &)> function) -> void
+    Interpreter &interpreter, const std::string &name, Type lhs_type, Type rhs_type,
+    Type return_type, std::function<RESULT_T(const LHS_T &, const RHS_T &)> function) -> void
 {
     interpreter.addFunction(
         {.name = name, .returnType = return_type, .parameters = {lhs_type, rhs_type}},
         isl::makeUnique<BuiltinFunction>(
-            std::vector<std::string>{"lhs", "rhs"}, [function](Interpreter &interpreter) {
+            std::vector<std::string>{"lhs", "rhs"},
+            [function, return_type](Interpreter &interpreter) {
                 auto *lhs_ptr = astlang::observe<LHS_T>(interpreter.read("lhs"));
                 auto *rhs_ptr = astlang::observe<RHS_T>(interpreter.read("rhs"));
 
-                return EvaluationResult{isl::UniqueAny{function(*lhs_ptr, *rhs_ptr)}, Type::INT};
+                return EvaluationResult{isl::UniqueAny{function(*lhs_ptr, *rhs_ptr)}, return_type};
+            }));
+}
+
+template<typename T>
+auto createPrintFunction(Interpreter &interpreter, const std::string &name, Type type) -> void
+{
+    interpreter.addFunction(
+        {.name = name, .returnType = Type::VOID, .parameters = {type}},
+        isl::makeUnique<BuiltinFunction>(
+            std::vector<std::string>{"value"}, [](Interpreter &interpreter) {
+                auto *value_ptr = astlang::observe<T>(interpreter.read("value"));
+                fmt::println("{}", *value_ptr);
+
+                return EvaluationResult{
+                    .value = std::nullopt,
+                    .type = Type::VOID,
+                };
             }));
 }
 
@@ -62,46 +80,8 @@ auto main() -> int
 
     auto interpreter = astlang::interpreter::Interpreter{constructor};
 
-    createBinaryFunction<isl::ssize_t, isl::ssize_t, isl::ssize_t>(
-        interpreter, "__addition__", Type::INT, Type::INT, Type::INT,
-        [](const auto &lhs, const auto &rhs) {
-            return lhs + rhs;
-        });
-
-    createBinaryFunction<std::size_t, std::size_t, std::size_t>(
-        interpreter, "__addition__", Type::UINT, Type::UINT, Type::UINT,
-        [](const auto &lhs, const auto &rhs) {
-            return lhs + rhs;
-        });
-
-    createBinaryFunction<isl::ssize_t, isl::ssize_t, isl::ssize_t>(
-        interpreter, "__subtraction__", Type::INT, Type::INT, Type::INT,
-        [](const auto &lhs, const auto &rhs) {
-            return lhs - rhs;
-        });
-
-    createBinaryFunction<std::size_t, std::size_t, std::size_t>(
-        interpreter, "__subtraction__", Type::UINT, Type::UINT, Type::UINT,
-        [](const auto &lhs, const auto &rhs) {
-            return lhs - rhs;
-        });
-
-    interpreter.addFunction(
-        FunctionIdentification{
-            .name = "print",
-            .returnType = Type::VOID,
-            .parameters = {Type::INT},
-        },
-        isl::makeUnique<BuiltinFunction>(
-            std::vector<std::string>{"value"}, [](Interpreter &interpreter) {
-                auto *value_ptr = astlang::observe<isl::ssize_t>(interpreter.read("value"));
-                fmt::println("{}", *value_ptr);
-
-                return EvaluationResult{
-                    .value = std::nullopt,
-                    .type = Type::VOID,
-                };
-            }));
+    global_declarations_node->print("", false, to_str);
+    global_declarations_node->runRecursiveOptimization();
 
     global_declarations_node->print("", false, to_str);
     global_declarations_node->compute(interpreter);

@@ -12,7 +12,7 @@ namespace astlang::interpreter
       , builtinFunction(std::move(builtin_function))
     {}
 
-    auto BuiltinFunction::doCall(Interpreter &interpreter) -> EvaluationResult
+    auto BuiltinFunction::doCall(Interpreter &interpreter) const -> EvaluationResult
     {
         return builtinFunction(interpreter);
     }

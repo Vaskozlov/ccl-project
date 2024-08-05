@@ -26,7 +26,7 @@ struct std::hash<ccl::parser::TableEntry>
 {
     [[nodiscard]] auto operator()(const ccl::parser::TableEntry &entry) const noexcept -> uint64_t
     {
-        return isl::hash::combine(entry.state, entry.lookAhead);
+        return ankerl::unordered_dense::detail::wyhash::hash(&entry, sizeof(entry));
     }
 };
 

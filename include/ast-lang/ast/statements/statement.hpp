@@ -10,9 +10,9 @@ namespace astlang::ast::statement
     public:
         using Node::Node;
 
-        auto compute(Interpreter &interpreter) -> EvaluationResult override
+        auto compute(Interpreter &interpreter) const -> EvaluationResult override
         {
-            return NodePtr(this->front()).astlangNode->compute(interpreter);
+            return ConstNodePtr(this->front()).astlangNode->compute(interpreter);
         }
     };
 }// namespace astlang::ast::statement

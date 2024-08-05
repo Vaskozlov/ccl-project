@@ -18,7 +18,7 @@ namespace astlang::interpreter
             std::function<EvaluationResult(Interpreter &)>
                 builtin_function);
 
-        auto doCall(Interpreter &interpreter) -> EvaluationResult override;
+        auto doCall(Interpreter &interpreter) const -> EvaluationResult override;
     };
 }// namespace astlang::interpreter
 

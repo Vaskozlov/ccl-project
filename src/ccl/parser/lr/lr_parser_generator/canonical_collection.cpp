@@ -115,7 +115,7 @@ namespace ccl::parser
                 temp_cc_id = cc_it->id;
             } else {
                 has_new_sets = true;
-                temp_cc_id = closure_id.next();
+                temp_cc_id = isl::as<SmallId>(closure_id.next());
                 temp_cc.id = temp_cc_id;
 
                 canonicalCollection.emplace_back(std::move(temp_cc));

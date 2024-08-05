@@ -10,7 +10,7 @@ namespace astlang::ast::statement
     public:
         using Node::Node;
 
-        auto compute(Interpreter &interpreter) -> EvaluationResult override
+        auto compute(Interpreter &interpreter) const -> EvaluationResult override
         {
             return EvaluationResult{.value = std::nullopt, .type = interpreter::Type::VOID};
         }

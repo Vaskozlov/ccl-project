@@ -13,10 +13,10 @@ namespace astlang::ast::function::decl
 
     constexpr static std::size_t SIZE_IN_CASE_IMPLICIT_RETURN_TYPE = 8;
 
-    auto Definition::compute(Interpreter &interpreter) -> EvaluationResult
+    auto Definition::compute(Interpreter &interpreter) const -> EvaluationResult
     {
-        auto function_name_node = NodePtr{this->at(FUNCTION_NAME_INDEX)};
-        auto function_arguments_node = NodePtr{this->at(FUNCTION_ARGUMENTS_INDEX)};
+        auto function_name_node = ConstNodePtr{this->at(FUNCTION_NAME_INDEX)};
+        auto function_arguments_node = ConstNodePtr{this->at(FUNCTION_ARGUMENTS_INDEX)};
 
         const auto &function_name_token = function_name_node.tokenNode->getToken();
         const auto function_name = function_name_token.getRepr();
@@ -25,19 +25,19 @@ namespace astlang::ast::function::decl
         auto arguments_list = isl::get<std::vector<EvaluationResult>>(function_arguments.value);
         auto function_definition_arguments_type = FunctionArguments{};
         auto function_definition_arguments_names = std::vector<std::string>{};
-        auto function_body = NodePtr{nullptr};
+        auto function_body = ConstNodePtr{nullptr};
         auto return_type = Type{Type::ANY};
 
         if (this->size() == SIZE_IN_CASE_IMPLICIT_RETURN_TYPE) {
-            function_body = NodePtr{
+            function_body = ConstNodePtr{
                 this->at(FUNCTION_BODY_INDEX_IN_CASE_OF_IMPLICIT_RETURN_TYPE),
             };
         } else {
-            function_body = NodePtr{
+            function_body = ConstNodePtr{
                 this->at(FUNCTION_BODY_INDEX_IN_CASE_OF_EXPLICIT_RETURN_TYPE),
             };
 
-            auto return_type_node = NodePtr{this->at(FUNCTION_RETURN_TYPE_INDEX)};
+            auto return_type_node = ConstNodePtr{this->at(FUNCTION_RETURN_TYPE_INDEX)};
             auto return_type_evaluation = return_type_node.astlangNode->compute(interpreter);
 
             return_type = std::move(return_type_evaluation.type);

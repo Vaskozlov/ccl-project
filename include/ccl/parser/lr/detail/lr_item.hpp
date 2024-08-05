@@ -1,8 +1,9 @@
 #ifndef CCL_PROJECT_LR_ITEM_HPP
 #define CCL_PROJECT_LR_ITEM_HPP
 
-#include "ccl/parser/rule.hpp"
+#include <ankerl/unordered_dense.h>
 #include <ccl/lexer/lexical_analyzer.hpp>
+#include <ccl/parser/rule.hpp>
 #include <ccl/parser/types.hpp>
 
 namespace ccl::parser
@@ -46,7 +47,7 @@ namespace ccl::parser
 
         [[nodiscard]] auto isDotInTheEnd() const noexcept -> bool
         {
-            return dotLocation >= rule->size();
+            return dotLocation == rule->size();
         }
 
         [[nodiscard]] auto at(std::size_t index) const CCL_LIFETIMEBOUND -> Symbol
@@ -71,12 +72,44 @@ namespace ccl::parser
 }// namespace ccl::parser
 
 template<>
+struct ankerl::unordered_dense::hash<ccl::parser::LrItem>
+{
+    using is_avalanching = void;
+
+    [[nodiscard]] auto operator()(const ccl::parser::LrItem &item) const noexcept -> auto
+    {
+        return ankerl::unordered_dense::detail::wyhash::hash(&item, sizeof(item));
+    }
+};
+
+template<typename T>
+struct ankerl::unordered_dense::hash<std::vector<T>>
+{
+    using is_avalanching = void;
+
+    [[nodiscard]] auto operator()(const std::vector<T> &vector) const noexcept -> auto
+    {
+        return ankerl::unordered_dense::detail::wyhash::hash(
+            vector.data(), sizeof(T) * vector.size());
+    }
+};
+
+
+template<typename T>
+struct std::hash<std::vector<T>>
+{
+    [[nodiscard]] auto operator()(const std::vector<T> &vector) const noexcept -> auto
+    {
+        return ankerl::unordered_dense::hash<std::vector<T>>{}(vector);
+    }
+};
+
+template<>
 struct std::hash<ccl::parser::LrItem>
 {
-    auto operator()(const ccl::parser::LrItem &item) const -> std::size_t
+    auto operator()(const ccl::parser::LrItem &item) const -> auto
     {
-        return isl::hash::combine(
-            reinterpret_cast<std::size_t>(item.rule), item.dotLocation, item.lookAhead);
+        return ankerl::unordered_dense::hash<ccl::parser::LrItem>{}(item);
     }
 };
 

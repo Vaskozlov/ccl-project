@@ -5,10 +5,10 @@ namespace astlang::ast::statement
 {
     using namespace astlang::interpreter;
 
-    auto VariableDeclaration::compute(Interpreter &interpreter) -> EvaluationResult
+    auto VariableDeclaration::compute(Interpreter &interpreter) const -> EvaluationResult
     {
-        auto name_node = NodePtr{this->at(1)};
-        auto expression_node = NodePtr{this->back()};
+        auto name_node = ConstNodePtr{this->at(1)};
+        auto expression_node = ConstNodePtr{this->back()};
 
         const auto &name_token = name_node.tokenNode->getToken();
         const auto variable_name = name_token.getRepr();

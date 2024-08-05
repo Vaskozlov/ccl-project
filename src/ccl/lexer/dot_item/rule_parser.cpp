@@ -13,8 +13,6 @@ namespace ccl::lexer::rule
       , ruleIterator{text_iterator}
       , lexicalAnalyzer{target_container.lexicalAnalyzer}
     {
-        checkId();
-
         ruleIterator.moveToCleanChar();
 
         while (hasMovedToTheNextChar()) {
@@ -123,13 +121,11 @@ namespace ccl::lexer::rule
         items.pop_back();
 
         if (binaryOperator == BinaryOperator::AND) {
-            return RuleBlock{
-                BinaryOperationAnd(std::move(constructedLhs.value()), std::move(rhs), getId())};
+            return RuleBlock{BinaryOperationAnd(std::move(constructedLhs.value()), std::move(rhs))};
         }
 
         if (binaryOperator == BinaryOperator::OR) {
-            return RuleBlock{
-                BinaryOperationOr(std::move(constructedLhs.value()), std::move(rhs), getId())};
+            return RuleBlock{BinaryOperationOr(std::move(constructedLhs.value()), std::move(rhs))};
         }
 
         isl::unreachable();
@@ -139,21 +135,21 @@ namespace ccl::lexer::rule
     {
         tryToFinishBinaryExpression();
 
-        return RuleBlock{Sequence{Sequence::SequenceFlags{}, "\"", ruleIterator, getId()}};
+        return RuleBlock{Sequence{Sequence::SequenceFlags{}, "\"", ruleIterator}};
     }
 
     auto Container::RuleParser::constructNewRuleReference() -> RuleBlock
     {
         tryToFinishBinaryExpression();
 
-        return RuleBlock{RuleReference{lexicalAnalyzer, "\'", "\'", ruleIterator, getId()}};
+        return RuleBlock{RuleReference{lexicalAnalyzer, "\'", "\'", ruleIterator}};
     }
 
     auto Container::RuleParser::constructNewUnion() -> RuleBlock
     {
         tryToFinishBinaryExpression();
 
-        return RuleBlock{Union{ruleIterator, getId()}};
+        return RuleBlock{Union{ruleIterator}};
     }
 
     // NOLINTNEXTLINE (recursive function)
@@ -168,7 +164,7 @@ namespace ccl::lexer::rule
         ruleIterator.setEnd(text.begin() + bracket_index);
 
         auto new_container =
-            Container{lexicalAnalyzer, ruleIterator, getId(), false, container.isAnyPlaceItem()};
+            Container{lexicalAnalyzer, ruleIterator, false, container.isAnyPlaceItem()};
         ruleIterator.setEnd(saved_end);
 
         return RuleBlock{std::move(new_container)};
@@ -248,14 +244,6 @@ namespace ccl::lexer::rule
         }
 
         container.flags.isAnyPlace = true;
-    }
-
-    CCL_INLINE auto Container::RuleParser::checkId() const -> void
-    {
-        if (getId() <= ReservedTokenMaxValue) {
-            throw UnrecoverableError{
-                fmt::format("tokens' ids from 0 to {} are reserved", ReservedTokenMaxValue)};
-        }
     }
 
     auto Container::RuleParser::reverseLastItem() -> void

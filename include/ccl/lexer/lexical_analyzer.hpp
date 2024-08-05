@@ -40,7 +40,6 @@ namespace ccl::lexer
         AnyPlaceItems anyPlaceItems;
         std::vector<u32> ignoredIds;
         std::string skippedCharacters;
-        std::atomic<u32> idCounter{0};
 
         // NOLINTNEXTLINE reference
         ExceptionHandler &exceptionHandler;
@@ -61,16 +60,7 @@ namespace ccl::lexer
         }
 
         auto addContainer(isl::string_view rule_name, isl::UniquePtr<Container> new_container)
-            -> void
-        {
-            allItemsMap.try_emplace(rule_name, new_container.get());
-
-            if (new_container->isAnyPlaceItem()) {
-                anyPlaceItems.items.emplace_back(std::move(new_container));
-            } else {
-                items.emplace_back(std::move(new_container));
-            }
-        }
+            -> void;
 
         [[nodiscard]] auto getIgnoredIds() const CCL_LIFETIMEBOUND -> const std::vector<u32> &
         {
@@ -107,11 +97,6 @@ namespace ccl::lexer
             getItems() const noexcept -> const std::vector<isl::UniquePtr<Container>> &
         {
             return items;
-        }
-
-        [[nodiscard]] auto generateIdForItem() noexcept -> SmallId
-        {
-            return static_cast<SmallId>(idCounter.fetch_add(1U, std::memory_order_relaxed));
         }
 
     private:

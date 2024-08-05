@@ -37,13 +37,10 @@ namespace ccl::lexer::rule
         Flags flags;
 
     public:
-        [[nodiscard]] explicit RuleBlockInterface(SmallId item_id)
-          : id{item_id}
-        {}
+        RuleBlockInterface() = default;
 
-        [[nodiscard]] RuleBlockInterface(SmallId item_id, Flags item_flags)
-          : id{item_id}
-          , flags{item_flags}
+        [[nodiscard]] RuleBlockInterface(Flags item_flags)
+          : flags{item_flags}
         {}
 
         RuleBlockInterface(const RuleBlockInterface &) = default;

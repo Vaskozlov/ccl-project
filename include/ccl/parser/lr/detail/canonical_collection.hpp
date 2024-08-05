@@ -25,6 +25,15 @@ namespace ccl::parser
 }// namespace ccl::parser
 
 template<>
+struct std::hash<ccl::parser::CanonicalCollection>
+{
+    auto operator()(const ccl::parser::CanonicalCollection &collection) const -> std::size_t
+    {
+        return std::hash<std::vector<ccl::parser::LrItem>>{}(collection.items);
+    }
+};
+
+template<>
 class fmt::formatter<ccl::parser::CanonicalCollectionPrintWrapper>
   : public fmt::formatter<std::string_view>
 {

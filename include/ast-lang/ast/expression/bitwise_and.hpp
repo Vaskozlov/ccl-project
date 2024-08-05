@@ -10,7 +10,7 @@ namespace astlang::ast::expression
     public:
         using BinaryExpressionBase::BinaryExpressionBase;
 
-        auto compute(Interpreter &interpreter) -> EvaluationResult override;
+        auto compute(Interpreter &interpreter) const -> EvaluationResult override;
     };
 }// namespace astlang::ast::expression
 

@@ -5,9 +5,9 @@ namespace astlang::ast
 {
     using namespace astlang::interpreter;
 
-    auto GlobalDeclaration::compute(Interpreter &interpreter) -> EvaluationResult
+    auto GlobalDeclaration::compute(Interpreter &interpreter) const -> EvaluationResult
     {
-        auto front_node_ptr = NodePtr{this->front()};
+        auto front_node_ptr = ConstNodePtr{this->front()};
         front_node_ptr.astlangNode->compute(interpreter);
 
         return EvaluationResult{

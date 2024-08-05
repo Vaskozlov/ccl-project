@@ -10,7 +10,7 @@ namespace astlang::ast
     public:
         using Node::Node;
 
-        auto compute(Interpreter &interpreter) -> EvaluationResult override;
+        auto compute(Interpreter &interpreter) const -> EvaluationResult override;
     };
 }// namespace astlang::ast
 

@@ -5,10 +5,10 @@ namespace astlang::ast::statement
 {
     using namespace astlang::interpreter;
 
-    auto Statements::compute(Interpreter &interpreter) -> EvaluationResult
+    auto Statements::compute(Interpreter &interpreter) const -> EvaluationResult
     {
         for (const auto &node : nodes) {
-            auto result = NodePtr{node.get()}.astlangNode->compute(interpreter);
+            auto result = ConstNodePtr{node.get()}.astlangNode->compute(interpreter);
 
             if (result.needToReturn) {
                 return result;

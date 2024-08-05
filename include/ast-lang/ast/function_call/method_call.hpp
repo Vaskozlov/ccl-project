@@ -12,7 +12,7 @@ namespace astlang::ast::function::call
     public:
         using Node::Node;
 
-        auto compute(Interpreter &interpreter) -> EvaluationResult override
+        auto compute(Interpreter &interpreter) const -> EvaluationResult override
         {
             return interpreter::EvaluationResult{
                 .value = std::nullopt, .type = interpreter::Type::VOID};

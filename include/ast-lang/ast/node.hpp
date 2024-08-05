@@ -34,9 +34,11 @@ namespace astlang::ast
         using EvaluationResult = interpreter::EvaluationResult;
         using ccl::parser::ast::UnNodeSequence::NodeSequence;
 
-        virtual auto optimize() -> isl::UniquePtr<ccl::parser::ast::Node>;
+        auto runRecursiveOptimization() -> void;
 
-        virtual auto compute(Interpreter &interpreter) -> EvaluationResult = 0;
+        virtual auto optimize() -> ccl::parser::ast::UnNodePtr;
+
+        virtual auto compute(Interpreter &interpreter) const -> EvaluationResult = 0;
 
         static auto convertCclTreeToAstlang(
             ccl::parser::reader::RulesConstructor &constructor,
@@ -60,6 +62,20 @@ namespace astlang::ast
         };
 
         explicit NodePtr(ccl::parser::ast::Node *node)
+          : cclNode{node}
+        {}
+    };
+
+    struct ConstNodePtr
+    {
+        union {
+            const ccl::parser::ast::Node *cclNode;
+            const ccl::parser::ast::TokenNode *tokenNode;
+            const ccl::parser::ast::UnNodeSequence *nodeSequence;
+            const Node *astlangNode;
+        };
+
+        explicit ConstNodePtr(const ccl::parser::ast::Node *node)
           : cclNode{node}
         {}
     };

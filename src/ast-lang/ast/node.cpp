@@ -43,9 +43,29 @@ namespace astlang::ast
 {
     using namespace ccl::parser;
 
-    auto Node::optimize() -> isl::UniquePtr<ccl::parser::ast::Node>
+    auto Node::optimize() -> ccl::parser::ast::UnNodePtr
     {
+        runRecursiveOptimization();
         return nullptr;
+    }
+
+    auto Node::runRecursiveOptimization() -> void
+    {
+        for (auto &node : getNodes()) {
+            auto *ast_node = dynamic_cast<Node *>(node.get());
+
+            if (ast_node == nullptr) {
+                continue;
+            }
+
+            auto optimized_version = ast_node->optimize();
+
+            if (optimized_version == nullptr) {
+                continue;
+            }
+
+            node = std::move(optimized_version);
+        }
     }
 
     auto Node::convertCclTreeToAstlang(reader::RulesConstructor &constructor, Node *node) -> void

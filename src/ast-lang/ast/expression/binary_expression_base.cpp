@@ -7,17 +7,17 @@ namespace astlang::ast::expression
 
     auto BinaryExpressionBase::computeBinaryExpression(
         Interpreter &interpreter,
-        const std::vector<std::pair<SmallId, std::string>> &token_to_function_name)
+        const std::vector<std::pair<SmallId, std::string>> &token_to_function_name) const
         -> interpreter::EvaluationResult
     {
-        auto front_node = NodePtr{front()};
+        auto front_node = ConstNodePtr{front()};
 
         if (size() == 1) {
             return front_node.astlangNode->compute(interpreter);
         }
 
         const auto *middle_node = at(1);
-        auto back_node = NodePtr{back()};
+        auto back_node = ConstNodePtr{back()};
         auto arguments = FunctionCallArguments{};
         arguments.reserve(2);
 

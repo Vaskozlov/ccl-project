@@ -5,7 +5,7 @@ namespace astlang::ast::expression
 {
     using namespace interpreter;
 
-    auto BitwiseAnd::compute(Interpreter &interpreter) -> EvaluationResult
+    auto BitwiseAnd::compute(Interpreter &interpreter) const -> EvaluationResult
     {
         return computeBinaryExpression(
             interpreter, {

@@ -50,8 +50,7 @@ namespace ccl::lexer::rule
         return result;
     }
 
-    Union::Union(TextIterator &rule_iterator, SmallId rule_id)
-      : RuleBlockInterface{rule_id}
+    Union::Union(TextIterator &rule_iterator)
     {
         static constexpr isl::StaticFlatmap<char32_t, char32_t, 3> special_symbols = {
             {U'[', U'['},
@@ -87,9 +86,8 @@ namespace ccl::lexer::rule
         checkForClosedRange(rule_iterator, is_range);
     }
 
-    Union::Union(isl::UtfSet stored_symbols, SmallId rule_id)
-      : RuleBlockInterface{rule_id}
-      , storedSymbols{std::move(stored_symbols)}
+    Union::Union(isl::UtfSet stored_symbols)
+      : storedSymbols{std::move(stored_symbols)}
     {}
 
     auto Union::scanIteration(const ForkedGenerator &text_iterator) const -> ScanResult

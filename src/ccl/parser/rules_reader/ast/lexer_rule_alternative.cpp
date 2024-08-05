@@ -17,7 +17,7 @@ namespace ccl::parser::reader::ast
         auto result =
             isl::makeUnique<lexer::rule::RuleBlockInterface, lexer::rule::BinaryOperationOr>(
                 lexer::rule::RuleBlock{std::move(lhs_as_rule)},
-                lexer::rule::RuleBlock{std::move(rhs_as_rule)}, SmallId{});
+                lexer::rule::RuleBlock{std::move(rhs_as_rule)});
 
         return isl::UniqueAny{std::move(result)};
     }

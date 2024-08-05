@@ -16,6 +16,8 @@ namespace astlang::interpreter
         ccl::parser::reader::RulesConstructor &constructor;
 
     public:
+        const SmallId TRUE = constructor.getRuleId("\"true\"");
+        const SmallId FALSE = constructor.getRuleId("\"false\"");
         const SmallId NUMBER = constructor.getRuleId("NUMBER");
         const SmallId STRING = constructor.getRuleId("STRING");
         const SmallId IDENTIFIER = constructor.getRuleId("IDENTIFIER");
@@ -55,34 +57,15 @@ namespace astlang::interpreter
         const SmallId BITWISE_OR = constructor.getRuleId("\'|\'");
         const SmallId BITWISE_XOR = constructor.getRuleId("\'^\'");
 
-        explicit Interpreter(ccl::parser::reader::RulesConstructor &rules_constructor)
-          : constructor(rules_constructor)
-        {}
+        explicit Interpreter(ccl::parser::reader::RulesConstructor &rules_constructor);
 
         auto addFunction(
             FunctionIdentification identification,
             isl::UniquePtr<FunctionInterface>
-                function) -> void
-        {
-            functions.addFunction(std::move(identification), std::move(function));
-        }
+                function) -> void;
 
         [[nodiscard]] auto
-            call(const std::string &name, FunctionCallArguments arguments) -> EvaluationResult
-        {
-            auto conversion_range = std::views::transform(arguments, [](const auto &argument) {
-                return argument.type;
-            });
-
-            auto function_identification = FunctionIdentification{
-                .name = name,
-                .returnType = Type::ERROR,
-                .parameters = std::vector<Type>{conversion_range.begin(), conversion_range.end()},
-            };
-
-            auto *function = functions.getFunction(function_identification);
-            return function->call(*this, std::move(arguments));
-        }
+            call(const std::string &name, FunctionCallArguments arguments) -> EvaluationResult;
 
         [[nodiscard]] auto read(const std::string &name) -> EvaluationResult &
         {

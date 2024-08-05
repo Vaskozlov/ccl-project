@@ -7,8 +7,7 @@ namespace ccl::parser::reader::ast
         using namespace lexer::rule;
 
         auto &lexical_analyzer = rule_constructor.getLexicalAnalyzer();
-        auto resulted_container =
-            isl::makeUnique<Container>(lexical_analyzer, lexical_analyzer.generateIdForItem());
+        auto resulted_container = isl::makeUnique<Container>(lexical_analyzer);
 
         for (const auto &node : this->nodes) {
             const auto *node_as_rules_reader = static_cast<const RulesReaderNode *>(node.get());

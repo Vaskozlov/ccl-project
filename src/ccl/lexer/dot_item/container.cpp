@@ -21,10 +21,9 @@ namespace ccl::lexer::rule
     }
 
     Container::Container(
-        LexicalAnalyzer &lexical_analyzer, TextIterator &rule_iterator, SmallId item_id,
-        bool main_item, bool is_special)
-      : RuleBlockInterface{item_id}
-      , lexicalAnalyzer{lexical_analyzer}
+        LexicalAnalyzer &lexical_analyzer, TextIterator &rule_iterator, bool main_item,
+        bool is_special)
+      : lexicalAnalyzer{lexical_analyzer}
       , anyPlaceItems{lexicalAnalyzer.shareAnyPlaceItems()}
       , flags{.isMain = main_item, .isAnyPlace = is_special}
     {
@@ -32,10 +31,9 @@ namespace ccl::lexer::rule
     }
 
     Container::Container(
-        LexicalAnalyzer &lexical_analyzer, const TextIterator &rule_iterator, SmallId item_id,
-        bool main_item, bool is_special)
-      : RuleBlockInterface{item_id}
-      , lexicalAnalyzer{lexical_analyzer}
+        LexicalAnalyzer &lexical_analyzer, const TextIterator &rule_iterator, bool main_item,
+        bool is_special)
+      : lexicalAnalyzer{lexical_analyzer}
       , anyPlaceItems{lexical_analyzer.shareAnyPlaceItems()}
       , flags{.isMain = main_item, .isAnyPlace = is_special}
     {
@@ -43,10 +41,8 @@ namespace ccl::lexer::rule
         parseRule(text_iterator_copy);
     }
 
-    Container::Container(
-        LexicalAnalyzer &lexical_analyzer, SmallId item_id, bool main_item, bool is_special)
-      : RuleBlockInterface{item_id}
-      , lexicalAnalyzer{lexical_analyzer}
+    Container::Container(LexicalAnalyzer &lexical_analyzer, bool main_item, bool is_special)
+      : lexicalAnalyzer{lexical_analyzer}
       , anyPlaceItems{lexical_analyzer.shareAnyPlaceItems()}
       , flags{.isMain = main_item, .isAnyPlace = is_special}
     {}

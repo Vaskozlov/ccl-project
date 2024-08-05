@@ -5,10 +5,10 @@ namespace astlang::ast
 {
     using namespace astlang::interpreter;
 
-    auto GlobalDeclarations::compute(Interpreter &interpreter) -> EvaluationResult
+    auto GlobalDeclarations::compute(Interpreter &interpreter) const -> EvaluationResult
     {
-        for (auto &node : getNodes()) {
-            NodePtr{node.get()}.astlangNode->compute(interpreter);
+        for (const auto &node : nodes) {
+            ConstNodePtr{node.get()}.astlangNode->compute(interpreter);
         }
 
         return EvaluationResult{.value = std::nullopt, .type = Type::ANY};
