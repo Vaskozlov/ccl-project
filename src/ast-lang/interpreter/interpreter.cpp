@@ -21,16 +21,17 @@ namespace astlang::interpreter
                 }));
     }
 
-    template<typename T>
+    template<typename T, typename... Ts>
     static auto createPrintFunction(
-        Interpreter &interpreter, const std::string &name, const Type &type) -> void
+        Interpreter &interpreter, const std::string &name, std::string_view fmt,
+        const Type &type) -> void
     {
         interpreter.addFunction(
             {.name = name, .returnType = Type::VOID, .parameters = {type}},
             isl::makeUnique<BuiltinFunction>(
-                std::vector<std::string>{"value"}, [](Interpreter &interpreter) {
+                std::vector<std::string>{"value"}, [fmt](Interpreter &interpreter) {
                     auto *value_ptr = astlang::observe<T>(interpreter.read("value"));
-                    fmt::println("{}", *value_ptr);
+                    fmt::print(fmt::runtime(fmt), *value_ptr);
 
                     return EvaluationResult{
                         .value = std::nullopt,
@@ -124,10 +125,15 @@ namespace astlang::interpreter
         createBinaryFunction<std::size_t, std::size_t>(
             *this, "__bitwise_xor", Type::UINT, Type::UINT, Type::UINT, std::bit_xor{});
 
-        createPrintFunction<bool>(*this, "print", Type::BOOL);
-        createPrintFunction<isl::ssize_t>(*this, "print", Type::INT);
-        createPrintFunction<std::size_t>(*this, "print", Type::UINT);
-        createPrintFunction<std::string>(*this, "print", Type::STRING);
+        createPrintFunction<bool>(*this, "print", "{}", Type::BOOL);
+        createPrintFunction<isl::ssize_t>(*this, "print", "{}", Type::INT);
+        createPrintFunction<std::size_t>(*this, "print", "{}", Type::UINT);
+        createPrintFunction<std::string>(*this, "print", "{}", Type::STRING);
+
+        createPrintFunction<bool>(*this, "println", "{}\n", Type::BOOL);
+        createPrintFunction<isl::ssize_t>(*this, "println", "{}\n", Type::INT);
+        createPrintFunction<std::size_t>(*this, "println", "{}\n", Type::UINT);
+        createPrintFunction<std::string>(*this, "println", "{}\n", Type::STRING);
 
         singleArgumentFunction<bool>(*this, "bool", Type::INT, Type::BOOL, [](isl::ssize_t value) {
             return value != 0;
