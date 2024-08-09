@@ -11,7 +11,7 @@ TEST_CASE("PegParsing", "[Parser]")
     auto input = string_view{"10+2*3"};
     auto tokenizer = tparser::TestParser.getParser("EXPR", input, "stdin");
 
-    tokenizer.parse()->print("", false, [](Id value) {
+    tokenizer.parse()->print("", false, [](SmallId value) {
         return std::string{lexer::lexerEnumToString<tparser::TestParserToken>(
             as<tparser::TestParserToken>(value))};
     });
