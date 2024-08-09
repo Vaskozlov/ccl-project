@@ -26,6 +26,7 @@ isl_set_project_warnings(
 target_link_libraries(
         ccl-catch
         ccl
+        astlang
         fmt::fmt-header-only
         Catch2::Catch2WithMain
 )
