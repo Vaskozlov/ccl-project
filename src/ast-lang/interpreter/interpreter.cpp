@@ -40,6 +40,7 @@ namespace astlang::interpreter
                 }));
     }
 
+
     template<typename FROM>
     static auto singleArgumentFunction(
         Interpreter &interpreter, const std::string &name, const Type &value_type,

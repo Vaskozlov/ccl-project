@@ -82,14 +82,9 @@ namespace astlang::interpreter
             return constructor.getRuleId(rule_name);
         }
 
-        auto pushHardStackScope() -> void
+        auto createsHardScope() -> decltype(auto)
         {
-            variables.pushHardStackScope();
-        }
-
-        auto popStackScope() -> void
-        {
-            variables.popStackScope();
+            return variables.createsHardScope();
         }
 
         auto write(const std::string &name, EvaluationResult value) -> void

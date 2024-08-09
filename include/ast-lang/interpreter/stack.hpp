@@ -3,6 +3,7 @@
 
 #include <ankerl/unordered_dense.h>
 #include <ast-lang/interpreter/evaluation_result.hpp>
+#include <isl/raii.hpp>
 
 namespace astlang::interpreter
 {
@@ -25,9 +26,17 @@ namespace astlang::interpreter
 
         auto globalRead(const std::string &name) -> EvaluationResult &;
 
-        auto pushHardStackScope() -> void;
-
-        auto popStackScope() -> void;
+        auto createsHardScope() -> auto
+        {
+            return isl::Raii{
+                [this]() {
+                    localScopes.emplace_back();
+                },
+                [this]() {
+                    localScopes.pop_back();
+                },
+            };
+        }
     };
 }// namespace astlang::interpreter
 

@@ -20,7 +20,8 @@ namespace astlang::interpreter
     auto Stack::createVariable(const std::string &name, EvaluationResult value) -> void
     {
         if (localScopes.empty()) {
-            return createGlobalVariable(name, std::move(value));
+            createGlobalVariable(name, std::move(value));
+            return;
         }
 
         auto &last_scope = localScopes.back();
@@ -58,15 +59,5 @@ namespace astlang::interpreter
     auto Stack::globalRead(const std::string &name) -> EvaluationResult &
     {
         return globalScope.at(name);
-    }
-
-    auto Stack::pushHardStackScope() -> void
-    {
-        localScopes.emplace_back();
-    }
-
-    auto Stack::popStackScope() -> void
-    {
-        localScopes.pop_back();
     }
 }// namespace astlang::interpreter
