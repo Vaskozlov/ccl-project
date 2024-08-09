@@ -5,12 +5,13 @@
 
 namespace ccl::parser
 {
-    enum class ParsingAction : u32
+    enum class ParsingAction : u16
     {
         SHIFT,
         REDUCE,
         ACCEPT,
-        FAILED
+        FAILED,
+        JOINED
     };
 }
 
@@ -34,6 +35,9 @@ public:
 
         case ccl::parser::ParsingAction::FAILED:
             return fmt::format_to(ctx.out(), "FAILED");
+
+        case ccl::parser::ParsingAction::JOINED:
+            return fmt::format_to(ctx.out(), "JOINED");
 
         default:
             isl::unreachable();
