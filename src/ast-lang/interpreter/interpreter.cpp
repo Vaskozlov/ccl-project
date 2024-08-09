@@ -155,6 +155,47 @@ namespace astlang::interpreter
             *this, "__positive__", Type::UINT, Type::UINT, [](std::size_t value) {
                 return value;
             });
+
+        addFunction(
+            FunctionIdentification{
+                .name = "print",
+                .returnType = Type::VOID,
+                .parameters =
+                    {
+                        {
+                            Type::LIST,
+                            {
+                                Type::ANY,
+                            },
+                        },
+                    },
+            },
+            isl::makeUnique<BuiltinFunction>(
+                std::vector<std::string>{"value"}, [](Interpreter &interpreter) {
+                    auto *value_ptr =
+                        astlang::observe<std::vector<EvaluationResult>>(interpreter.read("value"));
+
+                    fmt::print("[");
+
+                    for (auto &element : *value_ptr) {
+                        auto arguments = FunctionCallArguments{};
+                        arguments.emplace_back(EvaluationResult{
+                            .value = isl::UniqueAny{std::addressof(element)},
+                            .type = element.type,
+                            .storesReference = true,
+                        });
+
+                        [[maybe_unused]] auto _ = interpreter.call("print", std::move(arguments));
+                        fmt::print(", ");
+                    }
+
+                    fmt::print("]");
+
+                    return EvaluationResult{
+                        .value = std::nullopt,
+                        .type = Type::VOID,
+                    };
+                }));
     }
 
     auto Interpreter::addFunction(
