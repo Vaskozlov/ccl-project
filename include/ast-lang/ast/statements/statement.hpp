@@ -12,7 +12,7 @@ namespace astlang::ast::statement
 
         auto compute(Interpreter &interpreter) const -> EvaluationResult override
         {
-            return ConstNodePtr(this->front()).astlangNode->compute(interpreter);
+            return ConstNodePtr(front()).astlangNode->compute(interpreter);
         }
     };
 }// namespace astlang::ast::statement
