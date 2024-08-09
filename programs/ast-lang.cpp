@@ -3,6 +3,7 @@
 #include <ast-lang/ast/node.hpp>
 #include <ast-lang/interpreter/interpreter.hpp>
 #include <ccl/parser/rules_reader/rules_reader.hpp>
+#include <ccl/parser/visualization/graph.hpp>
 #include <isl/io.hpp>
 
 using namespace ccl::lexer;
@@ -29,6 +30,7 @@ auto main() -> int
 
     auto lr_parser = LrParser{first_item, grammar.getEpsilon(), grammar, to_str};
     auto node = lr_parser.parse(tokenizer);
+    visualization::visualize("test.dot", node.get(), to_str);
 
     auto *result_as_sequence = dynamic_cast<ccl::parser::ast::UnNodeSequence *>(node.get());
 
