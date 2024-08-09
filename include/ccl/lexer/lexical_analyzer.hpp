@@ -9,7 +9,7 @@ namespace ccl::lexer
     CCL_DECL auto lexerEnumToString(T value) -> isl::string_view;
 
     template<>
-    [[nodiscard]] inline auto lexerEnumToString<std::size_t>(std::size_t value) -> isl::string_view
+    [[nodiscard]] inline auto lexerEnumToString<SmallId>(SmallId value) -> isl::string_view
     {
         return isl::as<isl::string_view>(fmt::to_string(value));
     }
