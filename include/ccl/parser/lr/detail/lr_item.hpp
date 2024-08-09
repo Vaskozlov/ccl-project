@@ -94,7 +94,6 @@ struct ankerl::unordered_dense::hash<std::vector<T>>
     }
 };
 
-
 template<typename T>
 struct std::hash<std::vector<T>>
 {
