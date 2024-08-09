@@ -1,6 +1,7 @@
 #ifndef CCL_PROJECT_ASTLANG_AST_LANG_HPP
 #define CCL_PROJECT_ASTLANG_AST_LANG_HPP
 
+#include <ankerl/unordered_dense.h>
 #include <ccl/ccl.hpp>
 #include <ccl/parser/types.hpp>
 
