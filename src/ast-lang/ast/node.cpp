@@ -1,3 +1,5 @@
+#include <ast-lang/ast/expression/array.hpp>
+#include <ast-lang/ast/expression/array_elements.hpp>
 #include <ast-lang/ast/expression/bitwise_and.hpp>
 #include <ast-lang/ast/expression/bitwise_or.hpp>
 #include <ast-lang/ast/expression/bitwise_xor.hpp>
@@ -206,6 +208,14 @@ namespace astlang::ast
             {
                 constructor.getRuleId("FACTOR"),
                 reconstructNode<expression::Factor>,
+            },
+            {
+                constructor.getRuleId("ARRAY"),
+                reconstructNode<expression::Array>,
+            },
+            {
+                constructor.getRuleId("ARRAY_ELEMENTS"),
+                reconstructNode<expression::ArrayElements>,
             },
             {
                 constructor.getRuleId("FUNCTION_CALL"),
