@@ -479,7 +479,10 @@ namespace ccl::parser::reader
             LrItem{std::addressof(initial_rule), 0, RulesLexerToken::GOAL, RulesLexerToken::EOI};
 
         auto tokenizer = RulesLexer.getTokenizer(input, filename);
-        auto lr_parser = LrParser(start_item, RulesLexerToken::EPSILON, RulesGrammar);
+        auto lr_parser =
+            LrParser(start_item, RulesLexerToken::EPSILON, RulesGrammar, [](auto elem) {
+                return std::string{ToStringRulesLexerToken.at(elem)};
+            });
 
         auto node = lr_parser.parse(tokenizer);
         dynamic_cast<ast::RulesReaderNode *>(node.get())->construct(rulesConstructor);

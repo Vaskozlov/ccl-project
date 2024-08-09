@@ -10,14 +10,7 @@ namespace astlang::interpreter
     auto FunctionInterface::call(Interpreter &interpreter, FunctionCallArguments arguments)
         -> EvaluationResult
     {
-        auto stack_scope_cleaner = isl::Raii{
-            [&interpreter]() {
-                interpreter.pushHardStackScope();
-            },
-            [&interpreter]() {
-                interpreter.popStackScope();
-            },
-        };
+        auto scope_life = interpreter.createsHardScope();
 
         for (size_t i = 0; i != arguments.size(); ++i) {
             interpreter.createVariable(argumentsNames[i], std::move(arguments[i]));
