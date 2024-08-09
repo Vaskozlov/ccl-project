@@ -13,7 +13,7 @@ include(programs/CMakeLists.txt)
 include(src/CMakeLists.txt)
 include(catch/CMakeLists.txt)
 
-install(TARGETS ccl ccl-lexer unordered_dense
+install(TARGETS ccl ccl-lexer unordered_dense astlang
         EXPORT cclTargets
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
