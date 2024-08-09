@@ -8,6 +8,7 @@ namespace ccl::parser::detail
     auto Runner::poll() -> ParsingAction
     {
         const auto new_state = stateStack.top();
+
         const auto entry = TableEntry{
             .state = new_state,
             .lookAhead = common->word->getToken().getId(),
