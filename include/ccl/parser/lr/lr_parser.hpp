@@ -13,8 +13,8 @@ namespace ccl::parser
     class LrParser
     {
     private:
-        std::unordered_map<TableEntry, State> gotoTable;
-        std::unordered_map<TableEntry, Action> actionTable;
+        ankerl::unordered_dense::map<TableEntry, State> gotoTable;
+        ankerl::unordered_dense::map<TableEntry, Action> actionTable;
 
     public:
         explicit LrParser(
@@ -28,14 +28,12 @@ namespace ccl::parser
         [[nodiscard]] auto
             parse(lexer::LexicalAnalyzer::Tokenizer &tokenizer) const -> ast::UnNodePtr;
 
-        [[nodiscard]] auto
-            getGotoTable() const noexcept -> const std::unordered_map<TableEntry, State> &
+        [[nodiscard]] auto getGotoTable() const noexcept -> const auto &
         {
             return gotoTable;
         }
 
-        [[nodiscard]] auto
-            getActionTable() const noexcept -> const std::unordered_map<TableEntry, Action> &
+        [[nodiscard]] auto getActionTable() const noexcept -> const auto &
         {
             return actionTable;
         }

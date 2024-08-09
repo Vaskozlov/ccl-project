@@ -2,13 +2,13 @@ include(cmake/CPM.cmake)
 
 find_package(Threads REQUIRED)
 
-CPMAddPackage(
+CPMFindPackage(
         NAME fmt
         GIT_TAG master
         GITHUB_REPOSITORY fmtlib/fmt
 )
 
-CPMAddPackage(
+CPMFindPackage(
         NAME Catch2
         GITHUB_REPOSITORY catchorg/Catch2
         GIT_TAG devel
@@ -20,7 +20,7 @@ CPMAddPackage(
         GIT_TAG main
 )
 
-CPMAddPackage(
+CPMFindPackage(
         NAME cxxopts
         GITHUB_REPOSITORY jarro2783/cxxopts
         GIT_TAG master
