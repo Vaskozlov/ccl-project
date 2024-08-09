@@ -17,11 +17,11 @@ namespace astlang::ast::expression
 
         arguments.emplace_back(back_node.astlangNode->compute(interpreter));
 
-        if (front_node.cclNode->getType() == interpreter.getRuleId("\"+\"")) {
+        if (front_node.cclNode->getType() == interpreter.PLUS) {
             return interpreter.call("__positive__", std::move(arguments));
         }
 
-        if (front_node.cclNode->getType() == interpreter.getRuleId("\"-\"")) {
+        if (front_node.cclNode->getType() == interpreter.MINUS) {
             return interpreter.call("__negation__", std::move(arguments));
         }
 
