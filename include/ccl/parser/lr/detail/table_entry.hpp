@@ -22,6 +22,17 @@ namespace ccl::parser
 }// namespace ccl::parser
 
 template<>
+struct ankerl::unordered_dense::hash<ccl::parser::TableEntry>
+{
+    using is_avalanching = void;
+
+    [[nodiscard]] auto operator()(const ccl::parser::TableEntry &entry) const noexcept -> auto
+    {
+        return ankerl::unordered_dense::detail::wyhash::hash(&entry, sizeof(entry));
+    }
+};
+
+template<>
 struct std::hash<ccl::parser::TableEntry>
 {
     [[nodiscard]] auto operator()(const ccl::parser::TableEntry &entry) const noexcept -> uint64_t

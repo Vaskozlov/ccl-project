@@ -3,10 +3,11 @@
 
 namespace ccl::parser
 {
-    auto LrParserGenerator::getLrActionTable() const -> std::unordered_map<TableEntry, Action>
+    auto LrParserGenerator::getLrActionTable() const
+        -> ankerl::unordered_dense::map<TableEntry, Action>
     {
         auto has_errors = false;
-        auto result = std::unordered_map<TableEntry, Action>{};
+        auto result = ankerl::unordered_dense::map<TableEntry, Action>{};
 
         for (const auto &[key, actions] : actionTable) {
             if (actions.size() != 1) {
@@ -36,9 +37,9 @@ namespace ccl::parser
     }
 
     [[nodiscard]] auto LrParserGenerator::getGlrActionTable() const
-        -> std::unordered_map<TableEntry, std::vector<Action>>
+        -> ankerl::unordered_dense::map<TableEntry, std::vector<Action>>
     {
-        auto result = std::unordered_map<TableEntry, std::vector<Action>>{};
+        auto result = ankerl::unordered_dense::map<TableEntry, std::vector<Action>>{};
 
         for (const auto &[key, actions] : actionTable) {
             result.try_emplace(key, actions.begin(), actions.end());

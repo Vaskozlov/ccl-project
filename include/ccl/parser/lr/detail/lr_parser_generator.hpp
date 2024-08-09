@@ -31,10 +31,10 @@ namespace ccl::parser
 
         using CanonicalCollectionIterator = typename std::list<CanonicalCollection>::iterator;
 
-        std::unordered_map<TableEntry, State> gotoTable;
-        std::unordered_map<TableEntry, std::set<Action>> actionTable;
+        ankerl::unordered_dense::map<TableEntry, State> gotoTable;
+        ankerl::unordered_dense::map<TableEntry, std::set<Action>> actionTable;
 
-        std::unordered_map<TableEntry, State> transitions;
+        ankerl::unordered_dense::map<TableEntry, State> transitions;
         std::list<CanonicalCollection> canonicalCollection;
         CanonicalCollectionIterator lastPolledCanonicalCollection;
 
@@ -52,7 +52,7 @@ namespace ccl::parser
 
         ankerl::unordered_dense::map<LrItem, std::vector<LrItem>> closureComputationCache;
 
-        runtime::Pipe<GotoResult, 512> pipe;
+        runtime::Pipe<GotoResult, 256> pipe;
 
     public:
         explicit LrParserGenerator(
@@ -60,15 +60,16 @@ namespace ccl::parser
             const GrammarRulesStorage &parser_rules,
             std::function<std::string(SmallId)> id_to_string_converter);
 
-        [[nodiscard]] auto getGotoTable() -> std::unordered_map<TableEntry, State> &
+        [[nodiscard]] auto getGotoTable() -> auto &
         {
             return gotoTable;
         }
 
-        [[nodiscard]] auto getLrActionTable() const -> std::unordered_map<TableEntry, Action>;
-
         [[nodiscard]] auto
-            getGlrActionTable() const -> std::unordered_map<TableEntry, std::vector<Action>>;
+            getLrActionTable() const -> ankerl::unordered_dense::map<TableEntry, Action>;
+
+        [[nodiscard]] auto getGlrActionTable() const
+            -> ankerl::unordered_dense::map<TableEntry, std::vector<Action>>;
 
     private:
         [[nodiscard]] auto isTerminal(Symbol symbol) const noexcept -> bool
@@ -80,11 +81,6 @@ namespace ccl::parser
 
         [[nodiscard]] auto tryPopFromPipe(GotoResult &value) noexcept -> PipePopStatus;
 
-        auto reduceAction(
-            const Action &action,
-            std::vector<State> &state_stack,
-            std::vector<ast::UnNodePtr> &nodes_stack) const -> void;
-
         auto moveCollectionItemsOverSymbol(
             const CanonicalCollection &canonical_collection,
             Symbol symbol) -> std::vector<LrItem>;
@@ -92,7 +88,7 @@ namespace ccl::parser
         auto moveCollectionItemsOverRemainingSymbols(
             const CanonicalCollection &canonical_collection) -> void;
 
-        auto pollCanonicalCollection() -> isl::Task<>;
+        auto generateCanonicalCollection() -> isl::Task<>;
 
         auto fillCanonicalCollection(isl::thread::IdGenerator &closure_id) -> bool;
 

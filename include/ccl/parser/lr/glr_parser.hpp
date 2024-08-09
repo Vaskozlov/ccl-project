@@ -14,25 +14,27 @@ namespace ccl::parser
     class GlrParser
     {
     private:
-        std::unordered_map<TableEntry, State> gotoTable;
-        std::unordered_map<TableEntry, std::vector<Action>> actionTable;
+        ankerl::unordered_dense::map<TableEntry, State> gotoTable;
+        ankerl::unordered_dense::map<TableEntry, std::vector<Action>> actionTable;
 
     public:
         explicit GlrParser(
-            const LrItem &start_item, Symbol epsilon_symbol,
-            const GrammarRulesStorage &parser_rules);
+            const LrItem &start_item,
+            Symbol epsilon_symbol,
+            const GrammarRulesStorage &parser_rules,
+            std::function<std::string(SmallId)> id_to_string_converter = [](auto id) {
+                return std::to_string(id);
+            });
 
         [[nodiscard]] auto parse(lexer::LexicalAnalyzer::Tokenizer &tokenizer) const
             -> std::vector<ast::ShNodePtr>;
 
-        [[nodiscard]] auto
-            getGotoTable() const noexcept -> const std::unordered_map<TableEntry, State> &
+        [[nodiscard]] auto getGotoTable() const noexcept -> const auto &
         {
             return gotoTable;
         }
 
-        [[nodiscard]] auto getActionTable() const noexcept
-            -> const std::unordered_map<TableEntry, std::vector<Action>> &
+        [[nodiscard]] auto getActionTable() const noexcept -> const auto &
         {
             return actionTable;
         }

@@ -39,7 +39,11 @@ namespace ccl::parser
     }
 
     GlrParser::GlrParser(
-        const LrItem &start_item, Symbol epsilon_symbol, const GrammarRulesStorage &parser_rules)
+        const LrItem &start_item,
+        Symbol epsilon_symbol,
+        const GrammarRulesStorage &parser_rules,
+        std::function<std::string(SmallId)>
+            id_to_string_converter)
     {
         auto parser_generator =
             LrParserGenerator(start_item, epsilon_symbol, parser_rules, nullptr);

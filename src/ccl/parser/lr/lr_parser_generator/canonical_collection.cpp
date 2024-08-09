@@ -51,7 +51,7 @@ namespace ccl::parser
         }
     }
 
-    auto LrParserGenerator::pollCanonicalCollection() -> isl::Task<>
+    auto LrParserGenerator::generateCanonicalCollection() -> isl::Task<>
     {
         auto collection_end = canonicalCollection.end();
         auto max_polled_it_copy = lastPolledCanonicalCollection;
@@ -87,7 +87,7 @@ namespace ccl::parser
         auto result = GotoResult{};
 
         pipe.produceResume();
-        auto task = runtime::async(pollCanonicalCollection());
+        auto task = runtime::async(generateCanonicalCollection());
 
         while (true) {
             auto pop_result = tryPopFromPipe(result);
@@ -103,26 +103,28 @@ namespace ccl::parser
 
             auto &[goto_result, symbol, cc_id] = result;
 
-            auto temp_cc_id = State{};
             auto temp_cc = CanonicalCollection{
                 .items = std::move(goto_result),
                 .id = 0,
             };
 
-            auto cc_it = std::ranges::find(canonicalCollection, temp_cc);
+            const auto entry = TableEntry{
+                .state = cc_id,
+                .lookAhead = symbol,
+            };
+
+            const auto cc_it = std::ranges::find(canonicalCollection, temp_cc);
 
             if (cc_it != canonicalCollection.end()) {
-                temp_cc_id = cc_it->id;
-            } else {
-                has_new_sets = true;
-                temp_cc_id = isl::as<SmallId>(closure_id.next());
-                temp_cc.id = temp_cc_id;
-
-                canonicalCollection.emplace_back(std::move(temp_cc));
-                std::atomic_thread_fence(std::memory_order_release);
+                transitions.try_emplace(entry, cc_it->id);
+                continue;
             }
 
-            transitions.try_emplace({cc_id, symbol}, temp_cc_id);
+            has_new_sets = true;
+            temp_cc.id = isl::as<SmallId>(closure_id.next());
+
+            transitions.try_emplace(entry, temp_cc.id);
+            canonicalCollection.emplace_back(std::move(temp_cc));
         }
 
         task.await();

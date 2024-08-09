@@ -14,8 +14,8 @@ namespace ccl::parser::detail
         std::forward_list<Runner> newRunnersInShiftState;
         std::forward_list<Runner> newRunnersInReduceState;
         std::vector<ast::ShNodePtr> acceptedNodes;
-        const std::unordered_map<TableEntry, State> &gotoTable;
-        const std::unordered_map<TableEntry, std::vector<Action>> &actionTable;
+        const ankerl::unordered_dense::map<TableEntry, State> &gotoTable;
+        const ankerl::unordered_dense::map<TableEntry, std::vector<Action>> &actionTable;
         isl::SharedPtr<ast::TokenNode> word;
     };
 
