@@ -4,6 +4,7 @@
 #include <ccl/ccl.hpp>
 #include <ccl/lexer/token.hpp>
 #include <functional>
+#include <isl/gss.hpp>
 
 namespace ccl::parser::ast
 {
@@ -47,5 +48,11 @@ namespace ccl::parser::ast
     using UnNodePtr = isl::UniquePtr<Node>;
     using ShNodePtr = isl::SharedPtr<Node>;
 }// namespace ccl::parser::ast
+
+namespace ccl::parser
+{
+    using GSStack = isl::GSStack<ast::ShNodePtr>;
+    using GSSNode = isl::GSSNode<ast::ShNodePtr>;
+}// namespace ccl::parser
 
 #endif /* CCL_PROJECT_NODE_HPP */
