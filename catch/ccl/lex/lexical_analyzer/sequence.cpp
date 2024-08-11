@@ -5,7 +5,7 @@ TEST_CASE("LexicalAnalyzerSequence", "[ContainerSequence]")
 {
     using namespace ccl;
 
-    auto analyzer = lexer::LexicalAnalyzer(
+    const auto analyzer = lexer::LexicalAnalyzer(
         ExceptionHandler::instance(),
         {{debug::FirstUsableToken, R"("abz"p"10")"},
          {debug::FirstUsableToken + 1, R"("10""abz"p)"}});

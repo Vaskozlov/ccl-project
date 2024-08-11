@@ -10,16 +10,16 @@ namespace ccl::lexer
     {
     private:
         TextIterator textIterator;
-        Container *mainItem{};
+        const Container *mainItem{};
 
     public:
         [[nodiscard]] PegParser(
-            isl::string_view rule_name, LexicalAnalyzer &lexical_analyzer, isl::string_view text,
-            isl::string_view filename = {});
+            isl::string_view rule_name, const LexicalAnalyzer &lexical_analyzer,
+            isl::string_view text, isl::string_view filename = {});
 
         [[nodiscard]] PegParser(
-            isl::string_view rule_name, LexicalAnalyzer &lexical_analyzer, isl::string_view text,
-            isl::string_view filename, ExceptionHandler &exception_handler);
+            isl::string_view rule_name, const LexicalAnalyzer &lexical_analyzer,
+            isl::string_view text, isl::string_view filename, ExceptionHandler &exception_handler);
 
         [[nodiscard]] auto parse() -> isl::UniquePtr<parser::ast::Node>;
     };

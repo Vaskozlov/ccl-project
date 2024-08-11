@@ -40,7 +40,7 @@ namespace math
     };
 
     // NOLINTNEXTLINE
-    inline auto MathLexer = ccl::lexer::LexicalAnalyzer{
+    inline const auto MathLexer = ccl::lexer::LexicalAnalyzer{
         ccl::handler::Cmd::instance(),
         {
             {MathLexerToken::ANGLE_OPEN, R"( ![(] )"},

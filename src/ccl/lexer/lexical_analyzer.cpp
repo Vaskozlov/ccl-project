@@ -45,27 +45,29 @@ namespace ccl::lexer
         }
     }
 
-    auto
-        LexicalAnalyzer::getTokenizer(isl::string_view text, isl::string_view filename) -> Tokenizer
+    auto LexicalAnalyzer::getTokenizer(isl::string_view text, isl::string_view filename) const
+        -> Tokenizer
     {
         return {*this, text, filename};
     }
 
     auto LexicalAnalyzer::getTokenizer(
-        isl::string_view text, isl::string_view filename, ExceptionHandler &handler) -> Tokenizer
+        isl::string_view text, isl::string_view filename,
+        ExceptionHandler &handler) const -> Tokenizer
     {
         return {*this, text, filename, handler};
     }
 
     [[nodiscard]] auto LexicalAnalyzer::getParser(
         isl::string_view rule_name, isl::string_view text, isl::string_view filename,
-        ExceptionHandler &handler) -> PegParser
+        ExceptionHandler &handler) const -> PegParser
     {
         return {rule_name, *this, text, filename, handler};
     }
 
     [[nodiscard]] auto LexicalAnalyzer::getParser(
-        isl::string_view rule_name, isl::string_view text, isl::string_view filename) -> PegParser
+        isl::string_view rule_name, isl::string_view text,
+        isl::string_view filename) const -> PegParser
     {
         return getParser(rule_name, text, filename, exceptionHandler);
     }

@@ -9,19 +9,19 @@ namespace ccl::lexer
     {
         std::array<Token, 2> tokens;
         // NOLINTNEXTLINE reference
-        LexicalAnalyzer &lexicalAnalyzer;
+        const LexicalAnalyzer &lexicalAnalyzer;
         TextIterator textIterator;
         bool hasFutureToken{};
         bool tokenIndex{};
 
     public:
         [[nodiscard]] Tokenizer(
-            LexicalAnalyzer &lexical_analyzer, isl::string_view text,
+            const LexicalAnalyzer &lexical_analyzer, isl::string_view text,
             isl::string_view filename = {});
 
         [[nodiscard]] Tokenizer(
-            LexicalAnalyzer &lexical_analyzer, isl::string_view text, isl::string_view filename,
-            ExceptionHandler &exception_handler);
+            const LexicalAnalyzer &lexical_analyzer, isl::string_view text,
+            isl::string_view filename, ExceptionHandler &exception_handler);
 
         [[nodiscard]] auto getIterator() const CCL_LIFETIMEBOUND -> const TextIterator &
         {

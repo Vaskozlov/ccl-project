@@ -29,7 +29,7 @@ namespace tparser
     };
 
     // NOLINTNEXTLINE
-    inline auto TestParser = ccl::lexer::LexicalAnalyzer{
+    inline const auto TestParser = ccl::lexer::LexicalAnalyzer{
         ccl::handler::Cmd::instance(),
         {
             {TestParserToken::PRODUCT, R"( ('NUMBER'  [*] 'NUMBER') | 'NUMBER' )"},

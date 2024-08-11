@@ -62,7 +62,7 @@ namespace ccl::parser::reader
     };
 
     // NOLINTNEXTLINE
-    inline auto RulesLexer = ccl::lexer::LexicalAnalyzer{
+    inline const auto RulesLexer = ccl::lexer::LexicalAnalyzer{
         ccl::handler::Cmd::instance(),
         {
             {RulesLexerToken::LEXER_START, R"( "%LEXER%" )"},

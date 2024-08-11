@@ -209,7 +209,7 @@ namespace ccl::lexer::gen
     auto StaticGenerator::generateLexicalAnalyzer() -> void
     {
         codeGenerator << "// NOLINTNEXTLINE" << endl;
-        codeGenerator << "inline auto " << variableName << " = ccl::lexer::LexicalAnalyzer{";
+        codeGenerator << "inline auto const" << variableName << " = ccl::lexer::LexicalAnalyzer{";
         codeGenerator << push_scope << endl;
         codeGenerator << handler << ',' << endl;
         codeGenerator << '{' << push_scope;

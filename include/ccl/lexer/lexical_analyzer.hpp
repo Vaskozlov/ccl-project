@@ -39,7 +39,7 @@ namespace ccl::lexer
         std::vector<isl::UniquePtr<Container>> items;
         AnyPlaceItems anyPlaceItems;
         std::vector<u32> ignoredIds;
-        std::string skippedCharacters;
+        mutable std::string skippedCharacters;
 
         // NOLINTNEXTLINE reference
         ExceptionHandler &exceptionHandler;
@@ -78,20 +78,20 @@ namespace ccl::lexer
             return allItemsMap.at(name);
         }
 
-        [[nodiscard]] auto getTokenizer(isl::string_view text, isl::string_view filename = {})
+        [[nodiscard]] auto getTokenizer(isl::string_view text, isl::string_view filename = {}) const
             CCL_LIFETIMEBOUND -> Tokenizer;
 
         [[nodiscard]] auto getTokenizer(
             isl::string_view text, isl::string_view filename,
-            ExceptionHandler &handler) CCL_LIFETIMEBOUND -> Tokenizer;
+            ExceptionHandler &handler) const CCL_LIFETIMEBOUND -> Tokenizer;
 
         [[nodiscard]] auto getParser(
             isl::string_view rule_name, isl::string_view text, isl::string_view filename,
-            ExceptionHandler &handler) CCL_LIFETIMEBOUND -> PegParser;
+            ExceptionHandler &handler) const CCL_LIFETIMEBOUND -> PegParser;
 
         [[nodiscard]] auto getParser(
             isl::string_view rule_name, isl::string_view text,
-            isl::string_view filename = {}) CCL_LIFETIMEBOUND -> PegParser;
+            isl::string_view filename = {}) const CCL_LIFETIMEBOUND -> PegParser;
 
         [[nodiscard]] auto
             getItems() const noexcept -> const std::vector<isl::UniquePtr<Container>> &
