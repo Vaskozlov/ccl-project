@@ -15,11 +15,11 @@ namespace ccl
         // NOLINTNEXTLINE static variable
         static ExceptionHandler defaultExceptionHandler;
 
-        std::atomic<std::size_t> suggestionsCounter;
-        std::atomic<std::size_t> warningsCounter;
-        std::atomic<std::size_t> uncriticalErrorsCounter;
-        std::atomic<std::size_t> criticalErrorsCounter;
-        std::atomic<std::size_t> panicErrorsCounter;
+        mutable std::atomic<std::size_t> suggestionsCounter;
+        mutable std::atomic<std::size_t> warningsCounter;
+        mutable std::atomic<std::size_t> uncriticalErrorsCounter;
+        mutable std::atomic<std::size_t> criticalErrorsCounter;
+        mutable std::atomic<std::size_t> panicErrorsCounter;
 
     public:
         ExceptionHandler() noexcept = default;
@@ -34,22 +34,22 @@ namespace ccl
 
         [[nodiscard]] static auto instance() -> ExceptionHandler &;
 
-        auto handle(const ExceptionT *error) -> void;
+        auto handle(const ExceptionT *error) const -> void;
 
         template<std::derived_from<ExceptionT> T>
-        auto handle(const T *error) -> void
+        auto handle(const T *error) const -> void
         {
             handle(as<const ExceptionT *>(error));
         }
 
         template<std::derived_from<ExceptionT> T>
-        auto handle(const T &error) -> void
+        auto handle(const T &error) const -> void
         {
             handle(isl::as<const ExceptionT *>(&error));
         }
 
     private:
-        virtual auto onHandle(const ExceptionT *error) -> void;
+        virtual auto onHandle(const ExceptionT *error) const -> void;
     };
 }// namespace ccl
 

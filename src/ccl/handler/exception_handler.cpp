@@ -12,7 +12,7 @@ namespace ccl
     }
 
     // NOLINTNEXTLINE
-    auto ExceptionHandler::handle(const ExceptionT *const error) -> void
+    auto ExceptionHandler::handle(const ExceptionT *const error) const -> void
     {
         switch (error->getCriticality()) {
         case ExceptionCriticality::SUGGESTION:
@@ -44,7 +44,7 @@ namespace ccl
     }
 
     // NOLINTNEXTLINE recursive call
-    auto ExceptionHandler::onHandle(const ExceptionT *const error) -> void
+    auto ExceptionHandler::onHandle(const ExceptionT *const error) const -> void
     {
         auto &cmd_handler = handler::Cmd::instance();
 

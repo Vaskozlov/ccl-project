@@ -22,10 +22,10 @@ namespace ccl::handler
         [[nodiscard]] static auto instance() -> Cmd &;
 
     private:
-        auto onHandle(const ExceptionT *error) -> void override;
+        auto onHandle(const ExceptionT *error) const -> void override;
 
         template<fmt::color Color, typename HandleType>
-        auto formatAndPrint(const ExceptionT *value, HandleType &&handle_type) -> void;
+        auto formatAndPrint(const ExceptionT *value, HandleType &&handle_type) const -> void;
     };
 
     class Cmd::CmdFormatter

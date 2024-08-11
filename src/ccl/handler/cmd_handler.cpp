@@ -5,7 +5,6 @@ namespace ccl::handler
     auto Cmd::instance() -> Cmd &
     {
         static auto default_instance = Cmd{};
-
         return default_instance;
     }
 
@@ -43,7 +42,7 @@ namespace ccl::handler
         return formattingBuffer;
     }
 
-    auto Cmd::onHandle(const ExceptionT *error) -> void
+    auto Cmd::onHandle(const ExceptionT *error) const -> void
     {
         switch (error->getCriticality()) {
         case ExceptionCriticality::SUGGESTION:
@@ -61,7 +60,7 @@ namespace ccl::handler
     }
 
     template<fmt::color Color, typename HandleType>
-    auto Cmd::formatAndPrint(const ExceptionT *value, HandleType &&handle_type) -> void
+    auto Cmd::formatAndPrint(const ExceptionT *value, HandleType &&handle_type) const -> void
     {
         auto formatter = CmdFormatter{value};
         fmt::print("{}\n", formatter.format<Color>(std::forward<HandleType>(handle_type)));
