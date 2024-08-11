@@ -16,15 +16,14 @@ namespace ccl::parser
     private:
         ankerl::unordered_dense::map<TableEntry, State> gotoTable;
         ankerl::unordered_dense::map<TableEntry, std::vector<Action>> actionTable;
+        std::function<std::string(SmallId)> idToStringConverter;
 
     public:
         explicit GlrParser(
             const LrItem &start_item,
             Symbol epsilon_symbol,
             const GrammarRulesStorage &parser_rules,
-            std::function<std::string(SmallId)> id_to_string_converter = [](auto id) {
-                return std::to_string(id);
-            });
+            std::function<std::string(SmallId)> id_to_string_converter = fmt::to_string<SmallId>);
 
         [[nodiscard]] auto parse(lexer::LexicalAnalyzer::Tokenizer &tokenizer) const
             -> std::vector<ast::ShNodePtr>;

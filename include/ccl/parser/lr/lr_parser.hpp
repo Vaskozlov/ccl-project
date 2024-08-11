@@ -21,9 +21,7 @@ namespace ccl::parser
             const LrItem &start_item,
             Symbol epsilon_symbol,
             const GrammarRulesStorage &parser_rules,
-            std::function<std::string(SmallId)> id_to_string_converter = [](auto id) {
-                return std::to_string(id);
-            });
+            std::function<std::string(SmallId)> id_to_string_converter = fmt::to_string<SmallId>);
 
         [[nodiscard]] auto
             parse(lexer::LexicalAnalyzer::Tokenizer &tokenizer) const -> ast::UnNodePtr;

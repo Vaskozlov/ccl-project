@@ -44,9 +44,10 @@ namespace ccl::parser
         const GrammarRulesStorage &parser_rules,
         std::function<std::string(SmallId)>
             id_to_string_converter)
+      : idToStringConverter{std::move(id_to_string_converter)}
     {
         auto parser_generator =
-            LrParserGenerator(start_item, epsilon_symbol, parser_rules, nullptr);
+            LrParserGenerator(start_item, epsilon_symbol, parser_rules, idToStringConverter);
 
         gotoTable = std::move(parser_generator.getGotoTable());
         actionTable = parser_generator.getGlrActionTable();
