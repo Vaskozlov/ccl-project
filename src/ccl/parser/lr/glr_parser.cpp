@@ -3,7 +3,6 @@
 #include "ccl/parser/ast/token_node.hpp"
 #include "ccl/parser/lr/detail/glr_runner.hpp"
 #include "ccl/parser/lr/detail/lr_parser_generator.hpp"
-#include <algorithm>
 
 namespace ccl::parser
 {
