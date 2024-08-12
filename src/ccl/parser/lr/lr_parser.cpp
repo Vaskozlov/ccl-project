@@ -33,7 +33,7 @@ namespace ccl::parser
             const auto state = state_stack.top();
             const auto entry = TableEntry{
                 .state = state,
-                .lookAhead = word->getId(),
+                .symbol = word->getId(),
             };
 
             if (!actionTable.contains(entry)) {

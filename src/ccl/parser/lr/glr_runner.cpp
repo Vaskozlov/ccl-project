@@ -43,7 +43,7 @@ namespace ccl::parser::detail
         while (true) {
             const auto entry = TableEntry{
                 .state = stateStack.top(),
-                .lookAhead = common->word->getType(),
+                .symbol = common->word->getType(),
             };
 
             auto possible_actions_it = common->actionTable.find(entry);
