@@ -113,9 +113,7 @@ namespace ccl::parser::reader
 
     template<class T>
     static const auto AppendToTheLastNodeIfTElseDefaultAppend =
-        [](ccl::parser::Symbol production,
-           std::vector<isl::UniquePtr<ccl::parser::ast::Node>>
-               nodes) {
+        [](ccl::parser::Symbol production, std::vector<ccl::parser::ast::UnNodePtr> nodes) {
             auto &rule_body = nodes.front();
             auto *casted_rule_body = isl::as<T *>(rule_body.get());
 
@@ -135,6 +133,7 @@ namespace ccl::parser::reader
     using Rule = ccl::parser::Rule;
 
     static const GrammarRulesStorage RulesGrammar{
+        true,
         RulesLexerToken::EPSILON,
         {
             {
@@ -486,5 +485,20 @@ namespace ccl::parser::reader
 
         auto node = lr_parser.parse(tokenizer);
         dynamic_cast<ast::RulesReaderNode *>(node.get())->construct(rulesConstructor);
+    }
+
+    auto RulesReader::getRulesConstructor(Mode mode) -> RulesConstructor &
+    {
+        if (!rulesConstructorFinalized) {
+            rulesConstructorMode = mode;
+            rulesConstructorFinalized = true;
+            rulesConstructor.finishGrammar(rulesConstructorMode);
+        }
+
+        if (mode != rulesConstructorMode) {
+            throw std::runtime_error{"Constructor mode can not be changed after initialization"};
+        }
+
+        return rulesConstructor;
     }
 }// namespace ccl::parser::reader

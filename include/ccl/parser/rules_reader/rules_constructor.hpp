@@ -1,59 +1,41 @@
 #ifndef CCL_PROJECT_RULES_INFO_HPP
 #define CCL_PROJECT_RULES_INFO_HPP
 
-#include <atomic>
 #include <ccl/handler/cmd.hpp>
 #include <ccl/lexer/lexical_analyzer.hpp>
 #include <ccl/lexer/rule/container.hpp>
 #include <ccl/parser/grammar_rules_storage.hpp>
 #include <ccl/parser/lr/detail/lr_item.hpp>
-#include <isl/isl.hpp>
 #include <isl/thread/id_generator.hpp>
 
 namespace ccl::parser::reader
 {
+    enum class Mode : u8
+    {
+        LL,
+        LR
+    };
+
     class RulesConstructor
     {
     private:
         lexer::LexicalAnalyzer lexicalAnalyzer{handler::Cmd::instance()};
         std::map<SmallId, std::string> ruleIdToName;
         std::map<isl::string_view, SmallId> ruleNameToId;
-        isl::thread::IdGenerator<SmallId> ruleIdGenerator{lexer::ReservedTokenMaxValue + 1};
-        GrammarRulesStorage grammarRulesStorage{addRule("EPSILON")};
+        isl::thread::IdGenerator<SmallId> ruleIdGenerator;
+        GrammarRulesStorage grammarRulesStorage;
 
     public:
-        auto addRule(isl::string_view rule_name) -> SmallId
-        {
-            if (auto it = ruleNameToId.find(rule_name); it != ruleNameToId.end()) {
-                return it->second;
-            }
+        RulesConstructor();
 
-            const auto rule_id = ruleIdGenerator.next();
+        auto addRule(isl::string_view rule_name) -> SmallId;
 
-            auto [it, has_inserter] = ruleIdToName.try_emplace(rule_id, rule_name);
-            ruleNameToId.try_emplace(it->second, rule_id);
+        auto finishGrammar(Mode mode) -> void;
 
-            return rule_id;
-        }
-
-        auto finishGrammar() -> void
-        {
-            grammarRulesStorage.finishGrammar();
-        }
-
-        auto getStartItem() const -> LrItem
-        {
-            const auto goal_id = getRuleId("GOAL");
-            return LrItem{std::addressof(grammarRulesStorage.at(goal_id).front()), 0, goal_id, 0};
-        }
+        auto getStartItem() const -> LrItem;
 
         auto getIdToNameTranslationFunction() const CCL_LIFETIMEBOUND
-            -> std::function<std::string(SmallId)>
-        {
-            return [this](SmallId rule_id) {
-                return ruleIdToName.at(rule_id);
-            };
-        }
+            -> std::function<std::string(SmallId)>;
 
         [[nodiscard]] auto getRuleName(SmallId rule_id) const -> const std::string &
         {

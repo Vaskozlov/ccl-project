@@ -1,6 +1,8 @@
 #ifndef CCL_PROJECT_TABLE_ENTRY_HPP
 #define CCL_PROJECT_TABLE_ENTRY_HPP
 
+#include <ankerl/unordered_dense.h>
+#include <ccl/lexer/lexical_analyzer.hpp>
 #include <ccl/parser/types.hpp>
 
 namespace ccl::parser
@@ -8,7 +10,7 @@ namespace ccl::parser
     struct TableEntry
     {
         State state{};
-        Symbol lookAhead{};
+        Symbol symbol{};
 
         [[nodiscard]] auto
             operator<=>(const TableEntry &other) const noexcept -> std::strong_ordering = default;
@@ -54,7 +56,7 @@ public:
 
         return fmt::format_to(
             ctx.out(), "{}-{}", entry.state,
-            ccl::lexer::lexerEnumToString(isl::as<T>(entry.lookAhead)));
+            ccl::lexer::lexerEnumToString(isl::as<T>(entry.symbol)));
     }
 };
 

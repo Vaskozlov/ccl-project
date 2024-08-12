@@ -23,8 +23,8 @@ namespace astlang::ast
         using ConvertionTable = isl::StaticFlatmap<SmallId, ConstructionFunction, 50>;
 
         template<typename T>
-        static auto reconstructNode(ccl::parser::ast::UnNodeSequence *node)
-            -> isl::UniquePtr<ccl::parser::ast::Node>
+        static auto
+            reconstructNode(ccl::parser::ast::UnNodeSequence *node) -> ccl::parser::ast::UnNodePtr
         {
             return isl::makeUnique<T>(node->getType(), std::move(node->getNodes()));
         }

@@ -246,7 +246,7 @@ namespace astlang::ast
             return;
         }
 
-        auto new_self_nodes = std::vector<isl::UniquePtr<ccl::parser::ast::Node>>{};
+        auto new_self_nodes = std::vector<ccl::parser::ast::UnNodePtr>{};
 
         for (auto &node : self_as_sequence->getNodes()) {
             new_self_nodes.emplace_back(castToAstLangNode(conversion_table, std::move(node)));
