@@ -16,19 +16,19 @@ namespace ccl::parser::reader
     {
     private:
         lexer::LexicalAnalyzer lexicalAnalyzer{handler::Cmd::instance()};
-        std::map<u32, std::string> ruleIdToName;
-        std::map<isl::string_view, u32> ruleNameToId;
-        isl::thread::IdGenerator ruleIdGenerator{lexer::ReservedTokenMaxValue + 1};
+        std::map<SmallId, std::string> ruleIdToName;
+        std::map<isl::string_view, SmallId> ruleNameToId;
+        isl::thread::IdGenerator<SmallId> ruleIdGenerator{lexer::ReservedTokenMaxValue + 1};
         GrammarRulesStorage grammarRulesStorage{addRule("EPSILON")};
 
     public:
-        auto addRule(isl::string_view rule_name) -> u32
+        auto addRule(isl::string_view rule_name) -> SmallId
         {
             if (auto it = ruleNameToId.find(rule_name); it != ruleNameToId.end()) {
                 return it->second;
             }
 
-            const auto rule_id = static_cast<u32>(ruleIdGenerator.next());
+            const auto rule_id = ruleIdGenerator.next();
 
             auto [it, has_inserter] = ruleIdToName.try_emplace(rule_id, rule_name);
             ruleNameToId.try_emplace(it->second, rule_id);
@@ -60,7 +60,7 @@ namespace ccl::parser::reader
             return ruleIdToName.at(rule_id);
         }
 
-        [[nodiscard]] auto getRuleId(isl::string_view rule_name) const -> u32
+        [[nodiscard]] auto getRuleId(isl::string_view rule_name) const -> SmallId
         {
             return ruleNameToId.at(rule_name);
         }

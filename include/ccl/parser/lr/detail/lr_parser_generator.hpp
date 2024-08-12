@@ -90,7 +90,7 @@ namespace ccl::parser
 
         auto generateCanonicalCollection() -> isl::Task<>;
 
-        auto fillCanonicalCollection(isl::thread::IdGenerator &closure_id) -> bool;
+        auto fillCanonicalCollection(isl::thread::IdGenerator<SmallId> &closure_id) -> bool;
 
         auto constructCanonicalCollection(const LrItem &start_item) -> void;
 

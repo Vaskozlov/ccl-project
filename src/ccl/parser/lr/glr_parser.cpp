@@ -9,32 +9,56 @@ namespace ccl::parser
     using namespace detail;
     using enum ccl::parser::ParsingAction;
 
-    static auto pollRunners(std::forward_list<Runner> &parsing_runners) -> void
+    static auto joinStacks(std::forward_list<GSStack> &accepted_stacks) -> GSStack
     {
-        std::erase_if(parsing_runners, [](Runner &runner) {
+        auto front_stack = std::move(accepted_stacks.front());
+
+        for (auto &stack : accepted_stacks | std::views::drop(1)) {
+            front_stack.merge(stack);
+        }
+
+        return front_stack;
+    }
+
+    static auto pollRunners(
+        detail::RunnersCommon &common,
+        std::forward_list<GlrRunner> &parsing_runners) -> void
+    {
+        auto runners_to_be_reduced = std::forward_list<GlrRunner *>{};
+
+        std::erase_if(parsing_runners, [&common](GlrRunner &runner) {
             const auto polling_result = runner.poll();
-            return polling_result == ACCEPT || polling_result == FAILED;
+            const auto *stack_ptr = std::addressof(runner.nodeStack);
+
+            if (polling_result == ACCEPT) {
+                std::erase(common.stacks, stack_ptr);
+                auto &succeed_stack =
+                    common.acceptedStacks.emplace_front(std::move(runner.nodeStack));
+                common.stacks.emplace_front(std::addressof(succeed_stack));
+            }
+
+            return polling_result != SHIFT && polling_result != REDUCE;
         });
     }
 
     static auto newWordIteration(
-        detail::RunnersCommon &common, std::forward_list<Runner> &parsing_runners) -> void
+        detail::RunnersCommon &common,
+        std::forward_list<GlrRunner> &parsing_runners) -> void
     {
-        pollRunners(parsing_runners);
+        pollRunners(common, parsing_runners);
 
         while (!common.newRunnersInReduceState.empty()) {
             auto runners_in_reduce_state_copy = std::move(common.newRunnersInReduceState);
             // after move object is in unknown state
             common.newRunnersInReduceState.clear();
 
-            parsing_runners.splice_after(
-                parsing_runners.before_begin(), common.newRunnersInShiftState);
-
-            pollRunners(runners_in_reduce_state_copy);
+            pollRunners(common, runners_in_reduce_state_copy);
 
             parsing_runners.splice_after(
                 parsing_runners.before_begin(), runners_in_reduce_state_copy);
         }
+
+        parsing_runners.splice_after(parsing_runners.before_begin(), common.newRunnersInShiftState);
     }
 
     GlrParser::GlrParser(
@@ -52,34 +76,31 @@ namespace ccl::parser
         actionTable = parser_generator.getGlrActionTable();
     }
 
-    auto GlrParser::parse(lexer::LexicalAnalyzer::Tokenizer &tokenizer) const
-        -> std::vector<ast::ShNodePtr>
+    auto GlrParser::parse(lexer::LexicalAnalyzer::Tokenizer &tokenizer) const -> GSStack
     {
-        auto runners_common = detail::RunnersCommon{
-            .newRunnersInShiftState = {},
-            .newRunnersInReduceState = {},
-            .acceptedNodes = {},
+        auto common = RunnersCommon{
+            .idToStringConverter = idToStringConverter,
             .gotoTable = gotoTable,
             .actionTable = actionTable,
-            .word = nullptr,
         };
 
-        auto parsing_runners = std::forward_list<Runner>{};
+        auto parsing_runners = std::forward_list<GlrRunner>{};
 
-        parsing_runners.emplace_front(Runner{
-            .stateStack = {0},
-            .nodesStack = {},
-            .common = std::addressof(runners_common),
+        parsing_runners.emplace_front(GlrRunner{
+            .common = std::addressof(common),
         });
+
+        common.stacks.emplace_front(std::addressof(parsing_runners.front().nodeStack));
+        parsing_runners.front().stateStack.emplace(0);
 
         const auto *new_token = isl::as<lexer::Token *>(nullptr);
 
         do {
             new_token = &tokenizer.yield();
-            runners_common.word = isl::makeShared<ast::TokenNode>(new_token->getId(), *new_token);
-            newWordIteration(runners_common, parsing_runners);
+            common.word = isl::makeShared<ast::TokenNode>(new_token->getId(), *new_token);
+            newWordIteration(common, parsing_runners);
         } while (new_token->getId() != 0);
 
-        return std::move(runners_common.acceptedNodes);
+        return joinStacks(common.acceptedStacks);
     }
 }// namespace ccl::parser

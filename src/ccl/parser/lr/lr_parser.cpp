@@ -1,6 +1,5 @@
 #include "ccl/parser/lr/lr_parser.hpp"
 #include "ccl/lexer/tokenizer.hpp"
-#include "ccl/parser/ast/node_sequence.hpp"
 #include "ccl/parser/ast/token_node.hpp"
 #include "ccl/parser/lr/detail/lr_parser_generator.hpp"
 
@@ -88,7 +87,7 @@ namespace ccl::parser
         nodes_stack.emplace(std::move(reduced_item));
         state_stack.emplace(gotoTable.at({
             state_stack.top(),
-            lr_item.getProductionType(),
+            production,
         }));
     }
 }// namespace ccl::parser

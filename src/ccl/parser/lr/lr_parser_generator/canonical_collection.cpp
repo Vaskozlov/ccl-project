@@ -81,7 +81,8 @@ namespace ccl::parser
         return SUCCEED;
     }
 
-    auto LrParserGenerator::fillCanonicalCollection(isl::thread::IdGenerator &closure_id) -> bool
+    auto LrParserGenerator::fillCanonicalCollection(isl::thread::IdGenerator<SmallId> &closure_id)
+        -> bool
     {
         auto has_new_sets = false;
         auto result = GotoResult{};
@@ -133,7 +134,7 @@ namespace ccl::parser
 
     auto LrParserGenerator::constructCanonicalCollection(const LrItem &start_item) -> void
     {
-        auto closure_id = isl::thread::IdGenerator{1};
+        auto closure_id = isl::thread::IdGenerator<SmallId>{1};
 
         canonicalCollection.emplace_back(CanonicalCollection{
             .items = computeClosureOnItems({start_item}),

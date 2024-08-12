@@ -1,60 +1,158 @@
 #include "ccl/parser/lr/detail/glr_runner.hpp"
 #include "ccl/parser/ast/node_sequence.hpp"
+#include <ccl/parser/dot/dot_repr.hpp>
+#include <isl/thread/id_generator.hpp>
 
 namespace ccl::parser::detail
 {
     using enum ccl::parser::ParsingAction;
 
-    auto Runner::poll() -> ParsingAction
+    static constexpr auto debugOutputEnabled = true;
+    isl::thread::IdGenerator<SmallId> GlrRunner::runnerIdGenerator{0};
+
+    namespace debug
     {
-        const auto new_state = stateStack.top();
+        auto stateOutput(GlrRunner &runner) -> void
+        {
+            if constexpr (debugOutputEnabled) {
+                static auto state_counter = isl::thread::IdGenerator<SmallId>{0};
+                static auto dir_created = std::atomic_flag();
+                auto output_dir = std::filesystem::current_path().append("trace");
 
-        const auto entry = TableEntry{
-            .state = new_state,
-            .lookAhead = common->word->getToken().getId(),
-        };
+                if (!dir_created.test_and_set()) {
+                    std::filesystem::create_directories(output_dir);
+                }
 
-        if (!common->actionTable.contains(entry)) {
-            return FAILED;
+                auto converted = isl::dot::createDotRepresentation<ast::ShNodePtr>(
+                    runner.nodeStack, [&runner](const ast::ShNodePtr &node) {
+                        return runner.common->idToStringConverter(node->getType());
+                    });
+
+                isl::io::writeToFile(
+                    output_dir.append(
+                        fmt::format("trace-{}-{}.dot", runner.runnerId, state_counter.next())),
+                    converted);
+            }
         }
+    }// namespace debug
 
-        const auto &actions = common->actionTable.at(entry);
-        hostNewRunnersIfMoreThanOneAction(actions);
+    auto GlrRunner::poll() -> ParsingAction
+    {
+        auto has_reduced = false;
 
-        const auto &current_runner_action = actions.front();
-        runAction(current_runner_action);
+        while (true) {
+            const auto entry = TableEntry{
+                .state = stateStack.top(),
+                .lookAhead = common->word->getType(),
+            };
 
-        if (current_runner_action.isAccept()) {
-            return ACCEPT;
+            auto possible_actions_it = common->actionTable.find(entry);
+
+            if (possible_actions_it == common->actionTable.end()) {
+                return FAILED;
+            }
+
+            const auto &possible_actions = possible_actions_it->second;
+            hostRunnersForAlternatives(possible_actions);
+
+            const auto &action_for_current_runner = possible_actions.front();
+            runAction(action_for_current_runner);
+
+            debug::stateOutput(*this);
+
+            if (action_for_current_runner.isReduce()) {
+                has_reduced = true;
+                continue;
+            }
+
+            if (has_reduced && tryToJoin()) {
+                return JOINED;
+            }
+
+            return action_for_current_runner.getParsingAction();
         }
-
-        if (current_runner_action.isReduce()) {
-            return poll();
-        }
-
-        return SHIFT;
     }
 
-    auto Runner::hostNewRunnersIfMoreThanOneAction(const std::vector<Action> &actions) -> void
+    auto GlrRunner::runAction(const Action &action) -> void
     {
+        using enum ParsingAction;
+
+        const auto action_type = action.getParsingAction();
+
+        switch (action_type) {
+        case SHIFT:
+            shiftAction(action);
+            break;
+
+        case REDUCE:
+            reduceAction(action);
+            break;
+
+        case ACCEPT:
+            break;
+
+        default:
+            isl::unreachable();
+        }
+    }
+
+    auto GlrRunner::shiftAction(const Action &action) -> void
+    {
+        stateStack.emplace(action.getShiftingState());
+        nodeStack.push(inputLevel, stateStack.top(), common->word);
+        ++inputLevel;
+    }
+
+    auto GlrRunner::reduceAction(const Action &action) -> void
+    {
+        const auto &lr_item = action.getReducingItem();
+        const auto production = lr_item.production;
+        const auto *rule = lr_item.getRulePtr();
+        const auto number_of_elements_to_pop = lr_item.size();
+
+        for (std::size_t i = 0; i != number_of_elements_to_pop; ++i) {
+            stateStack.pop();
+        }
+
+        const auto new_state = common->gotoTable.at({
+            stateStack.top(),
+            production,
+        });
+
+        auto reducer = [&rule, production](std::vector<ast::ShNodePtr> nodes) {
+            std::ranges::reverse(nodes);
+            return rule->construct(production, std::move(nodes));
+        };
+
+        stateStack.emplace(new_state);
+        nodeStack.reduce(inputLevel, new_state, number_of_elements_to_pop, reducer);
+    }
+
+    auto GlrRunner::hostRunnersForAlternatives(const std::vector<Action> &actions) -> void
+    {
+        using enum ParsingAction;
+
         for (const auto &action : actions | std::views::drop(1)) {
             auto new_runner = *this;
+            new_runner.runnerId = runnerIdGenerator.next();
+
+            const auto action_type = action.getParsingAction();
             new_runner.runAction(action);
 
-            switch (action.getParsingAction()) {
-            case SHIFT:
-                common->newRunnersInShiftState.emplace_front(std::move(new_runner));
-                break;
+            switch (action_type) {
+            case SHIFT: {
+                auto &created_runner =
+                    common->newRunnersInShiftState.emplace_front(std::move(new_runner));
+                common->stacks.emplace_front(std::addressof(created_runner.nodeStack));
+            } break;
 
-            case REDUCE:
-                common->newRunnersInReduceState.emplace_front(std::move(new_runner));
-                break;
+            case REDUCE: {
+                auto &created_runner =
+                    common->newRunnersInReduceState.emplace_front(std::move(new_runner));
+                common->stacks.emplace_front(std::addressof(created_runner.nodeStack));
+            } break;
 
             case ACCEPT:
-                common->acceptedNodes.emplace_back(new_runner.nodesStack.top());
-                break;
-
-            case FAILED:
                 break;
 
             default:
@@ -63,46 +161,18 @@ namespace ccl::parser::detail
         }
     }
 
-    auto Runner::runAction(const Action &action) -> void
+    auto GlrRunner::tryToJoin() -> bool
     {
-        switch (action.getParsingAction()) {
-        case SHIFT:
-            nodesStack.emplace(common->word);
-            stateStack.emplace(action.getShiftingState());
-            break;
+        auto *self_stack_ptr = std::addressof(nodeStack);
 
-        case REDUCE:
-            reduceAction(action);
-            break;
-
-        case ACCEPT:
-            common->acceptedNodes.emplace_back(nodesStack.top());
-            break;
-
-        default:
-            isl::unreachable();
-        }
-    }
-
-    auto Runner::reduceAction(const Action &action) -> void
-    {
-        const auto &lr_item = action.getReducingItem();
-        auto reduced_item =
-            isl::makeUnique<ast::ShNodeSequence>(isl::as<Symbol>(lr_item.getProductionType()));
-        const auto number_of_elements_to_take_from_stack = lr_item.size();
-
-        for (std::size_t i = 0; i != number_of_elements_to_take_from_stack; ++i) {
-            reduced_item->addNode(nodesStack.top());
-            nodesStack.pop();
-            stateStack.pop();
+        for (auto *stack : common->stacks) {
+            if (stack->canMerge(nodeStack)) {
+                stack->merge(nodeStack);
+                std::erase(common->stacks, self_stack_ptr);
+                return true;
+            }
         }
 
-        reduced_item->reverse();
-
-        nodesStack.emplace(std::move(reduced_item));
-        stateStack.emplace(common->gotoTable.at({
-            stateStack.top(),
-            lr_item.getProductionType(),
-        }));
+        return false;
     }
 }// namespace ccl::parser::detail

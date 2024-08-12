@@ -3,6 +3,7 @@
 
 #include <ccl/parser/ast/node.hpp>
 #include <filesystem>
+#include <isl/dot_repr.hpp>
 #include <isl/gss.hpp>
 
 namespace ccl::parser::dot

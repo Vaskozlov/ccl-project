@@ -39,7 +39,7 @@ namespace ccl::lexer::parser
         std::map<Token, isl::string_view, CompareTokensByRepr> directives;
         AnyPlaceItems anyPlaceItems;
         Tokenizer &tokenizer;
-        isl::thread::IdGenerator idGenerator{ReservedTokenMaxValue + 1};
+        isl::thread::IdGenerator<SmallId> idGenerator{ReservedTokenMaxValue + 1};
 
     public:
         explicit CcllParser(Tokenizer &input_tokenizer);
