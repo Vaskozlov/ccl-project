@@ -12,8 +12,6 @@ namespace ccl::parser::reader::ast
             }
         }
 
-        rule_constructor.finishGrammar();
-
         return std::nullopt;
     }
 }// namespace ccl::parser::reader::ast

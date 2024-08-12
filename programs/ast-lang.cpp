@@ -2,6 +2,7 @@
 #include <ast-lang/ast/global_declarations.hpp>
 #include <ast-lang/ast/node.hpp>
 #include <ast-lang/interpreter/interpreter.hpp>
+#include <ccl/parser/dot/dot_repr.hpp>
 #include <ccl/parser/rules_reader/rules_reader.hpp>
 #include <ccl/parser/visualization/graph.hpp>
 #include <isl/io.hpp>
@@ -19,7 +20,7 @@ auto main() -> int
 
     ccl::parser::reader::RulesReader reader(isl::io::readFile(filename), filename.string());
 
-    auto &constructor = reader.getRulesConstructor();
+    auto &constructor = reader.getRulesConstructor(reader::Mode::LR);
     const auto first_item = constructor.getStartItem();
     const auto &grammar = constructor.getGrammarRulesStorage();
     auto &lexical_analyzer = constructor.getLexicalAnalyzer();
