@@ -3,7 +3,7 @@
 
 #include <ast-lang/interpreter/functions.hpp>
 #include <ast-lang/interpreter/stack.hpp>
-#include <ccl/parser/rules_reader/rules_constructor.hpp>
+#include <ccl/parser/rules_reader/parser_builder.hpp>
 #include <isl/raii.hpp>
 
 namespace astlang::interpreter
@@ -13,7 +13,7 @@ namespace astlang::interpreter
     private:
         Functions functions;
         Stack variables;
-        ccl::parser::reader::RulesConstructor &constructor;
+        ccl::parser::reader::ParserBuilder &constructor;
 
     public:
         const SmallId TRUE = constructor.getRuleId("\"true\"");
@@ -57,7 +57,7 @@ namespace astlang::interpreter
         const SmallId BITWISE_OR = constructor.getRuleId("\'|\'");
         const SmallId BITWISE_XOR = constructor.getRuleId("\'^\'");
 
-        explicit Interpreter(ccl::parser::reader::RulesConstructor &rules_constructor);
+        explicit Interpreter(ccl::parser::reader::ParserBuilder &parser_builder);
 
         auto addFunction(
             FunctionIdentification identification,

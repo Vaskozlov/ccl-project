@@ -1,5 +1,5 @@
-#ifndef CCL_PROJECT_RULES_INFO_HPP
-#define CCL_PROJECT_RULES_INFO_HPP
+#ifndef CCL_PROJECT_PARSER_BUILDER_HPP
+#define CCL_PROJECT_PARSER_BUILDER_HPP
 
 #include <ccl/handler/cmd.hpp>
 #include <ccl/lexer/lexical_analyzer.hpp>
@@ -16,17 +16,17 @@ namespace ccl::parser::reader
         LR
     };
 
-    class RulesConstructor
+    class ParserBuilder
     {
     private:
         lexer::LexicalAnalyzer lexicalAnalyzer{handler::Cmd::instance()};
         std::map<SmallId, std::string> ruleIdToName;
         std::map<isl::string_view, SmallId> ruleNameToId;
         isl::thread::IdGenerator<SmallId> ruleIdGenerator;
-        GrammarRulesStorage grammarRulesStorage;
+        GrammarStorage grammarRulesStorage;
 
     public:
-        RulesConstructor();
+        ParserBuilder();
 
         auto addRule(isl::string_view rule_name) -> SmallId;
 
@@ -81,16 +81,16 @@ namespace ccl::parser::reader
             return lexicalAnalyzer;
         }
 
-        [[nodiscard]] auto getGrammarRulesStorage() noexcept -> GrammarRulesStorage &
+        [[nodiscard]] auto getGrammarRulesStorage() noexcept -> GrammarStorage &
         {
             return grammarRulesStorage;
         }
 
-        [[nodiscard]] auto getGrammarRulesStorage() const noexcept -> const GrammarRulesStorage &
+        [[nodiscard]] auto getGrammarRulesStorage() const noexcept -> const GrammarStorage &
         {
             return grammarRulesStorage;
         }
     };
 }// namespace ccl::parser::reader
 
-#endif /* CCL_PROJECT_RULES_INFO_HPP */
+#endif /* CCL_PROJECT_PARSER_BUILDER_HPP */

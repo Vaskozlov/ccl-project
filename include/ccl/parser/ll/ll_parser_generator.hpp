@@ -15,10 +15,10 @@ namespace ccl::parser::ll
         FirstSetEvaluator firstSetEvaluator;
         FollowSetEvaluator followSetEvaluator;
         std::function<std::string(SmallId)> idToStringConverter;
-        const GrammarRulesStorage &storage;
+        const GrammarStorage &storage;
 
         LlParserGenerator(
-            SmallId start_symbol, const GrammarRulesStorage &grammar_storage,
+            SmallId start_symbol, const GrammarStorage &grammar_storage,
             std::function<std::string(SmallId)> id_to_string_converter);
 
     private:

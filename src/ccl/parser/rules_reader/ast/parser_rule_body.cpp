@@ -6,7 +6,7 @@
 
 namespace ccl::parser::reader::ast
 {
-    auto ParserRuleBody::construct(RulesConstructor &rule_constructor) const -> isl::UniqueAny
+    auto ParserRuleBody::construct(ParserBuilder &parser_builder) const -> isl::UniqueAny
     {
         auto result = std::vector<SmallId>{};
 
@@ -18,33 +18,32 @@ namespace ccl::parser::reader::ast
             if (token.getId() == RulesLexerToken::STRING ||
                 token.getId() == RulesLexerToken::ANY_PLACE_STRING) {
                 addStringToLexicalAnalyzer(
-                    repr, rule_constructor, token.getId() == RulesLexerToken::ANY_PLACE_STRING);
+                    repr, parser_builder, token.getId() == RulesLexerToken::ANY_PLACE_STRING);
             }
 
-            result.emplace_back(rule_constructor.addRule(repr));
+            result.emplace_back(parser_builder.addRule(repr));
         }
 
         return isl::UniqueAny{std::move(result)};
     }
 
     auto ParserRuleBody::addStringToLexicalAnalyzer(
-        isl::string_view str, RulesConstructor &rule_constructor,
-        bool is_any_place_string) const -> void
+        isl::string_view str, ParserBuilder &parser_builder, bool is_any_place_string) const -> void
     {
-        if (rule_constructor.hasRule(str)) {
+        if (parser_builder.hasRule(str)) {
             return;
         }
 
-        auto rule_id = rule_constructor.addRule(str);
+        auto rule_id = parser_builder.addRule(str);
 
         auto container = isl::makeUnique<lexer::rule::Container>(
-            rule_constructor.getLexicalAnalyzer(), false, is_any_place_string);
+            parser_builder.getLexicalAnalyzer(), false, is_any_place_string);
         container->setId(rule_id);
 
         auto str_without_quotes = str.substr(1, str.size() - 2);
         container->addItem(
             isl::makeUnique<lexer::rule::Sequence>(text::removeEscaping(str_without_quotes, {})));
 
-        rule_constructor.addLexerRule(str, std::move(container));
+        parser_builder.addLexerRule(str, std::move(container));
     }
 }// namespace ccl::parser::reader::ast

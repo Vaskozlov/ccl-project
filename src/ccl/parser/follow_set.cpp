@@ -4,7 +4,7 @@ namespace ccl::parser
 {
     FollowSetEvaluator::FollowSetEvaluator(
         Symbol start_symbol, Symbol end_of_input, Symbol epsilon_symbol,
-        const GrammarRulesStorage &parser_rules,
+        const GrammarStorage &parser_rules,
         const std::unordered_map<Symbol, std::unordered_set<Symbol>> &first_set)
       : FirstAndFollowSetsCommon::FirstAndFollowSetsCommon{parser_rules}
       , firstSet{first_set}
@@ -72,7 +72,7 @@ namespace ccl::parser
 
     auto evaluateFollowSet(
         Symbol start_symbol, Symbol end_of_input, Symbol epsilon_symbol,
-        const GrammarRulesStorage &rules,
+        const GrammarStorage &rules,
         const std::unordered_map<Symbol, std::unordered_set<Symbol>> &first_set)
         -> std::unordered_map<Symbol, std::unordered_set<Symbol>>
     {

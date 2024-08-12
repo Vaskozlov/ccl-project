@@ -4,7 +4,7 @@
 namespace ccl::parser
 {
     LrParserGenerator::LrParserGenerator(
-        const LrItem &start_item, Symbol epsilon_symbol, const GrammarRulesStorage &parser_rules,
+        const LrItem &start_item, Symbol epsilon_symbol, const GrammarStorage &parser_rules,
         std::function<std::string(SmallId)> id_to_string_converter)
       : idToStringConverter{std::move(id_to_string_converter)}
       , grammarRules{parser_rules}

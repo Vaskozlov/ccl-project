@@ -21,7 +21,7 @@ namespace ccl::parser
     public:
         FollowSetEvaluator(
             Symbol start_symbol, Symbol end_of_input, Symbol epsilon_symbol,
-            const GrammarRulesStorage &parser_rules,
+            const GrammarStorage &parser_rules,
             const std::unordered_map<Symbol, std::unordered_set<Symbol>> &first_set);
 
         [[nodiscard]] auto getFollowSetOfRule() CCL_LIFETIMEBOUND -> auto &
@@ -47,7 +47,7 @@ namespace ccl::parser
 
     auto evaluateFollowSet(
         Symbol start_symbol, Symbol end_of_input, Symbol epsilon_symbol,
-        const GrammarRulesStorage &rules,
+        const GrammarStorage &rules,
         const std::unordered_map<Symbol, std::unordered_set<Symbol>> &first_set)
         -> std::unordered_map<Symbol, std::unordered_set<Symbol>>;
 }// namespace ccl::parser

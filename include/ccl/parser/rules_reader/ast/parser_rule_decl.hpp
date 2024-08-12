@@ -18,7 +18,7 @@ namespace ccl::parser::reader::ast
         [[nodiscard]] auto getAlternatives() const -> const ast::ParserRuleAlternatives *;
 
         [[nodiscard]] auto
-            construct(RulesConstructor &rule_constructor) const -> isl::UniqueAny override;
+            construct(ParserBuilder &parser_builder) const -> isl::UniqueAny override;
     };
 }// namespace ccl::parser::reader::ast
 

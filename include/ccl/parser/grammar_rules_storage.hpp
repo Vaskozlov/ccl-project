@@ -8,7 +8,7 @@
 
 namespace ccl::parser
 {
-    class GrammarRulesStorage : private std::unordered_map<Symbol, std::vector<Rule>>
+    class GrammarStorage : private std::unordered_map<Symbol, std::vector<Rule>>
     {
     private:
         using Self = std::unordered_map<Symbol, std::vector<Rule>>;
@@ -20,9 +20,9 @@ namespace ccl::parser
         Symbol epsilonSymbol;
 
     public:
-        explicit GrammarRulesStorage(Symbol epsilon);
+        explicit GrammarStorage(Symbol epsilon);
 
-        GrammarRulesStorage(
+        GrammarStorage(
             bool remove_epsilon,
             Symbol epsilon,
             const std::initializer_list<isl::Pair<Symbol, std::vector<Rule>>> &initial_data);

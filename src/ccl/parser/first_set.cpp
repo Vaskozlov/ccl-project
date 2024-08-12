@@ -4,8 +4,7 @@
 namespace ccl::parser
 {
     FirstSetEvaluator::FirstSetEvaluator(
-        Symbol epsilon_symbol,
-        const GrammarRulesStorage &parser_rules)
+        Symbol epsilon_symbol, const GrammarStorage &parser_rules)
       : FirstAndFollowSetsCommon{parser_rules}
       , epsilonSymbol{epsilon_symbol}
     {
@@ -66,7 +65,7 @@ namespace ccl::parser
         return insertRange(firstSet.at(key), rhs);
     }
 
-    auto evaluateFirstSet(Symbol epsilon, const GrammarRulesStorage &rules)
+    auto evaluateFirstSet(Symbol epsilon, const GrammarStorage &rules)
         -> std::unordered_map<Symbol, std::unordered_set<Symbol>>
     {
         auto first_set = FirstSetEvaluator(epsilon, rules);

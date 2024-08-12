@@ -12,10 +12,10 @@ namespace ccl::parser::detail
         std::set<Symbol> possiblyEmptyRules;
         std::vector<isl::Pair<Symbol, Rule>> pendingRulesToAdd;
         std::vector<isl::Pair<Symbol, Rule>> pendingRulesToRemove;
-        GrammarRulesStorage &storage;
+        GrammarStorage &storage;
 
     public:
-        EmptyMovesFixer(GrammarRulesStorage &grammar_storage);
+        EmptyMovesFixer(GrammarStorage &grammar_storage);
 
         auto apply() -> void;
 

@@ -40,7 +40,7 @@ namespace ccl::parser
 
         std::function<std::string(SmallId)> idToStringConverter;
 
-        const GrammarRulesStorage &grammarRules;
+        const GrammarStorage &grammarRules;
         Symbol goalProduction;
         Symbol endOfInput;
         Symbol epsilonSymbol;
@@ -56,8 +56,7 @@ namespace ccl::parser
 
     public:
         explicit LrParserGenerator(
-            const LrItem &start_item, Symbol epsilon_symbol,
-            const GrammarRulesStorage &parser_rules,
+            const LrItem &start_item, Symbol epsilon_symbol, const GrammarStorage &parser_rules,
             std::function<std::string(SmallId)> id_to_string_converter);
 
         [[nodiscard]] auto getGotoTable() -> auto &

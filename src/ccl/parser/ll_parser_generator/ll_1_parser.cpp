@@ -4,7 +4,7 @@
 namespace ccl::parser::ll
 {
     LL1::LL1(
-        SmallId start_symbol, const GrammarRulesStorage &grammar_storage,
+        SmallId start_symbol, const GrammarStorage &grammar_storage,
         std::function<std::string(SmallId)> id_to_string_converter)
       : idToStringConverter{std::move(id_to_string_converter)}
       , storage{grammar_storage}

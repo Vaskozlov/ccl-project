@@ -2,16 +2,16 @@
 
 namespace ccl::parser::reader::ast
 {
-    auto LexerRuleBody::construct(RulesConstructor &rule_constructor) const -> isl::UniqueAny
+    auto LexerRuleBody::construct(ParserBuilder &parser_builder) const -> isl::UniqueAny
     {
         using namespace lexer::rule;
 
-        auto &lexical_analyzer = rule_constructor.getLexicalAnalyzer();
+        auto &lexical_analyzer = parser_builder.getLexicalAnalyzer();
         auto resulted_container = isl::makeUnique<Container>(lexical_analyzer);
 
         for (const auto &node : this->nodes) {
             const auto *node_as_rules_reader = static_cast<const RulesReaderNode *>(node.get());
-            auto new_block = node_as_rules_reader->construct(rule_constructor);
+            auto new_block = node_as_rules_reader->construct(parser_builder);
 
             resulted_container->addItem(isl::get<isl::UniquePtr<RuleBlockInterface>>(new_block));
         }

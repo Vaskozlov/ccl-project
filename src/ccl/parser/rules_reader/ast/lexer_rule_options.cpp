@@ -26,7 +26,7 @@ namespace ccl::parser::reader::ast
         },
     };
 
-    auto LexerRuleOptions::construct(RulesConstructor &rule_constructor) const -> isl::UniqueAny
+    auto LexerRuleOptions::construct(ParserBuilder &parser_builder) const -> isl::UniqueAny
     {
         const auto *front_node = this->front();
         auto options =
@@ -38,7 +38,7 @@ namespace ccl::parser::reader::ast
                 static_cast<const LexerRuleOptions *>(other_options_node);
 
             auto other_options = isl::get<std::vector<RulesLexerToken>>(
-                casted_other_options->construct(rule_constructor));
+                casted_other_options->construct(parser_builder));
 
             options.insert(options.end(), other_options.begin(), other_options.end());
         }

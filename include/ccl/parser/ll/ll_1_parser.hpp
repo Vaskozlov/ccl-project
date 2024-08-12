@@ -11,9 +11,9 @@ namespace ccl::parser::ll
     public:
         std::unordered_map<TableEntry, const Rule *> table;
         std::function<std::string(SmallId)> idToStringConverter;
-        const GrammarRulesStorage &storage;
+        const GrammarStorage &storage;
 
-        LL1(SmallId start_symbol, const GrammarRulesStorage &grammar_storage,
+        LL1(SmallId start_symbol, const GrammarStorage &grammar_storage,
             std::function<std::string(SmallId)> id_to_string_converter);
 
         auto parse(Symbol start, typename ccl::lexer::LexicalAnalyzer::Tokenizer &tokenizer)

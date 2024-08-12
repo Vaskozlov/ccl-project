@@ -132,7 +132,7 @@ namespace ccl::parser::reader
 
     using Rule = ccl::parser::Rule;
 
-    static const GrammarRulesStorage RulesGrammar{
+    static const GrammarStorage RulesGrammar{
         true,
         RulesLexerToken::EPSILON,
         {
@@ -487,7 +487,7 @@ namespace ccl::parser::reader
         dynamic_cast<ast::RulesReaderNode *>(node.get())->construct(rulesConstructor);
     }
 
-    auto RulesReader::getRulesConstructor(Mode mode) -> RulesConstructor &
+    auto RulesReader::getRulesConstructor(Mode mode) -> ParserBuilder &
     {
         if (!rulesConstructorFinalized) {
             rulesConstructorMode = mode;

@@ -22,21 +22,21 @@ namespace ccl::parser::reader::ast
         return this->size() == number_of_blocks_when_special;
     }
 
-    auto LexerRuleDecl::construct(RulesConstructor &rule_constructor) const -> isl::UniqueAny
+    auto LexerRuleDecl::construct(ParserBuilder &parser_builder) const -> isl::UniqueAny
     {
         auto rule_name = getDeclarationName();
 
         const auto *last_node = this->back();
         const auto *rule_node = static_cast<const RulesReaderNode *>(last_node);
 
-        auto rule = rule_node->construct(rule_constructor);
+        auto rule = rule_node->construct(parser_builder);
         auto rule_as_container = isl::get<isl::UniquePtr<lexer::rule::Container>>(rule);
 
         if (isSpecial()) {
             rule_as_container->makeAsAnyPlaceItem();
         }
 
-        rule_constructor.addLexerRule(rule_name, std::move(rule_as_container));
+        parser_builder.addLexerRule(rule_name, std::move(rule_as_container));
         return isl::makeAny<isl::string_view>(rule_name);
     }
 }// namespace ccl::parser::reader::ast

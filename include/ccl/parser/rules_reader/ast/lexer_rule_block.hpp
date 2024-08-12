@@ -21,10 +21,10 @@ namespace ccl::parser::reader::ast
 
         [[nodiscard]] auto getOptions() const -> const ast::LexerRuleOptions *;
 
-        auto construct(RulesConstructor &rule_constructor) const -> isl::UniqueAny override;
+        auto construct(ParserBuilder &parser_builder) const -> isl::UniqueAny override;
 
         auto applyOptions(
-            RulesConstructor &rule_constructor,
+            ParserBuilder &parser_builder,
             lexer::rule::RuleBlockInterface *rule_block) const -> void;
     };
 }// namespace ccl::parser::reader::ast

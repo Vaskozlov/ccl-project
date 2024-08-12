@@ -11,7 +11,7 @@ namespace ccl::parser::reader::ast
     public:
         using RulesReaderNode::RulesReaderNode;
 
-        auto construct(RulesConstructor &rule_constructor) const -> isl::UniqueAny override;
+        auto construct(ParserBuilder &parser_builder) const -> isl::UniqueAny override;
     };
 }// namespace ccl::parser::reader::ast
 

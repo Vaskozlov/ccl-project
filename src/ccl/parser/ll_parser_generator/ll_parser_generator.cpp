@@ -4,7 +4,7 @@ namespace ccl::parser::ll
 {
     LlParserGenerator::LlParserGenerator(
         SmallId start_symbol,
-        const GrammarRulesStorage &grammar_storage,
+        const GrammarStorage &grammar_storage,
         std::function<std::string(SmallId)>
             id_to_string_converter)
       : firstSetEvaluator{grammar_storage.getEpsilon(), grammar_storage}

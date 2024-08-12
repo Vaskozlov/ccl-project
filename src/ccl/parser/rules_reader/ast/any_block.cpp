@@ -2,13 +2,13 @@
 
 namespace ccl::parser::reader::ast
 {
-    auto AnyBlock::construct(RulesConstructor &rule_constructor) const -> isl::UniqueAny
+    auto AnyBlock::construct(ParserBuilder &parser_builder) const -> isl::UniqueAny
     {
         for (const auto &node : this->nodes) {
             const auto *elem = dynamic_cast<RulesReaderNode *>(node.get());
 
             if (elem != nullptr) {
-                elem->construct(rule_constructor);
+                elem->construct(parser_builder);
             }
         }
 

@@ -4,13 +4,13 @@
 
 namespace ccl::parser
 {
-    GrammarRulesStorage::GrammarRulesStorage(Symbol epsilon)
+    GrammarStorage::GrammarStorage(Symbol epsilon)
       : grammarSymbols{0, epsilon}
       , possiblyEmptyRules{epsilon}
       , epsilonSymbol{epsilon}
     {}
 
-    GrammarRulesStorage::GrammarRulesStorage(
+    GrammarStorage::GrammarStorage(
         bool remove_epsilon,
         Symbol epsilon,
         const std::initializer_list<isl::Pair<Symbol, std::vector<Rule>>> &initial_data)
@@ -27,7 +27,7 @@ namespace ccl::parser
         finishGrammar(remove_epsilon);
     }
 
-    auto GrammarRulesStorage::tryEmplace(Symbol key, Rule rule) -> bool
+    auto GrammarStorage::tryEmplace(Symbol key, Rule rule) -> bool
     {
         auto [it, inserted] = Self::try_emplace(key);
 
@@ -39,7 +39,7 @@ namespace ccl::parser
         return false;
     }
 
-    auto GrammarRulesStorage::eraseRule(Symbol key, const Rule &rule) -> void
+    auto GrammarStorage::eraseRule(Symbol key, const Rule &rule) -> void
     {
         auto it = Self::find(key);
 
@@ -48,14 +48,14 @@ namespace ccl::parser
         }
     }
 
-    auto GrammarRulesStorage::registerAllRuleSymbols(const Rule &rule) -> void
+    auto GrammarStorage::registerAllRuleSymbols(const Rule &rule) -> void
     {
         for (const auto symbol : rule) {
             grammarSymbols.emplace(symbol);
         }
     }
 
-    auto GrammarRulesStorage::finishGrammar(bool remove_epsilon) -> void
+    auto GrammarStorage::finishGrammar(bool remove_epsilon) -> void
     {
         for (const auto &[key, rules] : *this) {
             nonTerminals.emplace(key);
@@ -71,7 +71,7 @@ namespace ccl::parser
         }
     }
 
-    auto GrammarRulesStorage::findAndFixEmptyRules() -> void
+    auto GrammarStorage::findAndFixEmptyRules() -> void
     {
         auto empty_moves_fixer = detail::EmptyMovesFixer{*this};
         empty_moves_fixer.apply();

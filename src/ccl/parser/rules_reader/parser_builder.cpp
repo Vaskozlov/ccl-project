@@ -1,8 +1,8 @@
-#include <ccl/parser/rules_reader/rules_constructor.hpp>
+#include <ccl/parser/rules_reader/parser_builder.hpp>
 
 namespace ccl::parser::reader
 {
-    RulesConstructor::RulesConstructor()
+    ParserBuilder::ParserBuilder()
       : ruleIdToName{
             {
                 std::to_underlying(lexer::ReservedTokenType::EOI),
@@ -35,13 +35,12 @@ namespace ccl::parser::reader
       grammarRulesStorage{addRule("EPSILON")}
     {}
 
-
-    auto RulesConstructor::finishGrammar(Mode mode) -> void
+    auto ParserBuilder::finishGrammar(Mode mode) -> void
     {
         grammarRulesStorage.finishGrammar(mode == Mode::LR);
     }
 
-    auto RulesConstructor::addRule(const std::string &rule_name) -> SmallId
+    auto ParserBuilder::addRule(isl::string_view rule_name) -> SmallId
     {
         if (auto it = ruleNameToId.find(rule_name); it != ruleNameToId.end()) {
             return it->second;
@@ -55,7 +54,7 @@ namespace ccl::parser::reader
         return rule_id;
     }
 
-    auto RulesConstructor::getStartItem() const -> LrItem
+    auto ParserBuilder::getStartItem() const -> LrItem
     {
         const auto goal_id = getRuleId("GOAL");
         auto &start_rules = grammarRulesStorage.at(goal_id);
@@ -71,8 +70,8 @@ namespace ccl::parser::reader
         return LrItem{std::addressof(grammarRulesStorage.at(goal_id).front()), 0, goal_id, 0};
     }
 
-    auto RulesConstructor::getIdToNameTranslationFunction() const
-        -> std::function<std::string(SmallId)>
+    auto
+        ParserBuilder::getIdToNameTranslationFunction() const -> std::function<std::string(SmallId)>
     {
         return [this](SmallId rule_id) {
             return ruleIdToName.at(rule_id);

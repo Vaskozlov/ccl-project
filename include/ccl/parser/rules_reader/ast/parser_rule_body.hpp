@@ -11,11 +11,11 @@ namespace ccl::parser::reader::ast
     public:
         using RulesReaderNode::RulesReaderNode;
 
-        auto construct(RulesConstructor &rule_constructor) const -> isl::UniqueAny override;
+        auto construct(ParserBuilder &parser_builder) const -> isl::UniqueAny override;
 
     private:
         auto addStringToLexicalAnalyzer(
-            isl::string_view str, RulesConstructor &rule_constructor,
+            isl::string_view str, ParserBuilder &parser_builder,
             bool is_any_place_string) const -> void;
     };
 }// namespace ccl::parser::reader::ast

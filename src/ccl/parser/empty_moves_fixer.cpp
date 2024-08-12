@@ -2,7 +2,7 @@
 
 namespace ccl::parser::detail
 {
-    EmptyMovesFixer::EmptyMovesFixer(GrammarRulesStorage &grammar_storage)
+    EmptyMovesFixer::EmptyMovesFixer(GrammarStorage &grammar_storage)
       : possiblyEmptyRules({grammar_storage.getEpsilon()})
       , storage{grammar_storage}
     {}

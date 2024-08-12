@@ -20,7 +20,7 @@ namespace ccl::parser
         explicit LrParser(
             const LrItem &start_item,
             Symbol epsilon_symbol,
-            const GrammarRulesStorage &parser_rules,
+            const GrammarStorage &parser_rules,
             std::function<std::string(SmallId)> id_to_string_converter = fmt::to_string<SmallId>);
 
         [[nodiscard]] auto

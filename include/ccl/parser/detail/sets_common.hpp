@@ -9,7 +9,7 @@ namespace ccl::parser::detail
     class FirstAndFollowSetsCommon
     {
     protected:
-        const GrammarRulesStorage &grammarRules;// NOLINT reference
+        const GrammarStorage &grammarRules;// NOLINT reference
 
         static auto insertRange(auto &&set, isl::RangeOf<Symbol> auto &&range) -> bool
         {
@@ -24,7 +24,7 @@ namespace ccl::parser::detail
         }
 
     public:
-        explicit FirstAndFollowSetsCommon(const GrammarRulesStorage &grammar_rules)
+        explicit FirstAndFollowSetsCommon(const GrammarStorage &grammar_rules)
           : grammarRules{grammar_rules}
         {}
 

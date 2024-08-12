@@ -3,13 +3,13 @@
 
 namespace ccl::parser::reader::ast
 {
-    auto LexerRuleAlternative::construct(RulesConstructor &rule_constructor) const -> isl::UniqueAny
+    auto LexerRuleAlternative::construct(ParserBuilder &parser_builder) const -> isl::UniqueAny
     {
         const auto *lhs_node = this->front();
         const auto *rhs_node = this->back();
 
-        auto lhs = static_cast<const RulesReaderNode *>(lhs_node)->construct(rule_constructor);
-        auto rhs = static_cast<const RulesReaderNode *>(rhs_node)->construct(rule_constructor);
+        auto lhs = static_cast<const RulesReaderNode *>(lhs_node)->construct(parser_builder);
+        auto rhs = static_cast<const RulesReaderNode *>(rhs_node)->construct(parser_builder);
 
         auto lhs_as_rule = isl::get<isl::UniquePtr<lexer::rule::Container>>(lhs);
         auto rhs_as_rule = isl::get<isl::UniquePtr<lexer::rule::RuleBlockInterface>>(rhs);

@@ -19,7 +19,7 @@ namespace ccl::parser::reader::ast
 
         [[nodiscard]] auto isSpecial() const noexcept -> bool;
 
-        auto construct(RulesConstructor &rule_constructor) const -> isl::UniqueAny override;
+        auto construct(ParserBuilder &parser_builder) const -> isl::UniqueAny override;
     };
 }// namespace ccl::parser::reader::ast
 

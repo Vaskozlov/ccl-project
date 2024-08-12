@@ -17,26 +17,26 @@ namespace ccl::parser::reader::ast
         return dynamic_cast<const ast::ParserRuleAlternatives *>(value_node);
     }
 
-    auto ParserRuleDecl::construct(RulesConstructor &rule_constructor) const -> isl::UniqueAny
+    auto ParserRuleDecl::construct(ParserBuilder &parser_builder) const -> isl::UniqueAny
     {
         const auto production_name = getDeclarationName();
-        const auto production_id = rule_constructor.addRule(production_name);
+        const auto production_id = parser_builder.addRule(production_name);
         const auto *alternatives = getAlternatives();
 
         if (alternatives == nullptr) {
             auto not_casted_rule =
-                static_cast<const RulesReaderNode *>(back())->construct(rule_constructor);
+                static_cast<const RulesReaderNode *>(back())->construct(parser_builder);
             auto rule = isl::get<std::vector<SmallId>>(not_casted_rule);
 
-            rule_constructor.addParserRule(production_id, parser::Rule{{rule}});
+            parser_builder.addParserRule(production_id, parser::Rule{{rule}});
             return std::nullopt;
         }
 
-        auto not_casted_rules = alternatives->construct(rule_constructor);
+        auto not_casted_rules = alternatives->construct(parser_builder);
         const auto rules = isl::get<std::vector<std::vector<SmallId>>>(not_casted_rules);
 
         for (const auto &alternative : rules) {
-            rule_constructor.addParserRule(production_id, parser::Rule{alternative});
+            parser_builder.addParserRule(production_id, parser::Rule{alternative});
         }
 
         return std::nullopt;

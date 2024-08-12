@@ -57,8 +57,8 @@ namespace astlang::interpreter
                 }));
     }
 
-    Interpreter::Interpreter(ccl::parser::reader::RulesConstructor &rules_constructor)
-      : constructor(rules_constructor)
+    Interpreter::Interpreter(ccl::parser::reader::ParserBuilder &parser_builder)
+      : constructor(parser_builder)
     {
         createBinaryFunction<isl::ssize_t, isl::ssize_t>(
             *this, "__addition__", Type::INT, Type::INT, Type::INT, std::plus{});

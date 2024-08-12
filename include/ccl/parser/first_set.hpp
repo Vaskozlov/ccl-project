@@ -18,7 +18,7 @@ namespace ccl::parser
         using FirstAndFollowSetsCommon::isTerminal;
 
     public:
-        FirstSetEvaluator(Symbol epsilon_symbol, const GrammarRulesStorage &parser_rules);
+        FirstSetEvaluator(Symbol epsilon_symbol, const GrammarStorage &parser_rules);
 
         [[nodiscard]] auto getFirstSet()
             CCL_LIFETIMEBOUND -> std::unordered_map<Symbol, std::unordered_set<Symbol>> &
@@ -38,7 +38,7 @@ namespace ccl::parser
         auto firstSetComputationIteration(Symbol key, const Rule &rule) -> bool;
     };
 
-    auto evaluateFirstSet(Symbol epsilon, const GrammarRulesStorage &rules)
+    auto evaluateFirstSet(Symbol epsilon, const GrammarStorage &rules)
         -> std::unordered_map<Symbol, std::unordered_set<Symbol>>;
 }// namespace ccl::parser
 
