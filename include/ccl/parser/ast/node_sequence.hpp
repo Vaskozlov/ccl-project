@@ -38,7 +38,7 @@ namespace ccl::parser::ast
             nodes.emplace_back(std::move(node));
         }
 
-        [[nodiscard]] auto getNodes() -> std::vector<SmartPointer<Node>> &
+        [[nodiscard]] auto getNodes() -> auto &
         {
             return nodes;
         }
