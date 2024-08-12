@@ -11,6 +11,7 @@ namespace ccl::parser
     {}
 
     GrammarRulesStorage::GrammarRulesStorage(
+        bool remove_epsilon,
         Symbol epsilon,
         const std::initializer_list<isl::Pair<Symbol, std::vector<Rule>>> &initial_data)
       : grammarSymbols{0, epsilon}
@@ -23,7 +24,7 @@ namespace ccl::parser
             }
         }
 
-        finishGrammar();
+        finishGrammar(remove_epsilon);
     }
 
     auto GrammarRulesStorage::tryEmplace(Symbol key, Rule rule) -> bool
@@ -54,7 +55,7 @@ namespace ccl::parser
         }
     }
 
-    auto GrammarRulesStorage::finishGrammar() -> void
+    auto GrammarRulesStorage::finishGrammar(bool remove_epsilon) -> void
     {
         for (const auto &[key, rules] : *this) {
             nonTerminals.emplace(key);
@@ -65,7 +66,9 @@ namespace ccl::parser
             }
         }
 
-        findAndFixEmptyRules();
+        if (remove_epsilon) {
+            findAndFixEmptyRules();
+        }
     }
 
     auto GrammarRulesStorage::findAndFixEmptyRules() -> void
