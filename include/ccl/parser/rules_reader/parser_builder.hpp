@@ -8,6 +8,13 @@
 #include <ccl/parser/lr/detail/lr_item.hpp>
 #include <isl/thread/id_generator.hpp>
 
+namespace ccl::parser
+{
+    class LrParser;
+    class GlrParser;
+    class Ll1Parser;
+}// namespace ccl::parser
+
 namespace ccl::parser::reader
 {
     enum class Mode : u8
@@ -24,15 +31,21 @@ namespace ccl::parser::reader
         std::map<isl::string_view, SmallId> ruleNameToId;
         isl::thread::IdGenerator<SmallId> ruleIdGenerator;
         GrammarStorage grammarRulesStorage;
+        Mode rulesConstructorMode{Mode::LR};
+        bool rulesConstructorFinalized{};
 
     public:
         ParserBuilder();
 
+        auto buildLr1() -> LrParser;
+
+        auto buildGlr() -> GlrParser;
+
+        auto buildLl1() -> Ll1Parser;
+
+        auto buildGLL() -> void;
+
         auto addRule(isl::string_view rule_name) -> SmallId;
-
-        auto finishGrammar(Mode mode) -> void;
-
-        auto getStartItem() const -> LrItem;
 
         auto getIdToNameTranslationFunction() const CCL_LIFETIMEBOUND
             -> std::function<std::string(SmallId)>;
@@ -81,15 +94,15 @@ namespace ccl::parser::reader
             return lexicalAnalyzer;
         }
 
-        [[nodiscard]] auto getGrammarRulesStorage() noexcept -> GrammarStorage &
-        {
-            return grammarRulesStorage;
-        }
-
         [[nodiscard]] auto getGrammarRulesStorage() const noexcept -> const GrammarStorage &
         {
             return grammarRulesStorage;
         }
+
+    private:
+        auto finishGrammar(Mode mode) -> void;
+
+        auto getStartItem() const -> LrItem;
     };
 }// namespace ccl::parser::reader
 

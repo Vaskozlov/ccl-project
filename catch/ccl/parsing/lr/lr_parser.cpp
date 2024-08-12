@@ -9,20 +9,12 @@ TEST_CASE("TreeStructureTest", "[TreeParsing]")
     using namespace ccl::parser;
 
     reader::RulesReader math_rules_reader{MathGrammarDefinition, __FILE__};
-    auto &math_rules_constructor = math_rules_reader.getRulesConstructor(reader::Mode::LR);
-    const auto math_rules_start_item = math_rules_constructor.getStartItem();
-    const auto &math_grammar_rules_storage = math_rules_constructor.getGrammarRulesStorage();
-    auto &math_lexical_analyzer = math_rules_constructor.getLexicalAnalyzer();
+    auto &math_rules_constructor = math_rules_reader.getParserBuilder();
+    const auto &lexer = math_rules_constructor.getLexicalAnalyzer();
     auto math_token_to_string = math_rules_constructor.getIdToNameTranslationFunction();
+    auto MathLrParser = math_rules_constructor.buildLr1();
 
-    auto MathLrParser = LrParser{
-        math_rules_start_item,
-        math_grammar_rules_storage.getEpsilon(),
-        math_grammar_rules_storage,
-        math_token_to_string,
-    };
-
-    auto tokenizer = math_lexical_analyzer.getTokenizer("10+2*3");
+    auto tokenizer = lexer.getTokenizer("10+2*3");
     auto parse_result = MathLrParser.parse(tokenizer);
     const auto *root_node = isl::as<ast::UnNodeSequence *>(parse_result.get());
 

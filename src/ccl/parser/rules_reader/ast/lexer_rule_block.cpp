@@ -1,4 +1,5 @@
 #include <ccl/lexer/rule/container.hpp>
+#include <ccl/lexer/rule/rule_reference.hpp>
 #include <ccl/parser/rules_reader/ast/lexer_rule_block.hpp>
 #include <ccl/parser/rules_reader/ast/lexer_rule_body.hpp>
 
@@ -20,7 +21,8 @@ namespace ccl::parser::reader::ast
         return isl::makeUnique<lexer::rule::Sequence>(text::removeEscaping(repr, {}));
     }
 
-    static auto constructRuleReference(ParserBuilder &parser_builder, const lexer::Token &token) -> isl::UniquePtr<lexer::rule::RuleBlockInterface>
+    static auto constructRuleReference(ParserBuilder &parser_builder, const lexer::Token &token)
+        -> isl::UniquePtr<lexer::rule::RuleBlockInterface>
     {
         auto repr = token.getRepr();
         repr = repr.substr(1, repr.size() - 2);
@@ -28,13 +30,15 @@ namespace ccl::parser::reader::ast
             parser_builder.getLexicalAnalyzer(), text::removeEscaping(repr, {}));
     }
 
-    static auto constructContainer(ParserBuilder &parser_builder, const parser::ast::Node *node) -> isl::UniquePtr<lexer::rule::RuleBlockInterface>
+    static auto constructContainer(ParserBuilder &parser_builder, const parser::ast::Node *node)
+        -> isl::UniquePtr<lexer::rule::RuleBlockInterface>
     {
         const auto *casted_node = dynamic_cast<const ast::LexerRuleBody *>(node);
         return casted_node->construct(parser_builder).get<isl::UniquePtr<lexer::rule::Container>>();
     }
 
-    static auto constructNonContainerRule(ParserBuilder &parser_builder, const lexer::Token &token) -> isl::UniquePtr<lexer::rule::RuleBlockInterface>
+    static auto constructNonContainerRule(ParserBuilder &parser_builder, const lexer::Token &token)
+        -> isl::UniquePtr<lexer::rule::RuleBlockInterface>
     {
         switch (token.getId()) {
         case RulesLexerToken::UNION:

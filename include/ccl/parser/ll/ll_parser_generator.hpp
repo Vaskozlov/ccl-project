@@ -10,18 +10,27 @@ namespace ccl::parser::ll
 {
     class LlParserGenerator
     {
-    public:
-        std::unordered_map<TableEntry, const Rule *> table;
+    private:
+        std::unordered_map<TableEntry, std::vector<const Rule *>> table;
         FirstSetEvaluator firstSetEvaluator;
         FollowSetEvaluator followSetEvaluator;
         std::function<std::string(SmallId)> idToStringConverter;
         const GrammarStorage &storage;
 
+    public:
         LlParserGenerator(
             SmallId start_symbol, const GrammarStorage &grammar_storage,
             std::function<std::string(SmallId)> id_to_string_converter);
 
+        [[nodiscard]] auto
+            createLl1Table() const -> ankerl::unordered_dense::map<TableEntry, const Rule *>;
+
+        [[nodiscard]] auto createGllTable() const
+            -> ankerl::unordered_dense::map<TableEntry, std::vector<const Rule *>>;
+
     private:
+        auto insertIntoTable(TableEntry entry, const Rule *rule) -> void;
+
         auto generateUsingRule(Symbol production, const Rule &rule) -> void;
     };
 }// namespace ccl::parser::ll

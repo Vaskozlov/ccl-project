@@ -1,3 +1,6 @@
+#include <ccl/parser/ll/ll_1_parser.hpp>
+#include <ccl/parser/lr/glr_parser.hpp>
+#include <ccl/parser/lr/lr_parser.hpp>
 #include <ccl/parser/rules_reader/parser_builder.hpp>
 
 namespace ccl::parser::reader
@@ -35,9 +38,59 @@ namespace ccl::parser::reader
       grammarRulesStorage{addRule("EPSILON")}
     {}
 
+    auto ParserBuilder::buildLr1() -> LrParser
+    {
+        finishGrammar(Mode::LR);
+
+        return LrParser{
+            getStartItem(),
+            grammarRulesStorage.getEpsilon(),
+            grammarRulesStorage,
+            getIdToNameTranslationFunction(),
+        };
+    }
+
+    auto ParserBuilder::buildGlr() -> GlrParser
+    {
+        finishGrammar(Mode::LR);
+
+        return GlrParser{
+            getStartItem(),
+            grammarRulesStorage.getEpsilon(),
+            grammarRulesStorage,
+            getIdToNameTranslationFunction(),
+        };
+    }
+
+    auto ParserBuilder::buildLl1() -> Ll1Parser
+    {
+        finishGrammar(Mode::LL);
+
+        return Ll1Parser{
+            getRuleId("GOAL"),
+            grammarRulesStorage,
+            getIdToNameTranslationFunction(),
+        };
+    }
+
+    auto ParserBuilder::buildGLL() -> void
+    {
+        finishGrammar(Mode::LL);
+
+        throw std::runtime_error{"Not implemented yet"};
+    }
+
     auto ParserBuilder::finishGrammar(Mode mode) -> void
     {
-        grammarRulesStorage.finishGrammar(mode == Mode::LR);
+        if (!rulesConstructorFinalized) {
+            rulesConstructorMode = mode;
+            rulesConstructorFinalized = true;
+            grammarRulesStorage.finishGrammar(mode == Mode::LR);
+        }
+
+        if (mode != rulesConstructorMode) {
+            throw std::runtime_error{"Constructor mode can not be changed after initialization"};
+        }
     }
 
     auto ParserBuilder::addRule(isl::string_view rule_name) -> SmallId

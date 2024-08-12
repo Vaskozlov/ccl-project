@@ -1,24 +1,25 @@
 #include <ccl/parser/ast/token_node.hpp>
 #include <ccl/parser/ll/ll_1_parser.hpp>
 
-namespace ccl::parser::ll
+namespace ccl::parser
 {
-    LL1::LL1(
+    Ll1Parser::Ll1Parser(
         SmallId start_symbol, const GrammarStorage &grammar_storage,
         std::function<std::string(SmallId)> id_to_string_converter)
       : idToStringConverter{std::move(id_to_string_converter)}
       , storage{grammar_storage}
+      , grammarGoalSymbol{start_symbol}
     {
-        auto ll_generator = LlParserGenerator{start_symbol, storage, idToStringConverter};
-        table = std::move(ll_generator.table);
+        auto ll_generator = ll::LlParserGenerator{start_symbol, storage, idToStringConverter};
+        table = ll_generator.createLl1Table();
     }
 
-    auto LL1::parse(Symbol start, typename ccl::lexer::LexicalAnalyzer::Tokenizer &tokenizer)
+    auto Ll1Parser::parse(typename ccl::lexer::LexicalAnalyzer::Tokenizer &tokenizer)
         -> ast::ShNodePtr
     {
         const auto *word = std::addressof(tokenizer.yield());
         auto stack = Stack<ast::ShNodePtr>{};
-        auto goal = isl::makeShared<ast::ShNodeSequence>(start);
+        auto goal = isl::makeShared<ast::ShNodeSequence>(grammarGoalSymbol);
 
         stack.emplace(nullptr);
         stack.emplace(goal);
@@ -71,4 +72,4 @@ namespace ccl::parser::ll
             focus = stack.top();
         }
     }
-}// namespace ccl::parser::ll
+}// namespace ccl::parser

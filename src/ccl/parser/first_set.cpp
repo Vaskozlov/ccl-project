@@ -3,8 +3,7 @@
 
 namespace ccl::parser
 {
-    FirstSetEvaluator::FirstSetEvaluator(
-        Symbol epsilon_symbol, const GrammarStorage &parser_rules)
+    FirstSetEvaluator::FirstSetEvaluator(Symbol epsilon_symbol, const GrammarStorage &parser_rules)
       : FirstAndFollowSetsCommon{parser_rules}
       , epsilonSymbol{epsilon_symbol}
     {

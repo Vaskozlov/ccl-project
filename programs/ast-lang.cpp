@@ -19,16 +19,15 @@ auto main() -> int
 
     ccl::parser::reader::RulesReader reader(isl::io::readFile(filename), filename.string());
 
-    auto &constructor = reader.getRulesConstructor(reader::Mode::LR);
-    const auto first_item = constructor.getStartItem();
-    const auto &grammar = constructor.getGrammarRulesStorage();
-    auto &lexical_analyzer = constructor.getLexicalAnalyzer();
-    auto input =
-        isl::io::readFile("/Users/vaskozlov/CLionProjects/ccl-project/programs/test.astlang");
-    auto tokenizer = lexical_analyzer.getTokenizer(input);
+    auto &constructor = reader.getParserBuilder();
+    auto &lexer = constructor.getLexicalAnalyzer();
     auto to_str = constructor.getIdToNameTranslationFunction();
 
-    auto lr_parser = LrParser{first_item, grammar.getEpsilon(), grammar, to_str};
+    auto input =
+        isl::io::readFile("/Users/vaskozlov/CLionProjects/ccl-project/programs/test.astlang");
+    auto tokenizer = lexer.getTokenizer(input);
+
+    auto lr_parser = constructor.buildLr1();
     auto node = lr_parser.parse(tokenizer);
 
     auto dot_repr = dot::createDotRepresentation({node.get()}, to_str);

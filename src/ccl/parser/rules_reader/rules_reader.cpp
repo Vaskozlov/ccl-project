@@ -487,18 +487,8 @@ namespace ccl::parser::reader
         dynamic_cast<ast::RulesReaderNode *>(node.get())->construct(rulesConstructor);
     }
 
-    auto RulesReader::getRulesConstructor(Mode mode) -> ParserBuilder &
+    auto RulesReader::getParserBuilder() -> ParserBuilder &
     {
-        if (!rulesConstructorFinalized) {
-            rulesConstructorMode = mode;
-            rulesConstructorFinalized = true;
-            rulesConstructor.finishGrammar(rulesConstructorMode);
-        }
-
-        if (mode != rulesConstructorMode) {
-            throw std::runtime_error{"Constructor mode can not be changed after initialization"};
-        }
-
         return rulesConstructor;
     }
 }// namespace ccl::parser::reader
