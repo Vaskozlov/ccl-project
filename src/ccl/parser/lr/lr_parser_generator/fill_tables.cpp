@@ -12,7 +12,7 @@ namespace ccl::parser
         for (const auto &[key, actions] : actionTable) {
             if (actions.size() != 1) {
                 fmt::println("State: {}", key.state);
-                fmt::println("Lookahead: {}", idToStringConverter(key.lookAhead));
+                fmt::println("Lookahead: {}", idToStringConverter(key.symbol));
 
                 for (const auto &action : actions) {
                     fmt::println(
@@ -69,14 +69,14 @@ namespace ccl::parser
             insertIntoActionTable(
                 TableEntry{
                     .state = cc.id,
-                    .lookAhead = endOfInput,
+                    .symbol = endOfInput,
                 },
                 std::monostate{});
         } else if (item.isDotInTheEnd()) {
             insertIntoActionTable(
                 TableEntry{
                     .state = cc.id,
-                    .lookAhead = item.getLookAhead(),
+                    .symbol = item.getLookAhead(),
                 },
                 item);
         } else {
@@ -88,7 +88,7 @@ namespace ccl::parser
 
             const auto entry = TableEntry{
                 .state = cc.id,
-                .lookAhead = symbol_at_dot,
+                .symbol = symbol_at_dot,
             };
 
             insertIntoActionTable(entry, transitions.at(entry));
@@ -99,7 +99,7 @@ namespace ccl::parser
     {
         const auto entry = TableEntry{
             .state = cc.id,
-            .lookAhead = symbol,
+            .symbol = symbol,
         };
 
         if (!transitions.contains(entry)) {

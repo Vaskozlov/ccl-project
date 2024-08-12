@@ -111,7 +111,7 @@ namespace ccl::parser
 
             const auto entry = TableEntry{
                 .state = cc_id,
-                .lookAhead = symbol,
+                .symbol = symbol,
             };
 
             const auto cc_it = std::ranges::find(canonicalCollection, temp_cc);

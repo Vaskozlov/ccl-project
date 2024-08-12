@@ -3,7 +3,7 @@
 
 namespace ccl::parser
 {
-    detail::FirstSetEvaluator::FirstSetEvaluator(
+    FirstSetEvaluator::FirstSetEvaluator(
         Symbol epsilon_symbol,
         const GrammarRulesStorage &parser_rules)
       : FirstAndFollowSetsCommon{parser_rules}
@@ -13,8 +13,12 @@ namespace ccl::parser
         computeFirstSet();
     }
 
-    auto detail::FirstSetEvaluator::initializeFirstSet() -> void
+    auto FirstSetEvaluator::initializeFirstSet() -> void
     {
+        for (const auto &[key, rule] : grammarRules.rulesIterator()) {
+            firstSetOfRule.try_emplace(std::addressof(rule));
+        }
+
         for (auto symbol : grammarRules.getGrammarSymbols()) {
             if (!lexer::isUsedDefinedTokenOrEoF(symbol)) {
                 continue;
@@ -28,15 +32,14 @@ namespace ccl::parser
         }
     }
 
-    auto detail::FirstSetEvaluator::computeFirstSet() -> void
+    auto FirstSetEvaluator::computeFirstSet() -> void
     {
         applyFixedPointAlgorithmOnAllRules([this](Symbol key, const Rule &rule) {
             return firstSetComputationIteration(key, rule);
         });
     }
 
-    auto detail::FirstSetEvaluator::firstSetComputationIteration(Symbol key, const Rule &rule)
-        -> bool
+    auto FirstSetEvaluator::firstSetComputationIteration(Symbol key, const Rule &rule) -> bool
     {
         const auto front_element = rule.front();
         const auto back_element = rule.back();
@@ -59,13 +62,14 @@ namespace ccl::parser
             rhs.emplace(epsilonSymbol);
         }
 
+        insertRange(firstSetOfRule.at(std::addressof(rule)), rhs);
         return insertRange(firstSet.at(key), rhs);
     }
 
     auto evaluateFirstSet(Symbol epsilon, const GrammarRulesStorage &rules)
         -> std::unordered_map<Symbol, std::unordered_set<Symbol>>
     {
-        auto first_set = detail::FirstSetEvaluator(epsilon, rules);
+        auto first_set = FirstSetEvaluator(epsilon, rules);
         return std::move(first_set.getFirstSet());
     }
 }// namespace ccl::parser

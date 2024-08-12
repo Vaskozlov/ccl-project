@@ -10,7 +10,7 @@ TEST_CASE("GlrParser", "[TreeParsing]")
     using namespace ccl::parser;
 
     reader::RulesReader math_rules_reader{SimpleGlrMathGrammarDefinition, __FILE__};
-    auto &math_rules_constructor = math_rules_reader.getRulesConstructor();
+    auto &math_rules_constructor = math_rules_reader.getRulesConstructor(reader::Mode::LR);
     const auto math_rules_start_item = math_rules_constructor.getStartItem();
     const auto &math_grammar_rules_storage = math_rules_constructor.getGrammarRulesStorage();
     auto &math_lexical_analyzer = math_rules_constructor.getLexicalAnalyzer();

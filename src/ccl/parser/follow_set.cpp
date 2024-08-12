@@ -2,7 +2,7 @@
 
 namespace ccl::parser
 {
-    detail::FollowSetEvaluator::FollowSetEvaluator(
+    FollowSetEvaluator::FollowSetEvaluator(
         Symbol start_symbol, Symbol end_of_input, Symbol epsilon_symbol,
         const GrammarRulesStorage &parser_rules,
         const std::unordered_map<Symbol, std::unordered_set<Symbol>> &first_set)
@@ -14,9 +14,12 @@ namespace ccl::parser
         computeFollowSet();
     }
 
-    auto detail::FollowSetEvaluator::initializeFollowSet(Symbol start_symbol, Symbol end_of_input)
-        -> void
+    auto FollowSetEvaluator::initializeFollowSet(Symbol start_symbol, Symbol end_of_input) -> void
     {
+        for (const auto &[key, rule] : grammarRules.rulesIterator()) {
+            followSetOfRule.try_emplace(std::addressof(rule));
+        }
+
         for (auto symbol : grammarRules.getGrammarSymbols()) {
             if (isNonTerminal(symbol)) {
                 followSet.try_emplace(symbol);
@@ -26,15 +29,14 @@ namespace ccl::parser
         followSet.at(start_symbol).emplace(end_of_input);
     }
 
-    auto detail::FollowSetEvaluator::computeFollowSet() -> void
+    auto FollowSetEvaluator::computeFollowSet() -> void
     {
         applyFixedPointAlgorithmOnAllRules([this](Symbol key, const Rule &rule) {
             return followSetComputationIteration(key, rule);
         });
     }
 
-    auto detail::FollowSetEvaluator::followSetComputationIteration(Symbol key, const Rule &rule)
-        -> bool
+    auto FollowSetEvaluator::followSetComputationIteration(Symbol key, const Rule &rule) -> bool
     {
         auto has_modifications = false;
         auto trailer = followSet.at(key);
@@ -43,17 +45,19 @@ namespace ccl::parser
             if (isTerminal(elem)) {
                 trailer = firstSet.at(elem);
             } else {
-                has_modifications = followSetNonTerminalCase(elem, trailer) || has_modifications;
+                has_modifications =
+                    followSetNonTerminalCase(rule, elem, trailer) || has_modifications;
             }
         }
 
         return has_modifications;
     }
 
-    auto detail::FollowSetEvaluator::followSetNonTerminalCase(
-        Symbol elem, std::unordered_set<Symbol> &trailer) -> bool
+    auto FollowSetEvaluator::followSetNonTerminalCase(
+        const Rule &rule, Symbol elem, std::unordered_set<Symbol> &trailer) -> bool
     {
         auto has_modifications = insertRange(followSet[elem], trailer);
+        insertRange(followSetOfRule[std::addressof(rule)], trailer);
         auto elem_first_set = firstSet.at(elem);
 
         if (elem_first_set.contains(epsilonSymbol)) {
@@ -72,8 +76,8 @@ namespace ccl::parser
         const std::unordered_map<Symbol, std::unordered_set<Symbol>> &first_set)
         -> std::unordered_map<Symbol, std::unordered_set<Symbol>>
     {
-        auto follow_set = detail::FollowSetEvaluator(
-            start_symbol, end_of_input, epsilon_symbol, rules, first_set);
+        auto follow_set =
+            FollowSetEvaluator(start_symbol, end_of_input, epsilon_symbol, rules, first_set);
 
         return std::move(follow_set.getFollowSet());
     }

@@ -5,34 +5,38 @@
 
 namespace ccl::parser
 {
-    namespace detail
+    class FirstSetEvaluator : private detail::FirstAndFollowSetsCommon
     {
-        class FirstSetEvaluator : private FirstAndFollowSetsCommon
+    private:
+        std::unordered_map<const Rule *, std::unordered_set<Symbol>> firstSetOfRule;
+        std::unordered_map<Symbol, std::unordered_set<Symbol>> firstSet;
+        Symbol epsilonSymbol;
+
+        using FirstAndFollowSetsCommon::applyFixedPointAlgorithmOnAllRules;
+        using FirstAndFollowSetsCommon::insertRange;
+        using FirstAndFollowSetsCommon::isNonTerminal;
+        using FirstAndFollowSetsCommon::isTerminal;
+
+    public:
+        FirstSetEvaluator(Symbol epsilon_symbol, const GrammarRulesStorage &parser_rules);
+
+        [[nodiscard]] auto getFirstSet()
+            CCL_LIFETIMEBOUND -> std::unordered_map<Symbol, std::unordered_set<Symbol>> &
         {
-        private:
-            std::unordered_map<Symbol, std::unordered_set<Symbol>> firstSet;
-            Symbol epsilonSymbol;
+            return firstSet;
+        }
 
-            using FirstAndFollowSetsCommon::applyFixedPointAlgorithmOnAllRules;
-            using FirstAndFollowSetsCommon::insertRange;
-            using FirstAndFollowSetsCommon::isNonTerminal;
-            using FirstAndFollowSetsCommon::isTerminal;
+        [[nodiscard]] auto getFirstSetOfRules()
+            CCL_LIFETIMEBOUND -> std::unordered_map<const Rule *, std::unordered_set<Symbol>> &
+        {
+            return firstSetOfRule;
+        }
 
-        public:
-            FirstSetEvaluator(Symbol epsilon_symbol, const GrammarRulesStorage &parser_rules);
-
-            [[nodiscard]] auto getFirstSet()
-                CCL_LIFETIMEBOUND -> std::unordered_map<Symbol, std::unordered_set<Symbol>> &
-            {
-                return firstSet;
-            }
-
-        private:
-            auto initializeFirstSet() -> void;
-            auto computeFirstSet() -> void;
-            auto firstSetComputationIteration(Symbol key, const Rule &rule) -> bool;
-        };
-    }// namespace detail
+    private:
+        auto initializeFirstSet() -> void;
+        auto computeFirstSet() -> void;
+        auto firstSetComputationIteration(Symbol key, const Rule &rule) -> bool;
+    };
 
     auto evaluateFirstSet(Symbol epsilon, const GrammarRulesStorage &rules)
         -> std::unordered_map<Symbol, std::unordered_set<Symbol>>;

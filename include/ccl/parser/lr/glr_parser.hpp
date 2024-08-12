@@ -6,7 +6,7 @@
 #include <ccl/parser/grammar_rules_storage.hpp>
 #include <ccl/parser/lr/action.hpp>
 #include <ccl/parser/lr/detail/canonical_collection.hpp>
-#include <ccl/parser/lr/detail/table_entry.hpp>
+#include <ccl/parser/table_entry.hpp>
 #include <isl/gss.hpp>
 
 namespace ccl::parser
