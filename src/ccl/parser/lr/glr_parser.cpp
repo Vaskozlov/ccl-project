@@ -24,8 +24,6 @@ namespace ccl::parser
         detail::RunnersCommon &common,
         std::forward_list<GlrRunner> &parsing_runners) -> void
     {
-        auto runners_to_be_reduced = std::forward_list<GlrRunner *>{};
-
         std::erase_if(parsing_runners, [&common](GlrRunner &runner) {
             const auto polling_result = runner.poll();
             const auto *stack_ptr = std::addressof(runner.nodeStack);

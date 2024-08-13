@@ -13,6 +13,7 @@ namespace ccl::parser
     class LrParser;
     class GlrParser;
     class Ll1Parser;
+    class GllParser;
 }// namespace ccl::parser
 
 namespace ccl::parser::reader
@@ -43,7 +44,7 @@ namespace ccl::parser::reader
 
         auto buildLl1() -> Ll1Parser;
 
-        auto buildGLL() -> void;
+        auto buildGLL() -> GllParser;
 
         auto addRule(isl::string_view rule_name) -> SmallId;
 

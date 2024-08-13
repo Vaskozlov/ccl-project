@@ -22,10 +22,9 @@ namespace ccl::parser::ll
         }
     }
 
-    [[nodiscard]] auto LlParserGenerator::createLl1Table() const
-        -> ankerl::unordered_dense::map<TableEntry, const Rule *>
+    [[nodiscard]] auto LlParserGenerator::createLl1Table() const -> Ll1Table
     {
-        auto ll_1_table = ankerl::unordered_dense::map<TableEntry, const Rule *>{};
+        auto ll_1_table = Ll1Table{};
 
         for (const auto &[entry, rules] : table) {
             if (rules.size() > 1) {
@@ -38,11 +37,9 @@ namespace ccl::parser::ll
         return ll_1_table;
     }
 
-    [[nodiscard]] auto LlParserGenerator::createGllTable() const
-        -> ankerl::unordered_dense::map<TableEntry, std::vector<const Rule *>>
+    [[nodiscard]] auto LlParserGenerator::createGllTable() const -> GllTable
     {
-        return ankerl::unordered_dense::map<TableEntry, std::vector<const Rule *>>{
-            table.begin(), table.end()};
+        return GllTable{table.begin(), table.end()};
     }
 
     auto LlParserGenerator::generateUsingRule(

@@ -9,7 +9,7 @@ namespace ccl::parser
     class Ll1Parser
     {
     private:
-        ankerl::unordered_dense::map<TableEntry, const Rule *> table;
+        ll::Ll1Table table;
         std::function<std::string(SmallId)> idToStringConverter;
         const GrammarStorage &storage;
         SmallId grammarGoalSymbol;

@@ -1,3 +1,4 @@
+#include <ccl/parser/ll/gll_parser.hpp>
 #include <ccl/parser/ll/ll_1_parser.hpp>
 #include <ccl/parser/lr/glr_parser.hpp>
 #include <ccl/parser/lr/lr_parser.hpp>
@@ -73,11 +74,15 @@ namespace ccl::parser::reader
         };
     }
 
-    auto ParserBuilder::buildGLL() -> void
+    auto ParserBuilder::buildGLL() -> GllParser
     {
         finishGrammar(Mode::LL);
 
-        throw std::runtime_error{"Not implemented yet"};
+        return GllParser{
+            getRuleId("GOAL"),
+            grammarRulesStorage,
+            getIdToNameTranslationFunction(),
+        };
     }
 
     auto ParserBuilder::finishGrammar(Mode mode) -> void

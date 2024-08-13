@@ -14,6 +14,7 @@ namespace ccl::parser
         using Self = std::unordered_map<Symbol, std::vector<Rule>>;
         using AlternativesConstRuleIterator = typename std::vector<Rule>::const_iterator;
 
+        // TODO: change to ankerl?
         std::unordered_set<Symbol> nonTerminals;
         std::unordered_set<Symbol> grammarSymbols;
         std::unordered_set<Symbol> possiblyEmptyRules;

@@ -12,7 +12,8 @@ GOAL:
     EXPR
 
 EXPR:
-    NUMBER EXPR_C
+    NUMBER '+' EXPR
+    | NUMBER
     | EPSILON
 
 EXPR_C:

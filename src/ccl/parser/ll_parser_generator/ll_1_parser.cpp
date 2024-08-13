@@ -23,9 +23,10 @@ namespace ccl::parser
 
         stack.emplace(nullptr);
         stack.emplace(goal.get());
-        auto *focus = stack.top();
 
         while (true) {
+            auto *focus = stack.top();
+
             if (focus == nullptr && word->getId() == 0) {
                 return std::move(goal);
             }
@@ -35,32 +36,31 @@ namespace ccl::parser
                     return nullptr;
                 }
 
-                static_cast<ast::TokenNode *>(stack.top())->setToken(*word);
+                static_cast<ast::TokenNode *>(focus)->setToken(*word);
                 stack.pop();
                 word = std::addressof(tokenizer.yield());
-            } else {
-                const auto *rule = table.at({focus->getType(), word->getId()});
-                auto *focus_as_sequence = static_cast<ast::UnNodeSequence *>(focus);
-                stack.pop();
-
-                for (auto s : *rule | std::views::reverse) {
-                    if (s == storage.getEpsilon()) {
-                        continue;
-                    }
-
-                    if (storage.isTerminal(s)) {
-                        focus_as_sequence->addNode(isl::makeUnique<ast::TokenNode>(s));
-                    } else {
-                        focus_as_sequence->addNode(isl::makeUnique<ast::UnNodeSequence>(s));
-                    }
-
-                    stack.emplace(focus_as_sequence->getNodes().back().get());
-                }
-
-                focus_as_sequence->reverse();
+                continue;
             }
 
-            focus = stack.top();
+            const auto *rule = table.at({focus->getType(), word->getId()});
+            auto *focus_as_sequence = static_cast<ast::UnNodeSequence *>(focus);
+            stack.pop();
+
+            for (auto s : *rule | std::views::reverse) {
+                if (s == storage.getEpsilon()) {
+                    continue;
+                }
+
+                if (storage.isTerminal(s)) {
+                    focus_as_sequence->addNode(isl::makeUnique<ast::TokenNode>(s));
+                } else {
+                    focus_as_sequence->addNode(isl::makeUnique<ast::UnNodeSequence>(s));
+                }
+
+                stack.emplace(focus_as_sequence->getNodes().back().get());
+            }
+
+            focus_as_sequence->reverse();
         }
     }
 }// namespace ccl::parser
