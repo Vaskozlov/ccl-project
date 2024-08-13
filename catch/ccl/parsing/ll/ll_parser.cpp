@@ -13,7 +13,7 @@ TEST_CASE("LLParser", "[TreeParsing]")
     const auto &lexer = math_rules_constructor.getLexicalAnalyzer();
     auto parser = math_rules_constructor.buildLl1();
 
-    auto tokenizer = lexer.getTokenizer("1+2");
+    auto tokenizer = lexer.getTokenizer("1 + 2");
     parser.parse(tokenizer)->print(
         "", false, math_rules_constructor.getIdToNameTranslationFunction());
 }

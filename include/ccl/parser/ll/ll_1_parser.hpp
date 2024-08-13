@@ -19,7 +19,7 @@ namespace ccl::parser
             SmallId start_symbol, const GrammarStorage &grammar_storage,
             std::function<std::string(SmallId)> id_to_string_converter);
 
-        auto parse(typename ccl::lexer::LexicalAnalyzer::Tokenizer &tokenizer) -> ast::ShNodePtr;
+        auto parse(typename ccl::lexer::LexicalAnalyzer::Tokenizer &tokenizer) -> ast::UnNodePtr;
     };
 }// namespace ccl::parser
 

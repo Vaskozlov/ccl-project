@@ -15,20 +15,15 @@ namespace ccl::parser
     }
 
     auto Ll1Parser::parse(typename ccl::lexer::LexicalAnalyzer::Tokenizer &tokenizer)
-        -> ast::ShNodePtr
+        -> ast::UnNodePtr
     {
         const auto *word = std::addressof(tokenizer.yield());
-        auto stack = Stack<ast::ShNodePtr>{};
-        auto goal = isl::makeShared<ast::ShNodeSequence>(grammarGoalSymbol);
+        auto stack = Stack<ast::Node *>{};
+        auto goal = isl::makeUnique<ast::UnNodeSequence>(grammarGoalSymbol);
 
         stack.emplace(nullptr);
-        stack.emplace(goal);
-
-        auto old_focus = stack.top();
-        auto focus = stack.top();
-
-        fmt::println("{}", idToStringConverter(focus->getType()));
-        fmt::println("{}", idToStringConverter(word->getId()));
+        stack.emplace(goal.get());
+        auto *focus = stack.top();
 
         while (true) {
             if (focus == nullptr && word->getId() == 0) {
@@ -36,39 +31,35 @@ namespace ccl::parser
             }
 
             if (storage.isTerminal(focus->getType())) {
-                if (focus->getType() == word->getId()) {
-                    dynamic_cast<ast::ShNodeSequence *>(old_focus.get())
-                        ->addNode(isl::makeShared<ast::TokenNode>(
-                            focus->getType(), tokenizer.getCurrentToken()));
-                    fmt::println("{}:", idToStringConverter(stack.top()->getType()));
-                    stack.pop();
-                    word = std::addressof(tokenizer.yield());
-                    fmt::println(
-                        "{} - {}", idToStringConverter(old_focus->getType()),
-                        idToStringConverter(word->getId()));
-                } else {
+                if (focus->getType() != word->getId()) {
                     return nullptr;
                 }
+
+                static_cast<ast::TokenNode *>(stack.top())->setToken(*word);
+                stack.pop();
+                word = std::addressof(tokenizer.yield());
             } else {
                 const auto *rule = table.at({focus->getType(), word->getId()});
-                auto *focus_as_sequence = dynamic_cast<ast::ShNodeSequence *>(focus.get());
-                fmt::println(
-                    "{}: {}", idToStringConverter(focus->getType()),
-                    std::views::transform(*rule, idToStringConverter));
-
+                auto *focus_as_sequence = static_cast<ast::UnNodeSequence *>(focus);
                 stack.pop();
 
                 for (auto s : *rule | std::views::reverse) {
-                    if (s != storage.getEpsilon()) {
-                        stack.emplace(isl::makeUnique<ast::ShNodeSequence>(s));
-                        focus_as_sequence->addNode(stack.top());
+                    if (s == storage.getEpsilon()) {
+                        continue;
                     }
+
+                    if (storage.isTerminal(s)) {
+                        focus_as_sequence->addNode(isl::makeUnique<ast::TokenNode>(s));
+                    } else {
+                        focus_as_sequence->addNode(isl::makeUnique<ast::UnNodeSequence>(s));
+                    }
+
+                    stack.emplace(focus_as_sequence->getNodes().back().get());
                 }
 
                 focus_as_sequence->reverse();
             }
 
-            old_focus = std::move(focus);
             focus = stack.top();
         }
     }

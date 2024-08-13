@@ -11,10 +11,19 @@ namespace ccl::parser::ast
         lexer::Token token;
 
     public:
+        explicit TokenNode(SmallId node_type_id)
+          : Node{node_type_id}
+        {}
+
         explicit TokenNode(SmallId node_type_id, lexer::Token l_token)
           : Node{node_type_id}
           , token{std::move(l_token)}
         {}
+
+        auto setToken(lexer::Token l_token) -> void
+        {
+            token = std::move(l_token);
+        }
 
         [[nodiscard]] auto getToken() const noexcept -> const lexer::Token &
         {
