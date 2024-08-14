@@ -2,7 +2,7 @@
 #define CCL_PROJECT_CHAR_HPP
 
 #include <ccl/ccl.hpp>
-#include <isl/flatmap.hpp>
+#include <isl/static_flat_map.hpp>
 
 namespace ccl
 {

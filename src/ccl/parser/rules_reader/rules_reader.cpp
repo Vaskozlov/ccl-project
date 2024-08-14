@@ -474,8 +474,8 @@ namespace ccl::parser::reader
     {
         static auto initial_rule = Rule{{RulesLexerToken::ANY_BLOCK}};
 
-        auto start_item =
-            LrItem{std::addressof(initial_rule), 0, RulesLexerToken::GOAL, RulesLexerToken::EOI};
+        auto start_item = GrammarSlot{
+            std::addressof(initial_rule), 0, RulesLexerToken::GOAL, RulesLexerToken::EOI};
 
         auto tokenizer = RulesLexer.getTokenizer(input, filename);
         auto lr_parser =

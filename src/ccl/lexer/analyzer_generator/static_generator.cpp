@@ -13,7 +13,7 @@ namespace ccl::lexer::gen
 
     constexpr static auto IncludedHeaders = []() {
         std::array<isl::string_view, 3> result = {
-            "<ccl/handler/cmd.hpp>", "<ccl/lexer/tokenizer.hpp>", "<isl/flatmap.hpp>"};
+            "<ccl/handler/cmd.hpp>", "<ccl/lexer/tokenizer.hpp>", "<isl/static_flat_map.hpp>"};
 
         std::ranges::sort(result);
         return result;

@@ -1,14 +1,14 @@
 #ifndef CCL_PROJECT_CANONICAL_COLLECTION_HPP
 #define CCL_PROJECT_CANONICAL_COLLECTION_HPP
 
-#include <ccl/parser/lr/detail/lr_item.hpp>
+#include <ccl/parser/grammar_slot.hpp>
 #include <list>
 
 namespace ccl::parser
 {
     struct CanonicalCollection
     {
-        std::vector<LrItem> items;
+        std::vector<GrammarSlot> items;
         State id{};
 
         [[nodiscard]] auto operator==(const CanonicalCollection &other) const noexcept -> bool
@@ -29,7 +29,7 @@ struct std::hash<ccl::parser::CanonicalCollection>
 {
     auto operator()(const ccl::parser::CanonicalCollection &collection) const -> std::size_t
     {
-        return std::hash<std::vector<ccl::parser::LrItem>>{}(collection.items);
+        return std::hash<std::vector<ccl::parser::GrammarSlot>>{}(collection.items);
     }
 };
 
@@ -48,8 +48,9 @@ public:
         return fmt::format_to(
             ctx.out(), "{}: {}", collection.id,
             std::views::transform(
-                collection.items, [&collection_print_wrapper](const ccl::parser::LrItem &item) {
-                    return ccl::parser::LrItemPrintWrapper(
+                collection.items,
+                [&collection_print_wrapper](const ccl::parser::GrammarSlot &item) {
+                    return ccl::parser::GrammarSlotPrintWrapper(
                         item, collection_print_wrapper.idToStringConversionFunction);
                 }));
     }

@@ -5,7 +5,7 @@
 #include <ccl/lexer/lexical_analyzer.hpp>
 #include <ccl/lexer/rule/container.hpp>
 #include <ccl/parser/grammar_rules_storage.hpp>
-#include <ccl/parser/lr/detail/lr_item.hpp>
+#include <ccl/parser/grammar_slot.hpp>
 #include <isl/thread/id_generator.hpp>
 
 namespace ccl::parser
@@ -44,7 +44,7 @@ namespace ccl::parser::reader
 
         auto buildLl1() -> Ll1Parser;
 
-        auto buildGLL() -> GllParser;
+        auto buildGLL() -> void;
 
         auto addRule(isl::string_view rule_name) -> SmallId;
 
@@ -103,7 +103,7 @@ namespace ccl::parser::reader
     private:
         auto finishGrammar(Mode mode) -> void;
 
-        auto getStartItem() const -> LrItem;
+        auto getStartItem() const -> GrammarSlot;
     };
 }// namespace ccl::parser::reader
 

@@ -1,7 +1,7 @@
 #ifndef CCL_PROJECT_ACTION_HPP
 #define CCL_PROJECT_ACTION_HPP
 
-#include <ccl/parser/lr/detail/lr_item.hpp>
+#include <ccl/parser/grammar_slot.hpp>
 #include <ccl/parser/lr/detail/parsing_action.hpp>
 
 namespace ccl::parser
@@ -9,7 +9,7 @@ namespace ccl::parser
     class Action
     {
     private:
-        std::variant<std::monostate, State, LrItem> data;
+        std::variant<std::monostate, State, GrammarSlot> data;
         ParsingAction parsingAction;
 
     public:
@@ -18,7 +18,7 @@ namespace ccl::parser
           , parsingAction{ParsingAction::SHIFT}
         {}
 
-        explicit Action(const LrItem &item)
+        explicit Action(const GrammarSlot &item)
           : data{item}
           , parsingAction{ParsingAction::REDUCE}
         {}
@@ -53,7 +53,7 @@ namespace ccl::parser
         }
 
         [[nodiscard]] auto getStoredData() const noexcept CCL_LIFETIMEBOUND
-            -> const std::variant<std::monostate, State, LrItem> &
+            -> const std::variant<std::monostate, State, GrammarSlot> &
         {
             return data;
         }
@@ -63,9 +63,9 @@ namespace ccl::parser
             return std::get<State>(data);
         }
 
-        [[nodiscard]] auto getReducingItem() const noexcept CCL_LIFETIMEBOUND -> const LrItem &
+        [[nodiscard]] auto getReducingItem() const noexcept CCL_LIFETIMEBOUND -> const GrammarSlot &
         {
-            return std::get<LrItem>(data);
+            return std::get<GrammarSlot>(data);
         }
     };
 
@@ -99,9 +99,11 @@ public:
 
         return std::visit(
             overloaded{
-                [&ctx, &action_print_wrapper](const LrItem &arg) {
+                [&ctx, &action_print_wrapper](const GrammarSlot &arg) {
                     return fmt::format_to(
-                        ctx.out(), "{}", LrItemPrintWrapper(arg, action_print_wrapper.idToStr));
+                        ctx.out(),
+                        "{}",
+                        GrammarSlotPrintWrapper(arg, action_print_wrapper.idToStr));
                 },
                 [&ctx](auto arg) {
                     return fmt::format_to(ctx.out(), "{}", arg);

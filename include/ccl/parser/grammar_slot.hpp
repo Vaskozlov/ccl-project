@@ -1,5 +1,5 @@
-#ifndef CCL_PROJECT_LR_ITEM_HPP
-#define CCL_PROJECT_LR_ITEM_HPP
+#ifndef CCL_PROJECT_GRAMMAR_SLOT_HPP
+#define CCL_PROJECT_GRAMMAR_SLOT_HPP
 
 #include <ankerl/unordered_dense.h>
 #include <ccl/lexer/lexical_analyzer.hpp>
@@ -8,7 +8,7 @@
 
 namespace ccl::parser
 {
-    struct LrItem
+    struct GrammarSlot
     {
         const Rule *rule;
         std::size_t dotLocation{};
@@ -61,22 +61,22 @@ namespace ccl::parser
         }
 
         [[nodiscard]] auto
-            operator<=>(const LrItem &other) const noexcept -> std::weak_ordering = default;
+            operator<=>(const GrammarSlot &other) const noexcept -> std::weak_ordering = default;
     };
 
-    struct LrItemPrintWrapper
+    struct GrammarSlotPrintWrapper
     {
-        const LrItem &item;
+        const GrammarSlot &item;
         std::function<std::string(SmallId)> idToStr;
     };
 }// namespace ccl::parser
 
 template<>
-struct ankerl::unordered_dense::hash<ccl::parser::LrItem>
+struct ankerl::unordered_dense::hash<ccl::parser::GrammarSlot>
 {
     using is_avalanching = void;
 
-    [[nodiscard]] auto operator()(const ccl::parser::LrItem &item) const noexcept -> auto
+    [[nodiscard]] auto operator()(const ccl::parser::GrammarSlot &item) const noexcept -> auto
     {
         return ankerl::unordered_dense::detail::wyhash::hash(&item, sizeof(item));
     }
@@ -104,20 +104,20 @@ struct std::hash<std::vector<T>>
 };
 
 template<>
-struct std::hash<ccl::parser::LrItem>
+struct std::hash<ccl::parser::GrammarSlot>
 {
-    auto operator()(const ccl::parser::LrItem &item) const -> auto
+    auto operator()(const ccl::parser::GrammarSlot &item) const -> auto
     {
-        return ankerl::unordered_dense::hash<ccl::parser::LrItem>{}(item);
+        return ankerl::unordered_dense::hash<ccl::parser::GrammarSlot>{}(item);
     }
 };
 
 template<>
-class fmt::formatter<ccl::parser::LrItemPrintWrapper> : public fmt::formatter<std::string_view>
+class fmt::formatter<ccl::parser::GrammarSlotPrintWrapper> : public fmt::formatter<std::string_view>
 {
 public:
-    auto format(const ccl::parser::LrItemPrintWrapper &item_print_wrapper, format_context &ctx)
+    auto format(const ccl::parser::GrammarSlotPrintWrapper &item_print_wrapper, format_context &ctx)
         const -> typename format_context::iterator;
 };
 
-#endif /* CCL_PROJECT_LR_ITEM_HPP */
+#endif /* CCL_PROJECT_GRAMMAR_SLOT_HPP */

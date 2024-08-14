@@ -60,7 +60,7 @@ namespace ccl::parser
     }
 
     GlrParser::GlrParser(
-        const LrItem &start_item,
+        const GrammarSlot &start_item,
         Symbol epsilon_symbol,
         const GrammarStorage &parser_rules,
         std::function<std::string(SmallId)>

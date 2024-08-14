@@ -6,7 +6,7 @@
 namespace ccl::parser
 {
     LrParser::LrParser(
-        const LrItem &start_item,
+        const GrammarSlot &start_item,
         Symbol epsilon_symbol,
         const GrammarStorage &parser_rules,
         std::function<std::string(SmallId)>

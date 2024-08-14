@@ -60,8 +60,9 @@ namespace ccl::parser
         }
     }
 
-    auto LrParserGenerator::fillActionTableEntry(const CanonicalCollection &cc, const LrItem &item)
-        -> void
+    auto LrParserGenerator::fillActionTableEntry(
+        const CanonicalCollection &cc,
+        const GrammarSlot &item) -> void
     {
         using enum ccl::parser::ParsingAction;
 

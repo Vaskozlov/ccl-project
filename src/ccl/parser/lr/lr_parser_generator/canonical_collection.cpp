@@ -12,9 +12,9 @@ namespace ccl::parser
     }
 
     auto LrParserGenerator::moveCollectionItemsOverSymbol(
-        const CanonicalCollection &canonical_collection, Symbol symbol) -> std::vector<LrItem>
+        const CanonicalCollection &canonical_collection, Symbol symbol) -> std::vector<GrammarSlot>
     {
-        auto moved = std::vector<LrItem>{};
+        auto moved = std::vector<GrammarSlot>{};
         moved.reserve(canonical_collection.items.size());
 
         for (const auto &item : canonical_collection.items) {
@@ -132,7 +132,7 @@ namespace ccl::parser
         return has_new_sets;
     }
 
-    auto LrParserGenerator::constructCanonicalCollection(const LrItem &start_item) -> void
+    auto LrParserGenerator::constructCanonicalCollection(const GrammarSlot &start_item) -> void
     {
         auto closure_id = isl::thread::IdGenerator<SmallId>{1};
 

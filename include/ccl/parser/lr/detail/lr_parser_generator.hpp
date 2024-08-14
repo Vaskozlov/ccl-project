@@ -17,7 +17,7 @@ namespace ccl::parser
     private:
         struct GotoResult
         {
-            std::vector<LrItem> items;
+            std::vector<GrammarSlot> items;
             Symbol symbol;
             SmallId canonicalCollectionId;
         };
@@ -47,16 +47,17 @@ namespace ccl::parser
 
         std::unordered_map<Symbol, std::unordered_set<Symbol>> firstSet;
 
-        ankerl::unordered_dense::map<std::vector<LrItem>, std::vector<LrItem>>
+        ankerl::unordered_dense::map<std::vector<GrammarSlot>, std::vector<GrammarSlot>>
             closureComputationOnItemsCache;
 
-        ankerl::unordered_dense::map<LrItem, std::vector<LrItem>> closureComputationCache;
+        ankerl::unordered_dense::map<GrammarSlot, std::vector<GrammarSlot>> closureComputationCache;
 
         runtime::Pipe<GotoResult, 256> pipe;
 
     public:
         explicit LrParserGenerator(
-            const LrItem &start_item, Symbol epsilon_symbol, const GrammarStorage &parser_rules,
+            const GrammarSlot &start_item, Symbol epsilon_symbol,
+            const GrammarStorage &parser_rules,
             std::function<std::string(SmallId)> id_to_string_converter);
 
         [[nodiscard]] auto getGotoTable() -> auto &
@@ -82,7 +83,7 @@ namespace ccl::parser
 
         auto moveCollectionItemsOverSymbol(
             const CanonicalCollection &canonical_collection,
-            Symbol symbol) -> std::vector<LrItem>;
+            Symbol symbol) -> std::vector<GrammarSlot>;
 
         auto moveCollectionItemsOverRemainingSymbols(
             const CanonicalCollection &canonical_collection) -> void;
@@ -91,15 +92,15 @@ namespace ccl::parser
 
         auto fillCanonicalCollection(isl::thread::IdGenerator<SmallId> &closure_id) -> bool;
 
-        auto constructCanonicalCollection(const LrItem &start_item) -> void;
+        auto constructCanonicalCollection(const GrammarSlot &start_item) -> void;
 
-        auto computeClosure(const LrItem &item) -> const std::vector<LrItem> &;
+        auto computeClosure(const GrammarSlot &item) -> const std::vector<GrammarSlot> &;
 
-        auto computeClosureOnItems(std::vector<LrItem> s) -> const std::vector<LrItem> &;
+        auto computeClosureOnItems(std::vector<GrammarSlot> s) -> const std::vector<GrammarSlot> &;
 
         auto fillTablesUsingCanonicalCollection(const CanonicalCollection &cc) -> void;
 
-        auto fillActionTableEntry(const CanonicalCollection &cc, const LrItem &item) -> void;
+        auto fillActionTableEntry(const CanonicalCollection &cc, const GrammarSlot &item) -> void;
 
         auto fillGotoTableEntry(const CanonicalCollection &cc, Symbol symbol) -> void;
 

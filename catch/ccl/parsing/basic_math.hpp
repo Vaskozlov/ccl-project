@@ -2,7 +2,7 @@
 
 #include <ccl/handler/cmd.hpp>
 #include <ccl/lexer/tokenizer.hpp>
-#include <isl/flatmap.hpp>
+#include <isl/static_flat_map.hpp>
 
 namespace math
 {

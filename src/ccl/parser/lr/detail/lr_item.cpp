@@ -1,7 +1,7 @@
-#include <ccl/parser/lr/detail/lr_item.hpp>
+#include <ccl/parser/grammar_slot.hpp>
 
-auto fmt::formatter<ccl::parser::LrItemPrintWrapper>::format(
-    const ccl::parser::LrItemPrintWrapper &item_print_wrapper, format_context &ctx) const ->
+auto fmt::formatter<ccl::parser::GrammarSlotPrintWrapper>::format(
+    const ccl::parser::GrammarSlotPrintWrapper &item_print_wrapper, format_context &ctx) const ->
     typename format_context::iterator
 {
     const auto &item = item_print_wrapper.item;

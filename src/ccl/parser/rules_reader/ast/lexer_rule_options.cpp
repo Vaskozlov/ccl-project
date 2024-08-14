@@ -1,5 +1,5 @@
 #include "ccl/parser/rules_reader/ast/lexer_rule_options.hpp"
-#include <isl/flatmap.hpp>
+#include <isl/static_flat_map.hpp>
 
 namespace ccl::parser::reader::ast
 {

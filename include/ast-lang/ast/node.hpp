@@ -4,7 +4,7 @@
 #include <ast-lang/ast-lang.hpp>
 #include <ccl/parser/ast/node_sequence.hpp>
 #include <ccl/parser/ast/token_node.hpp>
-#include <ccl/parser/rules_reader/rules_constructor.hpp>
+#include <ccl/parser/rules_reader/parser_builder.hpp>
 
 namespace astlang::interpreter
 {
@@ -41,7 +41,7 @@ namespace astlang::ast
         virtual auto compute(Interpreter &interpreter) const -> EvaluationResult = 0;
 
         static auto convertCclTreeToAstlang(
-            ccl::parser::reader::RulesConstructor &constructor,
+            ccl::parser::reader::ParserBuilder &constructor,
             Node *node) -> void;
 
         auto castChildrenToAstLangNode(const ConvertionTable &conversion_table) -> void;

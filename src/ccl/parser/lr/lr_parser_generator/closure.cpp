@@ -4,7 +4,8 @@ namespace ccl::parser
 {
     static std::size_t counter{};
 
-    auto LrParserGenerator::computeClosure(const LrItem &item) -> const std::vector<LrItem> &
+    auto LrParserGenerator::computeClosure(const GrammarSlot &item)
+        -> const std::vector<GrammarSlot> &
     {
         auto [it, inserted] = closureComputationCache.try_emplace(item);
 
@@ -15,7 +16,7 @@ namespace ccl::parser
 
         const auto index = item.getDotLocation();
         const auto symbol = item.at(index);
-        auto result = std::vector<LrItem>{};
+        auto result = std::vector<GrammarSlot>{};
 
         const auto has_symbol_after_current = (index + 1 == item.size());
         const auto next_symbol =
@@ -35,8 +36,8 @@ namespace ccl::parser
         return it->second;
     }
 
-    auto LrParserGenerator::computeClosureOnItems(std::vector<LrItem> s)
-        -> const std::vector<LrItem> &
+    auto LrParserGenerator::computeClosureOnItems(std::vector<GrammarSlot> s)
+        -> const std::vector<GrammarSlot> &
     {
         auto [it, inserted] = closureComputationOnItemsCache.try_emplace(s);
 

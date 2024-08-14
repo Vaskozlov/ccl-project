@@ -20,7 +20,7 @@ namespace ccl::parser
 
     public:
         explicit GlrParser(
-            const LrItem &start_item,
+            const GrammarSlot &start_item,
             Symbol epsilon_symbol,
             const GrammarStorage &parser_rules,
             std::function<std::string(SmallId)> id_to_string_converter = fmt::to_string<SmallId>);
