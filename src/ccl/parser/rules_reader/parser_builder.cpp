@@ -1,4 +1,3 @@
-#include <ccl/parser/ll/gll_parser.hpp>
 #include <ccl/parser/ll/ll_1_parser.hpp>
 #include <ccl/parser/lr/glr_parser.hpp>
 #include <ccl/parser/lr/lr_parser.hpp>
@@ -74,15 +73,10 @@ namespace ccl::parser::reader
         };
     }
 
-    auto ParserBuilder::buildGLL() -> GllParser
+    auto ParserBuilder::buildGLL() -> void
     {
         finishGrammar(Mode::LL);
-
-        return GllParser{
-            getRuleId("GOAL"),
-            grammarRulesStorage,
-            getIdToNameTranslationFunction(),
-        };
+        throw std::runtime_error{""};
     }
 
     auto ParserBuilder::finishGrammar(Mode mode) -> void
@@ -112,10 +106,10 @@ namespace ccl::parser::reader
         return rule_id;
     }
 
-    auto ParserBuilder::getStartItem() const -> LrItem
+    auto ParserBuilder::getStartItem() const -> GrammarSlot
     {
         const auto goal_id = getRuleId("GOAL");
-        auto &start_rules = grammarRulesStorage.at(goal_id);
+        const auto &start_rules = grammarRulesStorage.at(goal_id);
 
         if (start_rules.size() > 1) {
             throw std::runtime_error{"Grammar must define only one goal production."};
@@ -125,7 +119,8 @@ namespace ccl::parser::reader
             throw std::runtime_error{"No goal production found."};
         }
 
-        return LrItem{std::addressof(grammarRulesStorage.at(goal_id).front()), 0, goal_id, 0};
+        auto first_rule_it = grammarRulesStorage.at(goal_id).begin();
+        return GrammarSlot{std::addressof(*first_rule_it), 0, goal_id, 0};
     }
 
     auto

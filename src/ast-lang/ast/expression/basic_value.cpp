@@ -2,14 +2,14 @@
 
 namespace astlang::ast::expression
 {
-    auto BasicValue::optimize() -> ccl::parser::ast::UnNodePtr
+    auto BasicValue::optimize() -> ccl::parser::ast::Node *
     {
         if (size() != 1) {
             runRecursiveOptimization();
             return nullptr;
         }
 
-        auto *front_ptr = dynamic_cast<Node *>(nodes.front().get());
+        auto *front_ptr = dynamic_cast<Node *>(nodes.front());
 
         if (front_ptr == nullptr) {
             return nullptr;

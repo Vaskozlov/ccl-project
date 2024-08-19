@@ -17,14 +17,14 @@ TEST_CASE("GlrParser", "[TreeParsing]")
     auto MathLrParser = math_rules_constructor.buildGlr();
 
     auto tokenizer = lexer.getTokenizer("1*2*3+4");
-    auto parse_result = MathLrParser.parse(tokenizer);
+    auto [parse_result, storage] = MathLrParser.parse(tokenizer);
 
     for (const auto &elem : parse_result.getHead()) {
         elem->value->print("", false, math_token_to_string);
     }
 
     auto conversion_range = std::views::transform(parse_result.getHead(), [](auto &node) {
-        return node->value.get();
+        return node->value;
     });
 
     auto tree_repr = dot::createDotRepresentation(

@@ -1,6 +1,5 @@
 #include <ccl/lexer/lexical_analyzer.hpp>
 #include <ccl/lexer/tokenizer.hpp>
-#include <ccl/parser/peg_parser.hpp>
 
 namespace ccl::lexer
 {
@@ -56,19 +55,5 @@ namespace ccl::lexer
         ExceptionHandler &handler) const -> Tokenizer
     {
         return {*this, text, filename, handler};
-    }
-
-    [[nodiscard]] auto LexicalAnalyzer::getParser(
-        isl::string_view rule_name, isl::string_view text, isl::string_view filename,
-        ExceptionHandler &handler) const -> PegParser
-    {
-        return {rule_name, *this, text, filename, handler};
-    }
-
-    [[nodiscard]] auto LexicalAnalyzer::getParser(
-        isl::string_view rule_name, isl::string_view text,
-        isl::string_view filename) const -> PegParser
-    {
-        return getParser(rule_name, text, filename, exceptionHandler);
     }
 }// namespace ccl::lexer

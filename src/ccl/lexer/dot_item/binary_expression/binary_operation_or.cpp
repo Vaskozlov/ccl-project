@@ -8,16 +8,4 @@ namespace ccl::lexer::rule
             return rhsItem->scan(text_iterator);
         });
     }
-
-    auto BinaryOperationOr::parseIteration(const ForkedGenerator &text_iterator) const
-        -> ParsingResult
-    {
-        auto lhs_result = lhsItem->parse(text_iterator);
-
-        if (lhs_result.isFailure()) {
-            return rhsItem->parse(text_iterator);
-        }
-
-        return lhs_result;
-    }
 }// namespace ccl::lexer::rule

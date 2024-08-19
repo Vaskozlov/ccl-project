@@ -14,36 +14,49 @@ namespace ccl::parser
         table = ll_generator.createLl1Table();
     }
 
-    auto Ll1Parser::parse(typename ccl::lexer::LexicalAnalyzer::Tokenizer &tokenizer)
-        -> ast::UnNodePtr
+    auto Ll1Parser::parse(lexer::LexicalAnalyzer::Tokenizer &tokenizer)
+        -> std::pair<ast::Node *, isl::DynamicForwardList<ast::NodeOfNodes>>
     {
         const auto *word = std::addressof(tokenizer.yield());
         auto stack = Stack<ast::Node *>{};
-        auto goal = isl::makeUnique<ast::UnNodeSequence>(grammarGoalSymbol);
+        auto forward_list = isl::DynamicForwardList<ast::NodeOfNodes>{};
+        auto *goal = forward_list.emplaceFront<ast::NodeOfNodes>(grammarGoalSymbol);
 
         stack.emplace(nullptr);
-        stack.emplace(goal.get());
+        stack.emplace(goal);
 
         while (true) {
             auto *focus = stack.top();
 
             if (focus == nullptr && word->getId() == 0) {
-                return std::move(goal);
+                return {goal, std::move(forward_list)};
             }
 
             if (storage.isTerminal(focus->getType())) {
                 if (focus->getType() != word->getId()) {
-                    return nullptr;
+                    return {nullptr, std::move(forward_list)};
                 }
 
-                static_cast<ast::TokenNode *>(focus)->setToken(*word);
+                dynamic_cast<ast::TokenNode *>(focus)->setToken(*word);
                 stack.pop();
                 word = std::addressof(tokenizer.yield());
                 continue;
             }
 
-            const auto *rule = table.at({focus->getType(), word->getId()});
-            auto *focus_as_sequence = static_cast<ast::UnNodeSequence *>(focus);
+            const auto entry = TableEntry{
+                .state = focus->getType(),
+                .symbol = word->getId(),
+            };
+
+            auto rule_it = table.find(entry);
+
+            if (rule_it == table.end()) {
+                return {nullptr, std::move(forward_list)};
+            }
+
+            const auto *rule = rule_it->second;
+            auto *focus_as_sequence = static_cast<ast::NodeOfNodes *>(focus);
+
             stack.pop();
 
             for (auto s : *rule | std::views::reverse) {
@@ -51,13 +64,16 @@ namespace ccl::parser
                     continue;
                 }
 
+                auto *built_node = std::add_pointer_t<ast::Node>{};
+
                 if (storage.isTerminal(s)) {
-                    focus_as_sequence->addNode(isl::makeUnique<ast::TokenNode>(s));
+                    built_node = focus_as_sequence->emplaceAfter<ast::TokenNode>(s);
                 } else {
-                    focus_as_sequence->addNode(isl::makeUnique<ast::UnNodeSequence>(s));
+                    built_node = focus_as_sequence->emplaceAfter<ast::NodeOfNodes>(s);
                 }
 
-                stack.emplace(focus_as_sequence->getNodes().back().get());
+                focus_as_sequence->addNode(built_node);
+                stack.emplace(focus_as_sequence->getNodes().back());
             }
 
             focus_as_sequence->reverse();

@@ -36,9 +36,6 @@ namespace ccl::lexer::rule
         [[nodiscard]] auto
             scanIteration(const ForkedGenerator &text_iterator) const -> ScanResult override;
 
-        [[nodiscard]] auto
-            parseIteration(const ForkedGenerator &text_iterator) const -> ParsingResult override;
-
         [[nodiscard]] static auto isRange(bool is_escaping, char32_t chr) noexcept -> bool;
 
         [[nodiscard]] static auto isUnionEnd(bool is_escaping, char32_t chr) noexcept -> bool;

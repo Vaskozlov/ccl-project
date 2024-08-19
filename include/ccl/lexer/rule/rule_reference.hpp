@@ -34,9 +34,6 @@ namespace ccl::lexer::rule
 
         [[nodiscard]] auto
             scanIteration(const ForkedGenerator &text_iterator) const -> ScanResult override;
-
-        [[nodiscard]] auto
-            parseIteration(const ForkedGenerator &text_iterator) const -> ParsingResult override;
     };
 }// namespace ccl::lexer::rule
 

@@ -13,7 +13,6 @@ namespace ccl::parser
     class LrParser;
     class GlrParser;
     class Ll1Parser;
-    class GllParser;
 }// namespace ccl::parser
 
 namespace ccl::parser::reader

@@ -14,7 +14,7 @@ namespace ccl::lexer::rule
      * @tparam RT
      */
     template<typename CRTP, typename RT>
-        requires isl::DerivedOrSame<RT, ScanResult>
+        requires std::derived_from<RT, ScanResult>
     class CrtpScanner
     {
     public:

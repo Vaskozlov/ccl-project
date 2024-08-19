@@ -1,5 +1,3 @@
-#include <ccl/parser/ast/token_node.hpp>
-#include <ccl/parser/lr/glr_parser.hpp>
 #include <ccl/parser/rules_reader/ast/any_block.hpp>
 #include <ccl/parser/rules_reader/ast/lexer_block.hpp>
 #include <ccl/parser/rules_reader/ast/lexer_rule_alternative.hpp>
@@ -17,65 +15,64 @@ namespace ccl::parser::reader
 {
     template<class T>
     static const auto DefaultNodeConstructor =
-        [](Symbol production, std::vector<parser::ast::UnNodePtr> nodes) {
-            return isl::makeUnique<T>(production, std::move(nodes));
+        [](Symbol production, std::vector<parser::ast::Node *> nodes) {
+            return nodes.back()->emplaceAfter<T>(production, std::move(nodes));
         };
 
-    static const auto DefaultAppender =
-        [](Symbol /* unused */, std::vector<parser::ast::UnNodePtr> nodes) {
-            auto rule_body = std::move(nodes.front());
-            auto *casted_rule_body = isl::as<parser::ast::UnNodeSequence *>(rule_body.get());
+    static const auto DefaultAppender = [](Symbol /* unused */,
+                                           std::vector<parser::ast::Node *> nodes) {
+        auto *rule_body = nodes.front();
+        auto *casted_rule_body = isl::as<parser::ast::NodeOfNodes *>(rule_body);
+        casted_rule_body->addNode(nodes.back());
 
-            casted_rule_body->addNode(std::move(nodes.back()));
-            return rule_body;
-        };
+        return rule_body;
+    };
 
     static const auto ReplaceUpperBlockWithLastElementFromCurrent =
-        [](Symbol /* unused */, std::vector<parser::ast::UnNodePtr> nodes) {
+        [](Symbol /* unused */, std::vector<parser::ast::Node *> nodes) {
             return std::move(nodes.back());
         };
 
-    static const auto ConstructLexerGroup =
-        [](Symbol production, std::vector<parser::ast::UnNodePtr> nodes) {
-            auto result = isl::makeUnique<ast::LexerRuleBlock>(production);
+    static const auto ConstructLexerGroup = [](Symbol production,
+                                               std::vector<parser::ast::Node *> nodes) {
+        auto *result = nodes.back()->emplaceAfter<ast::LexerRuleBlock>(production);
+        result->addNode(nodes.at(1));
 
-            result->addNode(std::move(nodes.at(1)));
+        if (nodes.size() == 4) {
+            result->addNode(std::move(nodes.back()));
+        }
 
-            if (nodes.size() == 4) {
-                result->addNode(std::move(nodes.back()));
-            }
+        return result;
+    };
 
-            return result;
-        };
+    static const auto ConstructLexerRuleAlternative = [](Symbol production,
+                                                         std::vector<parser::ast::Node *> nodes) {
+        auto *lhs_node = nodes.front();
+        auto *rhs_node = nodes.back();
 
-    static const auto ConstructLexerRuleAlternative =
-        [](Symbol production, std::vector<parser::ast::UnNodePtr> nodes) {
-            auto lhs_node = std::move(nodes.front());
-            auto rhs_node = std::move(nodes.back());
+        auto *alternative =
+            lhs_node->emplaceAfter<ast::LexerRuleAlternative>(LEXER_RULE_ALTERNATIVE);
 
-            auto alternative =
-                isl::makeUnique<ast::LexerRuleAlternative>(RulesLexerToken::LEXER_RULE_ALTERNATIVE);
+        alternative->addNode(lhs_node);
+        alternative->addNode(rhs_node);
 
-            alternative->addNode(std::move(lhs_node));
-            alternative->addNode(std::move(rhs_node));
+        auto *result = alternative->emplaceAfter<ast::LexerRuleBody>(production);
+        result->addNode(alternative);
 
-            auto result = DefaultNodeConstructor<ast::LexerRuleBody>(production, {});
-            result->addNode(std::move(alternative));
-
-            return result;
-        };
+        return result;
+    };
 
     static const auto ConstructLexerRuleAlternativeWithAppend =
-        [](Symbol production, std::vector<parser::ast::UnNodePtr> nodes) {
-            auto lhs_node = std::move(nodes.at(1));
-            auto rhs_node = std::move(nodes.back());
+        [](Symbol production, std::vector<parser::ast::Node *> nodes) {
+            auto *lhs_node = nodes.at(1);
+            auto *rhs_node = nodes.back();
 
-            auto result = isl::makeUnique<ast::LexerRuleAlternative>(production);
+            auto result = lhs_node->emplaceAfter<ast::LexerRuleAlternative>(production);
 
-            result->addNode(std::move(lhs_node));
-            result->addNode(std::move(rhs_node));
+            result->addNode(lhs_node);
+            result->addNode(rhs_node);
 
-            auto front_node = std::move(nodes.front());
+            auto *front_node = nodes.front();
 
             nodes.clear();
             nodes.emplace_back(std::move(front_node));
@@ -85,379 +82,372 @@ namespace ccl::parser::reader
         };
 
     static const auto ConstructParserRuleAlternative =
-        [](Symbol /* unused */, std::vector<parser::ast::UnNodePtr> nodes)
-        -> parser::ast::UnNodePtr {
-        auto first_node = std::move(nodes.front());
-
+        [](Symbol /* unused */, std::vector<parser::ast::Node *> nodes) -> parser::ast::Node * {
+        auto *first_node = nodes.front();
         auto *first_node_as_rule_alternative =
-            isl::as<ast::ParserRuleAlternatives *>(first_node.get());
+            dynamic_cast<ast::ParserRuleAlternatives *>(first_node);
 
-        auto rhs_rule_body =
-            isl::makeUnique<ast::ParserRuleBody>(RulesLexerToken::PARSER_RULE_BODY);
+        auto *rhs_rule_body = first_node->emplaceAfter<ast::ParserRuleBody>(PARSER_RULE_BODY);
 
-        rhs_rule_body->addNode(std::move(nodes.back()));
+        rhs_rule_body->addNode(nodes.back());
 
         if (first_node_as_rule_alternative == nullptr) {
-            auto result = isl::makeUnique<ast::ParserRuleAlternatives>(PARSER_RULE_ALTERNATIVE);
+            auto *result =
+                rhs_rule_body->emplaceAfter<ast::ParserRuleAlternatives>(PARSER_RULE_ALTERNATIVE);
 
-            result->addNode(std::move(first_node));
-            result->addNode(std::move(rhs_rule_body));
+            result->addNode(first_node);
+            result->addNode(rhs_rule_body);
 
             return result;
         }
 
         first_node_as_rule_alternative->addNode(std::move(rhs_rule_body));
-
         return first_node;
     };
 
     template<class T>
     static const auto AppendToTheLastNodeIfTElseDefaultAppend =
-        [](ccl::parser::Symbol production, std::vector<ccl::parser::ast::UnNodePtr> nodes) {
+        [](Symbol production, std::vector<parser::ast::Node *> nodes) {
             auto &rule_body = nodes.front();
-            auto *casted_rule_body = isl::as<T *>(rule_body.get());
+            auto *casted_rule_body = isl::as<T *>(rule_body);
 
             if (casted_rule_body == nullptr) {
                 return DefaultAppender(production, std::move(nodes));
             }
 
-            auto *casted_last_node =
-                isl::as<parser::ast::UnNodeSequence *>(casted_rule_body->back());
-
-            casted_last_node->addNode(std::move(nodes.back()));
+            auto *casted_last_node = isl::as<parser::ast::NodeOfNodes *>(casted_rule_body->back());
+            casted_last_node->addNode(nodes.back());
 
             return std::move(rule_body);
         };
 
 
-    using Rule = ccl::parser::Rule;
-
     static const GrammarStorage RulesGrammar{
         true,
-        RulesLexerToken::EPSILON,
+        EPSILON,
         {
             {
-                RulesLexerToken::GOAL,
+                GOAL,
                 {
                     Rule{
                         {
-                            RulesLexerToken::ANY_BLOCK,
+                            ANY_BLOCK,
                         },
                     },
                 },
             },
             {
-                RulesLexerToken::ANY_BLOCK,
+                ANY_BLOCK,
                 {
                     Rule{
                         {
-                            RulesLexerToken::LEXER_BLOCK_DEFINITION,
+                            LEXER_BLOCK_DEFINITION,
                         },
                         DefaultNodeConstructor<ast::AnyBlock>,
                     },
                     Rule{
                         {
-                            RulesLexerToken::PARSER_BLOCK_DEFINITION,
+                            PARSER_BLOCK_DEFINITION,
                         },
                         DefaultNodeConstructor<ast::AnyBlock>,
                     },
 
                     Rule{
                         {
-                            RulesLexerToken::ANY_BLOCK,
-                            RulesLexerToken::LEXER_BLOCK_DEFINITION,
+                            ANY_BLOCK,
+                            LEXER_BLOCK_DEFINITION,
                         },
                         DefaultAppender,
                     },
                     Rule{
                         {
-                            RulesLexerToken::ANY_BLOCK,
-                            RulesLexerToken::PARSER_BLOCK_DEFINITION,
+                            ANY_BLOCK,
+                            PARSER_BLOCK_DEFINITION,
                         },
                         DefaultAppender,
                     },
                 },
             },
             {
-                RulesLexerToken::LEXER_BLOCK_DEFINITION,
+                LEXER_BLOCK_DEFINITION,
                 {
                     Rule{
                         {
-                            RulesLexerToken::LEXER_START,
-                            RulesLexerToken::LEXER_BLOCK,
+                            LEXER_START,
+                            LEXER_BLOCK,
                         },
                         ReplaceUpperBlockWithLastElementFromCurrent,
                     },
                 },
             },
             {
-                RulesLexerToken::LEXER_BLOCK,
+                LEXER_BLOCK,
                 {
                     Rule{
                         {
-                            RulesLexerToken::LEXER_RULE_DECL,
+                            LEXER_RULE_DECL,
                         },
                         DefaultNodeConstructor<ast::LexerBlock>,
                     },
                     Rule{
                         {
-                            RulesLexerToken::LEXER_BLOCK,
-                            RulesLexerToken::LEXER_RULE_DECL,
+                            LEXER_BLOCK,
+                            LEXER_RULE_DECL,
                         },
                         DefaultAppender,
                     },
                 },
             },
             {
-                RulesLexerToken::LEXER_RULE_DECL,
+                LEXER_RULE_DECL,
                 {
                     Rule{
                         {
-                            RulesLexerToken::RULE_IDENTIFIER,
-                            RulesLexerToken::LEXER_RULE_BODY,
+                            RULE_IDENTIFIER,
+                            LEXER_RULE_BODY,
                         },
                         DefaultNodeConstructor<ast::LexerRuleDecl>,
                     },
                     Rule{
                         {
-                            RulesLexerToken::RULE_IDENTIFIER,
-                            RulesLexerToken::EXCLAMATION_POINT,
-                            RulesLexerToken::LEXER_RULE_BODY,
+                            RULE_IDENTIFIER,
+                            EXCLAMATION_POINT,
+                            LEXER_RULE_BODY,
                         },
                         DefaultNodeConstructor<ast::LexerRuleDecl>,
                     },
                 },
             },
             {
-                RulesLexerToken::LEXER_RULE_BODY,
+                LEXER_RULE_BODY,
                 {
                     Rule{
                         {
-                            RulesLexerToken::LEXER_RULE_BLOCK,
+                            LEXER_RULE_BLOCK,
                         },
                         DefaultNodeConstructor<ast::LexerRuleBody>,
                     },
                     Rule{
                         {
-                            RulesLexerToken::LEXER_RULE_BODY,
-                            RulesLexerToken::LEXER_RULE_BLOCK,
+                            LEXER_RULE_BODY,
+                            LEXER_RULE_BLOCK,
                         },
                         DefaultAppender,
                     },
                     Rule{
                         {
-                            RulesLexerToken::LEXER_RULE_BODY,
-                            RulesLexerToken::OR,
-                            RulesLexerToken::LEXER_RULE_BLOCK,
+                            LEXER_RULE_BODY,
+                            OR,
+                            LEXER_RULE_BLOCK,
                         },
                         ConstructLexerRuleAlternative,
                     },
                 },
             },
             {
-                RulesLexerToken::LEXER_RULE_BLOCK,
+                LEXER_RULE_BLOCK,
                 {
                     Rule{
                         {
-                            RulesLexerToken::UNION,
-                            RulesLexerToken::LEXER_RULE_OPTIONS,
+                            UNION,
+                            LEXER_RULE_OPTIONS,
                         },
                         DefaultNodeConstructor<ast::LexerRuleBlock>,
                     },
                     Rule{
                         {
-                            RulesLexerToken::STRING,
-                            RulesLexerToken::LEXER_RULE_OPTIONS,
+                            STRING,
+                            LEXER_RULE_OPTIONS,
                         },
                         DefaultNodeConstructor<ast::LexerRuleBlock>,
                     },
                     Rule{
                         {
-                            RulesLexerToken::RULE_REFERENCE,
-                            RulesLexerToken::LEXER_RULE_OPTIONS,
+                            RULE_REFERENCE,
+                            LEXER_RULE_OPTIONS,
                         },
                         DefaultNodeConstructor<ast::LexerRuleBlock>,
                     },
                     Rule{
                         {
-                            RulesLexerToken::ANGLE_OPEN,
-                            RulesLexerToken::LEXER_RULE_BODY,
-                            RulesLexerToken::ANGLE_CLOSE,
-                            RulesLexerToken::LEXER_RULE_OPTIONS,
+                            ANGLE_OPEN,
+                            LEXER_RULE_BODY,
+                            ANGLE_CLOSE,
+                            LEXER_RULE_OPTIONS,
                         },
                         ConstructLexerGroup,
                     },
                 },
             },
             {
-                RulesLexerToken::LEXER_RULE_OPTIONS,
+                LEXER_RULE_OPTIONS,
                 {
                     Rule{
                         {
-                            RulesLexerToken::EPSILON,
+                            EPSILON,
                         },
                         DefaultNodeConstructor<ast::LexerRuleOptions>,
                     },
                     Rule{
                         {
-                            RulesLexerToken::PLUS,
-                            RulesLexerToken::LEXER_RULE_OPTIONS,
+                            PLUS,
+                            LEXER_RULE_OPTIONS,
                         },
                         DefaultNodeConstructor<ast::LexerRuleOptions>,
                     },
                     Rule{
                         {
-                            RulesLexerToken::STAR,
-                            RulesLexerToken::LEXER_RULE_OPTIONS,
+                            STAR,
+                            LEXER_RULE_OPTIONS,
                         },
                         DefaultNodeConstructor<ast::LexerRuleOptions>,
                     },
                     Rule{
                         {
-                            RulesLexerToken::PREFIX_POSTFIX_OPERATOR,
-                            RulesLexerToken::LEXER_RULE_OPTIONS,
+                            PREFIX_POSTFIX_OPERATOR,
+                            LEXER_RULE_OPTIONS,
                         },
                         DefaultNodeConstructor<ast::LexerRuleOptions>,
                     },
                     Rule{
                         {
-                            RulesLexerToken::HIDE_OPERATOR,
-                            RulesLexerToken::LEXER_RULE_OPTIONS,
+                            HIDE_OPERATOR,
+                            LEXER_RULE_OPTIONS,
                         },
                         DefaultNodeConstructor<ast::LexerRuleOptions>,
                     },
                     Rule{
                         {
-                            RulesLexerToken::NOT_OPERATOR,
-                            RulesLexerToken::LEXER_RULE_OPTIONS,
+                            NOT_OPERATOR,
+                            LEXER_RULE_OPTIONS,
                         },
                         DefaultNodeConstructor<ast::LexerRuleOptions>,
                     },
                     Rule{
                         {
-                            RulesLexerToken::CURLY_OPEN,
-                            RulesLexerToken::NUMBER,
-                            RulesLexerToken::CURLY_CLOSE,
-                            RulesLexerToken::LEXER_RULE_OPTIONS,
+                            CURLY_OPEN,
+                            NUMBER,
+                            CURLY_CLOSE,
+                            LEXER_RULE_OPTIONS,
                         },
                     },
                     Rule{
                         {
-                            RulesLexerToken::CURLY_OPEN,
-                            RulesLexerToken::NUMBER,
-                            RulesLexerToken::COMMA,
-                            RulesLexerToken::NUMBER,
-                            RulesLexerToken::CURLY_CLOSE,
-                            RulesLexerToken::LEXER_RULE_OPTIONS,
+                            CURLY_OPEN,
+                            NUMBER,
+                            COMMA,
+                            NUMBER,
+                            CURLY_CLOSE,
+                            LEXER_RULE_OPTIONS,
                         },
                     },
                 },
             },
             {
-                RulesLexerToken::PARSER_BLOCK_DEFINITION,
+                PARSER_BLOCK_DEFINITION,
                 {
                     Rule{
                         {
-                            RulesLexerToken::PARSER_START,
-                            RulesLexerToken::PARSER_BLOCK,
+                            PARSER_START,
+                            PARSER_BLOCK,
                         },
                         ReplaceUpperBlockWithLastElementFromCurrent,
                     },
                 },
             },
             {
-                RulesLexerToken::PARSER_BLOCK,
+                PARSER_BLOCK,
                 {
                     Rule{
                         {
-                            RulesLexerToken::PARSER_RULE_DECL,
+                            PARSER_RULE_DECL,
                         },
                         DefaultNodeConstructor<ast::ParserBlock>,
                     },
                     Rule{
                         {
-                            RulesLexerToken::PARSER_BLOCK,
-                            RulesLexerToken::PARSER_RULE_DECL,
+                            PARSER_BLOCK,
+                            PARSER_RULE_DECL,
                         },
                         DefaultAppender,
                     },
                 },
             },
             {
-                RulesLexerToken::PARSER_RULE_DECL,
+                PARSER_RULE_DECL,
                 {
                     Rule{
                         {
-                            RulesLexerToken::RULE_IDENTIFIER,
-                            RulesLexerToken::PARSER_RULE_BODY,
+                            RULE_IDENTIFIER,
+                            PARSER_RULE_BODY,
                         },
                         DefaultNodeConstructor<ast::ParserRuleDecl>,
                     },
                 },
             },
             {
-                RulesLexerToken::PARSER_RULE_BODY,
+                PARSER_RULE_BODY,
                 {
                     Rule{
                         {
-                            RulesLexerToken::IDENTIFIER,
+                            IDENTIFIER,
                         },
                         DefaultNodeConstructor<ast::ParserRuleBody>,
                     },
                     Rule{
                         {
-                            RulesLexerToken::STRING,
+                            STRING,
                         },
                         DefaultNodeConstructor<ast::ParserRuleBody>,
                     },
                     Rule{
                         {
-                            RulesLexerToken::ANY_PLACE_STRING,
+                            ANY_PLACE_STRING,
                         },
                         DefaultNodeConstructor<ast::ParserRuleBody>,
                     },
                     Rule{
                         {
-                            RulesLexerToken::PARSER_RULE_BODY,
-                            RulesLexerToken::IDENTIFIER,
+                            PARSER_RULE_BODY,
+                            IDENTIFIER,
                         },
                         AppendToTheLastNodeIfTElseDefaultAppend<ast::ParserRuleAlternatives>,
                     },
                     Rule{
                         {
-                            RulesLexerToken::PARSER_RULE_BODY,
-                            RulesLexerToken::STRING,
+                            PARSER_RULE_BODY,
+                            STRING,
                         },
                         AppendToTheLastNodeIfTElseDefaultAppend<ast::ParserRuleAlternatives>,
                     },
                     Rule{
                         {
-                            RulesLexerToken::PARSER_RULE_BODY,
-                            RulesLexerToken::ANY_PLACE_STRING,
+                            PARSER_RULE_BODY,
+                            ANY_PLACE_STRING,
                         },
                         AppendToTheLastNodeIfTElseDefaultAppend<ast::ParserRuleAlternatives>,
                     },
                     Rule{
                         {
-                            RulesLexerToken::PARSER_RULE_BODY,
-                            RulesLexerToken::OR,
-                            RulesLexerToken::IDENTIFIER,
+                            PARSER_RULE_BODY,
+                            OR,
+                            IDENTIFIER,
                         },
                         ConstructParserRuleAlternative,
                     },
                     Rule{
                         {
-                            RulesLexerToken::PARSER_RULE_BODY,
-                            RulesLexerToken::OR,
-                            RulesLexerToken::STRING,
+                            PARSER_RULE_BODY,
+                            OR,
+                            STRING,
                         },
                         ConstructParserRuleAlternative,
                     },
                     Rule{
                         {
-                            RulesLexerToken::PARSER_RULE_BODY,
-                            RulesLexerToken::OR,
-                            RulesLexerToken::ANY_PLACE_STRING,
+                            PARSER_RULE_BODY,
+                            OR,
+                            ANY_PLACE_STRING,
                         },
                         ConstructParserRuleAlternative,
                     },
@@ -472,19 +462,17 @@ namespace ccl::parser::reader
             ReaderOption::SUGGESTIONS_ENABLE,
         }
     {
-        static auto initial_rule = Rule{{RulesLexerToken::ANY_BLOCK}};
+        static auto initial_rule = Rule{{ANY_BLOCK}};
 
-        auto start_item = GrammarSlot{
-            std::addressof(initial_rule), 0, RulesLexerToken::GOAL, RulesLexerToken::EOI};
+        auto start_item = GrammarSlot{std::addressof(initial_rule), 0, GOAL, EOI};
 
         auto tokenizer = RulesLexer.getTokenizer(input, filename);
-        auto lr_parser =
-            LrParser(start_item, RulesLexerToken::EPSILON, RulesGrammar, [](auto elem) {
-                return std::string{ToStringRulesLexerToken.at(elem)};
-            });
+        auto lr_parser = LrParser(start_item, EPSILON, RulesGrammar, [](auto elem) {
+            return std::string{ToStringRulesLexerToken.at(elem)};
+        });
 
-        auto node = lr_parser.parse(tokenizer);
-        dynamic_cast<ast::RulesReaderNode *>(node.get())->construct(rulesConstructor);
+        const auto [node, storage] = lr_parser.parse(tokenizer);
+        dynamic_cast<ast::RulesReaderNode *>(node)->construct(rulesConstructor);
     }
 
     auto RulesReader::getParserBuilder() -> ParserBuilder &

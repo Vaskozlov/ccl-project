@@ -1,9 +1,7 @@
 #ifndef CCL_PROJECT_LEXER_RULE_OPTIONS_HPP
 #define CCL_PROJECT_LEXER_RULE_OPTIONS_HPP
 
-#include <ccl/parser/ast/string_node.hpp>
 #include <ccl/parser/rules_reader/ast/rules_reader_node.hpp>
-#include <ccl/parser/rules_reader/rules_lexer.hpp>
 
 namespace ccl::parser::reader::ast
 {

@@ -6,10 +6,10 @@ namespace astlang::ast::statement::if_statement
     auto IfStatement::compute(Interpreter &interpreter) const -> EvaluationResult
     {
         for (const auto &node : nodes) {
-            auto node_ptr = ConstNodePtr{node.get()};
-            auto result = node_ptr.astlangNode->compute(interpreter);
+            const auto node_ptr = ConstNodePtr{node};
 
-            if (result.type != interpreter::Type::ERROR) {
+            if (auto result = node_ptr.astlangNode->compute(interpreter);
+                result.type != interpreter::Type::ERROR) {
                 return result;
             }
         }

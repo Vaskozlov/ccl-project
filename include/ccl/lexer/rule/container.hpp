@@ -1,6 +1,7 @@
 #ifndef CCL_PROJECT_CONTAINER_HPP
 #define CCL_PROJECT_CONTAINER_HPP
 
+#include <ccl/lexer/token.hpp>
 #include <ccl/lexer/rule/binary_expression/binary_expression_base.hpp>
 #include <ccl/lexer/rule/closure.hpp>
 #include <ccl/lexer/rule/rule_block_interface.hpp>
@@ -62,9 +63,6 @@ namespace ccl::lexer::rule
 
         [[nodiscard]] auto
             scanIteration(const ForkedGenerator &text_iterator) const -> ScanResult override;
-
-        [[nodiscard]] auto
-            parseIteration(const ForkedGenerator &text_iterator) const -> ParsingResult override;
 
         [[nodiscard]] auto operator==(const Container &other) const noexcept -> bool
         {

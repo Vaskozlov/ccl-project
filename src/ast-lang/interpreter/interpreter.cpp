@@ -180,13 +180,14 @@ namespace astlang::interpreter
 
                     for (auto &element : *value_ptr) {
                         auto arguments = FunctionCallArguments{};
-                        arguments.emplace_back(EvaluationResult{
-                            .value = isl::UniqueAny{std::addressof(element)},
-                            .type = element.type,
-                            .storesReference = true,
-                        });
+                        arguments.emplace_back(
+                            EvaluationResult{
+                                .value = isl::UniqueAny{std::addressof(element)},
+                                .type = element.type,
+                                .storesReference = true,
+                            });
 
-                        [[maybe_unused]] auto _ = interpreter.call("print", std::move(arguments));
+                        std::ignore = interpreter.call("print", std::move(arguments));
                         fmt::print(", ");
                     }
 

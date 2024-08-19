@@ -19,12 +19,14 @@ namespace ccl::parser
         actionTable = parser_generator.getLrActionTable();
     }
 
-    auto LrParser::parse(lexer::LexicalAnalyzer::Tokenizer &tokenizer) const -> ast::UnNodePtr
+    auto LrParser::parse(lexer::LexicalAnalyzer::Tokenizer &tokenizer) const
+        -> std::pair<ast::Node *, isl::DynamicForwardList<ast::Node>>
     {
         using enum ccl::parser::ParsingAction;
 
         auto state_stack = Stack<State>{};
-        auto nodes_stack = Stack<ast::UnNodePtr>{};
+        auto nodes_stack = Stack<ast::Node *>{};
+        auto forward_list = isl::DynamicForwardList<ast::Node>{};
         const auto *word = &tokenizer.yield();
 
         state_stack.push(0);
@@ -37,14 +39,15 @@ namespace ccl::parser
             };
 
             if (!actionTable.contains(entry)) {
-                return nullptr;
+                return {nullptr, std::move(forward_list)};
             }
 
             const auto &action = actionTable.at(entry);
 
             switch (action.getParsingAction()) {
             case SHIFT:
-                nodes_stack.emplace(isl::makeUnique<ast::TokenNode>(word->getId(), *word));
+                nodes_stack.emplace(
+                    forward_list.emplaceFront<ast::TokenNode>(word->getId(), *word));
                 state_stack.emplace(action.getShiftingState());
                 word = &tokenizer.yield();
                 break;
@@ -54,7 +57,7 @@ namespace ccl::parser
                 break;
 
             case ACCEPT:
-                return std::move(nodes_stack.top());
+                return {nodes_stack.top(), std::move(forward_list)};
 
             default:
                 isl::unreachable();
@@ -65,15 +68,15 @@ namespace ccl::parser
     auto LrParser::reduceAction(
         const Action &action,
         Stack<State> &state_stack,
-        Stack<ast::UnNodePtr> &nodes_stack) const -> void
+        Stack<ast::Node *> &nodes_stack) const -> void
     {
         const auto &lr_item = action.getReducingItem();
         const auto production = lr_item.getProductionType();
-        auto items_in_production = std::vector<ast::UnNodePtr>();
+        auto items_in_production = std::vector<ast::Node *>();
         const auto number_of_elements_to_take_from_stack = lr_item.size();
 
         for (std::size_t i = 0; i != number_of_elements_to_take_from_stack; ++i) {
-            items_in_production.emplace_back(std::move(nodes_stack.top()));
+            items_in_production.emplace_back(nodes_stack.top());
             nodes_stack.pop();
             state_stack.pop();
         }
@@ -81,8 +84,7 @@ namespace ccl::parser
         std::ranges::reverse(items_in_production);
 
         const auto *rule = lr_item.getRulePtr();
-        auto reduced_item =
-            rule->template construct<isl::UniquePtr>(production, std::move(items_in_production));
+        auto reduced_item = rule->construct(production, std::move(items_in_production));
 
         nodes_stack.emplace(std::move(reduced_item));
         state_stack.emplace(gotoTable.at({

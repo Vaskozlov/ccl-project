@@ -81,9 +81,8 @@ namespace ccl::parser::ll
     auto LlParserGenerator::insertIntoTable(TableEntry entry, const Rule *rule) -> void
     {
         auto [it, inserted] = table.try_emplace(entry);
-        auto &vec = it->second;
 
-        if (std::ranges::find(vec, rule) == vec.end()) {
+        if (auto &vec = it->second; std::ranges::find(vec, rule) == vec.end()) {
             vec.emplace_back(rule);
         }
     }

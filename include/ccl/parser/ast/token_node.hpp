@@ -1,6 +1,7 @@
 #ifndef CCL_PROJECT_TOKEN_NODE_HPP
 #define CCL_PROJECT_TOKEN_NODE_HPP
 
+#include <ccl/lexer/token.hpp>
 #include <ccl/parser/ast/node.hpp>
 
 namespace ccl::parser::ast

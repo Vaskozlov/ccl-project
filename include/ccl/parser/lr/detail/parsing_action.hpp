@@ -11,14 +11,13 @@ namespace ccl::parser
         REDUCE,
         ACCEPT,
         FAILED,
-        JOINED
+        JOINED,
     };
 }
 
 template<>
-class fmt::formatter<ccl::parser::ParsingAction> : public fmt::formatter<std::string_view>
+struct fmt::formatter<ccl::parser::ParsingAction> : public fmt::formatter<std::string_view>
 {
-public:
     template<typename FmtContext>
     constexpr auto
         format(ccl::parser::ParsingAction action, FmtContext &ctx) const -> decltype(auto)

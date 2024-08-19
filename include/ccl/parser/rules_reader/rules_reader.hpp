@@ -1,10 +1,8 @@
 #ifndef CCL_PROJECT_RULES_READER_HPP
 #define CCL_PROJECT_RULES_READER_HPP
 
-#include <ccl/parser/lr/lr_parser.hpp>
 #include <ccl/parser/rules_reader/parser_builder.hpp>
 #include <ccl/parser/rules_reader/reader_options.hpp>
-#include <ccl/parser/rules_reader/rules_lexer.hpp>
 
 namespace ccl::parser::reader
 {

@@ -1,3 +1,4 @@
+#include <ccl/parser/ast/token_node.hpp>
 #include <ccl/parser/rules_reader/ast/parser_rule_decl.hpp>
 
 namespace ccl::parser::reader::ast
@@ -11,10 +12,10 @@ namespace ccl::parser::reader::ast
         return token.getPrefixes().front();
     }
 
-    auto ParserRuleDecl::getAlternatives() const -> const ast::ParserRuleAlternatives *
+    auto ParserRuleDecl::getAlternatives() const -> const ParserRuleAlternatives *
     {
         const auto *value_node = this->back();
-        return dynamic_cast<const ast::ParserRuleAlternatives *>(value_node);
+        return dynamic_cast<const ParserRuleAlternatives *>(value_node);
     }
 
     auto ParserRuleDecl::construct(ParserBuilder &parser_builder) const -> isl::UniqueAny
@@ -28,7 +29,7 @@ namespace ccl::parser::reader::ast
                 static_cast<const RulesReaderNode *>(back())->construct(parser_builder);
             auto rule = isl::get<std::vector<SmallId>>(not_casted_rule);
 
-            parser_builder.addParserRule(production_id, parser::Rule{{rule}});
+            parser_builder.addParserRule(production_id, Rule{{rule}});
             return std::nullopt;
         }
 
@@ -36,7 +37,7 @@ namespace ccl::parser::reader::ast
         const auto rules = isl::get<std::vector<std::vector<SmallId>>>(not_casted_rules);
 
         for (const auto &alternative : rules) {
-            parser_builder.addParserRule(production_id, parser::Rule{alternative});
+            parser_builder.addParserRule(production_id, Rule{alternative});
         }
 
         return std::nullopt;

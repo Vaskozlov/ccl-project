@@ -16,7 +16,11 @@ namespace ccl::parser::detail
             auto has_inserted_element = false;
 
             for (auto &&elem : range) {
-                auto [it, has_inserted] = set.insert(std::forward<decltype(elem)>(elem));
+                auto has_inserted = false;
+
+                std::tie(std::ignore, has_inserted) =
+                    set.insert(std::forward<decltype(elem)>(elem));
+
                 has_inserted_element = has_inserted || has_inserted_element;
             }
 

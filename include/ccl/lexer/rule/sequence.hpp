@@ -52,9 +52,6 @@ namespace ccl::lexer::rule
             scanIteration(const ForkedGenerator &text_iterator) const -> ScanResult override;
 
         [[nodiscard]] auto
-            parseIteration(const ForkedGenerator &text_iterator) const -> ParsingResult override;
-
-        [[nodiscard]] auto
             isStringEnd(const TextIterator &rule_iterator, bool is_escaping) const -> bool;
 
         auto skipStringDefinition(TextIterator &rule_iterator) const -> void;

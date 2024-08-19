@@ -1,6 +1,5 @@
 #include <ccl/lexer/rule/rule_block_interface.hpp>
 #include <ccl/lexer/rule/scanner_template.hpp>
-#include <ccl/parser/ast/node_sequence.hpp>
 #include <ccl/parser/ast/string_node.hpp>
 
 namespace ccl::lexer::rule
@@ -26,45 +25,6 @@ namespace ccl::lexer::rule
         }
     };
 
-    class ParserScanner : public CrtpScanner<ParserScanner, ParsingResult>
-    {
-    public:
-        using CrtpScanner<ParserScanner, ParsingResult>::CrtpScanner;
-
-    private:
-        isl::UniquePtr<parser::ast::UnNodeSequence> nodeSequence =
-            isl::makeUnique<parser::ast::UnNodeSequence>(item.getId());
-        isl::string_view textBegin = textIterator.getRemaining();
-
-    public:
-        auto onIteration(ParsingResult &result) -> void
-        {
-            if (result.getNode() != nullptr) {
-                nodeSequence->joinWithNode(result.getAndReleaseNode());
-            }
-        }
-
-        [[nodiscard]] auto
-            scanIteration(const RuleBlockInterface &item_concept) const -> ParsingResult
-        {
-            return item_concept.parseIteration(textIterator);
-        }
-
-        [[nodiscard]] auto constructResult(std::size_t totally_skipped) -> ParsingResult
-        {
-            if (nodeSequence->empty()) {
-                const auto node_repr =
-                    isl::string_view{textBegin.begin(), textIterator.getRemainingAsCarriage()};
-
-                return ParsingResult{
-                    totally_skipped,
-                    isl::makeUnique<parser::ast::StringNode>(item.getId(), node_repr)};
-            }
-
-            return ParsingResult{totally_skipped, std::move(nodeSequence)};
-        }
-    };
-
     auto RuleBlockInterface::alwaysRecognizedSuggestion(TextIterator &text_iterator, bool condition)
         -> void
     {
@@ -86,10 +46,5 @@ namespace ccl::lexer::rule
     auto RuleBlockInterface::scan(ForkedGenerator text_iterator) const -> ScanResult
     {
         return LexerScanner(closure, *this, text_iterator).scan();
-    }
-
-    auto RuleBlockInterface::parse(ForkedGenerator text_iterator) const -> ParsingResult
-    {
-        return ParserScanner(closure, *this, text_iterator).scan();
     }
 }// namespace ccl::lexer::rule

@@ -7,7 +7,7 @@
 namespace ccl::parser
 {
     using namespace detail;
-    using enum ccl::parser::ParsingAction;
+    using enum ParsingAction;
 
     static auto joinStacks(std::forward_list<GSStack> &accepted_stacks) -> GSStack
     {
@@ -20,10 +20,8 @@ namespace ccl::parser
         return front_stack;
     }
 
-    static auto pollRunners(
-        detail::RunnersCommon &common,
-        std::forward_list<GlrRunner> &parsing_runners) -> void
-    {
+    static auto
+    pollRunners(RunnersCommon&common, std::forward_list<GlrRunner>&parsing_runners) -> void {
         std::erase_if(parsing_runners, [&common](GlrRunner &runner) {
             const auto polling_result = runner.poll();
             const auto *stack_ptr = std::addressof(runner.nodeStack);
@@ -40,7 +38,7 @@ namespace ccl::parser
     }
 
     static auto newWordIteration(
-        detail::RunnersCommon &common,
+        RunnersCommon&common,
         std::forward_list<GlrRunner> &parsing_runners) -> void
     {
         pollRunners(common, parsing_runners);
@@ -74,8 +72,10 @@ namespace ccl::parser
         actionTable = parser_generator.getGlrActionTable();
     }
 
-    auto GlrParser::parse(lexer::LexicalAnalyzer::Tokenizer &tokenizer) const -> GSStack
+    auto GlrParser::parse(lexer::LexicalAnalyzer::Tokenizer &tokenizer) const
+        -> std::pair<GSStack, isl::DynamicForwardList<ast::Node>>
     {
+        auto forward_list = isl::DynamicForwardList<ast::Node>{};
         auto common = RunnersCommon{
             .idToStringConverter = idToStringConverter,
             .gotoTable = gotoTable,
@@ -84,9 +84,10 @@ namespace ccl::parser
 
         auto parsing_runners = std::forward_list<GlrRunner>{};
 
-        parsing_runners.emplace_front(GlrRunner{
-            .common = std::addressof(common),
-        });
+        parsing_runners.emplace_front(
+            GlrRunner{
+                .common = std::addressof(common),
+            });
 
         common.stacks.emplace_front(std::addressof(parsing_runners.front().nodeStack));
         parsing_runners.front().stateStack.emplace(0);
@@ -95,10 +96,10 @@ namespace ccl::parser
 
         do {
             new_token = &tokenizer.yield();
-            common.word = isl::makeShared<ast::TokenNode>(new_token->getId(), *new_token);
+            common.word = forward_list.emplaceFront<ast::TokenNode>(new_token->getId(), *new_token);
             newWordIteration(common, parsing_runners);
         } while (new_token->getId() != 0);
 
-        return joinStacks(common.acceptedStacks);
+        return {joinStacks(common.acceptedStacks), std::move(forward_list)};
     }
 }// namespace ccl::parser

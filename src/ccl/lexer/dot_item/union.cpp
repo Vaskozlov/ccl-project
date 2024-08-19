@@ -17,6 +17,7 @@ namespace ccl::lexer::rule
         auto is_range = false;
         auto previous_chr = U'\0';
         [[maybe_unused]] auto skip_union_angle_open = text_iterator.advance();
+
         auto result = isl::Pair<
             std::bitset<isl::UtfSet::asciiStorageSize>, std::vector<isl::Range<char32_t>>>{};
 
@@ -95,17 +96,6 @@ namespace ccl::lexer::rule
         return storedSymbols.at(text_iterator.futureChar()) != isReversed()
                    ? ScanResult{isl::utf8::size(text_iterator.getNextCarriageValue())}
                    : ScanResult::failure();
-    }
-
-    auto Union::parseIteration(const ForkedGenerator &text_iterator) const -> ParsingResult
-    {
-        const auto result = scanIteration(text_iterator);
-
-        if (result.isFailure()) {
-            return ParsingResult::failure();
-        }
-
-        return ParsingResult{result.getBytesCount(), nullptr};
     }
 
     CCL_INLINE auto Union::isRange(bool is_escaping, char32_t chr) noexcept -> bool

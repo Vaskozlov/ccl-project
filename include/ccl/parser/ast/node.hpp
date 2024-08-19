@@ -2,19 +2,20 @@
 #define CCL_PROJECT_NODE_HPP
 
 #include <ccl/ccl.hpp>
-#include <ccl/lexer/token.hpp>
 #include <functional>
+#include <isl/dynamic_forward_list.hpp>
 #include <isl/gss.hpp>
 
 namespace ccl::parser::ast
 {
-    class Node
+    class Node : public isl::DynamicForwardListNode
     {
     private:
         SmallId nodeType{};
 
     protected:
         static auto getPrintingPrefix(const std::string &prefix, bool is_left) -> std::string;
+
         static auto expandPrefix(
             const std::string &prefix, bool is_left, size_t extra_expansion = 1) -> std::string;
 
@@ -44,15 +45,12 @@ namespace ccl::parser::ast
                 return fmt::to_string(arg);
             }) const -> void = 0;
     };
-
-    using UnNodePtr = isl::UniquePtr<Node>;
-    using ShNodePtr = isl::SharedPtr<Node>;
 }// namespace ccl::parser::ast
 
 namespace ccl::parser
 {
-    using GSStack = isl::GSStack<ast::ShNodePtr>;
-    using GSSNode = isl::GSSNode<ast::ShNodePtr>;
+    using GSStack = isl::GSStack<ast::Node *>;
+    using GSSNode = isl::GSSNode<ast::Node *>;
 }// namespace ccl::parser
 
 #endif /* CCL_PROJECT_NODE_HPP */

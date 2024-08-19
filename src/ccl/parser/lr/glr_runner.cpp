@@ -1,11 +1,10 @@
-#include "ccl/parser/lr/detail/glr_runner.hpp"
-#include "ccl/parser/ast/node_sequence.hpp"
 #include <ccl/parser/dot/dot_repr.hpp>
+#include <ccl/parser/lr/detail/glr_runner.hpp>
 #include <isl/thread/id_generator.hpp>
 
 namespace ccl::parser::detail
 {
-    using enum ccl::parser::ParsingAction;
+    using enum ParsingAction;
 
     static constexpr auto debugOutputEnabled = true;
     isl::thread::IdGenerator<SmallId> GlrRunner::runnerIdGenerator{0};
@@ -23,8 +22,8 @@ namespace ccl::parser::detail
                     std::filesystem::create_directories(output_dir);
                 }
 
-                auto converted = isl::dot::createDotRepresentation<ast::ShNodePtr>(
-                    runner.nodeStack, [&runner](const ast::ShNodePtr &node) {
+                auto converted = isl::dot::createDotRepresentation<ast::Node *>(
+                    runner.nodeStack, [&runner](const ast::Node *node) {
                         return runner.common->idToStringConverter(node->getType());
                     });
 
@@ -119,7 +118,7 @@ namespace ccl::parser::detail
             production,
         });
 
-        auto reducer = [&rule, production](std::vector<ast::ShNodePtr> nodes) {
+        auto reducer = [&rule, production](std::vector<ast::Node *> nodes) {
             std::ranges::reverse(nodes);
             return rule->construct(production, std::move(nodes));
         };

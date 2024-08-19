@@ -1,8 +1,8 @@
 #include <ccl/parser/grammar_slot.hpp>
 
 auto fmt::formatter<ccl::parser::GrammarSlotPrintWrapper>::format(
-    const ccl::parser::GrammarSlotPrintWrapper &item_print_wrapper, format_context &ctx) const ->
-    typename format_context::iterator
+    const ccl::parser::GrammarSlotPrintWrapper &item_print_wrapper,
+    format_context &ctx) -> format_context::iterator
 {
     const auto &item = item_print_wrapper.item;
     fmt::format_to(ctx.out(), "{} -> [", item_print_wrapper.idToStr(item.getProductionType()));

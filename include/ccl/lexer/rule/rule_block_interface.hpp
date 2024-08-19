@@ -1,13 +1,10 @@
 #ifndef CCL_PROJECT_RULE_INTERFACE_HPP
 #define CCL_PROJECT_RULE_INTERFACE_HPP
 
-#include <ccl/lexer/parsing_result.hpp>
 #include <ccl/lexer/rule/closure.hpp>
 #include <ccl/lexer/scan_result.hpp>
-#include <ccl/lexer/token.hpp>
 #include <ccl/parser/ast/node.hpp>
 #include <ccl/text/text_iterator.hpp>
-#include <isl/memory.hpp>
 
 namespace ccl::lexer::rule
 {
@@ -121,29 +118,25 @@ namespace ccl::lexer::rule
         static auto neverRecognizedSuggestion(TextIterator &text_iterator, bool condition) -> void;
 
         [[nodiscard]] auto scan(ForkedGenerator text_iterator) const -> ScanResult;
-        [[nodiscard]] auto parse(ForkedGenerator text_iterator) const -> ParsingResult;
 
         [[nodiscard]] virtual auto empty() const noexcept -> bool = 0;
 
         [[nodiscard]] virtual auto
             scanIteration(const ForkedGenerator &text_iterator) const -> ScanResult = 0;
-
-        [[nodiscard]] virtual auto
-            parseIteration(const ForkedGenerator &text_iterator) const -> ParsingResult = 0;
     };
 
-    class RuleBlock : public isl::UniquePtr<RuleBlockInterface>
+    class RuleBlock : public std::unique_ptr<RuleBlockInterface>
     {
     public:
-        using isl::UniquePtr<RuleBlockInterface>::UniquePtr;
+        using std::unique_ptr<RuleBlockInterface>::unique_ptr;
 
-        explicit RuleBlock(isl::UniquePtr<RuleBlockInterface> block)
-          : isl::UniquePtr<RuleBlockInterface>::UniquePtr(std::move(block))
+        explicit RuleBlock(std::unique_ptr<RuleBlockInterface> block)
+          : unique_ptr(std::move(block))
         {}
 
         template<std::derived_from<RuleBlockInterface> T>
         explicit RuleBlock(T dot_item)
-          : isl::UniquePtr<RuleBlockInterface>::UniquePtr(isl::makeUnique<T>(std::move(dot_item)))
+          : unique_ptr{std::make_unique<T>(std::move(dot_item))}
         {}
     };
 }// namespace ccl::lexer::rule

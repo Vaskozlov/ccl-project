@@ -10,7 +10,7 @@ namespace astlang::ast::expression
     public:
         using Node::Node;
 
-        auto optimize() -> ccl::parser::ast::UnNodePtr override;
+        auto optimize() -> ccl::parser::ast::Node * override;
     };
 }// namespace astlang::ast::expression
 

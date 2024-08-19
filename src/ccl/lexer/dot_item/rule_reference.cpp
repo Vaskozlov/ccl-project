@@ -30,10 +30,4 @@ namespace ccl::lexer::rule
         const auto *container = lexicalAnalyzer.getByRuleName(getValue());
         return container->scan(text_iterator);
     }
-
-    auto RuleReference::parseIteration(const ForkedGenerator &text_iterator) const -> ParsingResult
-    {
-        const auto *container = lexicalAnalyzer.getByRuleName(getValue());
-        return container->parse(text_iterator);
-    }
 }// namespace ccl::lexer::rule

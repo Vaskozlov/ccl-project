@@ -1,5 +1,4 @@
 #include "ccl/debug/debug.hpp"
-#include "ccl/parser/ast/node_sequence.hpp"
 #include "ccl/parser/ast/token_node.hpp"
 #include "lr_parser_for_math.hpp"
 
@@ -15,23 +14,23 @@ TEST_CASE("TreeStructureTest", "[TreeParsing]")
     auto MathLrParser = math_rules_constructor.buildLr1();
 
     auto tokenizer = lexer.getTokenizer("10+2*3");
-    auto parse_result = MathLrParser.parse(tokenizer);
-    const auto *root_node = isl::as<ast::UnNodeSequence *>(parse_result.get());
+    auto [parse_result, storage] = MathLrParser.parse(tokenizer);
+    const auto *root_node = isl::as<ast::NodeOfNodes *>(parse_result);
 
     REQUIRE(parse_result != nullptr);
     REQUIRE(root_node->getType() == math_rules_constructor.getRuleId("EXPR"));
 
     // Left EXPR
-    const auto *left_expr_node = isl::as<const ast::UnNodeSequence *>(root_node->at(0));
+    const auto *left_expr_node = isl::as<const ast::NodeOfNodes *>(root_node->at(0));
     REQUIRE(left_expr_node->getType() == math_rules_constructor.getRuleId("EXPR"));
 
-    const auto *term_node = isl::as<const ast::UnNodeSequence *>(left_expr_node->at(0));
+    const auto *term_node = isl::as<const ast::NodeOfNodes *>(left_expr_node->at(0));
     REQUIRE(term_node->getType() == math_rules_constructor.getRuleId("TERM"));
 
-    const auto *value_node = isl::as<const ast::UnNodeSequence *>(term_node->at(0));
+    const auto *value_node = isl::as<const ast::NodeOfNodes *>(term_node->at(0));
     REQUIRE(value_node->getType() == math_rules_constructor.getRuleId("VALUE"));
 
-    const auto *factor_node = isl::as<const ast::UnNodeSequence *>(value_node->at(0));
+    const auto *factor_node = isl::as<const ast::NodeOfNodes *>(value_node->at(0));
 
     REQUIRE(factor_node->getType() == math_rules_constructor.getRuleId("FACTOR"));
     const auto *number_10_node = isl::as<const ast::TokenNode *>(factor_node->at(0));
@@ -42,16 +41,16 @@ TEST_CASE("TreeStructureTest", "[TreeParsing]")
     REQUIRE(add_op_node->getToken().getRepr() == "+");
 
     // Right TERM
-    const auto *right_term_node = isl::as<const ast::UnNodeSequence *>(root_node->at(2));
+    const auto *right_term_node = isl::as<const ast::NodeOfNodes *>(root_node->at(2));
     REQUIRE(right_term_node->getType() == math_rules_constructor.getRuleId("TERM"));
 
-    const auto *nested_term_node = isl::as<const ast::UnNodeSequence *>(right_term_node->at(0));
+    const auto *nested_term_node = isl::as<const ast::NodeOfNodes *>(right_term_node->at(0));
     REQUIRE(nested_term_node->getType() == math_rules_constructor.getRuleId("TERM"));
 
-    const auto *nested_value_node = isl::as<const ast::UnNodeSequence *>(nested_term_node->at(0));
+    const auto *nested_value_node = isl::as<const ast::NodeOfNodes *>(nested_term_node->at(0));
     REQUIRE(nested_value_node->getType() == math_rules_constructor.getRuleId("VALUE"));
 
-    const auto *nested_factor_node = isl::as<const ast::UnNodeSequence *>(nested_value_node->at(0));
+    const auto *nested_factor_node = isl::as<const ast::NodeOfNodes *>(nested_value_node->at(0));
     REQUIRE(nested_factor_node->getType() == math_rules_constructor.getRuleId("FACTOR"));
 
     const auto *number_2_node = isl::as<const ast::TokenNode *>(nested_factor_node->at(0));
@@ -62,11 +61,11 @@ TEST_CASE("TreeStructureTest", "[TreeParsing]")
     REQUIRE(mul_op_node->getToken().getRepr() == "*");
 
     // Right VALUE
-    const auto *right_value_node = isl::as<const ast::UnNodeSequence *>(right_term_node->at(2));
+    const auto *right_value_node = isl::as<const ast::NodeOfNodes *>(right_term_node->at(2));
     REQUIRE(right_value_node->getType() == math_rules_constructor.getRuleId("VALUE"));
 
     const auto *right_nested_factor_node =
-        isl::as<const ast::UnNodeSequence *>(right_value_node->at(0));
+        isl::as<const ast::NodeOfNodes *>(right_value_node->at(0));
     REQUIRE(right_nested_factor_node->getType() == math_rules_constructor.getRuleId("FACTOR"));
 
     const auto *number3 = isl::as<const ast::TokenNode *>(right_nested_factor_node->at(0));

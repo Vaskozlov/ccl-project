@@ -2,7 +2,7 @@
 #define CCL_PROJECT_ASTLANG_NODE_HPP
 
 #include <ast-lang/ast-lang.hpp>
-#include <ccl/parser/ast/node_sequence.hpp>
+#include <ccl/parser/ast/node_of_nodes.hpp>
 #include <ccl/parser/ast/token_node.hpp>
 #include <ccl/parser/rules_reader/parser_builder.hpp>
 
@@ -14,29 +14,27 @@ namespace astlang::interpreter
 
 namespace astlang::ast
 {
-    class Node : public ccl::parser::ast::UnNodeSequence
+    class Node : public ccl::parser::ast::NodeOfNodes
     {
     private:
-        using ConstructionFunction =
-            isl::UniquePtr<ccl::parser::ast::Node> (*)(ccl::parser::ast::UnNodeSequence *);
-
-        using ConvertionTable = isl::StaticFlatmap<SmallId, ConstructionFunction, 50>;
+        using ConstructionFunction = ccl::parser::Rule::RuleBuilderFunction;
+        using ConversionTable = isl::
+            StaticFlatmap<SmallId, std::function<ccl::parser::ast::Node *(NodeOfNodes *node)>, 50>;
 
         template<typename T>
-        static auto
-            reconstructNode(ccl::parser::ast::UnNodeSequence *node) -> ccl::parser::ast::UnNodePtr
+        static auto reconstructNode(NodeOfNodes *node) -> NodeOfNodes *
         {
-            return isl::makeUnique<T>(node->getType(), std::move(node->getNodes()));
+            return node->emplaceAfter<T>(node->getType(), std::move(node->getNodes()));
         }
 
     public:
         using Interpreter = interpreter::Interpreter;
         using EvaluationResult = interpreter::EvaluationResult;
-        using ccl::parser::ast::UnNodeSequence::NodeSequence;
+        using NodeOfNodes::NodeOfNodes;
 
         auto runRecursiveOptimization() -> void;
 
-        virtual auto optimize() -> ccl::parser::ast::UnNodePtr;
+        virtual auto optimize() -> ccl::parser::ast::Node *;
 
         virtual auto compute(Interpreter &interpreter) const -> EvaluationResult = 0;
 
@@ -44,12 +42,11 @@ namespace astlang::ast
             ccl::parser::reader::ParserBuilder &constructor,
             Node *node) -> void;
 
-        auto castChildrenToAstLangNode(const ConvertionTable &conversion_table) -> void;
+        auto castChildrenToAstLangNode(const ConversionTable &conversion_table) -> void;
 
         static auto castToAstLangNode(
-            const ConvertionTable &conversion_table,
-            isl::UniquePtr<ccl::parser::ast::Node>
-                node) -> isl::UniquePtr<ccl::parser::ast::Node>;
+            const ConversionTable &conversion_table,
+            ccl::parser::ast::Node *node) -> ccl::parser::ast::Node *;
     };
 
     struct NodePtr
@@ -57,7 +54,7 @@ namespace astlang::ast
         union {
             ccl::parser::ast::Node *cclNode;
             ccl::parser::ast::TokenNode *tokenNode;
-            ccl::parser::ast::UnNodeSequence *nodeSequence;
+            ccl::parser::ast::NodeOfNodes *nodeSequence;
             Node *astlangNode;
         };
 
@@ -71,7 +68,7 @@ namespace astlang::ast
         union {
             const ccl::parser::ast::Node *cclNode;
             const ccl::parser::ast::TokenNode *tokenNode;
-            const ccl::parser::ast::UnNodeSequence *nodeSequence;
+            const ccl::parser::ast::NodeOfNodes *nodeSequence;
             const Node *astlangNode;
         };
 

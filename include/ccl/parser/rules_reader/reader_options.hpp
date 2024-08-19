@@ -1,8 +1,6 @@
 #ifndef CCL_PROJECT_READER_OPTIONS_HPP
 #define CCL_PROJECT_READER_OPTIONS_HPP
 
-#include <ccl/ccl.hpp>
-
 namespace ccl::parser::reader
 {
     enum class ReaderOption : std::size_t

@@ -85,14 +85,6 @@ namespace ccl::lexer
             isl::string_view text, isl::string_view filename,
             ExceptionHandler &handler) const CCL_LIFETIMEBOUND -> Tokenizer;
 
-        [[nodiscard]] auto getParser(
-            isl::string_view rule_name, isl::string_view text, isl::string_view filename,
-            ExceptionHandler &handler) const CCL_LIFETIMEBOUND -> PegParser;
-
-        [[nodiscard]] auto getParser(
-            isl::string_view rule_name, isl::string_view text,
-            isl::string_view filename = {}) const CCL_LIFETIMEBOUND -> PegParser;
-
         [[nodiscard]] auto
             getItems() const noexcept -> const std::vector<isl::UniquePtr<Container>> &
         {

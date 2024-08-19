@@ -1,4 +1,4 @@
-#include <ccl/parser/ast/node_sequence.hpp>
+#include <ccl/parser/ast/node_of_nodes.hpp>
 #include <ccl/parser/ast/token_node.hpp>
 #include <ccl/parser/dot/dot_repr.hpp>
 #include <isl/dot_repr.hpp>

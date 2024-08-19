@@ -25,7 +25,8 @@ namespace ccl::parser
             const GrammarStorage &parser_rules,
             std::function<std::string(SmallId)> id_to_string_converter = fmt::to_string<SmallId>);
 
-        [[nodiscard]] auto parse(lexer::LexicalAnalyzer::Tokenizer &tokenizer) const -> GSStack;
+        [[nodiscard]] auto parse(lexer::LexicalAnalyzer::Tokenizer &tokenizer) const
+            -> std::pair<GSStack, isl::DynamicForwardList<ast::Node>>;
 
         [[nodiscard]] auto getGotoTable() const noexcept -> const auto &
         {

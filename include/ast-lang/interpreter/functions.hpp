@@ -37,7 +37,9 @@ namespace astlang::interpreter
             isl::UniquePtr<FunctionInterface>
                 function) -> void
         {
-            auto [it, has_inserted] =
+            auto has_inserted = false;
+
+            std::tie(std::ignore, has_inserted) =
                 functions.try_emplace(std::move(identification), std::move(function));
 
             if (!has_inserted) {

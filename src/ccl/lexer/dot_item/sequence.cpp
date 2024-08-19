@@ -34,8 +34,9 @@ namespace ccl::lexer::rule
             if (getFlags().noEscapingSymbols) {
                 chr = rule_iterator.advance();
             } else {
-                auto [escaping, character] = rule_iterator.nextCharWithEscapingSymbols(std::span{
-                    special_symbols_for_sequence.begin(), special_symbols_for_sequence.end()});
+                auto [escaping, character] = rule_iterator.nextCharWithEscapingSymbols(
+                    std::span{
+                        special_symbols_for_sequence.begin(), special_symbols_for_sequence.end()});
                 is_escaping = escaping;
                 chr = character;
             }
@@ -65,17 +66,6 @@ namespace ccl::lexer::rule
         }
 
         return ScanResult::failure();
-    }
-
-    auto Sequence::parseIteration(const ForkedGenerator &text_iterator) const -> ParsingResult
-    {
-        auto result = scanIteration(text_iterator);
-
-        if (result.isFailure()) {
-            return ParsingResult::failure();
-        }
-
-        return ParsingResult{result.getBytesCount(), nullptr};
     }
 
     CCL_INLINE auto

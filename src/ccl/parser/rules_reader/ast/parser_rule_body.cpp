@@ -11,14 +11,12 @@ namespace ccl::parser::reader::ast
         auto result = std::vector<SmallId>{};
 
         for (const auto &node : nodes) {
-            const auto *node_as_token = dynamic_cast<const parser::ast::TokenNode *>(node.get());
+            const auto *node_as_token = dynamic_cast<const parser::ast::TokenNode *>(node);
             const auto &token = node_as_token->getToken();
             const auto repr = token.getRepr();
 
-            if (token.getId() == RulesLexerToken::STRING ||
-                token.getId() == RulesLexerToken::ANY_PLACE_STRING) {
-                addStringToLexicalAnalyzer(
-                    repr, parser_builder, token.getId() == RulesLexerToken::ANY_PLACE_STRING);
+            if (token.getId() == STRING || token.getId() == ANY_PLACE_STRING) {
+                addStringToLexicalAnalyzer(repr, parser_builder, token.getId() == ANY_PLACE_STRING);
             }
 
             result.emplace_back(parser_builder.addRule(repr));
@@ -28,7 +26,9 @@ namespace ccl::parser::reader::ast
     }
 
     auto ParserRuleBody::addStringToLexicalAnalyzer(
-        isl::string_view str, ParserBuilder &parser_builder, bool is_any_place_string) const -> void
+        isl::string_view str,
+        ParserBuilder &parser_builder,
+        bool is_any_place_string) const -> void
     {
         if (parser_builder.hasRule(str)) {
             return;
@@ -38,6 +38,7 @@ namespace ccl::parser::reader::ast
 
         auto container = isl::makeUnique<lexer::rule::Container>(
             parser_builder.getLexicalAnalyzer(), false, is_any_place_string);
+
         container->setId(rule_id);
 
         auto str_without_quotes = str.substr(1, str.size() - 2);

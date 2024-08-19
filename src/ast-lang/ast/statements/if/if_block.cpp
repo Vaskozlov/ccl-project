@@ -5,12 +5,11 @@ namespace astlang::ast::statement::if_statement
 {
     auto IfBlock::compute(Interpreter &interpreter) const -> EvaluationResult
     {
-        auto condition = ConstNodePtr{nodes.at(1).get()};
-        auto block = ConstNodePtr{nodes.at(3).get()};
+        const auto condition = ConstNodePtr{nodes.at(1)};
+        const auto block = ConstNodePtr{nodes.at(3)};
 
-        auto conditionResult = condition.astlangNode->compute(interpreter);
-
-        if (isl::get<bool>(conditionResult.value)) {
+        if (auto condition_result = condition.astlangNode->compute(interpreter);
+            isl::get<bool>(condition_result.value)) {
             return block.astlangNode->compute(interpreter);
         }
 

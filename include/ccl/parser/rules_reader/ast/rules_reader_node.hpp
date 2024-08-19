@@ -1,16 +1,16 @@
 #ifndef CCL_PROJECT_RULES_READER_NODE_HPP
 #define CCL_PROJECT_RULES_READER_NODE_HPP
 
-#include <ccl/lexer/lexical_analyzer.hpp>
+#include <ccl/parser/ast/node_of_nodes.hpp>
 #include <ccl/parser/rules_reader/parser_builder.hpp>
 #include <isl/unique_any.hpp>
 
 namespace ccl::parser::reader::ast
 {
-    class RulesReaderNode : public parser::ast::UnNodeSequence
+    class RulesReaderNode : public parser::ast::NodeOfNodes
     {
     public:
-        using parser::ast::UnNodeSequence::NodeSequence;
+        using NodeOfNodes::NodeOfNodes;
 
         virtual auto construct(ParserBuilder &parser_builder) const -> isl::UniqueAny = 0;
     };

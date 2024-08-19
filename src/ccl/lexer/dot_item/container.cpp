@@ -1,8 +1,5 @@
 #include <ccl/lexer/lexical_analyzer.hpp>
 #include <ccl/lexer/rule/container.hpp>
-#include <ccl/lexer/rule/rule_reference.hpp>
-#include <ccl/parser/ast/node_sequence.hpp>
-#include <ccl/parser/ast/string_node.hpp>
 
 namespace ccl::lexer::rule
 {
@@ -105,40 +102,6 @@ namespace ccl::lexer::rule
         }
 
         return ScanResult{totally_skipped};
-    }
-
-    auto Container::parseIteration(const ForkedGenerator &text_iterator) const -> ParsingResult
-    {
-        auto totally_skipped = isl::as<std::size_t>(0);
-        auto local_iterator = text_iterator;
-        auto node_sequence = isl::makeUnique<parser::ast::UnNodeSequence>(getId());
-
-        for (const RuleBlock &item : items) {
-            auto parsing_result = item->parse(local_iterator);
-
-            if (parsing_result.isFailure()) {
-                return ParsingResult::failure();
-            }
-
-            const auto is_hidden_item = item->getFlags().isHiddenFromParser;
-
-            if (parsing_result.getNode() == nullptr && !is_hidden_item) {
-                node_sequence->addNode(isl::makeUnique<parser::ast::StringNode>(
-                    getId(),
-                    local_iterator.getRemaining().substr(0, parsing_result.getBytesCount())));
-            } else if (!is_hidden_item) {
-                if (isl::is<RuleReference *>(item.get())) {
-                    node_sequence->addNode(parsing_result.getAndReleaseNode());
-                } else {
-                    node_sequence->joinWithNode(parsing_result.getAndReleaseNode());
-                }
-            }
-
-            totally_skipped += parsing_result.getBytesCount();
-            local_iterator.skip(parsing_result.getBytesCount());
-        }
-
-        return ParsingResult{totally_skipped, std::move(node_sequence)};
     }
 
     auto Container::parseRule(TextIterator &rule_iterator) -> void

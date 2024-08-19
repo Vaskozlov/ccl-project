@@ -39,13 +39,13 @@
 #include <ast-lang/ast/statements/type_variable_declaration.hpp>
 #include <ast-lang/ast/statements/variable_declaration.hpp>
 #include <ast-lang/ast/type.hpp>
-#include <ccl/parser/rules_reader/rules_constructor.hpp>
+#include <ccl/parser/rules_reader/parser_builder.hpp>
 
 namespace astlang::ast
 {
     using namespace ccl::parser;
 
-    auto Node::optimize() -> ccl::parser::ast::UnNodePtr
+    auto Node::optimize() -> ccl::parser::ast::Node *
     {
         runRecursiveOptimization();
         return nullptr;
@@ -54,7 +54,7 @@ namespace astlang::ast
     auto Node::runRecursiveOptimization() -> void
     {
         for (auto &node : getNodes()) {
-            auto *ast_node = dynamic_cast<Node *>(node.get());
+            auto *ast_node = dynamic_cast<Node *>(node);
 
             if (ast_node == nullptr) {
                 continue;
@@ -70,9 +70,9 @@ namespace astlang::ast
         }
     }
 
-    auto Node::convertCclTreeToAstlang(reader::RulesConstructor &constructor, Node *node) -> void
+    auto Node::convertCclTreeToAstlang(reader::ParserBuilder &constructor, Node *node) -> void
     {
-        const auto conversion_table = ConvertionTable{
+        const auto conversion_table = ConversionTable{
             {
                 constructor.getRuleId("GOAL"),
                 reconstructNode<Goal>,
@@ -238,36 +238,35 @@ namespace astlang::ast
         node->castChildrenToAstLangNode(conversion_table);
     }
 
-    auto Node::castChildrenToAstLangNode(const ConvertionTable &conversion_table) -> void
+    auto Node::castChildrenToAstLangNode(const ConversionTable &conversion_table) -> void
     {
-        auto *self_as_sequence = dynamic_cast<ccl::parser::ast::UnNodeSequence *>(this);
+        auto *self_as_sequence = dynamic_cast<NodeOfNodes *>(this);
 
         if (self_as_sequence == nullptr) {
             return;
         }
 
-        auto new_self_nodes = std::vector<ccl::parser::ast::UnNodePtr>{};
+        auto new_self_nodes = std::vector<ccl::parser::ast::Node *>{};
 
-        for (auto &node : self_as_sequence->getNodes()) {
-            new_self_nodes.emplace_back(castToAstLangNode(conversion_table, std::move(node)));
+        for (auto *node : self_as_sequence->getNodes()) {
+            new_self_nodes.emplace_back(castToAstLangNode(conversion_table, node));
         }
 
         self_as_sequence->getNodes() = std::move(new_self_nodes);
     }
 
     auto Node::castToAstLangNode(
-        const ConvertionTable &conversion_table,
-        isl::UniquePtr<ccl::parser::ast::Node>
-            node) -> isl::UniquePtr<ccl::parser::ast::Node>
+        const ConversionTable &conversion_table,
+        ccl::parser::ast::Node *node) -> ccl::parser::ast::Node *
     {
-        auto *node_as_sequence = dynamic_cast<ccl::parser::ast::UnNodeSequence *>(node.get());
+        auto *node_as_sequence = dynamic_cast<NodeOfNodes *>(node);
 
         if (node_as_sequence == nullptr) {
             return node;
         }
 
-        auto new_node = conversion_table[node_as_sequence->getType()](node_as_sequence);
-        dynamic_cast<Node *>(new_node.get())->castChildrenToAstLangNode(conversion_table);
+        auto *new_node = conversion_table[node_as_sequence->getType()](node_as_sequence);
+        dynamic_cast<Node *>(new_node)->castChildrenToAstLangNode(conversion_table);
 
         return new_node;
     }

@@ -12,7 +12,7 @@ namespace ccl::parser::detail
 
     struct RunnersCommon
     {
-        isl::SharedPtr<ast::TokenNode> word{};
+        ast::TokenNode *word{};
         std::forward_list<GlrRunner> newRunnersInShiftState{};
         std::forward_list<GlrRunner> newRunnersInReduceState{};
         std::forward_list<GSStack> acceptedStacks{};

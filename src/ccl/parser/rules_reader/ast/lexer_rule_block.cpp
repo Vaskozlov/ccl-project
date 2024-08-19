@@ -2,9 +2,13 @@
 #include <ccl/lexer/rule/rule_reference.hpp>
 #include <ccl/parser/rules_reader/ast/lexer_rule_block.hpp>
 #include <ccl/parser/rules_reader/ast/lexer_rule_body.hpp>
+#include <ccl/parser/rules_reader/rules_lexer.hpp>
+#include <ccl/text/remove_escaping.hpp>
 
 namespace ccl::parser::reader::ast
 {
+    using enum RulesLexerToken;
+
     static auto
         constructUnion(const lexer::Token &token) -> isl::UniquePtr<lexer::rule::RuleBlockInterface>
     {
@@ -33,7 +37,7 @@ namespace ccl::parser::reader::ast
     static auto constructContainer(ParserBuilder &parser_builder, const parser::ast::Node *node)
         -> isl::UniquePtr<lexer::rule::RuleBlockInterface>
     {
-        const auto *casted_node = dynamic_cast<const ast::LexerRuleBody *>(node);
+        const auto *casted_node = dynamic_cast<const LexerRuleBody *>(node);
         return casted_node->construct(parser_builder).get<isl::UniquePtr<lexer::rule::Container>>();
     }
 
@@ -41,13 +45,13 @@ namespace ccl::parser::reader::ast
         -> isl::UniquePtr<lexer::rule::RuleBlockInterface>
     {
         switch (token.getId()) {
-        case RulesLexerToken::UNION:
+        case UNION:
             return constructUnion(token);
 
-        case RulesLexerToken::STRING:
+        case STRING:
             return constructSequence(token);
 
-        case RulesLexerToken::RULE_REFERENCE:
+        case RULE_REFERENCE:
             return constructRuleReference(parser_builder, token);
 
         default:
@@ -106,19 +110,19 @@ namespace ccl::parser::reader::ast
                 rule_block->setClosure(lexer::rule::Closure{0, lexer::rule::Closure::max()});
                 break;
 
-            case RulesLexerToken::PLUS:
+            case PLUS:
                 rule_block->setClosure(lexer::rule::Closure{1, lexer::rule::Closure::max()});
                 break;
 
-            case RulesLexerToken::PREFIX_POSTFIX_OPERATOR:
+            case PREFIX_POSTFIX_OPERATOR:
                 rule_block->setPrefix();
                 break;
 
-            case RulesLexerToken::NOT_OPERATOR:
+            case NOT_OPERATOR:
                 rule_block->reverse();
                 break;
 
-            case RulesLexerToken::HIDE_OPERATOR:
+            case HIDE_OPERATOR:
                 rule_block->hideFromParser();
                 break;
 

@@ -11,7 +11,7 @@ namespace ccl::parser
     struct GrammarSlot
     {
         const Rule *rule;
-        std::size_t dotLocation{};
+        SmallId dotLocation{};
         Symbol production{};
         Symbol lookAhead{};
 
@@ -30,7 +30,7 @@ namespace ccl::parser
             return production;
         }
 
-        [[nodiscard]] auto getDotLocation() const noexcept -> std::size_t
+        [[nodiscard]] auto getDotLocation() const noexcept -> SmallId
         {
             return dotLocation;
         }
@@ -116,8 +116,9 @@ template<>
 class fmt::formatter<ccl::parser::GrammarSlotPrintWrapper> : public fmt::formatter<std::string_view>
 {
 public:
-    auto format(const ccl::parser::GrammarSlotPrintWrapper &item_print_wrapper, format_context &ctx)
-        const -> typename format_context::iterator;
+    static auto format(
+        const ccl::parser::GrammarSlotPrintWrapper &item_print_wrapper,
+        format_context &ctx) -> format_context::iterator;
 };
 
 #endif /* CCL_PROJECT_GRAMMAR_SLOT_HPP */

@@ -2,6 +2,7 @@
 #include <ast-lang/ast/global_declarations.hpp>
 #include <ast-lang/ast/node.hpp>
 #include <ast-lang/interpreter/interpreter.hpp>
+#include <ccl/lexer/tokenizer.hpp>
 #include <ccl/parser/dot/dot_repr.hpp>
 #include <ccl/parser/rules_reader/rules_reader.hpp>
 #include <isl/io.hpp>
@@ -28,13 +29,13 @@ auto main() -> int
     auto tokenizer = lexer.getTokenizer(input);
 
     auto lr_parser = constructor.buildLr1();
-    auto node = lr_parser.parse(tokenizer);
+    auto [node, storage] = lr_parser.parse(tokenizer);
 
-    auto dot_repr = dot::createDotRepresentation({node.get()}, to_str);
+    auto dot_repr = dot::createDotRepresentation({node}, to_str);
     isl::io::writeToFile(
         "/Users/vaskozlov/CLionProjects/ccl-project/cmake-build-debug-clang/test.dot", dot_repr);
 
-    auto *result_as_sequence = dynamic_cast<ccl::parser::ast::UnNodeSequence *>(node.get());
+    auto *result_as_sequence = dynamic_cast<ast::NodeOfNodes *>(node);
 
     auto global_declarations_node = isl::makeUnique<astlang::ast::GlobalDeclarations>(
         node->getType(), std::move(result_as_sequence->getNodes()));
