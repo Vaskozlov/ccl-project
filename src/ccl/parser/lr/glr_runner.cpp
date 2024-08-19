@@ -23,7 +23,7 @@ namespace ccl::parser::detail
                 }
 
                 auto converted = isl::dot::createDotRepresentation<ast::Node *>(
-                    runner.nodeStack, [&runner](const ast::Node *node) {
+                    runner.nodeStack, [&runner](const ast::Node* node) {
                         return runner.common->idToStringConverter(node->getType());
                     });
 
