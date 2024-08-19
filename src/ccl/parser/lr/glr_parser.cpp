@@ -72,9 +72,8 @@ namespace ccl::parser
         actionTable = parser_generator.getGlrActionTable();
     }
 
-    auto GlrParser::parse(lexer::LexicalAnalyzer::Tokenizer &tokenizer) const
-        -> std::pair<GSStack, isl::DynamicForwardList<ast::Node>>
-    {
+    auto GlrParser::parse(lexer::LexicalAnalyzer::Tokenizer&tokenizer) const
+        -> std::pair<GSStack, isl::DynamicForwardList<ast::Node>> {
         auto forward_list = isl::DynamicForwardList<ast::Node>{};
         auto common = RunnersCommon{
             .idToStringConverter = idToStringConverter,
@@ -102,4 +101,4 @@ namespace ccl::parser
 
         return {joinStacks(common.acceptedStacks), std::move(forward_list)};
     }
-}// namespace ccl::parser
+} // namespace ccl::parser
