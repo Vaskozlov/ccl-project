@@ -14,10 +14,10 @@ namespace ccl::parser::dot
     using TreeInformation = isl::dot::detail::TreeInformation<T, ToStrArg>;
 
     static auto createDotRepresentation(
-        const ast::Node *root,
+        ast::Node *root,
         std::size_t parent_id,
         isl::ssize_t child_index,
-        TreeInformation<const ast::Node *, SmallId> &tree_data) -> void
+        TreeInformation<ast::Node *, SmallId> &tree_data) -> void
     {
         const auto *node_as_sequence = dynamic_cast<const ast::NodeOfNodes *>(root);
         const auto *node_as_token = dynamic_cast<const ast::TokenNode *>(root);
@@ -63,14 +63,14 @@ namespace ccl::parser::dot
     }
 
     auto createDotRepresentation(
-        const std::vector<const ast::Node *> &roots,
+        const std::vector<ast::Node *> &roots,
         std::function<std::string(SmallId)>
             node_type_to_string) -> std::string
     {
-        auto tree_data = TreeInformation<const ast::Node *, SmallId>{
+        auto tree_data = TreeInformation<ast::Node *, SmallId>{
             .nodeTypeToString = std::move(node_type_to_string)};
 
-        for (const auto *root : roots) {
+        for (auto *root : roots) {
             createDotRepresentation(root, 0, 0, tree_data);
         }
 

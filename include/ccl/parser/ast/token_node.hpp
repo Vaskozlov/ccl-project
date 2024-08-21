@@ -16,6 +16,11 @@ namespace ccl::parser::ast
           : Node{node_type_id}
         {}
 
+        explicit TokenNode(lexer::Token l_token)
+          : Node{l_token.getId()}
+          , token{std::move(l_token)}
+        {}
+
         explicit TokenNode(SmallId node_type_id, lexer::Token l_token)
           : Node{node_type_id}
           , token{std::move(l_token)}

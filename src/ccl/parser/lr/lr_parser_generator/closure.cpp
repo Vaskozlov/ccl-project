@@ -1,7 +1,6 @@
 #include "ccl/parser/lr/detail/lr_parser_generator.hpp"
 
-namespace ccl::parser
-{
+namespace ccl::parser {
     auto LrParserGenerator::computeClosure(const LrItem&item) -> const std::vector<LrItem>& {
         auto [it, inserted] = closureComputationCache.try_emplace(item);
 
@@ -44,13 +43,13 @@ namespace ccl::parser
             has_modifications = false;
 
             for (std::size_t index = 0; index != s.size(); ++index) {
-                const auto &item = s.at(index);
+                const auto&item = s.at(index);
 
                 if (item.dottedRule.isDotInTheEnd() || isTerminal(item.dottedRule.atDot())) {
                     continue;
                 }
 
-                const auto &generated_closure = computeClosure(item);
+                const auto&generated_closure = computeClosure(item);
                 const auto is_not_in_set = [&s](const LrItem&slot) {
                     return std::ranges::find(s, slot) == s.end();
                 };

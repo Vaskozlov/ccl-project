@@ -4,19 +4,17 @@
 #include <ccl/parser/lr_item.hpp>
 #include <ccl/parser/lr/detail/parsing_action.hpp>
 
-namespace ccl::parser
-{
-    class Action
-    {
+namespace ccl::parser {
+    class Action {
     private:
         std::variant<std::monostate, State, LrItem> data;
         ParsingAction parsingAction;
 
     public:
         explicit Action(State state)
-          : data{state}
-          , parsingAction{ParsingAction::SHIFT}
-        {}
+            : data{state}
+              , parsingAction{ParsingAction::SHIFT} {
+        }
 
         explicit Action(const LrItem&item)
             : data{item}
@@ -24,30 +22,26 @@ namespace ccl::parser
         }
 
         explicit Action(std::monostate accept_state)
-          : data{accept_state}
-          , parsingAction{ParsingAction::ACCEPT}
-        {}
+            : data{accept_state}
+              , parsingAction{ParsingAction::ACCEPT} {
+        }
 
         [[nodiscard]] auto
-            operator<=>(const Action &other) const noexcept -> std::weak_ordering = default;
+        operator<=>(const Action&other) const noexcept -> std::weak_ordering = default;
 
-        [[nodiscard]] auto isShift() const noexcept -> bool
-        {
+        [[nodiscard]] auto isShift() const noexcept -> bool {
             return parsingAction == ParsingAction::SHIFT;
         }
 
-        [[nodiscard]] auto isReduce() const noexcept -> bool
-        {
+        [[nodiscard]] auto isReduce() const noexcept -> bool {
             return parsingAction == ParsingAction::REDUCE;
         }
 
-        [[nodiscard]] auto isAccept() const noexcept -> bool
-        {
+        [[nodiscard]] auto isAccept() const noexcept -> bool {
             return parsingAction == ParsingAction::ACCEPT;
         }
 
-        [[nodiscard]] auto getParsingAction() const noexcept -> ParsingAction
-        {
+        [[nodiscard]] auto getParsingAction() const noexcept -> ParsingAction {
             return parsingAction;
         }
 
@@ -65,12 +59,11 @@ namespace ccl::parser
         }
     };
 
-    struct ActionPrintWrapper
-    {
-        const Action &action;
+    struct ActionPrintWrapper {
+        const Action&action;
         std::function<std::string(SmallId)> idToStr;
     };
-}// namespace ccl::parser
+} // namespace ccl::parser
 
 template<>
 struct fmt::formatter<ccl::parser::ActionPrintWrapper> : formatter<std::string_view> {

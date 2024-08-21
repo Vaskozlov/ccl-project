@@ -23,7 +23,7 @@ namespace ccl::parser::detail
                 }
 
                 auto converted = isl::dot::createDotRepresentation<ast::Node *>(
-                    runner.nodeStack, [&runner](const ast::Node* node) {
+                    runner.nodeStack, [&runner](const ast::Node *node) {
                         return runner.common->idToStringConverter(node->getType());
                     });
 
@@ -104,10 +104,9 @@ namespace ccl::parser::detail
 
     auto GlrRunner::reduceAction(const Action &action) -> void
     {
-        const auto &lr_item = action.getReducingItem();
-        const auto production = lr_item.production;
-        const auto *rule = lr_item.getRulePtr();
-        const auto number_of_elements_to_pop = lr_item.size();
+        const auto [dottedRule, production, lookAhead] = action.getReducingItem();
+        const auto *rule = dottedRule.rule;
+        const auto number_of_elements_to_pop = dottedRule.size();
 
         for (std::size_t i = 0; i != number_of_elements_to_pop; ++i) {
             stateStack.pop();

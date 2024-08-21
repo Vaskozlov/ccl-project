@@ -16,11 +16,10 @@ namespace ccl::parser
 }
 
 template<>
-struct fmt::formatter<ccl::parser::ParsingAction> : public fmt::formatter<std::string_view>
+struct fmt::formatter<ccl::parser::ParsingAction> : formatter<std::string_view>
 {
-    template<typename FmtContext>
-    constexpr auto
-        format(ccl::parser::ParsingAction action, FmtContext &ctx) const -> decltype(auto)
+    static constexpr auto
+        format(ccl::parser::ParsingAction action, format_context &ctx) -> format_context::iterator
     {
         switch (action) {
         case ccl::parser::ParsingAction::SHIFT:

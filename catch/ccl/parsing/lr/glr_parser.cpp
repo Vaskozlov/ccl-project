@@ -4,7 +4,7 @@
 #include "ccl/parser/dot/dot_repr.hpp"
 #include "lr_parser_for_math.hpp"
 
-TEST_CASE("GlrParser", "[TreeParsing]")
+TEST_CASE("GlrParser", "[GLR]")
 {
     using namespace ccl::debug;
     using namespace ccl::parser;
@@ -16,20 +16,9 @@ TEST_CASE("GlrParser", "[TreeParsing]")
 
     auto MathLrParser = math_rules_constructor.buildGlr();
 
-    auto tokenizer = lexer.getTokenizer("1*2*3+4");
-    auto [parse_result, storage] = MathLrParser.parse(tokenizer);
+    auto tokenizer = lexer.getTokenizer("1*2*3+4+5");
+    auto [lifetime_manager, roots] = MathLrParser.parse(tokenizer);
 
-    for (const auto &elem : parse_result.getHead()) {
-        elem->value->print("", false, math_token_to_string);
-    }
-
-    auto conversion_range = std::views::transform(parse_result.getHead(), [](auto &node) {
-        return node->value;
-    });
-
-    auto tree_repr = dot::createDotRepresentation(
-        std::vector<const ast::Node *>{conversion_range.begin(), conversion_range.end()},
-        math_token_to_string);
-
-    isl::io::writeToFile(std::filesystem::current_path().append("glr.dot"), tree_repr);
+    auto tree_repr = dot::createDotRepresentation(roots, math_token_to_string);
+    isl::io::writeToFile(std::filesystem::current_path().append("glr-final.dot"), tree_repr);
 }

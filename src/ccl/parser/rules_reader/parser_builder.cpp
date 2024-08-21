@@ -106,7 +106,7 @@ namespace ccl::parser::reader
         return rule_id;
     }
 
-    auto ParserBuilder::getStartItem() const -> GrammarSlot
+    auto ParserBuilder::getStartItem() const -> LrItem
     {
         const auto goal_id = getRuleId("GOAL");
         const auto &start_rules = grammarRulesStorage.at(goal_id);
@@ -120,7 +120,7 @@ namespace ccl::parser::reader
         }
 
         auto first_rule_it = grammarRulesStorage.at(goal_id).begin();
-        return GrammarSlot{std::addressof(*first_rule_it), 0, goal_id, 0};
+        return LrItem{std::addressof(*first_rule_it), 0, goal_id, 0};
     }
 
     auto

@@ -1,64 +1,32 @@
 #include "ccl/parser/lr/glr_parser.hpp"
 #include "ccl/lexer/tokenizer.hpp"
 #include "ccl/parser/ast/token_node.hpp"
+#include "ccl/parser/dot/dot_repr.hpp"
 #include "ccl/parser/lr/detail/glr_runner.hpp"
 #include "ccl/parser/lr/detail/lr_parser_generator.hpp"
+#include <isl/dot_repr.hpp>
 
 namespace ccl::parser
 {
     using namespace detail;
     using enum ParsingAction;
 
-    static auto joinStacks(std::forward_list<GSStack> &accepted_stacks) -> GSStack
+    auto debugGlr(lr::GSS &gss, auto &&function) -> void
     {
-        auto front_stack = std::move(accepted_stacks.front());
+        auto result = std::vector<ast::Node *>{};
 
-        for (auto &stack : accepted_stacks | std::views::drop(1)) {
-            front_stack.merge(stack);
-        }
-
-        return front_stack;
-    }
-
-    static auto
-    pollRunners(RunnersCommon&common, std::forward_list<GlrRunner>&parsing_runners) -> void {
-        std::erase_if(parsing_runners, [&common](GlrRunner &runner) {
-            const auto polling_result = runner.poll();
-            const auto *stack_ptr = std::addressof(runner.nodeStack);
-
-            if (polling_result == ACCEPT) {
-                std::erase(common.stacks, stack_ptr);
-                auto &succeed_stack =
-                    common.acceptedStacks.emplace_front(std::move(runner.nodeStack));
-                common.stacks.emplace_front(std::addressof(succeed_stack));
+        for (auto &level : gss.getLevels()) {
+            for (auto &node : level) {
+                result.emplace_back(node->value);
             }
-
-            return polling_result != SHIFT && polling_result != REDUCE;
-        });
-    }
-
-    static auto newWordIteration(
-        RunnersCommon&common,
-        std::forward_list<GlrRunner> &parsing_runners) -> void
-    {
-        pollRunners(common, parsing_runners);
-
-        while (!common.newRunnersInReduceState.empty()) {
-            auto runners_in_reduce_state_copy = std::move(common.newRunnersInReduceState);
-            // after move object is in unknown state
-            common.newRunnersInReduceState.clear();
-
-            pollRunners(common, runners_in_reduce_state_copy);
-
-            parsing_runners.splice_after(
-                parsing_runners.before_begin(), runners_in_reduce_state_copy);
         }
 
-        parsing_runners.splice_after(parsing_runners.before_begin(), common.newRunnersInShiftState);
+        auto tree_repr = dot::createDotRepresentation(result, function);
+        isl::io::writeToFile(std::filesystem::current_path().append("glr.dot"), tree_repr);
     }
 
     GlrParser::GlrParser(
-        const GrammarSlot &start_item,
+        const LrItem &start_item,
         Symbol epsilon_symbol,
         const GrammarStorage &parser_rules,
         std::function<std::string(SmallId)>
@@ -72,33 +40,101 @@ namespace ccl::parser
         actionTable = parser_generator.getGlrActionTable();
     }
 
-    auto GlrParser::parse(lexer::LexicalAnalyzer::Tokenizer&tokenizer) const
-        -> std::pair<GSStack, isl::DynamicForwardList<ast::Node>> {
-        auto forward_list = isl::DynamicForwardList<ast::Node>{};
-        auto common = RunnersCommon{
-            .idToStringConverter = idToStringConverter,
-            .gotoTable = gotoTable,
-            .actionTable = actionTable,
+    auto GlrParser::parse(lexer::LexicalAnalyzer::Tokenizer &tokenizer) const
+        -> AmbiguousParsingResult
+    {
+        using enum ParsingAction;
+
+        auto parsing_result = AmbiguousParsingResult{};
+        auto *nodes_lifetime_manager = parsing_result.nodesLifetimeManager.get();
+        auto *token = std::add_pointer_t<ast::TokenNode>{};
+        auto gss = lr::GSS{};
+        auto [start_node, start_node_created] =
+            gss.pushTerminal(nullptr, 0, 0, nodes_lifetime_manager->create<ast::TokenNode>(0U));
+
+        auto start_descriptor = lr::GSS::Descriptor{
+            .stack = start_node,
+            .inputPosition = 0,
+            .parserState = 0,
         };
 
-        auto parsing_runners = std::forward_list<GlrRunner>{};
+        gss.add(start_descriptor);
 
-        parsing_runners.emplace_front(
-            GlrRunner{
-                .common = std::addressof(common),
-            });
+        while (gss.hasDescriptors()) {
+            auto descriptor = gss.getDescriptor();
+            const auto parser_state = descriptor.parserState;
 
-        common.stacks.emplace_front(std::addressof(parsing_runners.front().nodeStack));
-        parsing_runners.front().stateStack.emplace(0);
+            if (descriptor.inputPosition == gss.getGlobalInputPosition()) {
+                token = nodes_lifetime_manager->create<ast::TokenNode>(tokenizer.yield());
+                gss.nextWord();
+            }
 
-        const auto *new_token = isl::as<lexer::Token *>(nullptr);
+            const auto entry = TableEntry{
+                .state = parser_state,
+                .symbol = token->getType(),
+            };
 
-        do {
-            new_token = &tokenizer.yield();
-            common.word = forward_list.emplaceFront<ast::TokenNode>(new_token->getId(), *new_token);
-            newWordIteration(common, parsing_runners);
-        } while (new_token->getId() != 0);
+            auto possible_actions_it = actionTable.find(entry);
 
-        return {joinStacks(common.acceptedStacks), std::move(forward_list)};
+            if (possible_actions_it == actionTable.end()) {
+                continue;
+            }
+
+            const auto &possible_actions = possible_actions_it->second;
+
+            for (const auto &action : possible_actions) {
+                const auto action_type = action.getParsingAction();
+
+                switch (action_type) {
+                case SHIFT: {
+                    auto [new_node, isNew] = gss.pushTerminal(
+                        descriptor.stack,
+                        descriptor.inputPosition,
+                        action.getShiftingState(),
+                        token);
+
+                    nodes_lifetime_manager->insert(new_node->value);
+                    gss.add({
+                        new_node,
+                        descriptor.inputPosition + 1,
+                        action.getShiftingState(),
+                    });
+                    break;
+                }
+
+                case REDUCE: {
+                    const auto &lr_item = action.getReducingItem();
+                    const auto production = lr_item.production;
+                    const auto *rule = lr_item.dottedRule.rule;
+                    const auto number_of_elements_to_pop = lr_item.dottedRule.size();
+
+                    auto reducer = [rule, production](std::vector<ast::Node *> nodes) {
+                        std::ranges::reverse(nodes);
+                        return rule->construct(production, std::move(nodes));
+                    };
+
+                    gss.reduce(
+                        number_of_elements_to_pop,
+                        &gotoTable,
+                        production,
+                        std::move(reducer),
+                        descriptor);
+
+                    break;
+                }
+
+                case ACCEPT:
+                    parsing_result.roots.emplace_back(descriptor.stack->value);
+                    break;
+
+                default:
+                    isl::unreachable();
+                }
+            }
+
+            debugGlr(gss, idToStringConverter);
+        }
+
+        return parsing_result;
     }
-} // namespace ccl::parser
+}// namespace ccl::parser

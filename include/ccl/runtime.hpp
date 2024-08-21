@@ -1,8 +1,6 @@
 #ifndef CCL_PROJECT_RUNTIME_HPP
 #define CCL_PROJECT_RUNTIME_HPP
 
-#include <isl/coroutine/generator.hpp>
-#include <isl/thread/id_generator.hpp>
 #include <isl/thread/lockfree/spsc_pipe.hpp>
 #include <isl/thread/pool.hpp>
 

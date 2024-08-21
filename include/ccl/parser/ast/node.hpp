@@ -6,9 +6,33 @@
 #include <isl/dynamic_forward_list.hpp>
 #include <isl/gss.hpp>
 
+namespace ccl::parser
+{
+    class NodesLifetimeManager;
+}
+
 namespace ccl::parser::ast
 {
-    class Node : public isl::DynamicForwardListNode
+    class Node;
+
+    struct LifetimeManagerNode
+    {
+    private:
+        friend NodesLifetimeManager;
+        Node *lifetimeManagerPrivateNextNode{};
+        Node *lifetimeManagerPrivatePreviousNode{};
+        NodesLifetimeManager *lifetimeManager{};
+
+    public:
+        [[nodiscard]] auto getLifetimeManager() const -> NodesLifetimeManager *
+        {
+            return lifetimeManager;
+        }
+    };
+
+    class Node
+      : public isl::DynamicForwardListNode
+      , public LifetimeManagerNode
     {
     private:
         SmallId nodeType{};

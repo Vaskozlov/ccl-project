@@ -44,13 +44,11 @@ struct std::hash<ccl::parser::TableEntry>
 };
 
 template<typename T>
-class fmt::formatter<ccl::parser::TableEntryPrintHelper<T>>
-  : public fmt::formatter<std::string_view>
+struct fmt::formatter<ccl::parser::TableEntryPrintHelper<T>> : formatter<std::string_view>
 {
-public:
-    template<typename FmtContext>
-    constexpr auto
-        format(ccl::parser::TableEntryPrintHelper<T> entry_print_helper, FmtContext &ctx) const
+    constexpr auto format(
+        ccl::parser::TableEntryPrintHelper<T> entry_print_helper,
+        format_context &ctx) const -> format_context::iterator
     {
         const auto &entry = entry_print_helper.entry;
 

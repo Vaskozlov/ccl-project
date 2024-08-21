@@ -6,6 +6,7 @@
 #include <ccl/parser/grammar_rules_storage.hpp>
 #include <ccl/parser/lr/action.hpp>
 #include <ccl/parser/lr/gss.hpp>
+#include <ccl/parser/parsing_result.hpp>
 #include <ccl/parser/table_entry.hpp>
 #include <isl/gss.hpp>
 
@@ -20,13 +21,13 @@ namespace ccl::parser
 
     public:
         explicit GlrParser(
-            const GrammarSlot &start_item,
+            const LrItem &start_item,
             Symbol epsilon_symbol,
             const GrammarStorage &parser_rules,
             std::function<std::string(SmallId)> id_to_string_converter = fmt::to_string<SmallId>);
 
-        [[nodiscard]] auto parse(lexer::LexicalAnalyzer::Tokenizer&tokenizer) const
-            -> std::pair<GSStack, isl::DynamicForwardList<ast::Node>>;
+        [[nodiscard]] auto
+            parse(lexer::LexicalAnalyzer::Tokenizer &tokenizer) const -> AmbiguousParsingResult;
 
         [[nodiscard]] auto getGotoTable() const noexcept -> const auto &
         {

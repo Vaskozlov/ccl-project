@@ -2,7 +2,6 @@
 #define CCL_PROJECT_NODE_OF_NODES_HPP
 
 #include <ccl/parser/ast/node.hpp>
-#include <optional>
 
 namespace ccl::parser::ast
 {
@@ -25,7 +24,7 @@ namespace ccl::parser::ast
             const std::string &prefix, bool is_left,
             std::function<std::string(SmallId)> id_converter) const -> void override;
 
-        [[nodiscard]] virtual auto getNodesPointers() const -> std::vector<const Node *>
+        [[nodiscard]] virtual auto getNodesPointers() const -> std::vector<Node *>
         {
             return {nodes.begin(), nodes.end()};
         }

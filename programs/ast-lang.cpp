@@ -29,9 +29,10 @@ auto main() -> int
     auto tokenizer = lexer.getTokenizer(input);
 
     auto lr_parser = constructor.buildLr1();
-    auto [node, storage] = lr_parser.parse(tokenizer);
+    auto [lifetime_manager, node] = lr_parser.parse(tokenizer);
 
     auto dot_repr = dot::createDotRepresentation({node}, to_str);
+
     isl::io::writeToFile(
         "/Users/vaskozlov/CLionProjects/ccl-project/cmake-build-debug-clang/test.dot", dot_repr);
 

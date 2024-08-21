@@ -14,7 +14,7 @@ TEST_CASE("TreeStructureTest", "[TreeParsing]")
     auto MathLrParser = math_rules_constructor.buildLr1();
 
     auto tokenizer = lexer.getTokenizer("10+2*3");
-    auto [parse_result, storage] = MathLrParser.parse(tokenizer);
+    auto [nodes_lifetime_manager, parse_result] = MathLrParser.parse(tokenizer);
     const auto *root_node = isl::as<ast::NodeOfNodes *>(parse_result);
 
     REQUIRE(parse_result != nullptr);
