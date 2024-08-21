@@ -27,18 +27,16 @@ template<>
 struct std::hash<ccl::parser::CanonicalCollection>
 {
     auto
-        operator()(const ccl::parser::CanonicalCollection &collection) const noexcept -> std::size_t
-    {
+    operator()(const ccl::parser::CanonicalCollection&collection) const noexcept -> std::size_t {
         return std::hash<std::vector<ccl::parser::LrItem>>{}(collection.items);
     }
 };
 
 template<>
-struct fmt::formatter<ccl::parser::CanonicalCollectionPrintWrapper> : formatter<std::string_view>
-{
+struct fmt::formatter<ccl::parser::CanonicalCollectionPrintWrapper> : formatter<std::string_view> {
     static auto format(
         const ccl::parser::CanonicalCollectionPrintWrapper &collection_print_wrapper,
-        format_context &ctx) -> format_context::iterator;
+        format_context&ctx) -> format_context::iterator;
 };
 
 #endif /* CCL_PROJECT_CANONICAL_COLLECTION_HPP */
