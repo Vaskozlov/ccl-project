@@ -12,7 +12,7 @@ namespace ccl::parser
     {
     private:
         using Self = std::unordered_map<Symbol, std::vector<Rule>>;
-        using AlternativesConstRuleIterator = typename std::vector<Rule>::const_iterator;
+        using AlternativesConstRuleIterator = std::vector<Rule>::const_iterator;
 
         // TODO: change to ankerl?
         std::unordered_set<Symbol> nonTerminals;
@@ -79,6 +79,7 @@ namespace ccl::parser
 
     private:
         auto registerAllRuleSymbols(const Rule &rule) -> void;
+
         auto findAndFixEmptyRules() -> void;
     };
 }// namespace ccl::parser
