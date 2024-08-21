@@ -6,11 +6,10 @@
 namespace ccl::parser
 {
     LrParser::LrParser(
-        const GrammarSlot &start_item,
+        const LrItem&start_item,
         Symbol epsilon_symbol,
         const GrammarStorage &parser_rules,
-        std::function<std::string(SmallId)>
-            id_to_string_converter)
+        const std::function<std::string(SmallId)> &id_to_string_converter)
     {
         auto parser_generator =
             LrParserGenerator(start_item, epsilon_symbol, parser_rules, id_to_string_converter);
@@ -20,44 +19,46 @@ namespace ccl::parser
     }
 
     auto LrParser::parse(lexer::LexicalAnalyzer::Tokenizer &tokenizer) const
-        -> std::pair<ast::Node *, isl::DynamicForwardList<ast::Node>>
+        -> UnambiguousParsingResult
     {
-        using enum ccl::parser::ParsingAction;
+        using enum ParsingAction;
 
-        auto state_stack = Stack<State>{};
-        auto nodes_stack = Stack<ast::Node *>{};
-        auto forward_list = isl::DynamicForwardList<ast::Node>{};
         const auto *word = &tokenizer.yield();
 
-        state_stack.push(0);
+        auto parsing_result = UnambiguousParsingResult{};
+        auto parser_state = ParserState{
+            .nodesLifetimeManager = parsing_result.nodesLifetimeManager.get(),
+            .stateStack = {},
+            .nodesStack = {},
+        };
+
+        parser_state.stateStack.push(0);
 
         while (true) {
-            const auto state = state_stack.top();
+            const auto state = parser_state.stateStack.top();
+
             const auto entry = TableEntry{
                 .state = state,
                 .symbol = word->getId(),
             };
 
             if (!actionTable.contains(entry)) {
-                return {nullptr, std::move(forward_list)};
+                return parsing_result;
             }
 
-            const auto &action = actionTable.at(entry);
-
-            switch (action.getParsingAction()) {
+            switch (const auto &action = actionTable.at(entry); action.getParsingAction()) {
             case SHIFT:
-                nodes_stack.emplace(
-                    forward_list.emplaceFront<ast::TokenNode>(word->getId(), *word));
-                state_stack.emplace(action.getShiftingState());
-                word = &tokenizer.yield();
+                shiftAction(word, action.getShiftingState(), parser_state);
+                word = std::addressof(tokenizer.yield());
                 break;
 
             case REDUCE:
-                reduceAction(action, state_stack, nodes_stack);
+                reduceAction(action.getReducingItem(), parser_state);
                 break;
 
             case ACCEPT:
-                return {nodes_stack.top(), std::move(forward_list)};
+                parsing_result.root = parser_state.nodesStack.top();
+                return parsing_result;
 
             default:
                 isl::unreachable();
@@ -65,15 +66,25 @@ namespace ccl::parser
         }
     }
 
-    auto LrParser::reduceAction(
-        const Action &action,
-        Stack<State> &state_stack,
-        Stack<ast::Node *> &nodes_stack) const -> void
+    auto LrParser::shiftAction(
+        const lexer::Token *word,
+        State shifting_state,
+        ParserState &parser_state) const -> void
     {
-        const auto &lr_item = action.getReducingItem();
-        const auto production = lr_item.getProductionType();
+        auto &[nodes_lifetime_manager, state_stack, nodes_stack] = parser_state;
+
+        nodes_stack.emplace(nodes_lifetime_manager->create<ast::TokenNode>(word->getId(), *word));
+        state_stack.emplace(shifting_state);
+    }
+
+    auto LrParser::reduceAction(const LrItem &lr_item, ParserState &parser_state) const -> void
+    {
+        auto &[nodes_lifetime_manager, state_stack, nodes_stack] = parser_state;
+
+        const auto number_of_elements_to_take_from_stack = lr_item.dottedRule.size();
+
         auto items_in_production = std::vector<ast::Node *>();
-        const auto number_of_elements_to_take_from_stack = lr_item.size();
+        const auto production = lr_item.getProductionType();
 
         for (std::size_t i = 0; i != number_of_elements_to_take_from_stack; ++i) {
             items_in_production.emplace_back(nodes_stack.top());
@@ -83,10 +94,12 @@ namespace ccl::parser
 
         std::ranges::reverse(items_in_production);
 
-        const auto *rule = lr_item.getRulePtr();
-        auto reduced_item = rule->construct(production, std::move(items_in_production));
+        const auto *rule = lr_item.dottedRule.rule;
 
-        nodes_stack.emplace(std::move(reduced_item));
+        auto *reduced_item = rule->construct(production, std::move(items_in_production));
+        nodes_lifetime_manager->insert(reduced_item);
+
+        nodes_stack.emplace(reduced_item);
         state_stack.emplace(gotoTable.at({
             state_stack.top(),
             production,

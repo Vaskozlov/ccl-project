@@ -42,11 +42,7 @@ namespace ccl::parser::ll
         return GllTable{table.begin(), table.end()};
     }
 
-    auto LlParserGenerator::generateUsingRule(
-        ccl::parser::Symbol production,
-        const ccl::parser::Rule &rule) -> void
-    {
-        fmt::println("{}", std::views::transform(rule, idToStringConverter));
+    auto LlParserGenerator::generateUsingRule(Symbol production, const Rule&rule) -> void {
         const auto &rule_first_set =
             firstSetEvaluator.getFirstSetOfRules().at(std::addressof(rule));
 
@@ -55,8 +51,6 @@ namespace ccl::parser::ll
         if (set.contains(storage.getEpsilon())) {
             set.insert_range(followSetEvaluator.getFollowSet().at(production));
         }
-
-        fmt::println("{}", std::views::transform(set, idToStringConverter));
 
         for (auto symbol : set) {
             if (!storage.isTerminal(symbol) || symbol == storage.getEpsilon()) {
@@ -69,12 +63,6 @@ namespace ccl::parser::ll
                     .symbol = symbol,
                 },
                 std::addressof(rule));
-
-            fmt::println(
-                "[{},{}] = {}",
-                idToStringConverter(production),
-                idToStringConverter(symbol),
-                std::views::transform(rule, idToStringConverter));
         }
     }
 
