@@ -18,10 +18,9 @@ namespace ccl::parser
           , parsingAction{ParsingAction::SHIFT}
         {}
 
-        explicit Action(const LrItem &item)
-          : data{item}
-          , parsingAction{ParsingAction::REDUCE}
-        {}
+        explicit Action(const LrItem&item)
+            : data{item}
+              , parsingAction{ParsingAction::REDUCE} {}
 
         explicit Action(std::monostate accept_state)
           : data{accept_state}
@@ -52,18 +51,15 @@ namespace ccl::parser
         }
 
         [[nodiscard]] auto getStoredData() const noexcept CCL_LIFETIMEBOUND
-            -> const std::variant<std::monostate, State, LrItem> &
-        {
+            -> const std::variant<std::monostate, State, LrItem>& {
             return data;
         }
 
-        [[nodiscard]] auto getShiftingState() const -> State
-        {
+        [[nodiscard]] auto getShiftingState() const -> State {
             return std::get<State>(data);
         }
 
-        [[nodiscard]] auto getReducingItem() const CCL_LIFETIMEBOUND -> const LrItem &
-        {
+        [[nodiscard]] auto getReducingItem() const CCL_LIFETIMEBOUND -> const LrItem& {
             return std::get<LrItem>(data);
         }
     };
@@ -76,10 +72,9 @@ namespace ccl::parser
 }// namespace ccl::parser
 
 template<>
-struct fmt::formatter<ccl::parser::ActionPrintWrapper> :  formatter<std::string_view>
-{
-    auto format(const ccl::parser::ActionPrintWrapper &action_print_wrapper, format_context &ctx)
-        const -> format_context::iterator;
+struct fmt::formatter<ccl::parser::ActionPrintWrapper> : formatter<std::string_view> {
+    auto format(const ccl::parser::ActionPrintWrapper&action_print_wrapper, format_context&ctx)
+    const -> format_context::iterator;
 };
 
 #endif /* CCL_PROJECT_ACTION_HPP */
