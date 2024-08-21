@@ -20,7 +20,8 @@ namespace ccl::parser
 
         explicit Action(const LrItem&item)
             : data{item}
-              , parsingAction{ParsingAction::REDUCE} {}
+              , parsingAction{ParsingAction::REDUCE} {
+        }
 
         explicit Action(std::monostate accept_state)
           : data{accept_state}

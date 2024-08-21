@@ -12,23 +12,19 @@ namespace ccl::parser
     }
 
     auto LrParserGenerator::moveCollectionItemsOverSymbol(
-        const CanonicalCollection &canonical_collection, Symbol symbol) -> std::vector<GrammarSlot>
-    {
-        auto moved = std::vector<GrammarSlot>{};
+        const CanonicalCollection&canonical_collection, Symbol symbol) -> std::vector<LrItem> {
+        auto moved = std::vector<LrItem>{};
         moved.reserve(canonical_collection.items.size());
 
         for (const auto &item : canonical_collection.items) {
-            if (item.isDotInTheEnd()) {
+            if (item.dottedRule.isDotInTheEnd()) {
                 continue;
             }
 
-            const auto dot_index = item.getDotLocation();
-            const auto symbol_at_dot = item.at(dot_index);
-
-            if (symbol_at_dot == symbol) {
-                moved.emplace_back(
-                    item.getRulePtr(), item.getDotLocation() + 1, item.getProductionType(),
-                    item.getLookAhead());
+            if (item.dottedRule.atDot() == symbol) {
+                auto item_with_moved_dot = item;
+                item_with_moved_dot.dottedRule.dotPosition += 1;
+                moved.emplace_back(item_with_moved_dot);
             }
         }
 
@@ -39,7 +35,7 @@ namespace ccl::parser
         const CanonicalCollection &canonical_collection) -> void
     {
         for (const auto &item : canonical_collection.items) {
-            for (const auto symbol : item | std::views::drop(item.getDotLocation())) {
+            for (const auto symbol : item | std::views::drop(item.dottedRule.dotPosition)) {
                 auto value = GotoResult{
                     .items = moveCollectionItemsOverSymbol(canonical_collection, symbol),
                     .symbol = symbol,
@@ -68,7 +64,7 @@ namespace ccl::parser
 
     auto LrParserGenerator::tryPopFromPipe(GotoResult &value) noexcept -> PipePopStatus
     {
-        using enum ccl::parser::LrParserGenerator::PipePopStatus;
+        using enum PipePopStatus;
 
         if (!pipe.tryPop(value)) {
             if (pipe.isProducerDone()) {
@@ -84,6 +80,8 @@ namespace ccl::parser
     auto LrParserGenerator::fillCanonicalCollection(isl::thread::IdGenerator<SmallId> &closure_id)
         -> bool
     {
+        using enum PipePopStatus;
+
         auto has_new_sets = false;
         auto result = GotoResult{};
 
@@ -93,12 +91,12 @@ namespace ccl::parser
         while (true) {
             auto pop_result = tryPopFromPipe(result);
 
-            if (pop_result == PipePopStatus::PIPE_EMPTY) {
+            if (pop_result == PIPE_EMPTY) {
                 std::this_thread::sleep_for(100us);
                 continue;
             }
 
-            if (pop_result == PipePopStatus::PIPE_CLOSED) {
+            if (pop_result == PIPE_CLOSED) {
                 break;
             }
 
@@ -114,10 +112,10 @@ namespace ccl::parser
                 .symbol = symbol,
             };
 
-            const auto cc_it = std::ranges::find(canonicalCollection, temp_cc);
+            const auto canonical_collection_it = std::ranges::find(canonicalCollection, temp_cc);
 
-            if (cc_it != canonicalCollection.end()) {
-                transitions.try_emplace(entry, cc_it->id);
+            if (canonical_collection_it != canonicalCollection.end()) {
+                transitions.try_emplace(entry, canonical_collection_it->id);
                 continue;
             }
 
@@ -132,16 +130,32 @@ namespace ccl::parser
         return has_new_sets;
     }
 
-    auto LrParserGenerator::constructCanonicalCollection(const GrammarSlot &start_item) -> void
+    auto LrParserGenerator::constructCanonicalCollection(const LrItem &start_item) -> void
     {
         auto closure_id = isl::thread::IdGenerator<SmallId>{1};
 
-        canonicalCollection.emplace_back(CanonicalCollection{
-            .items = computeClosureOnItems({start_item}),
-            .id = 0,
-        });
+        canonicalCollection.emplace_back(
+            CanonicalCollection{
+                .items = computeClosureOnItems({start_item}),
+                .id = 0,
+            });
 
         lastPolledCanonicalCollection = canonicalCollection.begin();
         CCL_REPEAT_WHILE(fillCanonicalCollection(closure_id))
     }
 }// namespace ccl::parser
+
+auto fmt::formatter<ccl::parser::CanonicalCollectionPrintWrapper>::format(
+    const ccl::parser::CanonicalCollectionPrintWrapper &collection_print_wrapper,
+    format_context &ctx) -> format_context::iterator
+{
+    const auto &collection = collection_print_wrapper.canonicalCollection;
+
+    return fmt::format_to(
+        ctx.out(), "{}: {}", collection.id,
+        std::views::transform(
+            collection.items, [&collection_print_wrapper](const ccl::parser::LrItem &item) {
+                return ccl::parser::LrItemPrintWrapper(
+                    item, collection_print_wrapper.idToStringConversionFunction);
+            }));
+}

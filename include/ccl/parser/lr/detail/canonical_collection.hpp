@@ -1,14 +1,13 @@
 #ifndef CCL_PROJECT_CANONICAL_COLLECTION_HPP
 #define CCL_PROJECT_CANONICAL_COLLECTION_HPP
 
-#include <ccl/parser/grammar_slot.hpp>
-#include <list>
+#include <ccl/parser/lr_item.hpp>
 
 namespace ccl::parser
 {
     struct CanonicalCollection
     {
-        std::vector<GrammarSlot> items;
+        std::vector<LrItem> items;
         State id{};
 
         [[nodiscard]] auto operator==(const CanonicalCollection &other) const noexcept -> bool
@@ -27,33 +26,19 @@ namespace ccl::parser
 template<>
 struct std::hash<ccl::parser::CanonicalCollection>
 {
-    auto operator()(const ccl::parser::CanonicalCollection &collection) const -> std::size_t
+    auto
+        operator()(const ccl::parser::CanonicalCollection &collection) const noexcept -> std::size_t
     {
-        return std::hash<std::vector<ccl::parser::GrammarSlot>>{}(collection.items);
+        return std::hash<std::vector<ccl::parser::LrItem>>{}(collection.items);
     }
 };
 
 template<>
-class fmt::formatter<ccl::parser::CanonicalCollectionPrintWrapper>
-  : public fmt::formatter<std::string_view>
+struct fmt::formatter<ccl::parser::CanonicalCollectionPrintWrapper> : formatter<std::string_view>
 {
-public:
-    template<typename FmtContext>
-    constexpr auto format(
+    static auto format(
         const ccl::parser::CanonicalCollectionPrintWrapper &collection_print_wrapper,
-        FmtContext &ctx) const
-    {
-        const auto &collection = collection_print_wrapper.canonicalCollection;
-
-        return fmt::format_to(
-            ctx.out(), "{}: {}", collection.id,
-            std::views::transform(
-                collection.items,
-                [&collection_print_wrapper](const ccl::parser::GrammarSlot &item) {
-                    return ccl::parser::GrammarSlotPrintWrapper(
-                        item, collection_print_wrapper.idToStringConversionFunction);
-                }));
-    }
+        format_context &ctx) -> format_context::iterator;
 };
 
 #endif /* CCL_PROJECT_CANONICAL_COLLECTION_HPP */

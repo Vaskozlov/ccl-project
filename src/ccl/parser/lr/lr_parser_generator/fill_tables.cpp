@@ -1,5 +1,4 @@
 #include "ccl/parser/lr/detail/lr_parser_generator.hpp"
-#include <ranges>
 
 namespace ccl::parser
 {
@@ -62,38 +61,42 @@ namespace ccl::parser
 
     auto LrParserGenerator::fillActionTableEntry(
         const CanonicalCollection &cc,
-        const GrammarSlot &item) -> void
-    {
-        using enum ccl::parser::ParsingAction;
+        const LrItem&item) -> void {
+        using enum ParsingAction;
+        const auto is_dot_in_the_end = item.dottedRule.isDotInTheEnd();
 
-        if (item.isDotInTheEnd() && item.getProductionType() == goalProduction) {
+        if (is_dot_in_the_end && item.getProductionType() == goalProduction) {
             insertIntoActionTable(
                 TableEntry{
                     .state = cc.id,
                     .symbol = endOfInput,
                 },
                 std::monostate{});
-        } else if (item.isDotInTheEnd()) {
+            return;
+        }
+
+        if (is_dot_in_the_end) {
             insertIntoActionTable(
                 TableEntry{
                     .state = cc.id,
                     .symbol = item.getLookAhead(),
                 },
                 item);
-        } else {
-            const auto symbol_at_dot = item.at(item.getDotLocation());
-
-            if (!isTerminal(symbol_at_dot)) {
-                return;
-            }
-
-            const auto entry = TableEntry{
-                .state = cc.id,
-                .symbol = symbol_at_dot,
-            };
-
-            insertIntoActionTable(entry, transitions.at(entry));
+            return;
         }
+
+        const auto symbol_at_dot = item.dottedRule.atDot();
+
+        if (!isTerminal(symbol_at_dot)) {
+            return;
+        }
+
+        const auto entry = TableEntry{
+            .state = cc.id,
+            .symbol = symbol_at_dot,
+        };
+
+        insertIntoActionTable(entry, transitions.at(entry));
     }
 
     auto LrParserGenerator::fillGotoTableEntry(const CanonicalCollection &cc, Symbol symbol) -> void
@@ -123,7 +126,7 @@ namespace ccl::parser
         auto action = Action{std::forward<Ts>(args)...};
 
         actionTable.try_emplace(entry);
-        actionTable.at(entry).emplace(std::move(action));
+        actionTable.at(entry).emplace(action);
     }
 
     auto LrParserGenerator::insertIntoGotoTable(TableEntry entry, State state) -> void

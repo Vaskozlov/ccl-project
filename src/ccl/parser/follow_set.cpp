@@ -6,9 +6,9 @@ namespace ccl::parser
         Symbol start_symbol, Symbol end_of_input, Symbol epsilon_symbol,
         const GrammarStorage &parser_rules,
         const std::unordered_map<Symbol, std::unordered_set<Symbol>> &first_set)
-      : FirstAndFollowSetsCommon::FirstAndFollowSetsCommon{parser_rules}
-      , firstSet{first_set}
-      , epsilonSymbol{epsilon_symbol}
+        : FirstAndFollowSetsCommon{parser_rules}
+          , firstSet{first_set}
+          , epsilonSymbol{epsilon_symbol}
     {
         initializeFollowSet(start_symbol, end_of_input);
         computeFollowSet();
@@ -57,8 +57,9 @@ namespace ccl::parser
         const Rule &rule, Symbol elem, std::unordered_set<Symbol> &trailer) -> bool
     {
         auto has_modifications = insertRange(followSet[elem], trailer);
-        insertRange(followSetOfRule[std::addressof(rule)], trailer);
         auto elem_first_set = firstSet.at(elem);
+
+        insertRange(followSetOfRule[std::addressof(rule)], trailer);
 
         if (elem_first_set.contains(epsilonSymbol)) {
             elem_first_set.erase(epsilonSymbol);
