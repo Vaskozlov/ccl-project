@@ -117,11 +117,9 @@ namespace ccl::debug
 }// namespace ccl::debug
 
 template<>
-class fmt::formatter<ccl::debug::GrammarSymbol> : public fmt::formatter<std::string_view>
-{
-public:
-    template<typename FmtContext>
-    constexpr auto format(const ccl::debug::GrammarSymbol &symbol, FmtContext &ctx) const
+struct fmt::formatter<ccl::debug::GrammarSymbol> : formatter<std::string_view> {
+    constexpr auto format(const ccl::debug::GrammarSymbol &symbol, format_context &ctx) const
+        -> format_context::iterator
     {
         return fmt::format_to(ctx.out(), "{}", ccl::lexer::lexerEnumToString(symbol));
     }
