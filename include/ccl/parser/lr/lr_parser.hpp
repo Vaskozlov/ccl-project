@@ -5,6 +5,7 @@
 #include <ccl/parser/ast/node.hpp>
 #include <ccl/parser/grammar_rules_storage.hpp>
 #include <ccl/parser/lr/action.hpp>
+#include <ccl/parser/parsing_result.hpp>
 #include <ccl/parser/table_entry.hpp>
 
 namespace ccl::parser
@@ -12,18 +13,26 @@ namespace ccl::parser
     class LrParser
     {
     private:
+        struct ParserState
+        {
+            NodesLifetimeManager *nodesLifetimeManager;
+            Stack<State> stateStack;
+            Stack<ast::Node *> nodesStack;
+        };
+
         ankerl::unordered_dense::map<TableEntry, State> gotoTable;
         ankerl::unordered_dense::map<TableEntry, Action> actionTable;
 
     public:
         explicit LrParser(
-            const GrammarSlot &start_item,
+            const LrItem &start_item,
             Symbol epsilon_symbol,
             const GrammarStorage &parser_rules,
-            std::function<std::string(SmallId)> id_to_string_converter = fmt::to_string<SmallId>);
+            const std::function<std::string(SmallId)> &id_to_string_converter =
+                fmt::to_string<SmallId>);
 
-        [[nodiscard]] auto parse(lexer::LexicalAnalyzer::Tokenizer &tokenizer) const
-            -> std::pair<ast::Node *, isl::DynamicForwardList<ast::Node>>;
+        [[nodiscard]] auto
+            parse(lexer::LexicalAnalyzer::Tokenizer &tokenizer) const -> UnambiguousParsingResult;
 
         [[nodiscard]] auto getGotoTable() const noexcept -> const auto &
         {
@@ -36,10 +45,10 @@ namespace ccl::parser
         }
 
     private:
-        auto reduceAction(
-            const Action &action,
-            Stack<State> &state_stack,
-            Stack<ast::Node *> &nodes_stack) const -> void;
+        auto shiftAction(const lexer::Token *word, State shifting_state, ParserState &parser_state)
+            const -> void;
+
+        auto reduceAction(const LrItem &lr_item, ParserState &parser_state) const -> void;
     };
 }// namespace ccl::parser
 
