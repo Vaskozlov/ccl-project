@@ -1,7 +1,7 @@
 #ifndef CCL_PROJECT_ACTION_HPP
 #define CCL_PROJECT_ACTION_HPP
 
-#include <ccl/parser/grammar_slot.hpp>
+#include <ccl/parser/lr_item.hpp>
 #include <ccl/parser/lr/detail/parsing_action.hpp>
 
 namespace ccl::parser
@@ -9,7 +9,7 @@ namespace ccl::parser
     class Action
     {
     private:
-        std::variant<std::monostate, State, GrammarSlot> data;
+        std::variant<std::monostate, State, LrItem> data;
         ParsingAction parsingAction;
 
     public:
@@ -18,7 +18,7 @@ namespace ccl::parser
           , parsingAction{ParsingAction::SHIFT}
         {}
 
-        explicit Action(const GrammarSlot &item)
+        explicit Action(const LrItem &item)
           : data{item}
           , parsingAction{ParsingAction::REDUCE}
         {}
@@ -28,7 +28,6 @@ namespace ccl::parser
           , parsingAction{ParsingAction::ACCEPT}
         {}
 
-        [[nodiscard]] auto operator==(const Action &other) const noexcept -> bool = default;
         [[nodiscard]] auto
             operator<=>(const Action &other) const noexcept -> std::weak_ordering = default;
 
@@ -53,19 +52,19 @@ namespace ccl::parser
         }
 
         [[nodiscard]] auto getStoredData() const noexcept CCL_LIFETIMEBOUND
-            -> const std::variant<std::monostate, State, GrammarSlot> &
+            -> const std::variant<std::monostate, State, LrItem> &
         {
             return data;
         }
 
-        [[nodiscard]] auto getShiftingState() const noexcept -> State
+        [[nodiscard]] auto getShiftingState() const -> State
         {
             return std::get<State>(data);
         }
 
-        [[nodiscard]] auto getReducingItem() const noexcept CCL_LIFETIMEBOUND -> const GrammarSlot &
+        [[nodiscard]] auto getReducingItem() const CCL_LIFETIMEBOUND -> const LrItem &
         {
-            return std::get<GrammarSlot>(data);
+            return std::get<LrItem>(data);
         }
     };
 
@@ -77,40 +76,10 @@ namespace ccl::parser
 }// namespace ccl::parser
 
 template<>
-class fmt::formatter<ccl::parser::ActionPrintWrapper> : public fmt::formatter<std::string_view>
+struct fmt::formatter<ccl::parser::ActionPrintWrapper> :  formatter<std::string_view>
 {
-private:
-    template<class... Ts>
-    struct overloaded : Ts...
-    {
-        using Ts::operator()...;
-    };
-
-public:
-    template<typename FmtContext>
-    constexpr auto
-        format(const ccl::parser::ActionPrintWrapper &action_print_wrapper, FmtContext &ctx) const
-        -> decltype(auto)
-    {
-        using namespace ccl::parser;
-
-        auto &action = action_print_wrapper.action;
-        fmt::format_to(ctx.out(), "{} ", action.getParsingAction());
-
-        return std::visit(
-            overloaded{
-                [&ctx, &action_print_wrapper](const GrammarSlot &arg) {
-                    return fmt::format_to(
-                        ctx.out(),
-                        "{}",
-                        GrammarSlotPrintWrapper(arg, action_print_wrapper.idToStr));
-                },
-                [&ctx](auto arg) {
-                    return fmt::format_to(ctx.out(), "{}", arg);
-                },
-            },
-            action.getStoredData());
-    }
+    auto format(const ccl::parser::ActionPrintWrapper &action_print_wrapper, format_context &ctx)
+        const -> format_context::iterator;
 };
 
 #endif /* CCL_PROJECT_ACTION_HPP */
