@@ -1,5 +1,6 @@
 #include <ccl/parser/ast/token_node.hpp>
 #include <ccl/parser/ll/ll_1_parser.hpp>
+#include <ccl/parser/parsing_result.hpp>
 
 namespace ccl::parser
 {
@@ -10,17 +11,17 @@ namespace ccl::parser
       , storage{grammar_storage}
       , grammarGoalSymbol{start_symbol}
     {
-        auto ll_generator = ll::LlParserGenerator{start_symbol, storage, idToStringConverter};
+        const auto ll_generator = ll::LlParserGenerator{start_symbol, storage, idToStringConverter};
         table = ll_generator.createLl1Table();
     }
 
-    auto Ll1Parser::parse(lexer::LexicalAnalyzer::Tokenizer &tokenizer)
-        -> std::pair<ast::Node *, isl::DynamicForwardList<ast::NodeOfNodes>>
+    auto Ll1Parser::parse(lexer::LexicalAnalyzer::Tokenizer &tokenizer) -> UnambiguousParsingResult
     {
         const auto *word = std::addressof(tokenizer.yield());
         auto stack = Stack<ast::Node *>{};
-        auto forward_list = isl::DynamicForwardList<ast::NodeOfNodes>{};
-        auto *goal = forward_list.emplaceFront<ast::NodeOfNodes>(grammarGoalSymbol);
+        auto parsing_result = UnambiguousParsingResult{};
+        auto *nodes_lifetime_manager = parsing_result.nodesLifetimeManager.get();
+        auto *goal = nodes_lifetime_manager->create<ast::NodeOfNodes>(grammarGoalSymbol);
 
         stack.emplace(nullptr);
         stack.emplace(goal);
@@ -29,12 +30,13 @@ namespace ccl::parser
             auto *focus = stack.top();
 
             if (focus == nullptr && word->getId() == 0) {
-                return {goal, std::move(forward_list)};
+                parsing_result.root = goal;
+                return parsing_result;
             }
 
             if (storage.isTerminal(focus->getType())) {
                 if (focus->getType() != word->getId()) {
-                    return {nullptr, std::move(forward_list)};
+                    return parsing_result;
                 }
 
                 dynamic_cast<ast::TokenNode *>(focus)->setToken(*word);
@@ -51,7 +53,7 @@ namespace ccl::parser
             auto rule_it = table.find(entry);
 
             if (rule_it == table.end()) {
-                return {nullptr, std::move(forward_list)};
+                return parsing_result;
             }
 
             const auto *rule = rule_it->second;
