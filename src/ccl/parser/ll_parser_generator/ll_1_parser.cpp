@@ -15,13 +15,12 @@ namespace ccl::parser
         table = ll_generator.createLl1Table();
     }
 
-    auto Ll1Parser::parse(lexer::LexicalAnalyzer::Tokenizer &tokenizer) -> UnambiguousParsingResult
-    {
+    auto Ll1Parser::parse(lexer::LexicalAnalyzer::Tokenizer&tokenizer) -> UnambiguousParsingResult {
         const auto *word = std::addressof(tokenizer.yield());
         auto stack = Stack<ast::Node *>{};
         auto parsing_result = UnambiguousParsingResult{};
-        auto *nodes_lifetime_manager = parsing_result.nodesLifetimeManager.get();
-        auto *goal = nodes_lifetime_manager->create<ast::NodeOfNodes>(grammarGoalSymbol);
+        auto* nodes_lifetime_manager = parsing_result.nodesLifetimeManager.get();
+        auto* goal = nodes_lifetime_manager->create<ast::NodeOfNodes>(grammarGoalSymbol);
 
         stack.emplace(nullptr);
         stack.emplace(goal);

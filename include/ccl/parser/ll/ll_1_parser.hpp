@@ -3,6 +3,7 @@
 
 #include <ccl/lexer/tokenizer.hpp>
 #include <ccl/parser/ll/ll_parser_generator.hpp>
+#include <ccl/parser/parsing_result.hpp>
 
 namespace ccl::parser
 {
@@ -19,8 +20,7 @@ namespace ccl::parser
             SmallId start_symbol, const GrammarStorage &grammar_storage,
             std::function<std::string(SmallId)> id_to_string_converter);
 
-        auto parse(lexer::LexicalAnalyzer::Tokenizer &tokenizer)
-            -> std::pair<ast::Node *, isl::DynamicForwardList<ast::NodeOfNodes>>;
+        auto parse(lexer::LexicalAnalyzer::Tokenizer &tokenizer) -> UnambiguousParsingResult;
     };
 }// namespace ccl::parser
 
