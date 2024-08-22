@@ -3,13 +3,15 @@
 #include <ccl/parser/ll/gss.hpp>
 #include <ccl/parser/lr/lr_item.hpp>
 
-namespace ccl::parser {
-    static auto debugGll(ll::GSS&gss, auto&&function) -> void {
+namespace ccl::parser
+{
+    static auto debugGll(ll::GSS &gss, auto &&function) -> void
+    {
         auto result = std::vector<ast::Node *>{};
 
-        for (const auto&level: gss.getLevels()) {
-            for (const auto&node: level) {
-                for (auto* n: node->sppfNode.nodes) {
+        for (const auto &level : gss.getLevels()) {
+            for (const auto &node : level) {
+                for (auto *n : node->sppfNode.nodes) {
                     result.emplace_back(n);
                 }
             }
@@ -21,25 +23,27 @@ namespace ccl::parser {
     }
 
     GllParser::GllParser(
-        SmallId start_symbol, const GrammarStorage&grammar_storage,
-        const std::function<std::string(SmallId)>&id_to_string_converter)
-        : idToStringConverter{id_to_string_converter}
-          , storage{grammar_storage}
-          , grammarGoalSymbol{start_symbol} {
+        SmallId start_symbol, const GrammarStorage &grammar_storage,
+        const std::function<std::string(SmallId)> &id_to_string_converter)
+      : idToStringConverter{id_to_string_converter}
+      , storage{grammar_storage}
+      , grammarGoalSymbol{start_symbol}
+    {
         const auto ll_generator = ll::LlParserGenerator{start_symbol, storage, idToStringConverter};
         table = ll_generator.createGllTable();
     }
 
-    auto GllParser::parse(lexer::LexicalAnalyzer::Tokenizer&tokenizer) -> AmbiguousParsingResult {
+    auto GllParser::parse(lexer::LexicalAnalyzer::Tokenizer &tokenizer) -> AmbiguousParsingResult
+    {
         auto parsing_result = AmbiguousParsingResult{};
 
-        auto* nodes_lifetime_manager = parsing_result.nodesLifetimeManager.get();
-        auto* token = nodes_lifetime_manager->create<ast::TokenNode>(tokenizer.yield());
+        auto *nodes_lifetime_manager = parsing_result.nodesLifetimeManager.get();
+        auto *token = nodes_lifetime_manager->create<ast::TokenNode>(tokenizer.yield());
 
-        auto gss = ll::GSS{};
+        auto gss = ll::GSS{&storage};
         gss.nextWord();
 
-        const auto* start_rule = std::addressof(storage.at(grammarGoalSymbol).front());
+        const auto *start_rule = std::addressof(storage.at(grammarGoalSymbol).front());
 
         const auto start_rule_with_dot = RuleWithDot{
             .rule = start_rule,
@@ -51,7 +55,7 @@ namespace ccl::parser {
             .production = grammarGoalSymbol,
         };
 
-        auto* start_node = gss.createNode(nullptr, start_sppf, 0);
+        auto *start_node = gss.createNode(nullptr, start_sppf, 0);
 
         gss.add(
             {
@@ -70,7 +74,7 @@ namespace ccl::parser {
                 gss.nextWord();
             }
 
-            auto&sppf = descriptor.stack->sppfNode;
+            auto &sppf = descriptor.stack->sppfNode;
             fmt::println("Rule: {}", RuleWithDotPrintWrapper(sppf.rule, idToStringConverter));
 
             if (sppf.rule.isDotInTheEnd()) {
@@ -89,6 +93,12 @@ namespace ccl::parser {
                 fmt::println("ACCEPTED");
                 parsing_result.roots.emplace_back(descriptor.stack->sppfNode.nodes.front());
                 debugGll(gss, idToStringConverter);
+                continue;
+            }
+
+            if (focus == storage.getEpsilon()) {
+                sppf.rule.dotPosition += 1;
+                gss.add(descriptor, idToStringConverter);
                 continue;
             }
 
@@ -115,24 +125,26 @@ namespace ccl::parser {
                 return parsing_result;
             }
 
-            const auto&rules = rules_it->second;
+            const auto &rules = rules_it->second;
 
-            for (const auto* rule: rules) {
+            for (const auto *rule : rules) {
                 auto new_sppf_node = SPPFNode{
                     .rule =
-                    {
-                        .rule = rule,
-                        .dotPosition = 0,
-                    },
+                        {
+                            .rule = rule,
+                            .dotPosition = 0,
+                        },
                     .production = focus,
                 };
 
                 auto *new_node = gss.createNode(descriptor.stack, new_sppf_node, input_position);
 
-                gss.add({
-                            .stack = new_node,
-                            .inputPosition = input_position,
-                        }, idToStringConverter);
+                gss.add(
+                    {
+                        .stack = new_node,
+                        .inputPosition = input_position,
+                    },
+                    idToStringConverter);
             }
 
             debugGll(gss, idToStringConverter);

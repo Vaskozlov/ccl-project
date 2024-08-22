@@ -8,9 +8,9 @@ namespace ccl::parser
 {
     struct SPPFNode
     {
+        std::vector<ast::Node *> nodes;
         RuleWithDot rule{};
         Symbol production{};
-        std::vector<ast::Node *> nodes;
 
         auto next(ast::Node* node) -> void {
             rule.dotPosition += 1;

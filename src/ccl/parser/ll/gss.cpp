@@ -17,7 +17,7 @@ namespace ccl::parser::ll {
         const auto input_position = descriptor.inputPosition;
         auto* constructed_node = descriptor.stack->sppfNode.build();
 
-        for (auto&previous = descriptor.stack->previous; Node* prev: previous) {
+        for (Node* prev: descriptor.stack->previous) {
             auto new_sppf = prev->sppfNode;
             new_sppf.next(constructed_node);
 
@@ -36,7 +36,7 @@ namespace ccl::parser::ll {
         Descriptor descriptor,
         const std::function<std::string(SmallId)>&id_to_string_converter) -> void {
         auto inserted = false;
-        auto* node = descriptor.stack;
+        auto *node = descriptor.stack;
 
         std::tie(std::ignore, inserted) = passed.emplace(
             PassedDescriptor{
@@ -63,11 +63,25 @@ namespace ccl::parser::ll {
             },
             descriptor.inputPosition);
 
+        auto at_dot = descriptor.stack->sppfNode.rule.isDotInTheEnd()
+                          ? 0
+                          : descriptor.stack->sppfNode.atDot();
+
         if (descriptor.inputPosition == globalInputPosition) {
-            descriptors.emplace_back(descriptor);
+            if (storage->isTerminal(at_dot)) {
+                terminalDescriptors.emplace_back(descriptor);
+            }
+            else {
+                nonTerminalDescriptors.emplace_back(descriptor);
+            }
         }
         else {
-            descriptors.emplace_front(descriptor);
+            if (storage->isTerminal(at_dot)) {
+                terminalDescriptors.emplace_front(descriptor);
+            }
+            else {
+                nonTerminalDescriptors.emplace_front(descriptor);
+            }
         }
     }
 
@@ -120,4 +134,4 @@ namespace ccl::parser::ll {
 
         return levels.at(input_position);
     }
-} // namespace ccl::parser::ll
+}// namespace ccl::parser::ll
