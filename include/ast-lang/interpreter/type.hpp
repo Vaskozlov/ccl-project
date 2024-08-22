@@ -4,9 +4,8 @@
 #include <ast-lang/ast-lang.hpp>
 #include <ast-lang/ast/node.hpp>
 #include <ccl/parser/ast/node.hpp>
-#include <isl/flatmap.hpp>
+#include <isl/static_flat_map.hpp>
 #include <isl/string_view.hpp>
-#include <list>
 
 namespace astlang::interpreter
 {
@@ -95,9 +94,10 @@ namespace astlang::interpreter
 
 
 template<>
-struct fmt::formatter<astlang::interpreter::Type> : public fmt::formatter<std::string_view>
+struct fmt::formatter<astlang::interpreter::Type> : formatter<std::string_view>
 {
-    auto format(astlang::interpreter::Type type, format_context &ctx) const -> decltype(ctx.out())
+    auto format(astlang::interpreter::Type type, format_context &ctx) const
+        -> format_context::iterator
     {
         return formatter<std::string_view>::format(type.toString(), ctx);
     }

@@ -5,13 +5,13 @@
 
 namespace ccl::parser::dot
 {
-    using Edge = isl::dot::detail::Edge;
+    using Edge = isl::dot::Edge;
 
-    using EdgeInfo = isl::dot::detail::EdgeInfo;
-    using NodeInfo = isl::dot::detail::NodeInfo;
+    using EdgeInfo = isl::dot::EdgeInfo;
+    using NodeInfo = isl::dot::NodeInfo;
 
     template<typename T, typename ToStrArg>
-    using TreeInformation = isl::dot::detail::TreeInformation<T, ToStrArg>;
+    using TreeInformation = isl::dot::TreeInformation<T, ToStrArg>;
 
     static auto createDotRepresentation(
         ast::Node *root,

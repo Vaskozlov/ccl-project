@@ -2,6 +2,7 @@
 #define CCL_PROJECT_STRING_NODE_HPP
 
 #include <ccl/parser/ast/node.hpp>
+#include <isl/string_view.hpp>
 
 namespace ccl::parser::ast
 {

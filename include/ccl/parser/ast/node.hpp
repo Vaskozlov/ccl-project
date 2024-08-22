@@ -4,7 +4,6 @@
 #include <ccl/ccl.hpp>
 #include <functional>
 #include <isl/dynamic_forward_list.hpp>
-#include <isl/gss.hpp>
 
 namespace ccl::parser
 {
@@ -70,11 +69,5 @@ namespace ccl::parser::ast
             }) const -> void = 0;
     };
 }// namespace ccl::parser::ast
-
-namespace ccl::parser
-{
-    using GSStack = isl::GSStack<ast::Node *>;
-    using GSSNode = isl::GSSNode<ast::Node *>;
-}// namespace ccl::parser
 
 #endif /* CCL_PROJECT_NODE_HPP */
