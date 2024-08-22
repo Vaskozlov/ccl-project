@@ -1,22 +1,27 @@
 #include "ccl/parser/lr/glr_parser.hpp"
+
+#include <ccl/parser/lr/gss.hpp>
+
 #include "ccl/lexer/tokenizer.hpp"
 #include "ccl/parser/ast/token_node.hpp"
 #include "ccl/parser/dot/dot_repr.hpp"
-#include "ccl/parser/lr/detail/glr_runner.hpp"
 #include "ccl/parser/lr/detail/lr_parser_generator.hpp"
 #include <isl/dot_repr.hpp>
 
 namespace ccl::parser
 {
-    using namespace detail;
     using enum ParsingAction;
 
-    auto debugGlr(lr::GSS &gss, auto &&function) -> void
+    static auto debugGlr(lr::GSS &gss, auto &&function) -> void
     {
         auto result = std::vector<ast::Node *>{};
 
-        for (auto &level : gss.getLevels()) {
-            for (auto &node : level) {
+        for (const auto &level : gss.getLevels()) {
+            for (const auto &node : level.terminals) {
+                result.emplace_back(node->value);
+            }
+
+            for (const auto &node : level.nonTerminals) {
                 result.emplace_back(node->value);
             }
         }
@@ -34,7 +39,7 @@ namespace ccl::parser
       : idToStringConverter{std::move(id_to_string_converter)}
     {
         auto parser_generator =
-            LrParserGenerator(start_item, epsilon_symbol, parser_rules, idToStringConverter);
+            lr::LrParserGenerator(start_item, epsilon_symbol, parser_rules, idToStringConverter);
 
         gotoTable = std::move(parser_generator.getGotoTable());
         actionTable = parser_generator.getGlrActionTable();
@@ -47,10 +52,11 @@ namespace ccl::parser
 
         auto parsing_result = AmbiguousParsingResult{};
         auto *nodes_lifetime_manager = parsing_result.nodesLifetimeManager.get();
-        auto *token = std::add_pointer_t<ast::TokenNode>{};
+        auto *token = nodes_lifetime_manager->create<ast::TokenNode>(tokenizer.yield());
+
         auto gss = lr::GSS{};
-        auto [start_node, start_node_created] =
-            gss.pushTerminal(nullptr, 0, 0, nodes_lifetime_manager->create<ast::TokenNode>(0U));
+        gss.nextWord();
+        auto *start_node = gss.pushTerminal(nullptr, 0, 0, token);
 
         auto start_descriptor = lr::GSS::Descriptor{
             .stack = start_node,
@@ -87,7 +93,7 @@ namespace ccl::parser
 
                 switch (action_type) {
                 case SHIFT: {
-                    auto [new_node, isNew] = gss.pushTerminal(
+                    auto *new_node = gss.pushTerminal(
                         descriptor.stack,
                         descriptor.inputPosition,
                         action.getShiftingState(),
@@ -95,9 +101,9 @@ namespace ccl::parser
 
                     nodes_lifetime_manager->insert(new_node->value);
                     gss.add({
-                        new_node,
-                        descriptor.inputPosition + 1,
-                        action.getShiftingState(),
+                        .stack = new_node,
+                        .inputPosition = descriptor.inputPosition + 1,
+                        .parserState = action.getShiftingState(),
                     });
                     break;
                 }

@@ -5,14 +5,15 @@
 #include <ccl/lexer/lexical_analyzer.hpp>
 #include <ccl/lexer/rule/container.hpp>
 #include <ccl/parser/grammar_rules_storage.hpp>
-#include <ccl/parser/lr_item.hpp>
-#include <isl/thread/id_generator.hpp>
+#include <ccl/parser/lr/lr_item.hpp>
+#include <isl/id_generator.hpp>
 
 namespace ccl::parser
 {
     class LrParser;
     class GlrParser;
     class Ll1Parser;
+    class GllParser;
 }// namespace ccl::parser
 
 namespace ccl::parser::reader
@@ -29,7 +30,7 @@ namespace ccl::parser::reader
         lexer::LexicalAnalyzer lexicalAnalyzer{handler::Cmd::instance()};
         std::map<SmallId, std::string> ruleIdToName;
         std::map<isl::string_view, SmallId> ruleNameToId;
-        isl::thread::IdGenerator<SmallId> ruleIdGenerator;
+        isl::IdGenerator<SmallId> ruleIdGenerator;
         GrammarStorage grammarRulesStorage;
         Mode rulesConstructorMode{Mode::LR};
         bool rulesConstructorFinalized{};
@@ -43,7 +44,7 @@ namespace ccl::parser::reader
 
         auto buildLl1() -> Ll1Parser;
 
-        auto buildGLL() -> void;
+        auto buildGLL() -> GllParser;
 
         auto addRule(isl::string_view rule_name) -> SmallId;
 

@@ -64,11 +64,10 @@ namespace ccl::parser::dot
 
     auto createDotRepresentation(
         const std::vector<ast::Node *> &roots,
-        std::function<std::string(SmallId)>
-            node_type_to_string) -> std::string
+        const std::function<std::string(SmallId)> &node_type_to_string) -> std::string
     {
-        auto tree_data = TreeInformation<ast::Node *, SmallId>{
-            .nodeTypeToString = std::move(node_type_to_string)};
+        auto tree_data =
+            TreeInformation<ast::Node *, SmallId>{.nodeTypeToString = node_type_to_string};
 
         for (auto *root : roots) {
             createDotRepresentation(root, 0, 0, tree_data);

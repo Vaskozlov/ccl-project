@@ -8,6 +8,8 @@
 #include <ccl/parser/parsing_result.hpp>
 #include <ccl/parser/table_entry.hpp>
 
+#include <ccl/parser/lr/detail/lr_parser_generator.hpp>
+
 namespace ccl::parser
 {
     class LrParser
@@ -20,8 +22,8 @@ namespace ccl::parser
             Stack<ast::Node *> nodesStack;
         };
 
-        ankerl::unordered_dense::map<TableEntry, State> gotoTable;
-        ankerl::unordered_dense::map<TableEntry, Action> actionTable;
+        lr::LrGotoTable gotoTable;
+        lr::Lr1ActionTable actionTable;
 
     public:
         explicit LrParser(

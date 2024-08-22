@@ -2,21 +2,19 @@
 #define CCL_PROJECT_GLR_PARSER_HPP
 
 #include <ccl/lexer/lexical_analyzer.hpp>
-#include <ccl/parser/ast/node.hpp>
 #include <ccl/parser/grammar_rules_storage.hpp>
 #include <ccl/parser/lr/action.hpp>
-#include <ccl/parser/lr/gss.hpp>
+#include <ccl/parser/lr/detail/lr_parser_generator.hpp>
 #include <ccl/parser/parsing_result.hpp>
 #include <ccl/parser/table_entry.hpp>
-#include <isl/gss.hpp>
 
 namespace ccl::parser
 {
     class GlrParser
     {
     private:
-        ankerl::unordered_dense::map<TableEntry, State> gotoTable;
-        ankerl::unordered_dense::map<TableEntry, std::vector<Action>> actionTable;
+        lr::LrGotoTable gotoTable;
+        lr::GlrActionTable actionTable;
         std::function<std::string(SmallId)> idToStringConverter;
 
     public:

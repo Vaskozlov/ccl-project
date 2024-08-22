@@ -25,7 +25,7 @@ namespace ccl::parser
 
         [[nodiscard]] auto isDotInTheEnd() const noexcept -> bool
         {
-            return dotPosition == rule->size();
+            return dotPosition >= rule->size();
         }
 
         [[nodiscard]] auto at(std::size_t index) const -> Symbol

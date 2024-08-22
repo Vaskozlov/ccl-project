@@ -90,7 +90,7 @@ namespace ccl::lexer::gen
                 codeGenerator << pop_scope << endl << '}' << endl << endl;
             }};
 
-            codeGenerator << "enum " << enumName << " : ccl::u32;";
+            codeGenerator << "enum " << enumName << " : ccl::SmallId;";
         }
 
         codeGenerator
@@ -164,7 +164,7 @@ namespace ccl::lexer::gen
 
     auto StaticGenerator::generateEnum() -> void
     {
-        codeGenerator << "enum " << enumName << " : ccl::u32 {";
+        codeGenerator << "enum " << enumName << " : ccl::SmallId {";
         codeGenerator << push_scope;
 
         auto enum_definition = isl::Raii{[this]() {

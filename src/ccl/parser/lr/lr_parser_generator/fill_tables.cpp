@@ -1,9 +1,8 @@
 #include "ccl/parser/lr/detail/lr_parser_generator.hpp"
 
-namespace ccl::parser
+namespace ccl::parser::lr
 {
-    auto LrParserGenerator::getLrActionTable() const
-        -> ankerl::unordered_dense::map<TableEntry, Action>
+    auto LrParserGenerator::getLrActionTable() const -> Lr1ActionTable
     {
         auto has_errors = false;
         auto result = ankerl::unordered_dense::map<TableEntry, Action>{};
@@ -35,16 +34,9 @@ namespace ccl::parser
         return result;
     }
 
-    [[nodiscard]] auto LrParserGenerator::getGlrActionTable() const
-        -> ankerl::unordered_dense::map<TableEntry, std::vector<Action>>
+    [[nodiscard]] auto LrParserGenerator::getGlrActionTable() const -> const GlrActionTable &
     {
-        auto result = ankerl::unordered_dense::map<TableEntry, std::vector<Action>>{};
-
-        for (const auto &[key, actions] : actionTable) {
-            result.try_emplace(key, actions.begin(), actions.end());
-        }
-
-        return result;
+        return actionTable;
     }
 
     auto
@@ -59,9 +51,9 @@ namespace ccl::parser
         }
     }
 
-    auto LrParserGenerator::fillActionTableEntry(
-        const CanonicalCollection &cc,
-        const LrItem&item) -> void {
+    auto LrParserGenerator::fillActionTableEntry(const CanonicalCollection &cc, const LrItem &item)
+        -> void
+    {
         using enum ParsingAction;
         const auto is_dot_in_the_end = item.dottedRule.isDotInTheEnd();
 
@@ -125,16 +117,18 @@ namespace ccl::parser
     {
         auto action = Action{std::forward<Ts>(args)...};
 
-        actionTable.try_emplace(entry);
-        actionTable.at(entry).emplace(action);
+        auto [it, inserted] = actionTable.try_emplace(entry);
+        auto &actions = it->second;
+
+        if (std::ranges::find(actions, action) == actions.end()) {
+            actions.emplace_back(action);
+        }
     }
 
     auto LrParserGenerator::insertIntoGotoTable(TableEntry entry, State state) -> void
     {
-        auto [it, inserted] = gotoTable.try_emplace(entry, state);
-
-        if (!inserted) {
+        if (auto [it, inserted] = gotoTable.try_emplace(entry, state); !inserted) {
             throw std::logic_error("Goto table conflict");
         }
     }
-}// namespace ccl::parser
+}// namespace ccl::parser::lr

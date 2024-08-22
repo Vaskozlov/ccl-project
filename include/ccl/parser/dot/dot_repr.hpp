@@ -9,8 +9,7 @@ namespace ccl::parser::dot
 {
     auto createDotRepresentation(
         const std::vector<ast::Node *> &roots,
-        std::function<std::string(SmallId)>
-            node_type_to_string) -> std::string;
+        const std::function<std::string(SmallId)> &node_type_to_string) -> std::string;
 }// namespace ccl::parser::dot
 
 #endif /* CCL_PROJECT_GRAPH_HPP */

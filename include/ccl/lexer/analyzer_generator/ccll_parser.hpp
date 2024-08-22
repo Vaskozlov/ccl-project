@@ -2,15 +2,14 @@
 #define CCL_PROJECT_CCLL_PARSER_HPP
 
 #include <ccl/lexer/analyzer_generator/analyzer_generator.hpp>
-#include <isl/thread/id_generator.hpp>
-#include <stack>
+#include <isl/id_generator.hpp>
 
 namespace ccl::lexer::parser
 {
     class CcllParser
     {
     public:
-        using Tokenizer = typename LexicalAnalyzer::Tokenizer;
+        using Tokenizer = LexicalAnalyzer::Tokenizer;
 
         class Rule
         {
@@ -39,7 +38,7 @@ namespace ccl::lexer::parser
         std::map<Token, isl::string_view, CompareTokensByRepr> directives;
         AnyPlaceItems anyPlaceItems;
         Tokenizer &tokenizer;
-        isl::thread::IdGenerator<SmallId> idGenerator{ReservedTokenMaxValue + 1};
+        isl::IdGenerator<SmallId> idGenerator{ReservedTokenMaxValue + 1};
 
     public:
         explicit CcllParser(Tokenizer &input_tokenizer);

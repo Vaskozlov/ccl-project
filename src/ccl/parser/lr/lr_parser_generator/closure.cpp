@@ -1,7 +1,9 @@
 #include "ccl/parser/lr/detail/lr_parser_generator.hpp"
 
-namespace ccl::parser {
-    auto LrParserGenerator::computeClosure(const LrItem&item) -> const std::vector<LrItem>& {
+namespace ccl::parser::lr
+{
+    auto LrParserGenerator::computeClosure(const LrItem &item) -> const std::vector<LrItem> &
+    {
         auto [it, inserted] = closureComputationCache.try_emplace(item);
 
         if (!inserted) {
@@ -15,8 +17,8 @@ namespace ccl::parser {
                                      ? item.getLookAhead()
                                      : item.dottedRule.at(item.dottedRule.dotPosition + 1);
 
-        for (const auto first_symbol: firstSet.at(next_symbol)) {
-            for (const auto&rule: grammarRules.at(symbol)) {
+        for (const auto first_symbol : firstSet.at(next_symbol)) {
+            for (const auto &rule : grammarRules.at(symbol)) {
                 result.emplace_back(
                     RuleWithDot{
                         .rule = std::addressof(rule),
@@ -30,7 +32,8 @@ namespace ccl::parser {
     }
 
     auto LrParserGenerator::computeClosureOnItems(std::vector<LrItem> s)
-        -> const std::vector<LrItem>& {
+        -> const std::vector<LrItem> &
+    {
         auto [it, inserted] = closureComputationOnItemsCache.try_emplace(s);
 
         if (!inserted) {
@@ -43,18 +46,18 @@ namespace ccl::parser {
             has_modifications = false;
 
             for (std::size_t index = 0; index != s.size(); ++index) {
-                const auto&item = s.at(index);
+                const auto &item = s.at(index);
 
                 if (item.dottedRule.isDotInTheEnd() || isTerminal(item.dottedRule.atDot())) {
                     continue;
                 }
 
-                const auto&generated_closure = computeClosure(item);
-                const auto is_not_in_set = [&s](const LrItem&slot) {
+                const auto &generated_closure = computeClosure(item);
+                const auto is_not_in_set = [&s](const LrItem &slot) {
                     return std::ranges::find(s, slot) == s.end();
                 };
 
-                for (const auto&generated_item:
+                for (const auto &generated_item :
                      generated_closure | std::views::filter(is_not_in_set)) {
                     s.emplace_back(generated_item);
                 }
@@ -63,4 +66,4 @@ namespace ccl::parser {
 
         return it->second = std::move(s);
     }
-} // namespace ccl::parser
+}// namespace ccl::parser::lr

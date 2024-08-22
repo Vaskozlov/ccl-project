@@ -1,27 +1,29 @@
 #include "ccl/parser/rules_reader/ast/lexer_rule_options.hpp"
+
+#include <ccl/parser/rules_reader/rules_lexer.hpp>
 #include <isl/static_flat_map.hpp>
 
 namespace ccl::parser::reader::ast
 {
     constexpr static isl::StaticFlatmap<RulesLexerToken, char, 5> OptionToRep{
         {
-            RulesLexerToken::HIDE_OPERATOR,
+            HIDE_OPERATOR,
             'h',
         },
         {
-            RulesLexerToken::NOT_OPERATOR,
+            NOT_OPERATOR,
             '^',
         },
         {
-            RulesLexerToken::PREFIX_POSTFIX_OPERATOR,
+            PREFIX_POSTFIX_OPERATOR,
             'p',
         },
         {
-            RulesLexerToken::PLUS,
+            PLUS,
             '+',
         },
         {
-            RulesLexerToken::STAR,
+            STAR,
             '*',
         },
     };

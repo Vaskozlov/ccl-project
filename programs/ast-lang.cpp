@@ -1,9 +1,9 @@
-#include "ccl/parser/lr/lr_parser.hpp"
 #include <ast-lang/ast/global_declarations.hpp>
 #include <ast-lang/ast/node.hpp>
 #include <ast-lang/interpreter/interpreter.hpp>
 #include <ccl/lexer/tokenizer.hpp>
 #include <ccl/parser/dot/dot_repr.hpp>
+#include <ccl/parser/lr/lr_parser.hpp>
 #include <ccl/parser/rules_reader/rules_reader.hpp>
 #include <isl/io.hpp>
 
@@ -18,7 +18,7 @@ auto main() -> int
     auto filename = std::filesystem::path(
         "/Users/vaskozlov/CLionProjects/ccl-project/include/ast-lang/ast-lang.cclp");
 
-    ccl::parser::reader::RulesReader reader(isl::io::readFile(filename), filename.string());
+    reader::RulesReader reader(isl::io::readFile(filename), filename.string());
 
     auto &constructor = reader.getParserBuilder();
     auto &lexer = constructor.getLexicalAnalyzer();
@@ -41,15 +41,14 @@ auto main() -> int
     auto global_declarations_node = isl::makeUnique<astlang::ast::GlobalDeclarations>(
         node->getType(), std::move(result_as_sequence->getNodes()));
 
-    astlang::ast::Node::convertCclTreeToAstlang(
-        constructor, dynamic_cast<astlang::ast::Node *>(global_declarations_node.get()));
+    astlang::ast::Node::convertCclTreeToAstlang(constructor, global_declarations_node.get());
 
-    auto interpreter = astlang::interpreter::Interpreter{constructor};
+    auto interpreter = Interpreter{constructor};
 
-    global_declarations_node->print("", false, to_str);
+    // global_declarations_node->print("", false, to_str);
     global_declarations_node->runRecursiveOptimization();
 
-    global_declarations_node->print("", false, to_str);
+    // global_declarations_node->print("", false, to_str);
     global_declarations_node->compute(interpreter);
 
     return 0;

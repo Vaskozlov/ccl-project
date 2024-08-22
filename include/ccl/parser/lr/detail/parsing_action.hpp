@@ -5,7 +5,7 @@
 
 namespace ccl::parser
 {
-    enum class ParsingAction : u16
+    enum class ParsingAction : u8
     {
         SHIFT,
         REDUCE,

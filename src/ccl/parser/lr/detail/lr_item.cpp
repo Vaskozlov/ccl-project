@@ -1,4 +1,4 @@
-#include <ccl/parser/lr_item.hpp>
+#include <ccl/parser/lr/lr_item.hpp>
 
 auto fmt::formatter<ccl::parser::LrItemPrintWrapper>::format(
     const ccl::parser::LrItemPrintWrapper &item_print_wrapper,

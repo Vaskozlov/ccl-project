@@ -9,13 +9,11 @@ namespace ccl::debug
     constexpr inline isl::string_view SimpleLlGrammarDefinition = R"(
 %PARSER%
 GOAL:
-    EXPR
+    EXPR EOI
 
 EXPR:
-    NUMBER EXPR_C
-
-EXPR_C:
-    '+' EXPR
+    NUMBER
+    | EXPR '+' EXPR
 
 %LEXER%
 NUMBER:     [0-9]+

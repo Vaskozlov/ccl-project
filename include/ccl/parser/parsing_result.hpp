@@ -9,7 +9,7 @@ namespace ccl::parser
     {
         std::unique_ptr<NodesLifetimeManager> nodesLifetimeManager =
             std::make_unique<NodesLifetimeManager>();
-        ast::Node *root;
+        ast::Node *root{};
     };
 
     struct AmbiguousParsingResult

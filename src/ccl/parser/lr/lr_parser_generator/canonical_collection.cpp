@@ -1,20 +1,23 @@
 #include "ccl/parser/lr/detail/lr_parser_generator.hpp"
 
-namespace ccl::parser {
+namespace ccl::parser::lr
+{
     using namespace std::chrono_literals;
 
-    auto LrParserGenerator::pushIntoPipe(GotoResult&value) -> void {
+    auto LrParserGenerator::pushIntoPipe(GotoResult &value) -> void
+    {
         while (!pipe.tryPush(value)) {
             // empty code
         }
     }
 
     auto LrParserGenerator::moveCollectionItemsOverSymbol(
-        const CanonicalCollection&canonical_collection, Symbol symbol) -> std::vector<LrItem> {
+        const CanonicalCollection &canonical_collection, Symbol symbol) -> std::vector<LrItem>
+    {
         auto moved = std::vector<LrItem>{};
         moved.reserve(canonical_collection.items.size());
 
-        for (const auto&item: canonical_collection.items) {
+        for (const auto &item : canonical_collection.items) {
             if (item.dottedRule.isDotInTheEnd()) {
                 continue;
             }
@@ -30,9 +33,10 @@ namespace ccl::parser {
     }
 
     auto LrParserGenerator::moveCollectionItemsOverRemainingSymbols(
-        const CanonicalCollection&canonical_collection) -> void {
-        for (const auto&item: canonical_collection.items) {
-            for (const auto symbol: item | std::views::drop(item.dottedRule.dotPosition)) {
+        const CanonicalCollection &canonical_collection) -> void
+    {
+        for (const auto &item : canonical_collection.items) {
+            for (const auto symbol : item | std::views::drop(item.dottedRule.dotPosition)) {
                 auto value = GotoResult{
                     .items = moveCollectionItemsOverSymbol(canonical_collection, symbol),
                     .symbol = symbol,
@@ -44,7 +48,8 @@ namespace ccl::parser {
         }
     }
 
-    auto LrParserGenerator::generateCanonicalCollection() -> isl::Task<> {
+    auto LrParserGenerator::generateCanonicalCollection() -> isl::Task<>
+    {
         auto collection_end = canonicalCollection.end();
         auto max_polled_it_copy = lastPolledCanonicalCollection;
 
@@ -58,7 +63,8 @@ namespace ccl::parser {
         co_return;
     }
 
-    auto LrParserGenerator::tryPopFromPipe(GotoResult&value) noexcept -> PipePopStatus {
+    auto LrParserGenerator::tryPopFromPipe(GotoResult &value) noexcept -> PipePopStatus
+    {
         using enum PipePopStatus;
 
         if (!pipe.tryPop(value)) {
@@ -72,8 +78,8 @@ namespace ccl::parser {
         return SUCCEED;
     }
 
-    auto LrParserGenerator::fillCanonicalCollection(isl::thread::IdGenerator<SmallId>&closure_id)
-        -> bool {
+    auto LrParserGenerator::fillCanonicalCollection(isl::IdGenerator<SmallId> &closure_id) -> bool
+    {
         using enum PipePopStatus;
 
         auto has_new_sets = false;
@@ -94,7 +100,7 @@ namespace ccl::parser {
                 break;
             }
 
-            auto&[goto_result, symbol, cc_id] = result;
+            auto &[goto_result, symbol, cc_id] = result;
 
             auto temp_cc = CanonicalCollection{
                 .items = std::move(goto_result),
@@ -124,8 +130,9 @@ namespace ccl::parser {
         return has_new_sets;
     }
 
-    auto LrParserGenerator::constructCanonicalCollection(const LrItem&start_item) -> void {
-        auto closure_id = isl::thread::IdGenerator<SmallId>{1};
+    auto LrParserGenerator::constructCanonicalCollection(const LrItem &start_item) -> void
+    {
+        auto closure_id = isl::IdGenerator<SmallId>{1};
 
         canonicalCollection.emplace_back(
             CanonicalCollection{
@@ -136,17 +143,18 @@ namespace ccl::parser {
         lastPolledCanonicalCollection = canonicalCollection.begin();
         CCL_REPEAT_WHILE(fillCanonicalCollection(closure_id))
     }
-} // namespace ccl::parser
+}// namespace ccl::parser::lr
 
 auto fmt::formatter<ccl::parser::CanonicalCollectionPrintWrapper>::format(
-    const ccl::parser::CanonicalCollectionPrintWrapper&collection_print_wrapper,
-    format_context&ctx) -> format_context::iterator {
-    const auto&collection = collection_print_wrapper.canonicalCollection;
+    const ccl::parser::CanonicalCollectionPrintWrapper &collection_print_wrapper,
+    format_context &ctx) -> format_context::iterator
+{
+    const auto &collection = collection_print_wrapper.canonicalCollection;
 
     return fmt::format_to(
         ctx.out(), "{}: {}", collection.id,
         std::views::transform(
-            collection.items, [&collection_print_wrapper](const ccl::parser::LrItem&item) {
+            collection.items, [&collection_print_wrapper](const ccl::parser::LrItem &item) {
                 return ccl::parser::LrItemPrintWrapper(
                     item, collection_print_wrapper.idToStringConversionFunction);
             }));

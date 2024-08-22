@@ -30,7 +30,7 @@ struct ankerl::unordered_dense::hash<ccl::parser::TableEntry>
 
     [[nodiscard]] auto operator()(const ccl::parser::TableEntry &entry) const noexcept -> auto
     {
-        return ankerl::unordered_dense::detail::wyhash::hash(&entry, sizeof(entry));
+        return detail::wyhash::hash(&entry, sizeof(entry));
     }
 };
 
@@ -46,9 +46,9 @@ struct std::hash<ccl::parser::TableEntry>
 template<typename T>
 struct fmt::formatter<ccl::parser::TableEntryPrintHelper<T>> : formatter<std::string_view>
 {
-    constexpr auto format(
-        ccl::parser::TableEntryPrintHelper<T> entry_print_helper,
-        format_context &ctx) const -> format_context::iterator
+    constexpr auto
+        format(ccl::parser::TableEntryPrintHelper<T> entry_print_helper, format_context &ctx) const
+        -> format_context::iterator
     {
         const auto &entry = entry_print_helper.entry;
 
