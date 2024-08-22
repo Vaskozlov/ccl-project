@@ -21,3 +21,24 @@ auto fmt::formatter<ccl::parser::LrItemPrintWrapper>::format(
 
     return fmt::format_to(ctx.out(), ", {}]", item_print_wrapper.idToStr(item.getLookAhead()));
 }
+
+auto fmt::formatter<ccl::parser::RuleWithDotPrintWrapper>::format(
+    const ccl::parser::RuleWithDotPrintWrapper&item_print_wrapper,
+    format_context&ctx) -> format_context::iterator {
+    const auto&item = item_print_wrapper.ruleWithDot;
+    fmt::format_to(ctx.out(), "[");
+
+    for (std::size_t i = 0; i != item.size(); ++i) {
+        if (i == item.dotPosition) {
+            fmt::format_to(ctx.out(), "\u2022");
+        }
+
+        fmt::format_to(ctx.out(), "{} ", item_print_wrapper.idToStr(item.at(i)));
+    }
+
+    if (item.isDotInTheEnd()) {
+        fmt::format_to(ctx.out(), "\u2022");
+    }
+
+    return fmt::format_to(ctx.out(), "]");
+}

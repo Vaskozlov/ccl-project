@@ -1,5 +1,4 @@
 #include "ccl/parser/lr/glr_parser.hpp"
-#include "ccl/debug/debug.hpp"
 #include "ccl/parser/ast/token_node.hpp"
 #include "ccl/parser/dot/dot_repr.hpp"
 #include "lr_parser_for_math.hpp"

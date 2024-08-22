@@ -16,7 +16,8 @@ namespace ccl::parser {
         }
 
         auto tree_repr = dot::createDotRepresentation(result, function);
-        isl::io::writeToFile(std::filesystem::path("/Volumes/ramdisk").append("gll.dot"), tree_repr);
+        isl::io::writeToFile(
+            std::filesystem::path("/Volumes/ramdisk").append("gll.dot"), tree_repr);
     }
 
     GllParser::GllParser(
@@ -31,27 +32,37 @@ namespace ccl::parser {
 
     auto GllParser::parse(lexer::LexicalAnalyzer::Tokenizer&tokenizer) -> AmbiguousParsingResult {
         auto parsing_result = AmbiguousParsingResult{};
+
         auto* nodes_lifetime_manager = parsing_result.nodesLifetimeManager.get();
         auto* token = nodes_lifetime_manager->create<ast::TokenNode>(tokenizer.yield());
 
         auto gss = ll::GSS{};
         gss.nextWord();
 
-        const auto start_rule = RuleWithDot{
-            .rule = std::addressof(storage.at(grammarGoalSymbol).front()),
+        const auto* start_rule = std::addressof(storage.at(grammarGoalSymbol).front());
+
+        const auto start_rule_with_dot = RuleWithDot{
+            .rule = start_rule,
             .dotPosition = 0,
         };
 
-        const auto start_sppf_node = SPPFNode{.rule = start_rule};
-        auto* start_node = gss.createNode(nullptr, start_sppf_node, 0);
+        auto start_sppf = SPPFNode{
+            .rule = start_rule_with_dot,
+            .production = grammarGoalSymbol,
+        };
 
-        gss.add({
-            .stack = start_node,
-            .inputPosition = 0,
-        });
+        auto* start_node = gss.createNode(nullptr, start_sppf, 0);
+
+        gss.add(
+            {
+                .stack = start_node,
+                .inputPosition = 0,
+            },
+            idToStringConverter);
 
         while (gss.hasDescriptors()) {
             auto descriptor = gss.getDescriptor();
+
             auto input_position = descriptor.inputPosition;
 
             if (input_position == gss.getGlobalInputPosition()) {
@@ -59,16 +70,11 @@ namespace ccl::parser {
                 gss.nextWord();
             }
 
-            // copy instead of making a reference?
             auto&sppf = descriptor.stack->sppfNode;
-
-            auto lr_item = LrItem{};
-            lr_item.dottedRule = sppf.rule;
-
-            fmt::println("Rule: {}", LrItemPrintWrapper(lr_item, idToStringConverter));
+            fmt::println("Rule: {}", RuleWithDotPrintWrapper(sppf.rule, idToStringConverter));
 
             if (sppf.rule.isDotInTheEnd()) {
-                gss.pop(descriptor);
+                gss.pop(descriptor, idToStringConverter);
                 continue;
             }
 
@@ -94,10 +100,10 @@ namespace ccl::parser {
 
                 sppf.next(token);
                 descriptor.inputPosition += 1;
-                gss.add(descriptor);
+                gss.add(descriptor, idToStringConverter);
+
                 continue;
             }
-
             const auto entry = TableEntry{
                 .state = focus,
                 .symbol = token_type,
@@ -121,12 +127,12 @@ namespace ccl::parser {
                     .production = focus,
                 };
 
-                auto* new_node = gss.createNode(descriptor.stack, new_sppf_node, input_position);
+                auto *new_node = gss.createNode(descriptor.stack, new_sppf_node, input_position);
 
                 gss.add({
-                    .stack = new_node,
-                    .inputPosition = input_position,
-                });
+                            .stack = new_node,
+                            .inputPosition = input_position,
+                        }, idToStringConverter);
             }
 
             debugGll(gss, idToStringConverter);
@@ -134,4 +140,4 @@ namespace ccl::parser {
 
         return parsing_result;
     }
-} // namespace ccl::parser
+}// namespace ccl::parser

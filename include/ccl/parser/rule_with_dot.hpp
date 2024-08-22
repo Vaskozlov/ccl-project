@@ -43,6 +43,18 @@ namespace ccl::parser
             return rule->size();
         }
     };
+
+    struct RuleWithDotPrintWrapper {
+        const RuleWithDot&ruleWithDot;
+        std::function<std::string(SmallId)> idToStr;
+    };
 }// namespace ccl::parser
+
+template<>
+struct fmt::formatter<ccl::parser::RuleWithDotPrintWrapper> : formatter<std::string_view> {
+    static auto format(
+        const ccl::parser::RuleWithDotPrintWrapper&item_print_wrapper,
+        format_context&ctx) -> format_context::iterator;
+};
 
 #endif /* CCL_PROJECT_RULE_WITH_DOT_HPP */

@@ -11,52 +11,57 @@ namespace ccl::parser::ll {
         return nullptr;
     }
 
-    auto GSS::pop(const Descriptor&descriptor) -> void {
-        auto input_position = descriptor.inputPosition;
+    auto GSS::pop(
+        const Descriptor&descriptor,
+        const std::function<std::string(SmallId)>&id_to_string_converter) -> void {
+        const auto input_position = descriptor.inputPosition;
+        auto* constructed_node = descriptor.stack->sppfNode.build();
 
-        if (input_position >= levels.size()) {
-            levels.resize(input_position + 1);
-        }
+        for (auto&previous = descriptor.stack->previous; Node* prev: previous) {
+            auto new_sppf = prev->sppfNode;
+            new_sppf.next(constructed_node);
 
-        auto&level = levels.at(input_position);
-        auto&previous = descriptor.stack->previous;
-        auto* new_node = descriptor.stack->sppfNode.build();
+            auto* new_node = createNode(prev->previous, new_sppf, input_position);
 
-        for (auto* prev: previous) {
-            auto sppf_copy = prev->sppfNode;
-            sppf_copy.next(new_node);
-
-            auto* node = level.findNode(sppf_copy);
-
-            if (node == nullptr) {
-                auto created_node = std::make_unique<Node>();
-
-                created_node->sppfNode = sppf_copy;
-                created_node->inputPosition = input_position;
-                created_node->previous = prev->previous;
-
-                node = created_node.get();
-                level.emplace_back(std::move(created_node));
-            }
-
-            add({
-                .stack = node,
-                .inputPosition = descriptor.inputPosition,
-            });
+            add(
+                {
+                    .stack = new_node,
+                    .inputPosition = input_position,
+                },
+                id_to_string_converter);
         }
     }
 
-    auto GSS::add(Descriptor descriptor) -> void {
-        auto passed_desc = PassedDescriptor{
-            .sppfNode = descriptor.stack->sppfNode,
-            .inputPosition = descriptor.inputPosition,
-        };
+    auto GSS::add(
+        Descriptor descriptor,
+        const std::function<std::string(SmallId)>&id_to_string_converter) -> void {
+        auto inserted = false;
+        auto* node = descriptor.stack;
 
-        if (passed.contains(passed_desc)) {
+        std::tie(std::ignore, inserted) = passed.emplace(
+            PassedDescriptor{
+                .sppfNode = node->sppfNode,
+                .inputPosition = node->inputPosition,
+            });
+
+        if (!inserted) {
+            fmt::println(
+                "Rejecting descriptor: {} at {}",
+                RuleWithDotPrintWrapper{
+                    node->sppfNode.rule,
+                    id_to_string_converter,
+                },
+                descriptor.inputPosition);
             return;
         }
 
-        passed.emplace(passed_desc);
+        fmt::println(
+            "Accepting descriptor: {} at {}",
+            RuleWithDotPrintWrapper{
+                node->sppfNode.rule,
+                id_to_string_converter,
+            },
+            descriptor.inputPosition);
 
         if (descriptor.inputPosition == globalInputPosition) {
             descriptors.emplace_back(descriptor);
@@ -67,27 +72,52 @@ namespace ccl::parser::ll {
     }
 
     auto GSS::createNode(Node* parent, const SPPFNode&sppf_node, SmallId input_position) -> Node* {
+        auto&level = getLevel(input_position);
+        auto* node = level.findNode(sppf_node);
+
+        if (node == nullptr) {
+            auto constructed_node =
+                    std::make_unique<Node>(std::vector{parent}, sppf_node, input_position);
+
+            node = constructed_node.get();
+            level.emplace_back(std::move(constructed_node));
+
+            return node;
+        }
+
+        node->addParent(parent);
+        return node;
+    }
+
+    auto GSS::createNode(
+        const std::vector<Node *>&parents,
+        const SPPFNode&sppf_node,
+        SmallId input_position) -> Node* {
+        auto&level = getLevel(input_position);
+        auto* node = level.findNode(sppf_node);
+
+        if (node == nullptr) {
+            auto constructed_node = std::make_unique<Node>(parents, sppf_node, input_position);
+
+            node = constructed_node.get();
+            level.emplace_back(std::move(constructed_node));
+
+            return node;
+        }
+
+        for (auto* parent: parents) {
+            node->addParent(parent);
+        }
+
+        return node;
+    }
+
+
+    auto GSS::getLevel(SmallId input_position) -> Level& {
         if (input_position >= levels.size()) {
             levels.resize(input_position + 1);
         }
 
-        auto&level = levels.at(input_position);
-        auto* node = level.findNode(sppf_node);
-
-        if (node == nullptr) {
-            auto created_node = std::make_unique<Node>();
-
-            created_node->sppfNode = sppf_node;
-            created_node->inputPosition = input_position;
-            created_node->previous.emplace_back(parent);
-
-            node = created_node.get();
-            level.emplace_back(std::move(created_node));
-        }
-        else {
-            node->addPrevious(parent);
-        }
-
-        return node;
+        return levels.at(input_position);
     }
 } // namespace ccl::parser::ll

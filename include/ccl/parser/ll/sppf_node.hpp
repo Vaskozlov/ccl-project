@@ -9,8 +9,8 @@ namespace ccl::parser
     struct SPPFNode
     {
         RuleWithDot rule{};
-        std::vector<ast::Node *> nodes;
         Symbol production{};
+        std::vector<ast::Node *> nodes;
 
         auto next(ast::Node* node) -> void {
             rule.dotPosition += 1;
@@ -22,16 +22,13 @@ namespace ccl::parser
         }
 
         [[nodiscard]] auto build() const -> ast::Node* {
-            // probably it should be constructed only once
-
             auto* new_node = rule.rule->construct(production, nodes);
             nodes.front()->getLifetimeManager()->insert(new_node);
-
             return new_node;
         }
 
-        [[nodiscard]] auto operator<=>(const SPPFNode &) const -> std::weak_ordering = default;
+        [[nodiscard]] auto operator<=>(const SPPFNode&other) const -> std::weak_ordering = default;
     };
-}// namespace ccl::parser
+} // namespace ccl::parser
 
 #endif /* CCL_PROJECT_SPPF_NODE_HPP */

@@ -14,7 +14,7 @@ namespace ccl::parser::ll {
             SPPFNode sppfNode;
             SmallId inputPosition{};
 
-            auto addPrevious(Node* parent) -> void {
+            auto addParent(Node* parent) -> void {
                 if (auto it = std::ranges::find(previous, parent); it == previous.end()) {
                     previous.emplace_back(parent);
                 }
@@ -38,7 +38,8 @@ namespace ccl::parser::ll {
         struct Level : std::vector<std::unique_ptr<Node>> {
             using vector::vector;
 
-            [[nodiscard]] auto findNode(const SPPFNode&sppf_node) const -> Node*;
+            [[nodiscard]] auto
+            findNode(const SPPFNode&sppf_node) const CCL_LIFETIMEBOUND -> Node*;
         };
 
         using Levels = std::vector<Level>;
@@ -54,7 +55,7 @@ namespace ccl::parser::ll {
             return globalInputPosition;
         }
 
-        [[nodiscard]] auto getLevels() const noexcept -> const Levels& {
+        [[nodiscard]] auto getLevels() const noexcept CCL_LIFETIMEBOUND -> const Levels& {
             return levels;
         }
 
@@ -66,9 +67,13 @@ namespace ccl::parser::ll {
             ++globalInputPosition;
         }
 
-        auto pop(const Descriptor&descriptor) -> void;
+        auto
+        pop(const Descriptor&descriptor,
+            const std::function<std::string(SmallId)>&id_to_string_converter) -> void;
 
-        auto add(Descriptor descriptor) -> void;
+        auto
+        add(Descriptor descriptor,
+            const std::function<std::string(SmallId)>&id_to_string_converter) -> void;
 
         auto getDescriptor() -> Descriptor {
             auto descriptor = descriptors.front();
@@ -77,7 +82,16 @@ namespace ccl::parser::ll {
             return descriptor;
         }
 
-        auto createNode(Node* parent, const SPPFNode&sppf_node, SmallId input_position) -> Node*;
+        auto createNode(Node* parent, const SPPFNode&sppf_node, SmallId input_position)
+        CCL_LIFETIMEBOUND -> Node*;
+
+        auto createNode(
+            const std::vector<Node *>&parents,
+            const SPPFNode&sppf_node,
+            SmallId input_position) CCL_LIFETIMEBOUND -> Node*;
+
+    private:
+        auto getLevel(SmallId input_position) -> Level&;
     };
 } // namespace ccl::parser::ll
 
