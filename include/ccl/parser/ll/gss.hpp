@@ -1,7 +1,7 @@
 #ifndef CCL_PROJECT_LL_GSS_HPP
 #define CCL_PROJECT_LL_GSS_HPP
 
-#include <ccl/parser/ast/node.hpp>
+#include <ccl/lexer/tokenizer.hpp>
 #include <ccl/parser/ast/token_node.hpp>
 #include <ccl/parser/ll/sppf_node.hpp>
 #include <deque>
@@ -56,12 +56,14 @@ namespace ccl::parser::ll
         std::deque<Descriptor> terminalDescriptors;
         std::deque<Descriptor> nonTerminalDescriptors;
         std::set<PassedDescriptor> passed;
-        SmallId globalInputPosition{};
         const GrammarStorage *storage{};
+        lexer::Tokenizer *tokenizer{};
+        SmallId globalInputPosition{};
 
     public:
-        explicit GSS(const GrammarStorage *grammar_storage)
+        explicit GSS(const GrammarStorage *grammar_storage, lexer::Tokenizer *tokenizer_ptr)
           : storage{grammar_storage}
+          , tokenizer{tokenizer_ptr}
         {}
 
         [[nodiscard]] auto getGlobalInputPosition() const noexcept -> SmallId

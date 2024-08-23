@@ -94,6 +94,8 @@ namespace ccl::lexer
     private:
         auto createContainer(const Rule &rule, u32 id, isl::string_view filename) -> void;
     };
+
+    using Tokenizer = LexicalAnalyzer::Tokenizer;
 }// namespace ccl::lexer
 
 #endif /* CCL_PROJECT_LEXICAL_ANALYZER_HPP */

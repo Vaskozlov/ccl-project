@@ -34,14 +34,13 @@ namespace ccl::parser
         table = ll_generator.createGllTable();
     }
 
-    auto GllParser::parse(lexer::LexicalAnalyzer::Tokenizer &tokenizer) -> AmbiguousParsingResult
-    {
+    auto GllParser::parse(lexer::Tokenizer&tokenizer) -> AmbiguousParsingResult {
         auto parsing_result = AmbiguousParsingResult{};
 
         auto *nodes_lifetime_manager = parsing_result.nodesLifetimeManager.get();
         auto *token = nodes_lifetime_manager->create<ast::TokenNode>(tokenizer.yield());
 
-        auto gss = ll::GSS{&storage};
+        auto gss = ll::GSS{std::addressof(storage), std::addressof(tokenizer)};
         gss.nextWord();
 
         const auto *start_rule = std::addressof(storage.at(grammarGoalSymbol).front());
