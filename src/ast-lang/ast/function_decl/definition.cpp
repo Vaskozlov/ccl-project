@@ -57,7 +57,7 @@ namespace astlang::ast::function::decl
             .parameters = std::move(function_definition_arguments_type),
         };
 
-        auto function_ptr = isl::makeUnique<AstlangFunction>(
+        auto function_ptr = std::make_unique<AstlangFunction>(
             std::move(function_definition_arguments_names), function_body.astlangNode);
 
         interpreter.addFunction(std::move(function_identification), std::move(function_ptr));

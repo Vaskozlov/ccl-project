@@ -29,12 +29,12 @@ namespace astlang::interpreter
     class Functions
     {
     private:
-        std::map<FunctionIdentification, isl::UniquePtr<FunctionInterface>> functions;
+        std::map<FunctionIdentification, std::unique_ptr<FunctionInterface>> functions;
 
     public:
         auto addFunction(
             FunctionIdentification identification,
-            isl::UniquePtr<FunctionInterface>
+            std::unique_ptr<FunctionInterface>
                 function) -> void
         {
             auto has_inserted = false;

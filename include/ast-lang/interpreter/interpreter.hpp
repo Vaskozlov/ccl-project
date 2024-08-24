@@ -61,7 +61,7 @@ namespace astlang::interpreter
 
         auto addFunction(
             FunctionIdentification identification,
-            isl::UniquePtr<FunctionInterface>
+            std::unique_ptr<FunctionInterface>
                 function) -> void;
 
         [[nodiscard]] auto

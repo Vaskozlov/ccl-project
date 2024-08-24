@@ -10,7 +10,7 @@ namespace astlang::interpreter
     {
         interpreter.addFunction(
             {.name = name, .returnType = return_type, .parameters = {lhs_type, rhs_type}},
-            isl::makeUnique<BuiltinFunction>(
+            std::make_unique<BuiltinFunction>(
                 std::vector<std::string>{"lhs", "rhs"},
                 [function, return_type](Interpreter &interpreter) {
                     auto *lhs_ptr = astlang::observe<LHS_T>(interpreter.read("lhs"));
@@ -28,7 +28,7 @@ namespace astlang::interpreter
     {
         interpreter.addFunction(
             {.name = name, .returnType = Type::VOID, .parameters = {type}},
-            isl::makeUnique<BuiltinFunction>(
+            std::make_unique<BuiltinFunction>(
                 std::vector<std::string>{"value"}, [fmt](Interpreter &interpreter) {
                     auto *value_ptr = astlang::observe<T>(interpreter.read("value"));
                     fmt::print(fmt::runtime(fmt), *value_ptr);
@@ -48,7 +48,7 @@ namespace astlang::interpreter
     {
         interpreter.addFunction(
             {.name = name, .returnType = return_type, .parameters = {value_type}},
-            isl::makeUnique<BuiltinFunction>(
+            std::make_unique<BuiltinFunction>(
                 std::vector<std::string>{"value"},
                 [function, return_type](Interpreter &interpreter) {
                     auto *value_ptr = astlang::observe<FROM>(interpreter.read("value"));
@@ -171,7 +171,7 @@ namespace astlang::interpreter
                         },
                     },
             },
-            isl::makeUnique<BuiltinFunction>(
+            std::make_unique<BuiltinFunction>(
                 std::vector<std::string>{"value"}, [](Interpreter &interpreter) {
                     auto *value_ptr =
                         astlang::observe<std::vector<EvaluationResult>>(interpreter.read("value"));
@@ -202,7 +202,7 @@ namespace astlang::interpreter
 
     auto Interpreter::addFunction(
         FunctionIdentification identification,
-        isl::UniquePtr<FunctionInterface>
+        std::unique_ptr<FunctionInterface>
             function) -> void
     {
         functions.addFunction(std::move(identification), std::move(function));

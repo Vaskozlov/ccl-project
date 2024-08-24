@@ -52,7 +52,7 @@ namespace ccl::lexer::rule
         [[nodiscard]] Container(
             LexicalAnalyzer &lexical_analyzer, bool main_item = false, bool is_special = false);
 
-        auto addItem(isl::UniquePtr<RuleBlockInterface> new_item) -> void
+        auto addItem(std::unique_ptr<RuleBlockInterface> new_item) -> void
         {
             items.emplace_back(std::move(new_item));
         }
@@ -180,7 +180,7 @@ namespace ccl::lexer::rule
     class RuleBlockInterface::AnyPlaceItems
     {
     public:
-        std::vector<isl::UniquePtr<Container>> items;
+        std::vector<std::unique_ptr<Container>> items;
 
         [[nodiscard]] auto
             isSuccessfulScan(TextIterator &text_iterator, Token &token) const -> bool;

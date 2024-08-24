@@ -11,13 +11,13 @@ namespace ccl::parser::reader::ast
         auto lhs = static_cast<const RulesReaderNode *>(lhs_node)->construct(parser_builder);
         auto rhs = static_cast<const RulesReaderNode *>(rhs_node)->construct(parser_builder);
 
-        auto lhs_as_rule = isl::get<isl::UniquePtr<lexer::rule::Container>>(lhs);
-        auto rhs_as_rule = isl::get<isl::UniquePtr<lexer::rule::RuleBlockInterface>>(rhs);
+        auto lhs_as_rule = isl::get<std::unique_ptr<lexer::rule::Container>>(lhs);
+        auto rhs_as_rule = isl::get<std::unique_ptr<lexer::rule::RuleBlockInterface>>(rhs);
 
-        auto result =
-            isl::makeUnique<lexer::rule::RuleBlockInterface, lexer::rule::BinaryOperationOr>(
+        auto result = std::unique_ptr<lexer::rule::RuleBlockInterface>{
+            std::make_unique<lexer::rule::BinaryOperationOr>(
                 lexer::rule::RuleBlock{std::move(lhs_as_rule)},
-                lexer::rule::RuleBlock{std::move(rhs_as_rule)});
+                lexer::rule::RuleBlock{std::move(rhs_as_rule)})};
 
         return isl::UniqueAny{std::move(result)};
     }

@@ -357,19 +357,17 @@ namespace ccl::lexer::rule
     auto RuleBlockInterface::AnyPlaceItems::checkForSpecial(
         const ForkedGenerator &text_iterator) const -> bool
     {
-        return std::ranges::any_of(
-            items, [&text_iterator](const isl::UniquePtr<Container> &special_item) {
-                return special_item->scan(text_iterator).isSuccess();
-            });
+        return std::ranges::any_of(items, [&text_iterator](const auto &special_item) {
+            return special_item->scan(text_iterator).isSuccess();
+        });
     }
 
     auto RuleBlockInterface::AnyPlaceItems::isSuccessfulScan(
         TextIterator &text_iterator,
         Token &token) const -> bool
     {
-        return std::ranges::any_of(
-            items, [&text_iterator, &token](const isl::UniquePtr<Container> &special_item) {
-                return special_item->beginScan(text_iterator, token, ScanType::SPECIAL);
-            });
+        return std::ranges::any_of(items, [&text_iterator, &token](const auto &special_item) {
+            return special_item->beginScan(text_iterator, token, ScanType::SPECIAL);
+        });
     }
 }// namespace ccl::lexer::rule

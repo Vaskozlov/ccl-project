@@ -21,7 +21,7 @@ namespace ccl::lexer
     auto LexicalAnalyzer::createContainer(const Rule &rule, u32 id, isl::string_view filename)
         -> void
     {
-        auto container = isl::makeUnique<Container>(
+        auto container = std::make_unique<Container>(
             *this, TextIterator{rule.repr, exceptionHandler, filename}, true);
 
         container->setId(id);
@@ -29,7 +29,7 @@ namespace ccl::lexer
     }
 
     auto LexicalAnalyzer::addContainer(
-        isl::string_view rule_name, isl::UniquePtr<Container> new_container) -> void
+        isl::string_view rule_name, std::unique_ptr<Container> new_container) -> void
     {
         if (new_container->getId() <= ReservedTokenMaxValue) {
             throw UnrecoverableError{"Reserved token id is used for a custom token"};

@@ -36,7 +36,7 @@ namespace ccl::lexer
         };
 
         std::map<isl::string_view, Container *> allItemsMap;
-        std::vector<isl::UniquePtr<Container>> items;
+        std::vector<std::unique_ptr<Container>> items;
         AnyPlaceItems anyPlaceItems;
         std::vector<u32> ignoredIds;
         mutable std::string skippedCharacters;
@@ -59,7 +59,7 @@ namespace ccl::lexer
             return anyPlaceItems;
         }
 
-        auto addContainer(isl::string_view rule_name, isl::UniquePtr<Container> new_container)
+        auto addContainer(isl::string_view rule_name, std::unique_ptr<Container> new_container)
             -> void;
 
         [[nodiscard]] auto getIgnoredIds() const CCL_LIFETIMEBOUND -> const std::vector<u32> &
@@ -86,7 +86,7 @@ namespace ccl::lexer
             ExceptionHandler &handler) const CCL_LIFETIMEBOUND -> Tokenizer;
 
         [[nodiscard]] auto
-            getItems() const noexcept -> const std::vector<isl::UniquePtr<Container>> &
+            getItems() const noexcept -> const std::vector<std::unique_ptr<Container>> &
         {
             return items;
         }

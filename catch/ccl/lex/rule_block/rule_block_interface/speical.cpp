@@ -9,7 +9,7 @@ TEST_CASE("AnyPlaceItem", "[Container]")
     auto empty_lexical_analyzer = lexer::LexicalAnalyzer(ExceptionHandler::instance(), {});
     auto &special_items = empty_lexical_analyzer.shareAnyPlaceItems();
 
-    special_items.items.emplace_back(isl::makeUnique<lexer::rule::Container>(
+    special_items.items.emplace_back(std::make_unique<lexer::rule::Container>(
         empty_lexical_analyzer, text::TextIterator{R"(!"+")"}));
 
     REQUIRE(special_items.checkForSpecial(text_iterator.fork()));

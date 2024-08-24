@@ -13,7 +13,7 @@ namespace ccl::lexer::rule
         LexicalAnalyzer &lexicalAnalyzer;
 
     public:
-        using typename RuleBlockInterface::TextIterator;
+        using RuleBlockInterface::TextIterator;
 
         [[nodiscard]] RuleReference(
             LexicalAnalyzer &lexical_analyzer, isl::string_view sequence_starter,

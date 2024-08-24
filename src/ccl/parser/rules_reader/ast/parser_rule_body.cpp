@@ -36,14 +36,14 @@ namespace ccl::parser::reader::ast
 
         auto rule_id = parser_builder.addRule(str);
 
-        auto container = isl::makeUnique<lexer::rule::Container>(
+        auto container = std::make_unique<lexer::rule::Container>(
             parser_builder.getLexicalAnalyzer(), false, is_any_place_string);
 
         container->setId(rule_id);
 
         auto str_without_quotes = str.substr(1, str.size() - 2);
         container->addItem(
-            isl::makeUnique<lexer::rule::Sequence>(text::removeEscaping(str_without_quotes, {})));
+            std::make_unique<lexer::rule::Sequence>(text::removeEscaping(str_without_quotes, {})));
 
         parser_builder.addLexerRule(str, std::move(container));
     }

@@ -30,7 +30,7 @@ namespace ccl::parser::reader::ast
         const auto *rule_node = static_cast<const RulesReaderNode *>(last_node);
 
         auto rule = rule_node->construct(parser_builder);
-        auto rule_as_container = isl::get<isl::UniquePtr<lexer::rule::Container>>(rule);
+        auto rule_as_container = isl::get<std::unique_ptr<lexer::rule::Container>>(rule);
 
         if (isSpecial()) {
             rule_as_container->makeAsAnyPlaceItem();

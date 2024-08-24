@@ -3,7 +3,6 @@
 
 #include <ccl/lexer/rule/closure.hpp>
 #include <ccl/lexer/scan_result.hpp>
-#include <ccl/parser/ast/node.hpp>
 #include <ccl/text/text_iterator.hpp>
 
 namespace ccl::lexer::rule
@@ -14,7 +13,7 @@ namespace ccl::lexer::rule
     {
     public:
         using TextIterator = text::TextIterator;
-        using ForkedGenerator = typename text::TextIterator::ForkedTextIterator;
+        using ForkedGenerator = text::TextIterator::ForkedTextIterator;
 
         class AnyPlaceItems;
 
