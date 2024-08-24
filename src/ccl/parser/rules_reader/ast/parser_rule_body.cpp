@@ -11,7 +11,7 @@ namespace ccl::parser::reader::ast
         auto result = std::vector<SmallId>{};
 
         for (const auto &node : nodes) {
-            const auto *node_as_token = dynamic_cast<const parser::ast::TokenNode *>(node);
+            const auto *node_as_token = dynamic_cast<const parser::ast::TokenNode *>(node.get());
             const auto &token = node_as_token->getToken();
             const auto repr = token.getRepr();
 

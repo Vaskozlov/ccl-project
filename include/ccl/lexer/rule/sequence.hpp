@@ -14,7 +14,7 @@ namespace ccl::lexer::rule
             bool noEscaping{};
         };
 
-        using typename RuleBlockInterface::TextIterator;
+        using RuleBlockInterface::TextIterator;
 
     private:
         std::string sequenceValue;

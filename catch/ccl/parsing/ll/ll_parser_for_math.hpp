@@ -12,8 +12,8 @@ GOAL:
     EXPR EOI
 
 EXPR:
-    NUMBER
-    | EXPR '+' EXPR
+    EXPR '+' EXPR
+    | NUMBER
 
 %LEXER%
 NUMBER:     [0-9]+

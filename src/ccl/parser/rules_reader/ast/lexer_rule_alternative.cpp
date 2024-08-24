@@ -5,8 +5,8 @@ namespace ccl::parser::reader::ast
 {
     auto LexerRuleAlternative::construct(ParserBuilder &parser_builder) const -> isl::UniqueAny
     {
-        const auto *lhs_node = this->front();
-        const auto *rhs_node = this->back();
+        const auto *lhs_node = front().get();
+        const auto *rhs_node = back().get();
 
         auto lhs = static_cast<const RulesReaderNode *>(lhs_node)->construct(parser_builder);
         auto rhs = static_cast<const RulesReaderNode *>(rhs_node)->construct(parser_builder);

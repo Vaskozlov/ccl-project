@@ -4,16 +4,16 @@ namespace ccl::parser::reader::ast
 {
     auto LexerRuleDecl::getDeclarationName() const -> isl::string_view
     {
-        const auto *value_node = this->front();
+        const auto *value_node = this->front().get();
         const auto *declaration_token = dynamic_cast<const parser::ast::TokenNode *>(value_node);
         const auto &token = declaration_token->getToken();
         return token.getPrefixes().front();
     }
 
-    auto LexerRuleDecl::getRules() const -> const ast::LexerRuleBlock *
+    auto LexerRuleDecl::getRules() const -> const LexerRuleBlock *
     {
-        const auto *value_node = this->back();
-        return dynamic_cast<const ast::LexerRuleBlock *>(value_node);
+        const auto *value_node = this->back().get();
+        return dynamic_cast<const LexerRuleBlock *>(value_node);
     }
 
     auto LexerRuleDecl::isSpecial() const noexcept -> bool
@@ -26,7 +26,7 @@ namespace ccl::parser::reader::ast
     {
         auto rule_name = getDeclarationName();
 
-        const auto *last_node = this->back();
+        const auto *last_node = this->back().get();
         const auto *rule_node = static_cast<const RulesReaderNode *>(last_node);
 
         auto rule = rule_node->construct(parser_builder);

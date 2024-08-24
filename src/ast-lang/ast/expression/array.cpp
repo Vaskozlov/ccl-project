@@ -7,6 +7,6 @@ namespace astlang::ast::expression
 
     auto Array::compute(Interpreter &interpreter) const -> EvaluationResult
     {
-        return ConstNodePtr{at(1)}.astlangNode->compute(interpreter);
+        return ConstNodePtr{at(1).get()}.astlangNode->compute(interpreter);
     }
 }// namespace astlang::ast::expression

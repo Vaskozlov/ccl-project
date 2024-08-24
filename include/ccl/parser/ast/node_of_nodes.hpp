@@ -1,6 +1,7 @@
 #ifndef CCL_PROJECT_NODE_OF_NODES_HPP
 #define CCL_PROJECT_NODE_OF_NODES_HPP
 
+#include <ccl/parser/ast/allocator.hpp>
 #include <ccl/parser/ast/node.hpp>
 
 namespace ccl::parser::ast
@@ -8,14 +9,14 @@ namespace ccl::parser::ast
     class NodeOfNodes : public Node
     {
     protected:
-        std::vector<Node *> nodes;
+        std::vector<SharedNode<>> nodes;
 
     public:
         explicit NodeOfNodes(SmallId node_type_id)
           : Node{node_type_id}
         {}
 
-        explicit NodeOfNodes(SmallId node_type_id, std::vector<Node *> initial_nodes)
+        explicit NodeOfNodes(SmallId node_type_id, std::vector<SharedNode<>> initial_nodes)
           : Node{node_type_id}
           , nodes{std::move(initial_nodes)}
         {}
@@ -24,17 +25,17 @@ namespace ccl::parser::ast
             const std::string &prefix, bool is_left,
             std::function<std::string(SmallId)> id_converter) const -> void override;
 
-        [[nodiscard]] virtual auto getNodesPointers() const -> std::vector<Node *>
-        {
-            return {nodes.begin(), nodes.end()};
-        }
-
         [[nodiscard]] auto getNodes() -> auto &
         {
             return nodes;
         }
 
-        auto addNode(Node *node) -> void
+        [[nodiscard]] auto getNodes() const -> const auto &
+        {
+            return nodes;
+        }
+
+        auto addNode(SharedNode<> node) -> void
         {
             nodes.emplace_back(node);
         }
@@ -49,40 +50,40 @@ namespace ccl::parser::ast
             return size() == 0;
         }
 
-        [[nodiscard]] auto at(std::size_t index) -> Node *
+        [[nodiscard]] auto at(std::size_t index) -> SharedNode<>
         {
             return nodes.at(index);
         }
 
-        [[nodiscard]] auto at(std::size_t index) const -> const Node *
+        [[nodiscard]] auto at(std::size_t index) const -> SharedNode<>
         {
             return nodes.at(index);
         }
 
-        [[nodiscard]] auto front() CCL_LIFETIMEBOUND -> Node *
+        [[nodiscard]] auto front() CCL_LIFETIMEBOUND -> SharedNode<>
         {
             return nodes.front();
         }
 
-        [[nodiscard]] auto front() const CCL_LIFETIMEBOUND -> const Node *
+        [[nodiscard]] auto front() const CCL_LIFETIMEBOUND -> SharedNode<>
         {
             return nodes.front();
         }
 
-        [[nodiscard]] auto back() CCL_LIFETIMEBOUND -> Node *
+        [[nodiscard]] auto back() CCL_LIFETIMEBOUND -> SharedNode<>
         {
             return nodes.back();
         }
 
-        [[nodiscard]] auto back() const CCL_LIFETIMEBOUND -> const Node *
+        [[nodiscard]] auto back() const CCL_LIFETIMEBOUND -> SharedNode<>
         {
             return nodes.back();
         }
 
-        auto joinWithNode(Node *node) -> void
+        auto joinWithNode(SharedNode<> node) -> void
         {
-            if (auto *casted = isl::as<NodeOfNodes *>(node); casted != nullptr) {
-                for (auto *elem : casted->nodes) {
+            if (auto casted = isl::dynamicPointerCast<NodeOfNodes>(node); casted != nullptr) {
+                for (auto &elem : casted->nodes) {
                     addNode(elem);
                 }
             } else {

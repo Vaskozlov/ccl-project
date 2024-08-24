@@ -27,7 +27,6 @@ namespace ccl::parser
 
         auto parsing_result = UnambiguousParsingResult{};
         auto parser_state = ParserState{
-            .nodesLifetimeManager = parsing_result.nodesLifetimeManager.get(),
             .stateStack = {},
             .nodesStack = {},
         };
@@ -71,23 +70,23 @@ namespace ccl::parser
         State shifting_state,
         ParserState &parser_state) const -> void
     {
-        auto &[nodes_lifetime_manager, state_stack, nodes_stack] = parser_state;
+        auto &[state_stack, nodes_stack] = parser_state;
 
-        nodes_stack.emplace(nodes_lifetime_manager->create<ast::TokenNode>(word->getId(), *word));
+        nodes_stack.emplace(ast::SharedNode<ast::TokenNode>(*word));
         state_stack.emplace(shifting_state);
     }
 
     auto LrParser::reduceAction(const LrItem &lr_item, ParserState &parser_state) const -> void
     {
-        auto &[nodes_lifetime_manager, state_stack, nodes_stack] = parser_state;
+        auto &[state_stack, nodes_stack] = parser_state;
 
         const auto number_of_elements_to_take_from_stack = lr_item.dottedRule.size();
 
-        auto items_in_production = std::vector<ast::Node *>();
+        auto items_in_production = std::vector<ast::SharedNode<>>();
         const auto production = lr_item.getProductionType();
 
         for (std::size_t i = 0; i != number_of_elements_to_take_from_stack; ++i) {
-            items_in_production.emplace_back(nodes_stack.top());
+            items_in_production.emplace_back(std::move(nodes_stack.top()));
             nodes_stack.pop();
             state_stack.pop();
         }
@@ -96,10 +95,9 @@ namespace ccl::parser
 
         const auto *rule = lr_item.dottedRule.rule;
 
-        auto *reduced_item = rule->construct(production, std::move(items_in_production));
-        nodes_lifetime_manager->insert(reduced_item);
+        auto reduced_item = rule->construct(production, std::move(items_in_production));
 
-        nodes_stack.emplace(reduced_item);
+        nodes_stack.emplace(std::move(reduced_item));
         state_stack.emplace(gotoTable.at({
             state_stack.top(),
             production,

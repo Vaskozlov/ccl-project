@@ -9,8 +9,8 @@ namespace ccl::parser::reader::ast
 {
     using enum RulesLexerToken;
 
-    static auto
-        constructUnion(const lexer::Token &token) -> std::unique_ptr<lexer::rule::RuleBlockInterface>
+    static auto constructUnion(const lexer::Token &token)
+        -> std::unique_ptr<lexer::rule::RuleBlockInterface>
     {
         auto repr = token.getRepr();
         auto [ascii_symbols, ranges] = lexer::rule::parseUnionDecl(repr);
@@ -38,7 +38,8 @@ namespace ccl::parser::reader::ast
         -> std::unique_ptr<lexer::rule::RuleBlockInterface>
     {
         const auto *casted_node = dynamic_cast<const LexerRuleBody *>(node);
-        return casted_node->construct(parser_builder).get<std::unique_ptr<lexer::rule::Container>>();
+        return casted_node->construct(parser_builder)
+            .get<std::unique_ptr<lexer::rule::Container>>();
     }
 
     static auto constructNonContainerRule(ParserBuilder &parser_builder, const lexer::Token &token)
@@ -61,21 +62,21 @@ namespace ccl::parser::reader::ast
 
     auto LexerRuleBlock::getValue() const -> const parser::ast::TokenNode *
     {
-        const auto *value_node = this->front();
+        const auto *value_node = front().get();
         return isl::as<const parser::ast::TokenNode *>(value_node);
     }
 
-    auto LexerRuleBlock::getOptions() const -> const ast::LexerRuleOptions *
+    auto LexerRuleBlock::getOptions() const -> const LexerRuleOptions *
     {
-        const auto *value_node = this->back();
-        return isl::as<const ast::LexerRuleOptions *>(value_node);
+        const auto *value_node = back().get();
+        return isl::as<const LexerRuleOptions *>(value_node);
     }
 
     auto LexerRuleBlock::construct(ParserBuilder &parser_builder) const -> isl::UniqueAny
     {
         using namespace lexer::rule;
 
-        const auto *rule_block = this->front();
+        const auto *rule_block = front().get();
         const auto *rule_block_as_token_node = isl::as<const parser::ast::TokenNode *>(rule_block);
 
         auto resulted_block = std::unique_ptr<RuleBlockInterface>{};
@@ -99,8 +100,8 @@ namespace ccl::parser::reader::ast
             return;
         }
 
-        const auto *last_node = this->back();
-        const auto *rule_option = isl::as<const ast::LexerRuleOptions *>(last_node);
+        const auto *last_node = back().get();
+        const auto *rule_option = isl::as<const LexerRuleOptions *>(last_node);
         auto options =
             isl::get<std::vector<RulesLexerToken>>(rule_option->construct(parser_builder));
 

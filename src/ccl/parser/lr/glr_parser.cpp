@@ -1,9 +1,9 @@
 #include "ccl/parser/lr/glr_parser.hpp"
-#include "ccl/parser/lr/gss.hpp"
 #include "ccl/lexer/tokenizer.hpp"
 #include "ccl/parser/ast/token_node.hpp"
 #include "ccl/parser/dot/dot_repr.hpp"
 #include "ccl/parser/lr/detail/lr_parser_generator.hpp"
+#include "ccl/parser/lr/gss.hpp"
 #include <isl/dot_repr.hpp>
 #include <isl/io.hpp>
 
@@ -17,11 +17,11 @@ namespace ccl::parser
 
         for (const auto &level : gss.getLevels()) {
             for (const auto &node : level.terminals) {
-                result.emplace_back(node->value);
+                result.emplace_back(node->value.get());
             }
 
             for (const auto &node : level.nonTerminals) {
-                result.emplace_back(node->value);
+                result.emplace_back(node->value.get());
             }
         }
 
@@ -50,8 +50,7 @@ namespace ccl::parser
         using enum ParsingAction;
 
         auto parsing_result = AmbiguousParsingResult{};
-        auto *nodes_lifetime_manager = parsing_result.nodesLifetimeManager.get();
-        auto *token = nodes_lifetime_manager->create<ast::TokenNode>(tokenizer.yield());
+        auto token = ast::SharedNode<ast::TokenNode>(tokenizer.yield());
 
         auto gss = lr::GSS{};
         gss.nextWord();
@@ -70,7 +69,7 @@ namespace ccl::parser
             const auto parser_state = descriptor.parserState;
 
             if (descriptor.inputPosition == gss.getGlobalInputPosition()) {
-                token = nodes_lifetime_manager->create<ast::TokenNode>(tokenizer.yield());
+                token = ast::SharedNode<ast::TokenNode>(tokenizer.yield());
                 gss.nextWord();
             }
 
@@ -88,17 +87,14 @@ namespace ccl::parser
             const auto &possible_actions = possible_actions_it->second;
 
             for (const auto &action : possible_actions) {
-                const auto action_type = action.getParsingAction();
-
-                switch (action_type) {
+                switch (action.getParsingAction()) {
                 case SHIFT: {
-                    auto *new_node = gss.pushTerminal(
+                    auto new_node = gss.pushTerminal(
                         descriptor.stack,
                         descriptor.inputPosition,
                         action.getShiftingState(),
                         token);
 
-                    nodes_lifetime_manager->insert(new_node->value);
                     gss.add({
                         .stack = new_node,
                         .inputPosition = descriptor.inputPosition + 1,
@@ -113,7 +109,7 @@ namespace ccl::parser
                     const auto *rule = lr_item.dottedRule.rule;
                     const auto number_of_elements_to_pop = lr_item.dottedRule.size();
 
-                    auto reducer = [rule, production](std::vector<ast::Node *> nodes) {
+                    auto reducer = [rule, production](std::vector<ast::SharedNode<>> nodes) {
                         std::ranges::reverse(nodes);
                         return rule->construct(production, std::move(nodes));
                     };

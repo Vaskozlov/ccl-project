@@ -7,8 +7,8 @@ namespace astlang::ast
 
     auto GlobalDeclarations::compute(Interpreter &interpreter) const -> EvaluationResult
     {
-        for (const auto *node : nodes) {
-            ConstNodePtr{node}.astlangNode->compute(interpreter);
+        for (const auto &node : nodes) {
+            ConstNodePtr{node.get()}.astlangNode->compute(interpreter);
         }
 
         return EvaluationResult{.value = std::nullopt, .type = Type::ANY};

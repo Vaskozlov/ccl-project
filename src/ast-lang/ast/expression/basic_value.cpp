@@ -9,7 +9,7 @@ namespace astlang::ast::expression
             return nullptr;
         }
 
-        auto *front_ptr = dynamic_cast<Node *>(nodes.front());
+        auto *front_ptr = dynamic_cast<Node *>(nodes.front().get());
 
         if (front_ptr == nullptr) {
             return nullptr;
@@ -18,7 +18,7 @@ namespace astlang::ast::expression
         auto optimized_front = front_ptr->optimize();
 
         if (optimized_front == nullptr) {
-            return std::move(nodes.front());
+            return std::move(nodes.front().get());
         }
 
         return optimized_front;

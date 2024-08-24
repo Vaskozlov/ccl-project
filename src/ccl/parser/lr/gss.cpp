@@ -2,15 +2,17 @@
 
 namespace ccl::parser::lr
 {
-    auto GSS::Reducer::reduce(SmallId pop_count, Node *node, std::vector<ast::Node *> arguments)
-        -> void
+    auto GSS::Reducer::reduce(
+        SmallId pop_count,
+        Node *node,
+        std::vector<ast::SharedNode<>>
+            arguments) -> void
     {
         pop_count -= 1;
         arguments.emplace_back(node->value);
 
         if (pop_count == 0) {
-            auto *new_node = reducer(std::move(arguments));
-            node->value->getLifetimeManager()->insert(new_node);
+            auto new_node = reducer(std::move(arguments));
 
             for (auto *prev : node->previous) {
                 auto new_state = gotoTable->at({
@@ -52,7 +54,8 @@ namespace ccl::parser::lr
     {
         for (const auto &node : nonTerminals) {
             if (node->parserState == parsing_state &&
-                static_cast<ast::NodeOfNodes *>(node->value)->getNodes() == value->getNodes()) {
+                isl::staticPointerCast<ast::NodeOfNodes>(node->value)->getNodes() ==
+                    value->getNodes()) {
                 return node.get();
             }
         }
@@ -64,7 +67,7 @@ namespace ccl::parser::lr
         Node *parent,
         SmallId input_position,
         SmallId parser_state,
-        ast::TokenNode *token) -> Node *
+        ast::SharedNode<ast::TokenNode> token) -> Node *
     {
         if (input_position >= levels.size()) {
             levels.resize(input_position + 1);
@@ -95,14 +98,15 @@ namespace ccl::parser::lr
         Node *parent,
         SmallId input_position,
         SmallId parser_state,
-        ast::NodeOfNodes *non_terminal) -> Node *
+        ast::SharedNode<ast::NodeOfNodes>
+            non_terminal) -> Node *
     {
         if (input_position >= levels.size()) {
             levels.resize(input_position + 1);
         }
 
         auto &level = levels.at(input_position);
-        auto *node = level.findNonTerminal(input_position, non_terminal);
+        auto node = level.findNonTerminal(input_position, non_terminal.get());
 
         // Is there any need to check?
         if (node == nullptr) {
@@ -125,11 +129,13 @@ namespace ccl::parser::lr
 
     auto GSS::add(Descriptor descriptor) -> void
     {
-        if (passed.contains(descriptor)) {
+        auto inserted = false;
+        std::tie(std::ignore, inserted) =
+            passed.at(descriptor.inputPosition % 2).emplace(descriptor);
+
+        if (!inserted) {
             return;
         }
-
-        passed.emplace(descriptor);
 
         if (descriptor.inputPosition == globalInputPosition) {
             descriptors.emplace_back(descriptor);
@@ -142,7 +148,8 @@ namespace ccl::parser::lr
         SmallId pop_count,
         const ankerl::unordered_dense::map<TableEntry, State> *gotoTable,
         State production,
-        const std::function<ast::NodeOfNodes *(std::vector<ast::Node *>)> &reducer,
+        const std::function<ast::SharedNode<ast::NodeOfNodes>(std::vector<ast::SharedNode<>>)>
+            &reducer,
         const Descriptor &descriptor) -> void
     {
         Reducer{

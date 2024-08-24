@@ -8,7 +8,7 @@ namespace astlang::ast::statement
     auto Statements::compute(Interpreter &interpreter) const -> EvaluationResult
     {
         for (const auto &node : nodes) {
-            if (auto result = ConstNodePtr{node}.astlangNode->compute(interpreter);
+            if (auto result = ConstNodePtr{node.get()}.astlangNode->compute(interpreter);
                 result.needToReturn) {
                 return result;
             }

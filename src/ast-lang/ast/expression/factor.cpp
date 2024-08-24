@@ -53,11 +53,11 @@ namespace astlang::ast::expression
             return computeExpression(interpreter);
         }
 
-        auto node = ConstNodePtr{this->front()};
+        auto node = ConstNodePtr{this->front().get()};
         auto node_type = node.cclNode->getType();
 
         if (node_type == interpreter.NUMBER) {
-            return constructNumber(ConstNodePtr{node});
+            return constructNumber(node);
         }
 
         if (node_type == interpreter.TRUE || node_type == interpreter.FALSE) {
@@ -91,7 +91,7 @@ namespace astlang::ast::expression
 
     auto Factor::computeExpression(Interpreter &interpreter) const -> EvaluationResult
     {
-        auto middle_node = ConstNodePtr{this->at(1)};
+        auto middle_node = ConstNodePtr{at(1).get()};
         return middle_node.astlangNode->compute(interpreter);
     }
 }// namespace astlang::ast::expression

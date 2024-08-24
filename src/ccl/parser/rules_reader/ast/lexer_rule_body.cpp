@@ -10,7 +10,7 @@ namespace ccl::parser::reader::ast
         auto resulted_container = std::make_unique<Container>(lexical_analyzer);
 
         for (const auto &node : this->nodes) {
-            const auto *node_as_rules_reader = static_cast<const RulesReaderNode *>(node);
+            const auto *node_as_rules_reader = static_cast<const RulesReaderNode *>(node.get());
             auto new_block = node_as_rules_reader->construct(parser_builder);
 
             resulted_container->addItem(isl::get<std::unique_ptr<RuleBlockInterface>>(new_block));

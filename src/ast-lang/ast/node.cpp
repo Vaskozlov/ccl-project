@@ -54,7 +54,7 @@ namespace astlang::ast
     auto Node::runRecursiveOptimization() -> void
     {
         for (auto &node : getNodes()) {
-            auto *ast_node = dynamic_cast<Node *>(node);
+            auto *ast_node = dynamic_cast<Node *>(node.get());
 
             if (ast_node == nullptr) {
                 continue;
@@ -66,7 +66,8 @@ namespace astlang::ast
                 continue;
             }
 
-            node = std::move(optimized_version);
+            // TODO: Implement this
+            // node = std::move(optimized_version);
         }
     }
 
@@ -246,13 +247,9 @@ namespace astlang::ast
             return;
         }
 
-        auto new_self_nodes = std::vector<ccl::parser::ast::Node *>{};
-
-        for (auto *node : self_as_sequence->getNodes()) {
-            new_self_nodes.emplace_back(castToAstLangNode(conversion_table, node));
+        for (auto &node : self_as_sequence->getNodes()) {
+            castToAstLangNode(conversion_table, node.get());
         }
-
-        self_as_sequence->getNodes() = std::move(new_self_nodes);
     }
 
     auto Node::castToAstLangNode(

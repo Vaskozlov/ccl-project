@@ -5,13 +5,13 @@ namespace astlang::ast::expression
 {
     auto Value::compute(Interpreter &interpreter) const -> EvaluationResult
     {
-        auto front_node = ConstNodePtr{this->front()};
+        auto front_node = ConstNodePtr{this->front().get()};
 
         if (this->size() == 1) {
             return front_node.astlangNode->compute(interpreter);
         }
 
-        auto back_node = ConstNodePtr{this->back()};
+        auto back_node = ConstNodePtr{this->back().get()};
         auto arguments = interpreter::FunctionCallArguments{};
         arguments.reserve(1);
 

@@ -49,12 +49,12 @@ namespace ccl::parser::dot
         }
 
         if (node_as_sequence != nullptr && inserted) {
-            auto nodes = node_as_sequence->getNodesPointers();
+            auto nodes = node_as_sequence->getNodes();
             auto number_of_nodes = static_cast<isl::ssize_t>(nodes.size());
 
             for (std::size_t i = 0; i != nodes.size(); ++i) {
                 createDotRepresentation(
-                    nodes.at(i),
+                    nodes.at(i).get(),
                     node_id,
                     number_of_nodes == 1 ? -1 : static_cast<isl::ssize_t>(i),
                     tree_data);

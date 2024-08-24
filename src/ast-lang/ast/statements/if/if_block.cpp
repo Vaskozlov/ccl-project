@@ -5,8 +5,8 @@ namespace astlang::ast::statement::if_statement
 {
     auto IfBlock::compute(Interpreter &interpreter) const -> EvaluationResult
     {
-        const auto condition = ConstNodePtr{nodes.at(1)};
-        const auto block = ConstNodePtr{nodes.at(3)};
+        const auto condition = ConstNodePtr{nodes.at(1).get()};
+        const auto block = ConstNodePtr{nodes.at(3).get()};
 
         if (auto condition_result = condition.astlangNode->compute(interpreter);
             isl::get<bool>(condition_result.value)) {

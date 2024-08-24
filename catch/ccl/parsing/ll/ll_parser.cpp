@@ -17,7 +17,14 @@ TEST_CASE("LLParser", "[LLParser]")
 
     auto tokenizer = lexer.getTokenizer("1+2+3");
     auto [lifetime_manager, roots] = parser.parse(tokenizer);
+    auto converter = std::views::transform(roots, [](auto &node) {
+        return node.get();
+    });
 
-    auto tree_repr = dot::createDotRepresentation(roots, math_rules_constructor.getIdToNameTranslationFunction());
-    isl::io::writeToFile(std::filesystem::path("/Volumes/ramdisk").append("gll-final.dot"), tree_repr);
+    auto tree_repr = dot::createDotRepresentation(
+        std::vector<ast::Node *>{converter.begin(), converter.end()},
+        math_rules_constructor.getIdToNameTranslationFunction());
+
+    isl::io::writeToFile(
+        std::filesystem::path("/Volumes/ramdisk").append("gll-final.dot"), tree_repr);
 }

@@ -7,7 +7,7 @@ namespace ccl::parser::reader::ast
         auto result = std::vector<std::vector<SmallId>>();
 
         for (const auto &node : this->nodes) {
-            const auto *alternative = static_cast<const RulesReaderNode *>(node);
+            const auto *alternative = static_cast<const RulesReaderNode *>(node.get());
             result.emplace_back(
                 isl::get<std::vector<SmallId>>(alternative->construct(parser_builder)));
         }

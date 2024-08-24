@@ -17,7 +17,11 @@ TEST_CASE("GlrParser", "[GLR]")
 
     auto tokenizer = lexer.getTokenizer("1*2*3+4+5");
     auto [lifetime_manager, roots] = MathLrParser.parse(tokenizer);
+    auto converter = std::views::transform(roots, [](auto &node) {
+        return node.get();
+    });
 
-    auto tree_repr = dot::createDotRepresentation(roots, math_token_to_string);
+    auto tree_repr = dot::createDotRepresentation(
+        std::vector<ast::Node *>{converter.begin(), converter.end()}, math_token_to_string);
     isl::io::writeToFile(std::filesystem::current_path().append("glr-final.dot"), tree_repr);
 }

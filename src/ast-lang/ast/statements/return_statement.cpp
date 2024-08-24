@@ -12,7 +12,7 @@ namespace astlang::ast::statement
                 .value = std::nullopt, .type = interpreter::Type::VOID, .needToReturn = true};
         }
 
-        auto return_value = ConstNodePtr{this->at(1)}.astlangNode->compute(interpreter);
+        auto return_value = ConstNodePtr{at(1).get()}.astlangNode->compute(interpreter);
         return_value.needToReturn = true;
 
         return return_value;

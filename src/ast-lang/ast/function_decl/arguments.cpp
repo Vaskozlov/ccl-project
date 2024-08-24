@@ -9,7 +9,7 @@ namespace astlang::ast::function::decl
     {
         // TODO
         auto result = std::vector<EvaluationResult>{};
-        auto front_node = ConstNodePtr{this->front()};
+        auto front_node = ConstNodePtr{front().get()};
 
         if (this->size() == 1) {
             result.emplace_back(front_node.astlangNode->compute(interpreter));
@@ -20,7 +20,7 @@ namespace astlang::ast::function::decl
             };
         }
 
-        auto back_node = ConstNodePtr{this->back()};
+        auto back_node = ConstNodePtr{back().get()};
         auto next_arguments = back_node.astlangNode->compute(interpreter);
         auto resulted_list = isl::get<std::vector<EvaluationResult>>(next_arguments.value);
 

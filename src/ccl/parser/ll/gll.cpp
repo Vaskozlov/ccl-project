@@ -12,8 +12,8 @@ namespace ccl::parser
 
         for (const auto &level : gss.getLevels()) {
             for (const auto &node : level) {
-                for (auto *n : node->sppfNode.nodes) {
-                    result.emplace_back(n);
+                for (auto &n : node->sppfNode.nodes) {
+                    result.emplace_back(n.get());
                 }
             }
         }
@@ -34,11 +34,11 @@ namespace ccl::parser
         table = ll_generator.createGllTable();
     }
 
-    auto GllParser::parse(lexer::Tokenizer&tokenizer) -> AmbiguousParsingResult {
+    auto GllParser::parse(lexer::Tokenizer &tokenizer) -> AmbiguousParsingResult
+    {
         auto parsing_result = AmbiguousParsingResult{};
 
-        auto *nodes_lifetime_manager = parsing_result.nodesLifetimeManager.get();
-        auto *token = nodes_lifetime_manager->create<ast::TokenNode>(tokenizer.yield());
+        auto token = ast::SharedNode<ast::TokenNode>(tokenizer.yield());
 
         auto gss = ll::GSS{std::addressof(storage), std::addressof(tokenizer)};
         gss.nextWord();
@@ -70,7 +70,7 @@ namespace ccl::parser
             auto input_position = descriptor.inputPosition;
 
             if (input_position == gss.getGlobalInputPosition()) {
-                token = nodes_lifetime_manager->create<ast::TokenNode>(tokenizer.yield());
+                token = ast::SharedNode<ast::TokenNode>(tokenizer.yield());
                 gss.nextWord();
             }
 
@@ -108,7 +108,7 @@ namespace ccl::parser
                     continue;
                 }
 
-                sppf.next(token);
+                sppf.next(isl::staticPointerCast<ast::Node>(token));
                 descriptor.inputPosition += 1;
                 gss.add(descriptor, idToStringConverter);
 

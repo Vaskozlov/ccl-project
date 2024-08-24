@@ -21,11 +21,10 @@ namespace ccl::parser
         const auto *word = std::addressof(tokenizer.yield());
         auto stack = Stack<ast::Node *>{};
         auto parsing_result = UnambiguousParsingResult{};
-        auto *nodes_lifetime_manager = parsing_result.nodesLifetimeManager.get();
-        auto *goal = nodes_lifetime_manager->create<ast::NodeOfNodes>(grammarGoalSymbol);
+        auto goal = ast::SharedNode<ast::NodeOfNodes>(grammarGoalSymbol);
 
         stack.emplace(nullptr);
-        stack.emplace(goal);
+        stack.emplace(goal.get());
 
         while (true) {
             auto *focus = stack.top();
@@ -67,16 +66,16 @@ namespace ccl::parser
                     continue;
                 }
 
-                auto *built_node = std::add_pointer_t<ast::Node>{};
+                auto built_node = ast::SharedNode<>{};
 
                 if (storage.isTerminal(s)) {
-                    built_node = focus_as_sequence->emplaceAfter<ast::TokenNode>(s);
+                    built_node = ast::SharedNode<ast::TokenNode>(s);
                 } else {
-                    built_node = focus_as_sequence->emplaceAfter<ast::NodeOfNodes>(s);
+                    built_node = ast::SharedNode<ast::NodeOfNodes>(s);
                 }
 
-                focus_as_sequence->addNode(built_node);
-                stack.emplace(focus_as_sequence->getNodes().back());
+                focus_as_sequence->addNode(std::move(built_node));
+                stack.emplace(focus_as_sequence->getNodes().back().get());
             }
 
             focus_as_sequence->reverse();

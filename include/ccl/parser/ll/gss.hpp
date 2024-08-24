@@ -2,6 +2,7 @@
 #define CCL_PROJECT_LL_GSS_HPP
 
 #include <ccl/lexer/tokenizer.hpp>
+#include <ccl/parser/ast/allocator.hpp>
 #include <ccl/parser/ast/token_node.hpp>
 #include <ccl/parser/ll/sppf_node.hpp>
 #include <deque>
@@ -28,7 +29,7 @@ namespace ccl::parser::ll
         struct PassedDescriptor
         {
             SPPFNode sppfNode;
-            SmallId inputPosition;
+            SmallId inputPosition{};
 
             auto operator<=>(const PassedDescriptor &) const -> std::weak_ordering = default;
         };
@@ -55,7 +56,7 @@ namespace ccl::parser::ll
         Levels levels;
         std::deque<Descriptor> terminalDescriptors;
         std::deque<Descriptor> nonTerminalDescriptors;
-        std::set<PassedDescriptor> passed;
+        std::array<std::set<PassedDescriptor>, 2> passed;
         const GrammarStorage *storage{};
         lexer::Tokenizer *tokenizer{};
         SmallId globalInputPosition{};
@@ -84,6 +85,7 @@ namespace ccl::parser::ll
         auto nextWord() -> void
         {
             ++globalInputPosition;
+            passed.at(globalInputPosition % 2).clear();
         }
 
         auto

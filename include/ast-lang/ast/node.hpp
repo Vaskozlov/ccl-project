@@ -4,7 +4,6 @@
 #include <ast-lang/ast-lang.hpp>
 #include <ccl/parser/ast/node_of_nodes.hpp>
 #include <ccl/parser/ast/token_node.hpp>
-#include <ccl/parser/nodes_lifetime_manager.hpp>
 #include <ccl/parser/rules_reader/parser_builder.hpp>
 
 namespace astlang::interpreter
@@ -25,7 +24,13 @@ namespace astlang::ast
         template<typename T>
         static auto reconstructNode(NodeOfNodes *node) -> NodeOfNodes *
         {
-            return node->getLifetimeManager()->promote<T>(std::launder(node));
+            auto node_type = node->getType();
+            auto nodes = std::move(node->getNodes());
+
+            std::destroy_at(node);
+            node = new (node) T{node_type, std::move(nodes)};
+
+            return node;
         }
 
     public:

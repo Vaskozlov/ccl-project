@@ -7,7 +7,7 @@ namespace astlang::ast::expression
 
     auto ArrayElements::compute(Interpreter &interpreter) const -> EvaluationResult
     {
-        auto front_node = ConstNodePtr{front()};
+        auto front_node = ConstNodePtr{front().get()};
         auto result = std::vector<EvaluationResult>{};
         auto first_element = front_node.astlangNode->compute(interpreter);
         auto first_element_type = first_element.type;
@@ -15,7 +15,7 @@ namespace astlang::ast::expression
         result.emplace_back(std::move(first_element));
 
         if (size() > 1) {
-            auto back_node = ConstNodePtr{back()};
+            auto back_node = ConstNodePtr{back().get()};
             auto other_elements = back_node.astlangNode->compute(interpreter);
             auto unpacked_elements = isl::get<std::vector<EvaluationResult>>(other_elements.value);
 

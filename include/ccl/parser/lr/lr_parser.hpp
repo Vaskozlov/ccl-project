@@ -17,9 +17,8 @@ namespace ccl::parser
     private:
         struct ParserState
         {
-            NodesLifetimeManager *nodesLifetimeManager;
             Stack<State> stateStack;
-            Stack<ast::Node *> nodesStack;
+            Stack<ast::SharedNode<>> nodesStack;
         };
 
         lr::LrGotoTable gotoTable;

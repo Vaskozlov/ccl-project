@@ -14,7 +14,7 @@ namespace ccl::parser::lr
         struct Node
         {
             std::vector<Node *> previous;
-            ast::Node *value{};
+            ast::SharedNode<> value{};
             SmallId inputPosition{};
             SmallId parserState{};
 
@@ -51,18 +51,20 @@ namespace ccl::parser::lr
     private:
         struct Reducer
         {
-            std::function<ast::NodeOfNodes *(std::vector<ast::Node *>)> reducer;
+            std::function<ast::SharedNode<ast::NodeOfNodes>(std::vector<ast::SharedNode<>>)>
+                reducer;
             const ankerl::unordered_dense::map<TableEntry, State> *gotoTable;
             GSS *gss;
             State production;
             SmallId inputLevel;
 
-            auto reduce(SmallId pop_count, Node *node, std::vector<ast::Node *> arguments) -> void;
+            auto reduce(SmallId pop_count, Node *node, std::vector<ast::SharedNode<>> arguments)
+                -> void;
         };
 
         Levels levels;
         std::deque<Descriptor> descriptors;
-        std::set<Descriptor> passed;
+        std::array<std::set<Descriptor>, 2> passed;
         SmallId globalInputPosition{};
 
     public:
@@ -84,15 +86,16 @@ namespace ccl::parser::lr
         auto nextWord() -> void
         {
             ++globalInputPosition;
+            passed.at(globalInputPosition % 2).clear();
         }
 
         [[nodiscard]] auto pushTerminal(
             Node *parent, SmallId input_position, SmallId parser_state,
-            ast::TokenNode *token) -> Node *;
+            ast::SharedNode<ast::TokenNode> token) -> Node *;
 
         [[nodiscard]] auto pushNonTerminal(
             Node *parent, SmallId input_position, SmallId parser_state,
-            ast::NodeOfNodes *non_terminal) -> Node *;
+            ast::SharedNode<ast::NodeOfNodes> non_terminal) -> Node *;
 
         auto add(Descriptor descriptor) -> void;
 
@@ -107,7 +110,8 @@ namespace ccl::parser::lr
         auto reduce(
             SmallId pop_count, const ankerl::unordered_dense::map<TableEntry, State> *gotoTable,
             State production,
-            const std::function<ast::NodeOfNodes *(std::vector<ast::Node *>)> &reducer,
+            const std::function<ast::SharedNode<ast::NodeOfNodes>(std::vector<ast::SharedNode<>>)>
+                &reducer,
             const Descriptor &descriptor) -> void;
     };
 }// namespace ccl::parser::lr

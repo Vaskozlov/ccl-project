@@ -5,7 +5,7 @@ namespace ccl::parser::reader::ast
     auto AnyBlock::construct(ParserBuilder &parser_builder) const -> isl::UniqueAny
     {
         for (const auto &node : this->nodes) {
-            const auto *elem = dynamic_cast<RulesReaderNode *>(node);
+            const auto *elem = dynamic_cast<const RulesReaderNode *>(node.get());
 
             if (elem != nullptr) {
                 elem->construct(parser_builder);

@@ -7,8 +7,8 @@ namespace astlang::ast::function::decl
 
     auto Argument::compute(Interpreter &interpreter) const -> EvaluationResult
     {
-        auto front_node = ConstNodePtr{this->front()};
-        auto name_node = ConstNodePtr{this->back()};
+        auto front_node = ConstNodePtr{this->front().get()};
+        auto name_node = ConstNodePtr{this->back().get()};
 
         auto type = Type::fromNode(front_node.cclNode);
         auto &name_token = name_node.tokenNode->getToken();

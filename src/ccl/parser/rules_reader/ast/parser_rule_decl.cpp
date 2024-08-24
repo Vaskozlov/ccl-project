@@ -5,7 +5,7 @@ namespace ccl::parser::reader::ast
 {
     auto ParserRuleDecl::getDeclarationName() const -> isl::string_view
     {
-        const auto *value_node = this->front();
+        const auto *value_node = this->front().get();
         const auto *declaration_token = dynamic_cast<const parser::ast::TokenNode *>(value_node);
         const auto &token = declaration_token->getToken();
 
@@ -14,7 +14,7 @@ namespace ccl::parser::reader::ast
 
     auto ParserRuleDecl::getAlternatives() const -> const ParserRuleAlternatives *
     {
-        const auto *value_node = this->back();
+        const auto *value_node = back().get();
         return dynamic_cast<const ParserRuleAlternatives *>(value_node);
     }
 
@@ -26,7 +26,7 @@ namespace ccl::parser::reader::ast
 
         if (alternatives == nullptr) {
             auto not_casted_rule =
-                static_cast<const RulesReaderNode *>(back())->construct(parser_builder);
+                static_cast<const RulesReaderNode *>(back().get())->construct(parser_builder);
             auto rule = isl::get<std::vector<SmallId>>(not_casted_rule);
 
             parser_builder.addParserRule(production_id, Rule{{rule}});

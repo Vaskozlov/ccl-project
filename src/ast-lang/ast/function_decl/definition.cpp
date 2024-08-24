@@ -15,8 +15,8 @@ namespace astlang::ast::function::decl
 
     auto Definition::compute(Interpreter &interpreter) const -> EvaluationResult
     {
-        auto function_name_node = ConstNodePtr{this->at(FUNCTION_NAME_INDEX)};
-        auto function_arguments_node = ConstNodePtr{this->at(FUNCTION_ARGUMENTS_INDEX)};
+        auto function_name_node = ConstNodePtr{at(FUNCTION_NAME_INDEX).get()};
+        auto function_arguments_node = ConstNodePtr{at(FUNCTION_ARGUMENTS_INDEX).get()};
 
         const auto &function_name_token = function_name_node.tokenNode->getToken();
         const auto function_name = function_name_token.getRepr();
@@ -28,24 +28,24 @@ namespace astlang::ast::function::decl
         auto function_body = ConstNodePtr{nullptr};
         auto return_type = Type{Type::ANY};
 
-        if (this->size() == SIZE_IN_CASE_IMPLICIT_RETURN_TYPE) {
+        if (size() == SIZE_IN_CASE_IMPLICIT_RETURN_TYPE) {
             function_body = ConstNodePtr{
-                this->at(FUNCTION_BODY_INDEX_IN_CASE_OF_IMPLICIT_RETURN_TYPE),
+                at(FUNCTION_BODY_INDEX_IN_CASE_OF_IMPLICIT_RETURN_TYPE).get(),
             };
         } else {
             function_body = ConstNodePtr{
-                this->at(FUNCTION_BODY_INDEX_IN_CASE_OF_EXPLICIT_RETURN_TYPE),
+                at(FUNCTION_BODY_INDEX_IN_CASE_OF_EXPLICIT_RETURN_TYPE).get(),
             };
 
-            auto return_type_node = ConstNodePtr{this->at(FUNCTION_RETURN_TYPE_INDEX)};
+            auto return_type_node = ConstNodePtr{at(FUNCTION_RETURN_TYPE_INDEX).get()};
             auto return_type_evaluation = return_type_node.astlangNode->compute(interpreter);
 
             return_type = std::move(return_type_evaluation.type);
         }
 
-        for (auto &row_argument : arguments_list) {
-            const auto &argument_type = row_argument.type;
-            auto argument_name = isl::get<isl::string_view>(row_argument.value);
+        for (auto &[value, type, need_to_return, stores_reference] : arguments_list) {
+            const auto &argument_type = type;
+            auto argument_name = isl::get<isl::string_view>(value);
 
             function_definition_arguments_type.emplace_back(argument_type);
             function_definition_arguments_names.emplace_back(argument_name);
