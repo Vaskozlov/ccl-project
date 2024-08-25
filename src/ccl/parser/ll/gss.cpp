@@ -13,9 +13,7 @@ namespace ccl::parser::ll
         return nullptr;
     }
 
-    auto GSS::pop(
-        const Descriptor &descriptor,
-        const std::function<std::string(SmallId)> &id_to_string_converter) -> void
+    auto GSS::pop(const Descriptor &descriptor) -> void
     {
         const auto input_position = descriptor.inputPosition;
         auto constructed_node = descriptor.stack->sppfNode.build();
@@ -26,66 +24,81 @@ namespace ccl::parser::ll
 
             auto *new_node = createNode(prev->previous, new_sppf, input_position);
 
-            add(
-                {
-                    .stack = new_node,
-                    .inputPosition = input_position,
-                },
-                id_to_string_converter);
+            add({
+                .stack = new_node,
+                .inputPosition = input_position,
+            });
         }
     }
 
-    auto GSS::add(
-        Descriptor descriptor,
-        const std::function<std::string(SmallId)> &id_to_string_converter) -> void
+    auto GSS::add(Descriptor descriptor) -> void
     {
         auto inserted = false;
-        auto *node = descriptor.stack;
-        const auto input_position = descriptor.inputPosition;
+        const auto *node = descriptor.stack;
 
-        std::tie(std::ignore, inserted) = passed.at(input_position % 2)
-                                              .emplace(
-                                                  PassedDescriptor{
-                                                      .sppfNode = node->sppfNode,
-                                                      .inputPosition = node->inputPosition,
-                                                  });
+        const auto input_position = descriptor.inputPosition;
+        auto &current_set = passed.at(input_position % 2);
+
+        std::tie(std::ignore, inserted) = current_set.emplace(
+            PassedDescriptor{
+                .sppfNode = node->sppfNode,
+                .inputPosition = node->inputPosition,
+            });
 
         if (!inserted) {
-            fmt::println(
-                "Rejecting descriptor: {} at {}",
-                RuleWithDotPrintWrapper{
-                    node->sppfNode.rule,
-                    id_to_string_converter,
-                },
-                descriptor.inputPosition);
             return;
         }
-
-        fmt::println(
-            "Accepting descriptor: {} at {}",
-            RuleWithDotPrintWrapper{
-                node->sppfNode.rule,
-                id_to_string_converter,
-            },
-            descriptor.inputPosition);
 
         const auto at_dot = descriptor.stack->sppfNode.rule.isDotInTheEnd()
                                 ? 0
                                 : descriptor.stack->sppfNode.atDot();
 
+        const auto is_current_symbol_a_terminal = storage->isTerminal(at_dot) && (storage->getEpsilon() != at_dot);
+
         if (descriptor.inputPosition == globalInputPosition) {
-            if (storage->isTerminal(at_dot)) {
+            if (is_current_symbol_a_terminal) {
                 terminalDescriptors.emplace_back(descriptor);
-            } else {
-                nonTerminalDescriptors.emplace_back(descriptor);
+                return;
             }
-        } else {
-            if (storage->isTerminal(at_dot)) {
-                terminalDescriptors.emplace_front(descriptor);
-            } else {
-                nonTerminalDescriptors.emplace_front(descriptor);
-            }
+
+            nonTerminalDescriptors.emplace_back(descriptor);
         }
+
+        if (is_current_symbol_a_terminal) {
+            terminalDescriptors.emplace_front(descriptor);
+            return;
+        }
+
+        nonTerminalDescriptors.emplace_front(descriptor);
+    }
+
+    auto GSS::getDescriptor() -> Descriptor
+    {
+        if (nonTerminalDescriptors.empty()) {
+            auto descriptor = terminalDescriptors.front();
+            terminalDescriptors.pop_front();
+            return descriptor;
+        }
+
+        if (terminalDescriptors.empty()) {
+            auto descriptor = nonTerminalDescriptors.front();
+            nonTerminalDescriptors.pop_front();
+
+            return descriptor;
+        }
+
+        if (nonTerminalDescriptors.front().inputPosition <=
+            terminalDescriptors.front().inputPosition) {
+            auto descriptor = nonTerminalDescriptors.front();
+            nonTerminalDescriptors.pop_front();
+
+            return descriptor;
+        }
+
+        auto descriptor = terminalDescriptors.front();
+        terminalDescriptors.pop_front();
+
+        return descriptor;
     }
 
     auto GSS::createNode(Node *parent, const SPPFNode &sppf_node, SmallId input_position) -> Node *

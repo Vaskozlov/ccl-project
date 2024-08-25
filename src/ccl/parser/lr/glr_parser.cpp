@@ -107,7 +107,8 @@ namespace ccl::parser
                     const auto &lr_item = action.getReducingItem();
                     const auto production = lr_item.production;
                     const auto *rule = lr_item.dottedRule.rule;
-                    const auto number_of_elements_to_pop = lr_item.dottedRule.size();
+                    const auto number_of_elements_to_pop =
+                        static_cast<SmallId>(lr_item.dottedRule.size());
 
                     auto reducer = [rule, production](std::vector<ast::SharedNode<>> nodes) {
                         std::ranges::reverse(nodes);

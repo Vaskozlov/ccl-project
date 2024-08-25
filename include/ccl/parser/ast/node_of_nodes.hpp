@@ -37,7 +37,7 @@ namespace ccl::parser::ast
 
         auto addNode(SharedNode<> node) -> void
         {
-            nodes.emplace_back(node);
+            nodes.emplace_back(std::move(node));
         }
 
         [[nodiscard]] auto size() const noexcept -> std::size_t
@@ -80,16 +80,7 @@ namespace ccl::parser::ast
             return nodes.back();
         }
 
-        auto joinWithNode(SharedNode<> node) -> void
-        {
-            if (auto casted = isl::dynamicPointerCast<NodeOfNodes>(node); casted != nullptr) {
-                for (auto &elem : casted->nodes) {
-                    addNode(elem);
-                }
-            } else {
-                addNode(node);
-            }
-        }
+        auto joinWithNode(SharedNode<> node) -> void;
 
         auto reverse() -> void
         {

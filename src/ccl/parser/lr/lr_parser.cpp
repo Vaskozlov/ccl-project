@@ -23,13 +23,10 @@ namespace ccl::parser
     {
         using enum ParsingAction;
 
-        const auto *word = &tokenizer.yield();
-
         auto parsing_result = UnambiguousParsingResult{};
-        auto parser_state = ParserState{
-            .stateStack = {},
-            .nodesStack = {},
-        };
+        const auto *word = std::addressof(tokenizer.yield());
+
+        auto parser_state = ParserState{};
 
         parser_state.stateStack.push(0);
 
@@ -41,11 +38,13 @@ namespace ccl::parser
                 .symbol = word->getId(),
             };
 
-            if (!actionTable.contains(entry)) {
+            auto action_table_it = actionTable.find(entry);
+
+            if (action_table_it == actionTable.end()) {
                 return parsing_result;
             }
 
-            switch (const auto &action = actionTable.at(entry); action.getParsingAction()) {
+            switch (const auto &action = action_table_it->second; action.getParsingAction()) {
             case SHIFT:
                 shiftAction(word, action.getShiftingState(), parser_state);
                 word = std::addressof(tokenizer.yield());
@@ -68,7 +67,7 @@ namespace ccl::parser
     auto LrParser::shiftAction(
         const lexer::Token *word,
         State shifting_state,
-        ParserState &parser_state) const -> void
+        ParserState &parser_state) -> void
     {
         auto &[state_stack, nodes_stack] = parser_state;
 

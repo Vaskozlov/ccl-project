@@ -18,17 +18,21 @@ namespace astlang::ast
     {
     private:
         using ConstructionFunction = ccl::parser::Rule::RuleBuilderFunction;
-        using ConversionTable = isl::
-            StaticFlatmap<SmallId, std::function<ccl::parser::ast::Node *(NodeOfNodes *node)>, 50>;
+        using ConversionTable = isl::StaticFlatmap<
+            SmallId,
+            std::function<ccl::parser::ast::SharedNode<>(
+                ccl::parser::ast::SharedNode<NodeOfNodes>)>,
+            50>;
 
-        template<typename T>
-        static auto reconstructNode(NodeOfNodes *node) -> NodeOfNodes *
+        template<std::constructible_from<SmallId, std::vector<ccl::parser::ast::SharedNode<>>> T>
+        static auto reconstructNode(ccl::parser::ast::SharedNode<NodeOfNodes> node)
+            -> ccl::parser::ast::SharedNode<>
         {
             auto node_type = node->getType();
             auto nodes = std::move(node->getNodes());
 
-            std::destroy_at(node);
-            node = new (node) T{node_type, std::move(nodes)};
+            std::destroy_at(node.get());
+            new (node.get()) T{node_type, std::move(nodes)};
 
             return node;
         }
@@ -40,7 +44,7 @@ namespace astlang::ast
 
         auto runRecursiveOptimization() -> void;
 
-        virtual auto optimize() -> ccl::parser::ast::Node *;
+        virtual auto optimize() -> ccl::parser::ast::SharedNode<>;
 
         virtual auto compute(Interpreter &interpreter) const -> EvaluationResult = 0;
 
@@ -52,7 +56,8 @@ namespace astlang::ast
 
         static auto castToAstLangNode(
             const ConversionTable &conversion_table,
-            ccl::parser::ast::Node *node) -> ccl::parser::ast::Node *;
+            ccl::parser::ast::SharedNode<>
+                node) -> ccl::parser::ast::SharedNode<>;
     };
 
     struct NodePtr

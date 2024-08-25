@@ -2,7 +2,7 @@
 
 namespace astlang::ast::expression
 {
-    auto BasicValue::optimize() -> ccl::parser::ast::Node *
+    auto BasicValue::optimize() -> ccl::parser::ast::SharedNode<>
     {
         if (size() != 1) {
             runRecursiveOptimization();
@@ -18,7 +18,7 @@ namespace astlang::ast::expression
         auto optimized_front = front_ptr->optimize();
 
         if (optimized_front == nullptr) {
-            return std::move(nodes.front().get());
+            return std::move(nodes.front());
         }
 
         return optimized_front;

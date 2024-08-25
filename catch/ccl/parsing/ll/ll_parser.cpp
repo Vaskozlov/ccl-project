@@ -6,7 +6,6 @@
 
 TEST_CASE("LLParser", "[LLParser]")
 {
-    // 14:22
     using namespace ccl::debug;
     using namespace ccl::parser;
 
@@ -16,7 +15,7 @@ TEST_CASE("LLParser", "[LLParser]")
     auto parser = math_rules_constructor.buildGLL();
 
     auto tokenizer = lexer.getTokenizer("1+2+3");
-    auto [lifetime_manager, roots] = parser.parse(tokenizer);
+    auto [roots] = parser.parse(tokenizer);
     auto converter = std::views::transform(roots, [](auto &node) {
         return node.get();
     });

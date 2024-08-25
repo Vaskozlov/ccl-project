@@ -11,10 +11,10 @@ TEST_CASE("TreeStructureTest", "[TreeParsing]")
     auto &math_rules_constructor = math_rules_reader.getParserBuilder();
     const auto &lexer = math_rules_constructor.getLexicalAnalyzer();
     auto math_token_to_string = math_rules_constructor.getIdToNameTranslationFunction();
-    auto MathLrParser = math_rules_constructor.buildLr1();
+    auto math_lr_parser = math_rules_constructor.buildLr1();
 
     auto tokenizer = lexer.getTokenizer("10+2*3");
-    auto [nodes_lifetime_manager, parse_result] = MathLrParser.parse(tokenizer);
+    auto [parse_result] = math_lr_parser.parse(tokenizer);
     const auto root_node = isl::dynamicPointerCast<ast::NodeOfNodes>(parse_result);
 
     REQUIRE(parse_result != nullptr);

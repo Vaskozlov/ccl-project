@@ -37,36 +37,33 @@ namespace ccl::parser
     auto GllParser::parse(lexer::Tokenizer &tokenizer) -> AmbiguousParsingResult
     {
         auto parsing_result = AmbiguousParsingResult{};
-
-        auto token = ast::SharedNode<ast::TokenNode>(tokenizer.yield());
-
-        auto gss = ll::GSS{std::addressof(storage), std::addressof(tokenizer)};
+        auto token = ast::SharedNode<ast::TokenNode>{tokenizer.yield()};
+        auto gss = ll::GSS{std::addressof(storage)};
         gss.nextWord();
 
-        const auto *start_rule = std::addressof(storage.at(grammarGoalSymbol).front());
+        auto start_rule = storage.at(grammarGoalSymbol).front();
+        start_rule.emplace_back(0);
 
         const auto start_rule_with_dot = RuleWithDot{
-            .rule = start_rule,
+            .rule = &start_rule,
             .dotPosition = 0,
         };
 
-        auto start_sppf = SPPFNode{
+        const auto start_sppf = SPPFNode{
+            .nodes = {},
             .rule = start_rule_with_dot,
             .production = grammarGoalSymbol,
         };
 
         auto *start_node = gss.createNode(nullptr, start_sppf, 0);
 
-        gss.add(
-            {
-                .stack = start_node,
-                .inputPosition = 0,
-            },
-            idToStringConverter);
+        gss.add({
+            .stack = start_node,
+            .inputPosition = 0,
+        });
 
         while (gss.hasDescriptors()) {
             auto descriptor = gss.getDescriptor();
-
             auto input_position = descriptor.inputPosition;
 
             if (input_position == gss.getGlobalInputPosition()) {
@@ -75,45 +72,43 @@ namespace ccl::parser
             }
 
             auto &sppf = descriptor.stack->sppfNode;
-            fmt::println("Rule: {}", RuleWithDotPrintWrapper(sppf.rule, idToStringConverter));
 
             if (sppf.rule.isDotInTheEnd()) {
-                gss.pop(descriptor, idToStringConverter);
+                gss.pop(descriptor);
                 continue;
             }
 
             const auto focus = sppf.atDot();
             const auto token_type = token->getType();
 
-            fmt::println(
-                "Focus {}, token: {} = {}", idToStringConverter(focus),
-                idToStringConverter(token_type), token->getToken().getRepr());
+            // fmt::println(
+            // "Focus {}, token: {} = {}", idToStringConverter(focus),
+            // idToStringConverter(token_type), token->getToken().getRepr());
 
             if (focus == 0 && token_type == 0) {
-                fmt::println("ACCEPTED");
-                parsing_result.roots.emplace_back(descriptor.stack->sppfNode.nodes.front());
-                debugGll(gss, idToStringConverter);
+                parsing_result.roots.emplace_back(sppf.nodes.front());
+                // debugGll(gss, idToStringConverter);
                 continue;
             }
 
             if (focus == storage.getEpsilon()) {
                 sppf.rule.dotPosition += 1;
-                gss.add(descriptor, idToStringConverter);
+                gss.add(descriptor);
                 continue;
             }
 
             if (storage.isTerminal(focus)) {
                 if (focus != token_type) {
-                    // ERROR STATE
                     continue;
                 }
 
-                sppf.next(isl::staticPointerCast<ast::Node>(token));
+                sppf.next(token);
                 descriptor.inputPosition += 1;
-                gss.add(descriptor, idToStringConverter);
+                gss.add(descriptor);
 
                 continue;
             }
+
             const auto entry = TableEntry{
                 .state = focus,
                 .symbol = token_type,
@@ -122,13 +117,12 @@ namespace ccl::parser
             auto rules_it = table.find(entry);
 
             if (rules_it == table.end()) {
-                return parsing_result;
+                continue;
             }
 
-            const auto &rules = rules_it->second;
-
-            for (const auto *rule : rules) {
+            for (const auto *rule : rules_it->second) {
                 auto new_sppf_node = SPPFNode{
+                    .nodes = {},
                     .rule =
                         {
                             .rule = rule,
@@ -139,15 +133,13 @@ namespace ccl::parser
 
                 auto *new_node = gss.createNode(descriptor.stack, new_sppf_node, input_position);
 
-                gss.add(
-                    {
-                        .stack = new_node,
-                        .inputPosition = input_position,
-                    },
-                    idToStringConverter);
+                gss.add({
+                    .stack = new_node,
+                    .inputPosition = input_position,
+                });
             }
 
-            debugGll(gss, idToStringConverter);
+            // debugGll(gss, idToStringConverter);
         }
 
         return parsing_result;

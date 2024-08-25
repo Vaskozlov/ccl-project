@@ -17,8 +17,8 @@ namespace ccl::parser
     private:
         struct ParserState
         {
-            Stack<State> stateStack;
-            Stack<ast::SharedNode<>> nodesStack;
+            Stack<State> stateStack{};
+            Stack<ast::SharedNode<>> nodesStack{};
         };
 
         lr::LrGotoTable gotoTable;
@@ -46,8 +46,9 @@ namespace ccl::parser
         }
 
     private:
-        auto shiftAction(const lexer::Token *word, State shifting_state, ParserState &parser_state)
-            const -> void;
+        static auto
+            shiftAction(const lexer::Token *word, State shifting_state, ParserState &parser_state)
+                -> void;
 
         auto reduceAction(const LrItem &lr_item, ParserState &parser_state) const -> void;
     };

@@ -23,7 +23,7 @@ namespace ccl::parser::ll
     public:
         LlParserGenerator(
             SmallId start_symbol, const GrammarStorage &grammar_storage,
-            std::function<std::string(SmallId)> id_to_string_converter);
+            const std::function<std::string(SmallId)> &id_to_string_converter);
 
         [[nodiscard]] auto createLl1Table() const -> Ll1Table;
 

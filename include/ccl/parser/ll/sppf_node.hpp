@@ -17,16 +17,18 @@ namespace ccl::parser
             nodes.emplace_back(node);
         }
 
-        [[nodiscard]] auto atDot() const -> Symbol {
+        [[nodiscard]] auto atDot() const -> Symbol
+        {
             return rule.atDot();
         }
 
-        [[nodiscard]] auto build() const -> ast::SharedNode<> {
+        [[nodiscard]] auto build() const -> ast::SharedNode<ast::NodeOfNodes>
+        {
             return rule.rule->construct(production, nodes);
         }
 
-        [[nodiscard]] auto operator<=>(const SPPFNode&other) const -> std::weak_ordering = default;
+        [[nodiscard]] auto operator<=>(const SPPFNode &other) const -> std::weak_ordering = default;
     };
-} // namespace ccl::parser
+}// namespace ccl::parser
 
 #endif /* CCL_PROJECT_SPPF_NODE_HPP */

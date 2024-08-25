@@ -11,12 +11,11 @@ TEST_CASE("GlrParser", "[GLR]")
     reader::RulesReader math_rules_reader{SimpleGlrMathGrammarDefinition, __FILE__};
     auto &math_rules_constructor = math_rules_reader.getParserBuilder();
     const auto &lexer = math_rules_constructor.getLexicalAnalyzer();
-    auto math_token_to_string = math_rules_constructor.getIdToNameTranslationFunction();
-
-    auto MathLrParser = math_rules_constructor.buildGlr();
+    const auto math_token_to_string = math_rules_constructor.getIdToNameTranslationFunction();
+    const auto math_lr_parser = math_rules_constructor.buildGlr();
 
     auto tokenizer = lexer.getTokenizer("1*2*3+4+5");
-    auto [lifetime_manager, roots] = MathLrParser.parse(tokenizer);
+    auto [roots] = math_lr_parser.parse(tokenizer);
     auto converter = std::views::transform(roots, [](auto &node) {
         return node.get();
     });

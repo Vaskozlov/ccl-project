@@ -58,13 +58,11 @@ namespace ccl::parser::ll
         std::deque<Descriptor> nonTerminalDescriptors;
         std::array<std::set<PassedDescriptor>, 2> passed;
         const GrammarStorage *storage{};
-        lexer::Tokenizer *tokenizer{};
         SmallId globalInputPosition{};
 
     public:
-        explicit GSS(const GrammarStorage *grammar_storage, lexer::Tokenizer *tokenizer_ptr)
+        explicit GSS(const GrammarStorage *grammar_storage)
           : storage{grammar_storage}
-          , tokenizer{tokenizer_ptr}
         {}
 
         [[nodiscard]] auto getGlobalInputPosition() const noexcept -> SmallId
@@ -88,39 +86,11 @@ namespace ccl::parser::ll
             passed.at(globalInputPosition % 2).clear();
         }
 
-        auto
-            pop(const Descriptor &descriptor,
-                const std::function<std::string(SmallId)> &id_to_string_converter) -> void;
+        auto pop(const Descriptor &descriptor) -> void;
 
-        auto
-            add(Descriptor descriptor,
-                const std::function<std::string(SmallId)> &id_to_string_converter) -> void;
+        auto add(Descriptor descriptor) -> void;
 
-        auto getDescriptor() -> Descriptor
-        {
-            if (nonTerminalDescriptors.empty()) {
-                auto descriptor = terminalDescriptors.front();
-                terminalDescriptors.pop_front();
-                return descriptor;
-            }
-
-            if (terminalDescriptors.empty()) {
-                auto descriptor = nonTerminalDescriptors.front();
-                nonTerminalDescriptors.pop_front();
-                return descriptor;
-            }
-
-            if (nonTerminalDescriptors.front().inputPosition <=
-                terminalDescriptors.front().inputPosition) {
-                auto descriptor = nonTerminalDescriptors.front();
-                nonTerminalDescriptors.pop_front();
-                return descriptor;
-            }
-
-            auto descriptor = terminalDescriptors.front();
-            terminalDescriptors.pop_front();
-            return descriptor;
-        }
+        auto getDescriptor() -> Descriptor;
 
         auto createNode(Node *parent, const SPPFNode &sppf_node, SmallId input_position)
             CCL_LIFETIMEBOUND -> Node *;

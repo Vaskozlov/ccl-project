@@ -19,33 +19,33 @@ namespace ccl::parser::reader
             return parser::ast::SharedNode<T>{production, std::move(nodes)};
         };
 
-    static const auto DefaultAppender =
-        [](Symbol /* unused */, std::vector<parser::ast::SharedNode<>> nodes) {
-            auto rule_body = nodes.front();
-            auto casted_rule_body = isl::dynamicPointerCast<parser::ast::NodeOfNodes>(rule_body);
+    static const auto DefaultAppender = [](Symbol /* unused */,
+                                           std::vector<parser::ast::SharedNode<>> nodes) {
+        auto rule_body = nodes.front();
+        auto casted_rule_body = isl::dynamicPointerCast<parser::ast::NodeOfNodes>(rule_body);
 
-            // possible move
-            casted_rule_body->addNode(nodes.back());
+        // possible move
+        casted_rule_body->addNode(nodes.back());
 
-            return casted_rule_body;
-        };
+        return casted_rule_body;
+    };
 
     static const auto ReplaceUpperBlockWithLastElementFromCurrent =
         [](Symbol /* unused */, std::vector<parser::ast::SharedNode<>> nodes) {
             return isl::dynamicPointerCast<parser::ast::NodeOfNodes>(nodes.back());
         };
 
-    static const auto ConstructLexerGroup =
-        [](Symbol production, std::vector<parser::ast::SharedNode<>> nodes) {
-            auto result = parser::ast::SharedNode<ast::LexerRuleBlock>(production);
-            result->addNode(nodes.at(1));
+    static const auto ConstructLexerGroup = [](Symbol production,
+                                               std::vector<parser::ast::SharedNode<>> nodes) {
+        auto result = parser::ast::SharedNode<ast::LexerRuleBlock>(production);
+        result->addNode(nodes.at(1));
 
-            if (nodes.size() == 4) {
-                result->addNode(nodes.back());
-            }
+        if (nodes.size() == 4) {
+            result->addNode(nodes.back());
+        }
 
-            return result;
-        };
+        return result;
+    };
 
     static const auto ConstructLexerRuleAlternative =
         [](Symbol production, std::vector<parser::ast::SharedNode<>> nodes) {
@@ -120,7 +120,8 @@ namespace ccl::parser::reader
             return DefaultAppender(production, std::move(nodes));
         }
 
-        auto casted_last_node = isl::dynamicPointerCast<parser::ast::NodeOfNodes>(casted_rule_body->back());
+        auto casted_last_node =
+            isl::dynamicPointerCast<parser::ast::NodeOfNodes>(casted_rule_body->back());
         casted_last_node->addNode(nodes.back());
 
         return casted_rule_body;
@@ -468,9 +469,18 @@ namespace ccl::parser::reader
     {
         static auto initial_rule = Rule{{ANY_BLOCK}};
 
-        auto start_item = LrItem{std::addressof(initial_rule), 0, GOAL, EOI};
+        const auto start_item = LrItem{
+            .dottedRule =
+                {
+                    .rule = std::addressof(initial_rule),
+                    .dotPosition = 0,
+                },
+            .production = GOAL,
+            .lookAhead = EOI,
+        };
 
         auto tokenizer = RulesLexer.getTokenizer(input, filename);
+
         const auto lr_parser = LrParser(start_item, EPSILON, RulesGrammar, [](auto elem) {
             return std::string{ToStringRulesLexerToken.at(elem)};
         });

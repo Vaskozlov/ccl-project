@@ -5,8 +5,7 @@ namespace ccl::parser::ll
     LlParserGenerator::LlParserGenerator(
         SmallId start_symbol,
         const GrammarStorage &grammar_storage,
-        std::function<std::string(SmallId)>
-            id_to_string_converter)
+        const std::function<std::string(SmallId)> &id_to_string_converter)
       : firstSetEvaluator{grammar_storage.getEpsilon(), grammar_storage}
       , followSetEvaluator(
             start_symbol,
@@ -14,7 +13,7 @@ namespace ccl::parser::ll
             grammar_storage.getEpsilon(),
             grammar_storage,
             firstSetEvaluator.getFirstSet())
-      , idToStringConverter{std::move(id_to_string_converter)}
+      , idToStringConverter{id_to_string_converter}
       , storage{grammar_storage}
     {
         for (auto &[key, rule] : storage.rulesIterator()) {
@@ -42,7 +41,8 @@ namespace ccl::parser::ll
         return GllTable{table.begin(), table.end()};
     }
 
-    auto LlParserGenerator::generateUsingRule(Symbol production, const Rule&rule) -> void {
+    auto LlParserGenerator::generateUsingRule(Symbol production, const Rule &rule) -> void
+    {
         const auto &rule_first_set =
             firstSetEvaluator.getFirstSetOfRules().at(std::addressof(rule));
 

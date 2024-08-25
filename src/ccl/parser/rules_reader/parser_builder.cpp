@@ -76,7 +76,7 @@ namespace ccl::parser::reader
 
     auto ParserBuilder::buildGLL() -> GllParser
     {
-        finishGrammar(Mode::LL);
+        finishGrammar(Mode::LR);
 
         return GllParser{
             getRuleId("GOAL"),
@@ -126,7 +126,15 @@ namespace ccl::parser::reader
         }
 
         auto first_rule_it = grammarRulesStorage.at(goal_id).begin();
-        return LrItem{std::addressof(*first_rule_it), 0, goal_id, 0};
+
+        return LrItem{
+            {
+                .rule = std::addressof(*first_rule_it),
+                .dotPosition = 0,
+            },
+            goal_id,
+            0,
+        };
     }
 
     auto

@@ -3,7 +3,6 @@
 
 #include <ccl/ccl.hpp>
 #include <functional>
-#include <isl/dynamic_forward_list.hpp>
 
 namespace ccl::parser::ast
 {

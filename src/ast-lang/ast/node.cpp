@@ -45,7 +45,7 @@ namespace astlang::ast
 {
     using namespace ccl::parser;
 
-    auto Node::optimize() -> ccl::parser::ast::Node *
+    auto Node::optimize() -> ccl::parser::ast::SharedNode<>
     {
         runRecursiveOptimization();
         return nullptr;
@@ -66,8 +66,7 @@ namespace astlang::ast
                 continue;
             }
 
-            // TODO: Implement this
-            // node = std::move(optimized_version);
+            node = std::move(optimized_version);
         }
     }
 
@@ -248,22 +247,23 @@ namespace astlang::ast
         }
 
         for (auto &node : self_as_sequence->getNodes()) {
-            castToAstLangNode(conversion_table, node.get());
+            castToAstLangNode(conversion_table, node);
         }
     }
 
     auto Node::castToAstLangNode(
         const ConversionTable &conversion_table,
-        ccl::parser::ast::Node *node) -> ccl::parser::ast::Node *
+        ccl::parser::ast::SharedNode<>
+            node) -> ccl::parser::ast::SharedNode<>
     {
-        auto *node_as_sequence = dynamic_cast<NodeOfNodes *>(node);
+        auto node_as_sequence = isl::dynamicPointerCast<NodeOfNodes>(node);
 
         if (node_as_sequence == nullptr) {
             return node;
         }
 
-        auto *new_node = conversion_table[node_as_sequence->getType()](node_as_sequence);
-        dynamic_cast<Node *>(new_node)->castChildrenToAstLangNode(conversion_table);
+        auto new_node = conversion_table[node_as_sequence->getType()](node_as_sequence);
+        dynamic_cast<Node *>(new_node.get())->castChildrenToAstLangNode(conversion_table);
 
         return new_node;
     }

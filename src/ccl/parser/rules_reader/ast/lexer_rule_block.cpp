@@ -12,7 +12,7 @@ namespace ccl::parser::reader::ast
     static auto constructUnion(const lexer::Token &token)
         -> std::unique_ptr<lexer::rule::RuleBlockInterface>
     {
-        auto repr = token.getRepr();
+        const auto repr = token.getRepr();
         auto [ascii_symbols, ranges] = lexer::rule::parseUnionDecl(repr);
         return std::make_unique<lexer::rule::Union>(isl::UtfSet(ascii_symbols, ranges));
     }
@@ -96,18 +96,19 @@ namespace ccl::parser::reader::ast
         ParserBuilder &parser_builder,
         lexer::rule::RuleBlockInterface *rule_block) const -> void
     {
-        if (this->size() == 1) {
+        if (size() == 1) {
             return;
         }
 
-        const auto *last_node = back().get();
-        const auto *rule_option = isl::as<const LexerRuleOptions *>(last_node);
-        auto options =
+        const auto *rule_options = back().get();
+        const auto *rule_option = isl::as<const LexerRuleOptions *>(rule_options);
+
+        const auto options =
             isl::get<std::vector<RulesLexerToken>>(rule_option->construct(parser_builder));
 
-        for (auto option : options) {
+        for (const auto option : options) {
             switch (option) {
-            case RulesLexerToken::STAR:
+            case STAR:
                 rule_block->setClosure(lexer::rule::Closure{0, lexer::rule::Closure::max()});
                 break;
 
