@@ -23,9 +23,8 @@ namespace ccl::text
 
     auto TextIteratorException::createFullMessage() const -> std::string
     {
-        auto full_message = fmt::format(
-            "Error occurred at: {}, message: {}\n{}\n", location,
-            isl::as<std::string_view>(message), as<std::string_view>(workingLine));
+        auto full_message =
+            fmt::format("Error occurred at: {}, message: {}\n{}\n", location, message, workingLine);
 
         addArrowToError(full_message);
         addSuggestion(full_message);
@@ -35,7 +34,7 @@ namespace ccl::text
 
     auto TextIteratorException::addArrowToError(std::string &full_message) const -> void
     {
-        auto column_pos = location.getColumn();
+        const auto column_pos = location.getColumn();
         auto new_message_size = full_message.size() + (column_pos > 0 ? column_pos - 1 : 0);
 
         full_message.resize(new_message_size, ' ');

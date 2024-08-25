@@ -20,7 +20,7 @@ namespace ccl::text
 
     auto NotationEscapingSequenceToChar::calculateResult() -> void
     {
-        auto chars_count = isl::as<std::size_t>(0);
+        auto chars_count = isl::as<u32>(0);
 
         for (; chars_count != maximumSymbols; ++chars_count) {
             char32_t chr = textIterator.futureChar();
@@ -38,8 +38,8 @@ namespace ccl::text
         checkAllCharsUsage(chars_count);
     }
 
-    auto NotationEscapingSequenceToChar::createSuggestionNotEnoughChars(
-        std::size_t chars_count) const -> std::string
+    auto NotationEscapingSequenceToChar::createSuggestionNotEnoughChars(u32 chars_count) const
+        -> std::string
     {
         auto suggestion_message = isl::as<std::string>(textIterator.getCurrentLine());
         insertExtraZerosToNotEnoughMessage(chars_count, suggestion_message);
@@ -47,12 +47,12 @@ namespace ccl::text
     }
 
     auto NotationEscapingSequenceToChar::insertExtraZerosToNotEnoughMessage(
-        std::size_t chars_count,
+        u32 chars_count,
         std::string &message) const -> void
     {
-        auto column = textIterator.getColumn();
-        auto insertion_size = isl::as<std::size_t>(maximumSymbols - chars_count);
-        auto insertion_position = column - chars_count;
+        const auto column = textIterator.getColumn();
+        const auto insertion_size = isl::as<u32>(maximumSymbols - chars_count);
+        const auto insertion_position = column - chars_count;
 
         message.insert(insertion_position, insertion_size, '0');
     }
@@ -68,21 +68,20 @@ namespace ccl::text
                HexadecimalCharsToInt.at(chr) >= (1U << notationPower);
     }
 
-    auto NotationEscapingSequenceToChar::checkAllCharsUsage(std::size_t chars_count) const -> void
+    auto NotationEscapingSequenceToChar::checkAllCharsUsage(u32 chars_count) const -> void
     {
         if (areAllCharsRequired && chars_count != maximumSymbols) {
             throwNotEnoughCharsException(chars_count);
         }
     }
 
-    auto NotationEscapingSequenceToChar::throwNotEnoughCharsException(std::size_t chars_count) const
-        -> void
+    auto NotationEscapingSequenceToChar::throwNotEnoughCharsException(u32 chars_count) const -> void
     {
-        auto exception_message = fmt::format(
+        const auto exception_message = fmt::format(
             "expected {} characters, but only {} of them were provided", maximumSymbols,
             chars_count);
 
-        auto suggestion_message = createSuggestionNotEnoughChars(chars_count);
+        const auto suggestion_message = createSuggestionNotEnoughChars(chars_count);
 
         textIterator.throwUncriticalError(
             AnalysisStage::LEXICAL_ANALYSIS, exception_message, suggestion_message);

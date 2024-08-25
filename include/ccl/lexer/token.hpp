@@ -82,32 +82,32 @@ namespace ccl::lexer
             return environment;
         }
 
-        [[nodiscard]] auto getLocation() const noexcept -> const text::Location &
+        [[nodiscard]] auto getLocation() const noexcept CCL_LIFETIMEBOUND -> const text::Location &
         {
             return environment.location;
         }
 
-        [[nodiscard]] auto getLine() const noexcept -> std::size_t
+        [[nodiscard]] auto getLine() const noexcept -> u32
         {
             return environment.location.getLine();
         }
 
-        [[nodiscard]] auto getColumn() const noexcept -> std::size_t
+        [[nodiscard]] auto getColumn() const noexcept -> u32
         {
             return environment.location.getColumn();
         }
 
-        [[nodiscard]] auto getRealColumn() const noexcept -> std::size_t
+        [[nodiscard]] auto getRealColumn() const noexcept -> u32
         {
             return environment.location.getRealColumn();
         }
 
-        [[nodiscard]] auto getFilename() const noexcept -> isl::string_view
+        [[nodiscard]] auto getFilename() const noexcept CCL_LIFETIMEBOUND -> isl::string_view
         {
             return environment.location.getFilename();
         }
 
-        [[nodiscard]] auto getRepr() const noexcept -> isl::string_view
+        [[nodiscard]] auto getRepr() const noexcept CCL_LIFETIMEBOUND -> isl::string_view
         {
             return repr;
         }

@@ -15,9 +15,7 @@ namespace ccl::text
     {
         ISL_ASSERT_MSG(textIterator.getCurrentChar() == '\\', "called without preceding `\\`");
 
-        char32_t chr = textIterator.advance();
-
-        switch (chr) {
+        switch (const auto chr = textIterator.advance()) {
         case U'\\':
             return U'\\';
 

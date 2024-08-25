@@ -6,7 +6,6 @@
 #include <ccl/text/iterator_exception.hpp>
 #include <ccl/text/location.hpp>
 #include <span>
-#include <utility>
 
 namespace ccl::text
 {
@@ -45,17 +44,17 @@ namespace ccl::text
             return location;
         }
 
-        [[nodiscard]] auto getLine() const noexcept -> std::size_t
+        [[nodiscard]] auto getLine() const noexcept -> u32
         {
             return location.getLine();
         }
 
-        [[nodiscard]] auto getColumn() const noexcept -> std::size_t
+        [[nodiscard]] auto getColumn() const noexcept -> u32
         {
             return location.getColumn();
         }
 
-        [[nodiscard]] auto getRealColumn() const noexcept -> std::size_t
+        [[nodiscard]] auto getRealColumn() const noexcept -> u32
         {
             return location.getRealColumn();
         }
@@ -102,48 +101,48 @@ namespace ccl::text
 
         auto throwSuggestion(
             AnalysisStage stage, const TextIterator &iterator_location, isl::string_view message,
-            isl::string_view suggestion = {}) -> void;
+            isl::string_view suggestion = {}) const -> void;
 
         auto throwWarning(
             AnalysisStage stage, const TextIterator &iterator_location, isl::string_view message,
-            isl::string_view suggestion = {}) -> void;
+            isl::string_view suggestion = {}) const -> void;
 
         auto throwUncriticalError(
             AnalysisStage stage, const TextIterator &iterator_location, isl::string_view message,
-            isl::string_view suggestion = {}) -> void;
+            isl::string_view suggestion = {}) const -> void;
 
         auto throwCriticalError(
             AnalysisStage stage, const TextIterator &iterator_location, isl::string_view message,
-            isl::string_view suggestion = {}) -> void;
+            isl::string_view suggestion = {}) const -> void;
 
         auto throwPanicError(
             AnalysisStage stage, const TextIterator &iterator_location, isl::string_view message,
-            isl::string_view suggestion = {}) -> void;
+            isl::string_view suggestion = {}) const -> void;
 
         auto throwSuggestion(
             AnalysisStage stage, isl::string_view message,
-            isl::string_view suggestion = {}) -> void;
+            isl::string_view suggestion = {}) const -> void;
 
         auto throwWarning(
             AnalysisStage stage, isl::string_view message,
-            isl::string_view suggestion = {}) -> void;
+            isl::string_view suggestion = {}) const -> void;
 
         auto throwUncriticalError(
             AnalysisStage stage, isl::string_view message,
-            isl::string_view suggestion = {}) -> void;
+            isl::string_view suggestion = {}) const -> void;
 
         auto throwCriticalError(
             AnalysisStage stage, isl::string_view message,
-            isl::string_view suggestion = {}) -> void;
+            isl::string_view suggestion = {}) const -> void;
 
         auto throwPanicError(
             AnalysisStage stage, isl::string_view message,
-            isl::string_view suggestion = {}) -> void;
+            isl::string_view suggestion = {}) const -> void;
 
         auto throwToHandle(
             const TextIterator &iterator_location, ExceptionCriticality criticality,
             AnalysisStage stage, isl::string_view message,
-            isl::string_view suggestion = {}) -> void;
+            isl::string_view suggestion = {}) const -> void;
 
         static auto linesOfFragment(isl::string_view whole_input, isl::string_view fragment)
             -> isl::string_view;
@@ -216,14 +215,14 @@ namespace ccl::text
         [[nodiscard]] auto isOutOfNotation(char32_t chr) const -> bool;
 
         auto checkNotation() const -> void;
-        auto checkAllCharsUsage(std::size_t chars_count) const -> void;
+        auto checkAllCharsUsage(u32 chars_count) const -> void;
 
-        auto throwNotEnoughCharsException(std::size_t chars_count) const -> void;
+        auto throwNotEnoughCharsException(u32 chars_count) const -> void;
 
         [[nodiscard]] auto
-            createSuggestionNotEnoughChars(std::size_t chars_count) const -> std::string;
+            createSuggestionNotEnoughChars(u32 chars_count) const -> std::string;
 
-        auto insertExtraZerosToNotEnoughMessage(std::size_t chars_count, std::string &message) const
+        auto insertExtraZerosToNotEnoughMessage(u32 chars_count, std::string &message) const
             -> void;
     };
 

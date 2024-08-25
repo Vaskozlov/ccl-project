@@ -3,40 +3,39 @@
 
 #include <ccl/char.hpp>
 #include <isl/string_view.hpp>
-#include <isl/utf8.hpp>
 
 namespace ccl::text
 {
     class Location
     {
         isl::string_view filename;
-        std::size_t line{1};
-        std::size_t column{};
-        std::size_t realColumn{};
+        u32 line{1};
+        u32 column{};
+        u32 realColumn{};
 
     public:
         Location() noexcept = default;
 
         [[nodiscard]] constexpr explicit Location(
-            isl::string_view name_of_file, std::size_t line_in_file = 1,
-            std::size_t column_in_file = 0, std::size_t real_column = 0) noexcept
+            isl::string_view name_of_file, u32 line_in_file = 1, u32 column_in_file = 0,
+            u32 real_column = 0) noexcept
           : filename{name_of_file}
           , line{line_in_file}
           , column{column_in_file}
           , realColumn{real_column}
         {}
 
-        CCL_DECL auto getLine() const noexcept -> std::size_t
+        CCL_DECL auto getLine() const noexcept -> u32
         {
             return line;
         }
 
-        CCL_DECL auto getColumn() const noexcept -> std::size_t
+        CCL_DECL auto getColumn() const noexcept -> u32
         {
             return column;
         }
 
-        CCL_DECL auto getRealColumn() const noexcept -> std::size_t
+        CCL_DECL auto getRealColumn() const noexcept -> u32
         {
             return realColumn;
         }
@@ -68,13 +67,14 @@ namespace ccl::text
 template<>
 struct fmt::formatter<ccl::text::Location>
 {
-    [[maybe_unused]] constexpr static auto parse(const format_parse_context &ctx)
+    [[maybe_unused]] constexpr static auto
+        parse(const format_parse_context &ctx) -> format_parse_context::iterator
     {
         return ctx.begin();
     }
 
-    constexpr auto format(const ccl::text::Location &location, format_context &ctx) const
-        -> format_context::iterator
+    static constexpr auto
+        format(const ccl::text::Location &location, format_context &ctx) -> format_context::iterator
     {
         return fmt::format_to(
             ctx.out(), "{}, line: {}, column: {}", location.getFilename(), location.getLine(),

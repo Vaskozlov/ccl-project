@@ -11,12 +11,11 @@ namespace ccl::lexer
       : public text::CrtpBasicTextIterator<TextIteratorWithSkippedCharactersAccumulator>
     {
     private:
-        std::size_t skippedCharacters{};
-        std::size_t skippedBytes{};
+        u32 skippedCharacters{};
+        u32 skippedBytes{};
 
     public:
-        using CrtpBasicTextIterator<
-            TextIteratorWithSkippedCharactersAccumulator>::CrtpBasicTextIterator;
+        using CrtpBasicTextIterator::CrtpBasicTextIterator;
 
         auto clearAccumulator() noexcept -> void
         {
@@ -24,12 +23,12 @@ namespace ccl::lexer
             skippedCharacters = 0;
         }
 
-        [[nodiscard]] constexpr auto getSkippedCharacters() const noexcept -> std::size_t
+        [[nodiscard]] constexpr auto getSkippedCharacters() const noexcept -> u32
         {
             return skippedCharacters;
         }
 
-        [[nodiscard]] constexpr auto getSkippedBytes() const noexcept -> std::size_t
+        [[nodiscard]] constexpr auto getSkippedBytes() const noexcept -> u32
         {
             return skippedBytes;
         }
@@ -67,7 +66,7 @@ namespace ccl::lexer
     {}
 
     Token::Token(
-        const TokenEnvironment &token_environment, typename isl::string_view::iterator text_begin,
+        const TokenEnvironment &token_environment, isl::string_view::iterator text_begin,
         SmallId token_id)
       : Token{token_environment, {text_begin, isl::as<std::size_t>(0)}, token_id}
     {}
