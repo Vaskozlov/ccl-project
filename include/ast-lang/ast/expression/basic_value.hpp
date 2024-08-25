@@ -10,7 +10,7 @@ namespace astlang::ast::expression
     public:
         using Node::Node;
 
-        auto optimize() -> ccl::parser::ast::SharedNode<> override;
+        auto optimize() -> SharedNode<> override;
     };
 }// namespace astlang::ast::expression
 

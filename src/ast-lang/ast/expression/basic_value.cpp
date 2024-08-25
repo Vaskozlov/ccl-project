@@ -2,7 +2,7 @@
 
 namespace astlang::ast::expression
 {
-    auto BasicValue::optimize() -> ccl::parser::ast::SharedNode<>
+    auto BasicValue::optimize() -> SharedNode<>
     {
         if (size() != 1) {
             runRecursiveOptimization();

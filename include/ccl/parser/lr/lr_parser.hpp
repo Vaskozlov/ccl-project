@@ -46,10 +46,6 @@ namespace ccl::parser
         }
 
     private:
-        static auto
-            shiftAction(const lexer::Token *word, State shifting_state, ParserState &parser_state)
-                -> void;
-
         auto reduceAction(const LrItem &lr_item, ParserState &parser_state) const -> void;
     };
 }// namespace ccl::parser

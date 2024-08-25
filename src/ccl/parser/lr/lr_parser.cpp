@@ -24,7 +24,7 @@ namespace ccl::parser
         using enum ParsingAction;
 
         auto parsing_result = UnambiguousParsingResult{};
-        const auto *word = std::addressof(tokenizer.yield());
+        auto word = ast::SharedNode<ast::TokenNode>{tokenizer.yield()};
 
         auto parser_state = ParserState{};
 
@@ -35,7 +35,7 @@ namespace ccl::parser
 
             const auto entry = TableEntry{
                 .state = state,
-                .symbol = word->getId(),
+                .symbol = word->getType(),
             };
 
             auto action_table_it = actionTable.find(entry);
@@ -45,10 +45,13 @@ namespace ccl::parser
             }
 
             switch (const auto &action = action_table_it->second; action.getParsingAction()) {
-            case SHIFT:
-                shiftAction(word, action.getShiftingState(), parser_state);
-                word = std::addressof(tokenizer.yield());
+            case SHIFT: {
+                auto &[state_stack, nodes_stack] = parser_state;
+                nodes_stack.emplace(std::move(word));
+                state_stack.emplace(action.getShiftingState());
+                word = ast::SharedNode<ast::TokenNode>{tokenizer.yield()};
                 break;
+            }
 
             case REDUCE:
                 reduceAction(action.getReducingItem(), parser_state);
@@ -62,17 +65,6 @@ namespace ccl::parser
                 isl::unreachable();
             }
         }
-    }
-
-    auto LrParser::shiftAction(
-        const lexer::Token *word,
-        State shifting_state,
-        ParserState &parser_state) -> void
-    {
-        auto &[state_stack, nodes_stack] = parser_state;
-
-        nodes_stack.emplace(ast::SharedNode<ast::TokenNode>(*word));
-        state_stack.emplace(shifting_state);
     }
 
     auto LrParser::reduceAction(const LrItem &lr_item, ParserState &parser_state) const -> void

@@ -24,8 +24,7 @@ namespace ccl::parser
           , builder{std::move(rule_builder)}
         {}
 
-        [[nodiscard]] auto
-            construct(Symbol production, std::vector<ast::SharedNode<ast::Node>> nodes) const
+        [[nodiscard]] auto construct(Symbol production, std::vector<ast::SharedNode<>> nodes) const
             -> ast::SharedNode<ast::NodeOfNodes>
         {
             return builder(production, std::move(nodes));

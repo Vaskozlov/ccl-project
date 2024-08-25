@@ -45,7 +45,7 @@ namespace astlang::ast
 {
     using namespace ccl::parser;
 
-    auto Node::optimize() -> ccl::parser::ast::SharedNode<>
+    auto Node::optimize() -> SharedNode<>
     {
         runRecursiveOptimization();
         return nullptr;
@@ -251,10 +251,8 @@ namespace astlang::ast
         }
     }
 
-    auto Node::castToAstLangNode(
-        const ConversionTable &conversion_table,
-        ccl::parser::ast::SharedNode<>
-            node) -> ccl::parser::ast::SharedNode<>
+    auto Node::castToAstLangNode(const ConversionTable &conversion_table, SharedNode<> node)
+        -> SharedNode<>
     {
         auto node_as_sequence = isl::dynamicPointerCast<NodeOfNodes>(node);
 

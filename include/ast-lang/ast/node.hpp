@@ -14,19 +14,19 @@ namespace astlang::interpreter
 
 namespace astlang::ast
 {
+    template<std::derived_from<ccl::parser::ast::Node> T = ccl::parser::ast::Node>
+    using SharedNode = ccl::parser::ast::SharedNode<T>;
+
     class Node : public ccl::parser::ast::NodeOfNodes
     {
     private:
         using ConstructionFunction = ccl::parser::Rule::RuleBuilderFunction;
-        using ConversionTable = isl::StaticFlatmap<
-            SmallId,
-            std::function<ccl::parser::ast::SharedNode<>(
-                ccl::parser::ast::SharedNode<NodeOfNodes>)>,
-            50>;
+        using ConversionTable =
+            isl::StaticFlatmap<SmallId, std::function<SharedNode<>(SharedNode<NodeOfNodes>)>, 50>;
 
-        template<std::constructible_from<SmallId, std::vector<ccl::parser::ast::SharedNode<>>> T>
-        static auto reconstructNode(ccl::parser::ast::SharedNode<NodeOfNodes> node)
-            -> ccl::parser::ast::SharedNode<>
+        template<std::constructible_from<SmallId, std::vector<SharedNode<>>> T>
+            requires(SharedNode<>::canStore<T>())
+        static auto reconstructNode(SharedNode<NodeOfNodes> node) -> SharedNode<>
         {
             auto node_type = node->getType();
             auto nodes = std::move(node->getNodes());
@@ -44,7 +44,7 @@ namespace astlang::ast
 
         auto runRecursiveOptimization() -> void;
 
-        virtual auto optimize() -> ccl::parser::ast::SharedNode<>;
+        virtual auto optimize() -> SharedNode<>;
 
         virtual auto compute(Interpreter &interpreter) const -> EvaluationResult = 0;
 
@@ -54,10 +54,8 @@ namespace astlang::ast
 
         auto castChildrenToAstLangNode(const ConversionTable &conversion_table) -> void;
 
-        static auto castToAstLangNode(
-            const ConversionTable &conversion_table,
-            ccl::parser::ast::SharedNode<>
-                node) -> ccl::parser::ast::SharedNode<>;
+        static auto castToAstLangNode(const ConversionTable &conversion_table, SharedNode<> node)
+            -> SharedNode<>;
     };
 
     struct NodePtr
