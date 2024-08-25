@@ -8,9 +8,13 @@ TEST_CASE("ContainerPrefixAndPostfix", "[Container]")
 
     auto empty_lexical_analyzer = lexer::LexicalAnalyzer(ExceptionHandler::instance(), {});
 
-    auto container = lexer::rule::Container(
-        empty_lexical_analyzer, text::TextIterator{R"([a-z]+p[_]"test"p)"}, debug::FirstUsableToken,
-        true);
+    auto container = lexer::rule::Container{
+        empty_lexical_analyzer,
+        text::TextIterator{R"([a-z]+p[_]"test"p)"},
+        debug::FirstUsableToken,
+        true,
+    };
+
     DEBUG_VAR items = container.getItems();
 
     REQUIRE(items.at(0)->hasPrefix());

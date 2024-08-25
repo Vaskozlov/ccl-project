@@ -22,46 +22,46 @@ namespace ccl::lexer::parser
 
         while (const Token &token = tokenizer.yield()) {
             switch (isl::as<CcllAnalyzerToken>(token.getId())) {
-            case CcllAnalyzerToken::GROUP_DECLARATION:
+            case GROUP_DECLARATION:
                 break;
 
-            case CcllAnalyzerToken::BAD_GROUP_DECLARATION_ONLY_BRACKET:
+            case BAD_GROUP_DECLARATION_ONLY_BRACKET:
                 parsingError("group name expected");
                 break;
 
-            case CcllAnalyzerToken::BAD_GROUP_DECLARATION_BRACKET_AND_NAME:
+            case BAD_GROUP_DECLARATION_BRACKET_AND_NAME:
                 parsingError("group end expected", "insert ]");
                 break;
 
-            case CcllAnalyzerToken::BAD_GROUP_DECLARATION_EMPTY_NAME:
+            case BAD_GROUP_DECLARATION_EMPTY_NAME:
                 parsingError("group name can not be empty");
                 break;
 
-            case CcllAnalyzerToken::DIRECTIVE:
+            case DIRECTIVE:
                 completeDirective(token);
                 break;
 
-            case CcllAnalyzerToken::BAD_DIRECTIVE_DECLARATION:
+            case BAD_DIRECTIVE_DECLARATION:
                 parsingError("directive value expected");
                 break;
 
-            case CcllAnalyzerToken::RULE:
+            case RULE:
                 completeRule(token);
                 break;
 
-            case CcllAnalyzerToken::BAD_RULE_DECLARATION:
+            case BAD_RULE_DECLARATION:
                 parsingError("rule definition expected");
                 break;
 
-            case CcllAnalyzerToken::BAD_RULE_OR_DIRECTIVE_DECLARATION:
+            case BAD_RULE_OR_DIRECTIVE_DECLARATION:
                 parsingError("rule or directive declaration expected");
                 break;
 
-            case CcllAnalyzerToken::BAD_GROUP_NO_OPEN_BRACKET:
+            case BAD_GROUP_NO_OPEN_BRACKET:
                 parsingError("unable to match ] to close group declaration");
                 break;
 
-            case CcllAnalyzerToken::COMMENT:
+            case COMMENT:
                 break;
 
             default:
@@ -107,12 +107,14 @@ namespace ccl::lexer::parser
         auto text_iterator = text::TextIterator{
             line_repr, tokenizer.getHandler(),
             text::Location{
-                location.getFilename(), location.getLine(), location.getColumn() - 1,
-                location.getRealColumn() - 1}};
+                location.getFilename(),
+                location.getLine(),
+                location.getColumn() - 1,
+                location.getRealColumn() - 1,
+            }};
 
         // NOLINTNEXTLINE : is guaranteed by lexical analyzer rule
         text_iterator.skip(line_repr.find(':').value() + 1);
-
         std::ignore = rule::Container{EmptyLexicalAnalyzer, text_iterator, true};
     }
 

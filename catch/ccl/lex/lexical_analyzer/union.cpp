@@ -7,12 +7,13 @@ TEST_CASE("LexicalAnalyzerUnion", "[ContainerUnion]")
 
     auto analyzer = lexer::LexicalAnalyzer{
         ExceptionHandler::instance(),
-        {{debug::FirstUsableToken, R"([a-z]p+[0-9]+)"},
-         {debug::FirstUsableToken + 1, R"([0-9]+[a-z]p*)"}},
+        {
+            {debug::FirstUsableToken, R"([a-z]p+[0-9]+)"},
+            {debug::FirstUsableToken + 1, R"([0-9]+[a-z]p*)"},
+        },
     };
 
     auto tokenizer = analyzer.getTokenizer(R"(20 abz10 10abz)");
-
     auto token = tokenizer.yield();
 
     REQUIRE(token.getId() == debug::FirstUsableToken + 1);

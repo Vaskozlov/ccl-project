@@ -45,18 +45,21 @@ namespace ccl::lexer
 
         auto throwExceptionToHandler(
             ExceptionCriticality criticality, isl::string_view message,
-            isl::string_view suggestion = {}) -> void;
+            isl::string_view suggestion = {}) const -> void;
 
         auto yield() CCL_LIFETIMEBOUND -> const Token &;
+
         auto yieldFutureToken() CCL_LIFETIMEBOUND -> const Token &;
 
     private:
         auto nextToken(Token &token) -> void;
+
         auto returnIfNotInIgnored(Token &token) -> void;
 
         [[nodiscard]] auto shouldIgnoreToken(const Token &token) const -> bool;
 
         auto constructBadToken(Token &token) -> void;
+
         auto constructEoiToken(Token &token) const -> void;
     };
 }// namespace ccl::lexer

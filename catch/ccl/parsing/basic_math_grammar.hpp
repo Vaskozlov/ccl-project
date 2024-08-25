@@ -51,7 +51,9 @@ namespace ccl::debug
                         },
                     },
                     parser::Rule{
-                        {GrammarSymbol::EPSILON},
+                        {
+                            GrammarSymbol::EPSILON,
+                        },
                     },
                 },
             },
@@ -117,9 +119,11 @@ namespace ccl::debug
 }// namespace ccl::debug
 
 template<>
-struct fmt::formatter<ccl::debug::GrammarSymbol> : formatter<std::string_view> {
-    constexpr auto format(const ccl::debug::GrammarSymbol&symbol, format_context&ctx) const
-        -> format_context::iterator {
+struct fmt::formatter<ccl::debug::GrammarSymbol> : formatter<std::string_view>
+{
+    constexpr auto format(const ccl::debug::GrammarSymbol &symbol, format_context &ctx) const
+        -> format_context::iterator
+    {
         return fmt::format_to(ctx.out(), "{}", ccl::lexer::lexerEnumToString(symbol));
     }
 };

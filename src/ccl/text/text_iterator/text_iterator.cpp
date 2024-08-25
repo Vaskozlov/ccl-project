@@ -33,7 +33,7 @@ namespace ccl::text
             chr = doEscapeSymbolizing(*this, extra_symbols);
         }
 
-        CrtpBasicTextIterator::setCurrentChar(chr);
+        setCurrentChar(chr);
         return {escaping, chr};
     }
 

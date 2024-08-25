@@ -226,9 +226,7 @@ namespace ccl::lexer::gen
 
     auto StaticGenerator::generateRules() -> void
     {
-        const auto &rules = ccllParser.getRules();
-
-        for (const parser::CcllParser::Rule &rule : rules) {
+        for (const parser::CcllParser::Rule &rule : ccllParser.getRules()) {
             codeGenerator << endl << '{';
             codeGenerator << enumName << "::" << rule.name << ", ";
             codeGenerator << "R\"( ";
@@ -251,6 +249,7 @@ namespace ccl::lexer::gen
             "template<>\n"
             "CCL_DECL auto lexerEnumToString<{0}::{1}>({0}::{1} value) -> isl::string_view ",
             nameSpace, enumName);
+
         codeGenerator << "{" << endl << push_scope;
 
         const auto function_scope = isl::Raii{[this] {
