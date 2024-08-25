@@ -1,7 +1,7 @@
 #ifndef CCL_PROJECT_GLL_HPP
 #define CCL_PROJECT_GLL_HPP
 
-#include <ccl/parser/ll/ll_parser_generator.hpp>
+#include <ccl/parser/ll/gll_parser_generator.hpp>
 #include <ccl/parser/parsing_result.hpp>
 
 namespace ccl::parser {

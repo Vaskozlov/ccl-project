@@ -26,13 +26,11 @@ namespace ccl::parser
     GllParser::GllParser(
         SmallId start_symbol, const GrammarStorage &grammar_storage,
         const std::function<std::string(SmallId)> &id_to_string_converter)
-      : idToStringConverter{id_to_string_converter}
+      : table{ll::GllParserGenerator{grammar_storage, id_to_string_converter}.createGllTable()}
+      , idToStringConverter{id_to_string_converter}
       , storage{grammar_storage}
       , grammarGoalSymbol{start_symbol}
-    {
-        const auto ll_generator = ll::LlParserGenerator{start_symbol, storage, idToStringConverter};
-        table = ll_generator.createGllTable();
-    }
+    {}
 
     auto GllParser::parse(lexer::Tokenizer &tokenizer) -> AmbiguousParsingResult
     {
@@ -49,13 +47,14 @@ namespace ccl::parser
             .dotPosition = 0,
         };
 
-        const auto start_sppf = SPPFNode{
-            .nodes = {},
-            .rule = start_rule_with_dot,
-            .production = grammarGoalSymbol,
-        };
-
-        auto *start_node = gss.createNode(nullptr, start_sppf, 0);
+        auto *start_node = gss.createNode(
+            nullptr,
+            SPPFNode{
+                .nodes = {},
+                .rule = start_rule_with_dot,
+                .production = grammarGoalSymbol,
+            },
+            0);
 
         gss.add({
             .stack = start_node,
@@ -91,12 +90,6 @@ namespace ccl::parser
                 continue;
             }
 
-            if (focus == storage.getEpsilon()) {
-                sppf.rule.dotPosition += 1;
-                gss.add(descriptor);
-                continue;
-            }
-
             if (storage.isTerminal(focus)) {
                 if (focus != token_type) {
                     continue;
@@ -121,17 +114,14 @@ namespace ccl::parser
             }
 
             for (const auto *rule : rules_it->second) {
-                auto new_sppf_node = SPPFNode{
-                    .nodes = {},
-                    .rule =
-                        {
-                            .rule = rule,
-                            .dotPosition = 0,
-                        },
-                    .production = focus,
-                };
-
-                auto *new_node = gss.createNode(descriptor.stack, new_sppf_node, input_position);
+                auto *new_node = gss.createNode(
+                    descriptor.stack,
+                    SPPFNode{
+                        .nodes = {},
+                        .rule = {.rule = rule, .dotPosition = 0},
+                        .production = focus,
+                    },
+                    input_position);
 
                 gss.add({
                     .stack = new_node,

@@ -22,7 +22,7 @@ namespace ccl::parser::ll
             auto new_sppf = prev->sppfNode;
             new_sppf.next(constructed_node);
 
-            auto *new_node = createNode(prev->previous, new_sppf, input_position);
+            auto *new_node = createNode(prev->previous, std::move(new_sppf), input_position);
 
             add({
                 .stack = new_node,
@@ -53,7 +53,8 @@ namespace ccl::parser::ll
                                 ? 0
                                 : descriptor.stack->sppfNode.atDot();
 
-        const auto is_current_symbol_a_terminal = storage->isTerminal(at_dot) && (storage->getEpsilon() != at_dot);
+        const auto is_current_symbol_a_terminal =
+            storage->isTerminal(at_dot) && (storage->getEpsilon() != at_dot);
 
         if (descriptor.inputPosition == globalInputPosition) {
             if (is_current_symbol_a_terminal) {
@@ -101,14 +102,14 @@ namespace ccl::parser::ll
         return descriptor;
     }
 
-    auto GSS::createNode(Node *parent, const SPPFNode &sppf_node, SmallId input_position) -> Node *
+    auto GSS::createNode(Node *parent, SPPFNode sppf_node, SmallId input_position) -> Node *
     {
         auto &level = getLevel(input_position);
         auto *node = level.findNode(sppf_node);
 
         if (node == nullptr) {
             auto constructed_node =
-                std::make_unique<Node>(std::vector{parent}, sppf_node, input_position);
+                std::make_unique<Node>(std::vector{parent}, std::move(sppf_node), input_position);
 
             node = constructed_node.get();
             level.emplace_back(std::move(constructed_node));

@@ -8,13 +8,12 @@ namespace ccl::parser
     Ll1Parser::Ll1Parser(
         SmallId start_symbol, const GrammarStorage &grammar_storage,
         const std::function<std::string(SmallId)> &id_to_string_converter)
-      : idToStringConverter{id_to_string_converter}
+      : table{ll::Ll1ParserGenerator{start_symbol, grammar_storage, id_to_string_converter}
+                  .createLl1Table()}
+      , idToStringConverter{id_to_string_converter}
       , storage{grammar_storage}
       , grammarGoalSymbol{start_symbol}
-    {
-        const auto ll_generator = ll::LlParserGenerator{start_symbol, storage, idToStringConverter};
-        table = ll_generator.createLl1Table();
-    }
+    {}
 
     auto Ll1Parser::parse(lexer::LexicalAnalyzer::Tokenizer &tokenizer) -> UnambiguousParsingResult
     {

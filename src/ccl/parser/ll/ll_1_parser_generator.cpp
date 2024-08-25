@@ -1,8 +1,8 @@
-#include <ccl/parser/ll/ll_parser_generator.hpp>
+#include <ccl/parser/ll/ll_1_parser_generator.hpp>
 
 namespace ccl::parser::ll
 {
-    LlParserGenerator::LlParserGenerator(
+    Ll1ParserGenerator::Ll1ParserGenerator(
         SmallId start_symbol,
         const GrammarStorage &grammar_storage,
         const std::function<std::string(SmallId)> &id_to_string_converter)
@@ -21,27 +21,7 @@ namespace ccl::parser::ll
         }
     }
 
-    [[nodiscard]] auto LlParserGenerator::createLl1Table() const -> Ll1Table
-    {
-        auto ll_1_table = Ll1Table{};
-
-        for (const auto &[entry, rules] : table) {
-            if (rules.size() > 1) {
-                throw std::runtime_error{"Grammar is not LL(1) backtrack free."};
-            }
-
-            ll_1_table.emplace(entry, rules.front());
-        }
-
-        return ll_1_table;
-    }
-
-    [[nodiscard]] auto LlParserGenerator::createGllTable() const -> GllTable
-    {
-        return GllTable{table.begin(), table.end()};
-    }
-
-    auto LlParserGenerator::generateUsingRule(Symbol production, const Rule &rule) -> void
+    auto Ll1ParserGenerator::generateUsingRule(Symbol production, const Rule &rule) -> void
     {
         const auto &rule_first_set =
             firstSetEvaluator.getFirstSetOfRules().at(std::addressof(rule));
@@ -66,12 +46,12 @@ namespace ccl::parser::ll
         }
     }
 
-    auto LlParserGenerator::insertIntoTable(TableEntry entry, const Rule *rule) -> void
+    auto Ll1ParserGenerator::insertIntoTable(TableEntry entry, const Rule *rule) -> void
     {
-        auto [it, inserted] = table.try_emplace(entry);
+        auto [it, inserted] = table.try_emplace(entry, rule);
 
-        if (auto &vec = it->second; std::ranges::find(vec, rule) == vec.end()) {
-            vec.emplace_back(rule);
+        if (!inserted) {
+            throw std::runtime_error{"Grammar is not LL(1) backtrack free."};
         }
     }
 }// namespace ccl::parser::ll

@@ -92,7 +92,7 @@ namespace ccl::parser::ll
 
         auto getDescriptor() -> Descriptor;
 
-        auto createNode(Node *parent, const SPPFNode &sppf_node, SmallId input_position)
+        auto createNode(Node *parent, SPPFNode sppf_node, SmallId input_position)
             CCL_LIFETIMEBOUND -> Node *;
 
         auto createNode(
