@@ -2,6 +2,9 @@
 
 namespace ccl::parser::lr
 {
+    // NOLINTNEXTLINE
+    isl::FixedSizeAllocator<sizeof(Node), alignof(Node)> detail::NodeAllocator{};
+
     auto GSS::Reducer::reduce(
         SmallId pop_count,
         Node *node,
@@ -16,19 +19,17 @@ namespace ccl::parser::lr
 
             for (auto *prev : node->previous) {
                 auto new_state = gotoTable->at({
-                    prev->parserState,
-                    production,
+                    .state = prev->parserState,
+                    .symbol = production,
                 });
 
                 auto *gss_node = gss->pushNonTerminal(prev, inputLevel, new_state, new_node);
 
-                auto new_descriptor = Descriptor{
+                gss->add({
                     .stack = gss_node,
                     .inputPosition = inputLevel,
                     .parserState = new_state,
-                };
-
-                gss->add(new_descriptor);
+                });
             }
 
             return;
@@ -67,7 +68,8 @@ namespace ccl::parser::lr
         Node *parent,
         SmallId input_position,
         SmallId parser_state,
-        ast::SharedNode<ast::TokenNode> token) -> Node *
+        ast::SharedNode<ast::TokenNode>
+            token) -> Node *
     {
         if (input_position >= levels.size()) {
             levels.resize(input_position + 1);
@@ -77,12 +79,12 @@ namespace ccl::parser::lr
         auto *node = level.findTerminal(parser_state);
 
         if (node == nullptr) {
-            auto created_node = std::make_unique<Node>();
-
-            created_node->value = token;
-            created_node->inputPosition = input_position;
-            created_node->parserState = parser_state;
-            created_node->previous.emplace_back(parent);
+            auto created_node = UniqueGssNodePtr{
+                std::vector{parent},
+                std::move(token),
+                input_position,
+                parser_state,
+            };
 
             node = created_node.get();
             level.terminals.emplace_back(std::move(created_node));
@@ -90,7 +92,6 @@ namespace ccl::parser::lr
             node->addPrevious(parent);
         }
 
-        node->addPrevious(parent);
         return node;
     }
 
@@ -110,13 +111,12 @@ namespace ccl::parser::lr
 
         // Is there any need to check?
         if (node == nullptr) {
-            auto created_node = std::make_unique<Node>();
-
-            created_node->value = non_terminal;
-
-            created_node->inputPosition = input_position;
-            created_node->parserState = parser_state;
-            created_node->previous.emplace_back(parent);
+            auto created_node = UniqueGssNodePtr{
+                std::vector{parent},
+                std::move(non_terminal),
+                input_position,
+                parser_state,
+            };
 
             node = created_node.get();
             level.nonTerminals.emplace_back(std::move(created_node));

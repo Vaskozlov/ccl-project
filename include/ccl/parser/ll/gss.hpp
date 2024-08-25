@@ -34,32 +34,44 @@ struct ankerl::unordered_dense::hash<ccl::parser::ll::PassedDescriptor>
 
 namespace ccl::parser::ll
 {
+    struct Node
+    {
+        std::vector<Node *> previous;
+        SPPFNode sppfNode;
+        SmallId inputPosition{};
+
+        auto addParent(Node *parent) -> void
+        {
+            for (auto *ptr : previous) {
+                if (ptr == parent) {
+                    return;
+                }
+            }
+
+            previous.emplace_back(parent);
+        }
+    };
+
+    struct Descriptor
+    {
+        Node *stack;
+        SmallId inputPosition;
+
+        auto operator<=>(const Descriptor &other) const -> std::weak_ordering = default;
+    };
+
+    namespace detail
+    {
+        // NOLINTNEXTLINE
+        extern isl::FixedSizeAllocator<sizeof(Node), alignof(Node)> NodeAllocator;
+    }// namespace detail
+
+    using UniqueGssNodePtr = isl::UniquePtr<Node, std::addressof(detail::NodeAllocator)>;
+
     class GSS
     {
     public:
-        struct Node
-        {
-            std::vector<Node *> previous;
-            SPPFNode sppfNode;
-            SmallId inputPosition{};
-
-            auto addParent(Node *parent) -> void
-            {
-                if (auto it = std::ranges::find(previous, parent); it == previous.end()) {
-                    previous.emplace_back(parent);
-                }
-            }
-        };
-
-        struct Descriptor
-        {
-            Node *stack;
-            SmallId inputPosition;
-
-            auto operator<=>(const Descriptor &other) const -> std::weak_ordering = default;
-        };
-
-        struct Level : std::vector<std::unique_ptr<Node>>
+        struct Level : std::vector<UniqueGssNodePtr>
         {
             using vector::vector;
 
@@ -73,7 +85,7 @@ namespace ccl::parser::ll
         Levels levels;
         std::deque<Descriptor> terminalDescriptors;
         std::deque<Descriptor> nonTerminalDescriptors;
-        std::array<std::set<PassedDescriptor>, 2> passed;
+        std::array<ankerl::unordered_dense::set<PassedDescriptor>, 2> passed;
         const GrammarStorage *storage{};
         SmallId globalInputPosition{};
 
@@ -114,7 +126,7 @@ namespace ccl::parser::ll
 
         auto createNode(
             const std::vector<Node *> &parents,
-            const SPPFNode &sppf_node,
+            SPPFNode sppf_node,
             SmallId input_position) CCL_LIFETIMEBOUND -> Node *;
 
     private:

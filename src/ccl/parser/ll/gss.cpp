@@ -2,9 +2,11 @@
 
 namespace ccl::parser::ll
 {
+    isl::FixedSizeAllocator<sizeof(Node), alignof(Node)> detail::NodeAllocator;
+
     auto GSS::Level::findNode(const SPPFNode &sppf_node) const -> Node *
     {
-        for (const auto &node : *this) {
+        for (auto &node : *this) {
             if (node->sppfNode == sppf_node) {
                 return node.get();
             }
@@ -49,12 +51,10 @@ namespace ccl::parser::ll
             return;
         }
 
-        const auto at_dot = descriptor.stack->sppfNode.rule.isDotInTheEnd()
-                                ? 0
-                                : descriptor.stack->sppfNode.atDot();
+        const auto at_dot =
+            node->sppfNode.rule.isDotInTheEnd() ? 0 : descriptor.stack->sppfNode.atDot();
 
-        const auto is_current_symbol_a_terminal =
-            storage->isTerminal(at_dot) && (storage->getEpsilon() != at_dot);
+        const auto is_current_symbol_a_terminal = storage->isTerminal(at_dot);
 
         if (descriptor.inputPosition == globalInputPosition) {
             if (is_current_symbol_a_terminal) {
@@ -109,7 +109,7 @@ namespace ccl::parser::ll
 
         if (node == nullptr) {
             auto constructed_node =
-                std::make_unique<Node>(std::vector{parent}, std::move(sppf_node), input_position);
+                UniqueGssNodePtr(std::vector{parent}, std::move(sppf_node), input_position);
 
             node = constructed_node.get();
             level.emplace_back(std::move(constructed_node));
@@ -123,14 +123,14 @@ namespace ccl::parser::ll
 
     auto GSS::createNode(
         const std::vector<Node *> &parents,
-        const SPPFNode &sppf_node,
+        SPPFNode sppf_node,
         SmallId input_position) -> Node *
     {
         auto &level = getLevel(input_position);
         auto *node = level.findNode(sppf_node);
 
         if (node == nullptr) {
-            auto constructed_node = std::make_unique<Node>(parents, sppf_node, input_position);
+            auto constructed_node = UniqueGssNodePtr(parents, std::move(sppf_node), input_position);
 
             node = constructed_node.get();
             level.emplace_back(std::move(constructed_node));

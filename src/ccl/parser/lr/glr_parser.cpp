@@ -56,13 +56,11 @@ namespace ccl::parser
         gss.nextWord();
         auto *start_node = gss.pushTerminal(nullptr, 0, 0, token);
 
-        auto start_descriptor = lr::GSS::Descriptor{
+        gss.add({
             .stack = start_node,
             .inputPosition = 0,
             .parserState = 0,
-        };
-
-        gss.add(start_descriptor);
+        });
 
         while (gss.hasDescriptors()) {
             auto descriptor = gss.getDescriptor();
@@ -89,7 +87,7 @@ namespace ccl::parser
             for (const auto &action : possible_actions) {
                 switch (action.getParsingAction()) {
                 case SHIFT: {
-                    auto new_node = gss.pushTerminal(
+                    auto *new_node = gss.pushTerminal(
                         descriptor.stack,
                         descriptor.inputPosition,
                         action.getShiftingState(),
@@ -134,7 +132,7 @@ namespace ccl::parser
                 }
             }
 
-            debugGlr(gss, idToStringConverter);
+            // debugGlr(gss, idToStringConverter);
         }
 
         return parsing_result;

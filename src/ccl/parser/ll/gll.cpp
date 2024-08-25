@@ -12,7 +12,7 @@ namespace ccl::parser
 
         for (const auto &level : gss.getLevels()) {
             for (const auto &node : level) {
-                for (auto &n : node->sppfNode.nodes) {
+                for (const auto &n : node->sppfNode.nodes) {
                     result.emplace_back(n.get());
                 }
             }
