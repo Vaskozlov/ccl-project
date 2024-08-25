@@ -4,7 +4,7 @@ namespace ccl::parser::reader::ast
 {
     auto LexerBlock::construct(ParserBuilder &parser_builder) const -> isl::UniqueAny
     {
-        for (const auto &node : this->nodes) {
+        for (const auto &node : nodes) {
             static_cast<const RulesReaderNode *>(node.get())->construct(parser_builder);
         }
 

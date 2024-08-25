@@ -1,13 +1,12 @@
 #include <ccl/lexer/rule/rule_block_interface.hpp>
 #include <ccl/lexer/rule/scanner_template.hpp>
-#include <ccl/parser/ast/string_node.hpp>
 
 namespace ccl::lexer::rule
 {
     class LexerScanner : public CrtpScanner<LexerScanner, ScanResult>
     {
     public:
-        using CrtpScanner<LexerScanner, ScanResult>::CrtpScanner;
+        using CrtpScanner::CrtpScanner;
 
         static auto onIteration(const ScanResult & /* result */) noexcept -> void
         {

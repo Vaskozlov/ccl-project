@@ -30,11 +30,11 @@ namespace ccl::parser::reader::ast
 
     auto LexerRuleOptions::construct(ParserBuilder &parser_builder) const -> isl::UniqueAny
     {
-        const auto *front_node = this->front().get();
+        const auto *front_node = front().get();
         auto options = std::vector{static_cast<RulesLexerToken>(front_node->getType())};
 
-        if (this->size() > 1) {
-            const auto *other_options_node = this->back().get();
+        if (size() > 1) {
+            const auto *other_options_node = back().get();
             const auto *casted_other_options =
                 static_cast<const LexerRuleOptions *>(other_options_node);
 

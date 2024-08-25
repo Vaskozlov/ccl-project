@@ -5,7 +5,7 @@ namespace ccl::parser::reader::ast
 {
     auto ParserRuleDecl::getDeclarationName() const -> isl::string_view
     {
-        const auto *value_node = this->front().get();
+        const auto *value_node = front().get();
         const auto *declaration_token = dynamic_cast<const parser::ast::TokenNode *>(value_node);
         const auto &token = declaration_token->getToken();
 

@@ -4,7 +4,7 @@ namespace ccl::parser::reader::ast
 {
     auto LexerRuleDecl::getDeclarationName() const -> isl::string_view
     {
-        const auto *value_node = this->front().get();
+        const auto *value_node = front().get();
         const auto *declaration_token = dynamic_cast<const parser::ast::TokenNode *>(value_node);
         const auto &token = declaration_token->getToken();
         return token.getPrefixes().front();
@@ -12,21 +12,21 @@ namespace ccl::parser::reader::ast
 
     auto LexerRuleDecl::getRules() const -> const LexerRuleBlock *
     {
-        const auto *value_node = this->back().get();
+        const auto *value_node = back().get();
         return dynamic_cast<const LexerRuleBlock *>(value_node);
     }
 
     auto LexerRuleDecl::isSpecial() const noexcept -> bool
     {
         constexpr auto number_of_blocks_when_special = 3;
-        return this->size() == number_of_blocks_when_special;
+        return size() == number_of_blocks_when_special;
     }
 
     auto LexerRuleDecl::construct(ParserBuilder &parser_builder) const -> isl::UniqueAny
     {
         auto rule_name = getDeclarationName();
 
-        const auto *last_node = this->back().get();
+        const auto *last_node = back().get();
         const auto *rule_node = static_cast<const RulesReaderNode *>(last_node);
 
         auto rule = rule_node->construct(parser_builder);
