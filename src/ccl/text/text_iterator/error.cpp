@@ -75,9 +75,8 @@ namespace ccl::text
         AnalysisStage stage, isl::string_view message, isl::string_view suggestion) -> void
     {
         auto exception = TextIteratorException(
-            criticality, stage, iterator_location.getLocation(), 1,
-            iterator_location.getWorkingLine(), as<std::string>(message),
-            as<std::string>(suggestion));
+            criticality, stage, iterator_location.getLocation(), 1, iterator_location.getCurrentLine(),
+            as<std::string>(message), as<std::string>(suggestion));
 
         if (nullptr == exceptionHandler) {
             throw std::move(exception);
@@ -85,4 +84,30 @@ namespace ccl::text
 
         exceptionHandler->handle(exception);
     }
+
+    auto TextIterator::linesOfFragment(isl::string_view whole_input, isl::string_view fragment)
+        -> isl::string_view
+    {
+        const auto *front_it = std::next(fragment.begin(), -1);
+        const auto *back_it = fragment.end();
+
+        while (front_it >= whole_input.begin()) {
+            if (*front_it == U'\n') {
+                break;
+            }
+
+            front_it = std::next(front_it, -1);
+        }
+
+        while (back_it < whole_input.end()) {
+            if (*back_it == U'\n') {
+                break;
+            }
+
+            back_it = std::next(back_it);
+        }
+
+        return {std::next(front_it), back_it};
+    }
+
 }// namespace ccl::text

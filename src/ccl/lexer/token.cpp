@@ -2,6 +2,11 @@
 
 namespace ccl::lexer
 {
+    CCL_INLINE static auto isTabOrSpace(char chr) noexcept -> bool
+    {
+        return '\t' == chr || ' ' == chr;
+    }
+
     class TextIteratorWithSkippedCharactersAccumulator
       : public text::CrtpBasicTextIterator<TextIteratorWithSkippedCharactersAccumulator>
     {
@@ -46,9 +51,8 @@ namespace ccl::lexer
     };
 
     TokenEnvironment::TokenEnvironment(const text::TextIterator &text_iterator)
-      : tabsAndSpaces{text_iterator.getTabsAndSpaces()}
-      , location{text_iterator.getLocation()}
-      , workingLine{text_iterator.getWorkingLine()}
+      : location{text_iterator.getLocation()}
+      , wholeText{text_iterator.getWholeInput()}
     {}
 
     Token::Token(SmallId token_id)
@@ -56,16 +60,16 @@ namespace ccl::lexer
     {}
 
     Token::Token(
-        TokenEnvironment &&token_environment, isl::string_view token_repr, SmallId token_id)
-      : environment{std::move(token_environment)}
+        const TokenEnvironment &token_environment, isl::string_view token_repr, SmallId token_id)
+      : environment{token_environment}
       , repr{token_repr}
       , id{token_id}
     {}
 
     Token::Token(
-        TokenEnvironment &&token_environment, typename isl::string_view::iterator text_begin,
+        const TokenEnvironment &token_environment, typename isl::string_view::iterator text_begin,
         SmallId token_id)
-      : Token{std::move(token_environment), {text_begin, isl::as<std::size_t>(0)}, token_id}
+      : Token{token_environment, {text_begin, isl::as<std::size_t>(0)}, token_id}
     {}
 
     Token::Token(const text::TextIterator &text_iterator, SmallId token_id)
@@ -81,6 +85,27 @@ namespace ccl::lexer
         postfixes.clear();
     }
 
+    auto Token::getInlineRepr() const noexcept -> isl::string_view
+    {
+        return text::TextIterator::linesOfFragment(environment.wholeText, repr);
+    }
+
+    auto Token::getTabsAndSpaces() const noexcept -> isl::string_view
+    {
+        const auto whole_input = environment.wholeText;
+        const auto *it = std::next(repr.begin(), -1);
+
+        while (it >= whole_input.begin()) {
+            if (!isTabOrSpace(*it)) {
+                break;
+            }
+
+            it = std::next(it, -1);
+        }
+
+        return {std::next(it), repr.begin()};
+    }
+
     auto Token::cut(std::size_t first, std::size_t length) const -> Token
     {
         auto new_token = *this;
@@ -93,7 +118,6 @@ namespace ccl::lexer
         new_token.environment.location = text::Location{
             getFilename(), getLine(), getColumn() + text_iterator.getSkippedCharacters(),
             getRealColumn() + text_iterator.getSkippedBytes()};
-        new_token.environment.tabsAndSpaces.clear();
 
         text_iterator.clearAccumulator();
         text_iterator.skip(length);

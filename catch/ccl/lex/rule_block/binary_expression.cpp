@@ -9,8 +9,7 @@ TEST_CASE("BinaryExpressionWith2Elements", "[BinaryExpression]")
     using namespace ccl;
 
     auto text_iterator = text::TextIterator{"[1] | \"2\""};
-    auto empty_lexical_analyzer =
-        ccl::lexer::LexicalAnalyzer(ccl::ExceptionHandler::instance(), {});
+    auto empty_lexical_analyzer = lexer::LexicalAnalyzer(ExceptionHandler::instance(), {});
 
     auto container =
         lexer::rule::Container(empty_lexical_analyzer, text_iterator, debug::FirstUsableToken);

@@ -182,7 +182,7 @@ namespace ccl::lexer::gen
         const auto &rules = ccllParser.getRules();
 
         const auto output_enum_case = [this](isl::string_view name, SmallId id) {
-            codeGenerator << endl << name << " = " << fmt::to_string(id) << ',';
+            codeGenerator << endl << name << " = " << fmt::to_string(id) << "U,";
         };
 
         for (const auto &[rule_name, rule_id] : BuiltinRules) {
@@ -209,7 +209,7 @@ namespace ccl::lexer::gen
     auto StaticGenerator::generateLexicalAnalyzer() -> void
     {
         codeGenerator << "// NOLINTNEXTLINE" << endl;
-        codeGenerator << "inline auto const" << variableName << " = ccl::lexer::LexicalAnalyzer{";
+        codeGenerator << "inline auto const " << variableName << " = ccl::lexer::LexicalAnalyzer{";
         codeGenerator << push_scope << endl;
         codeGenerator << handler << ',' << endl;
         codeGenerator << '{' << push_scope;

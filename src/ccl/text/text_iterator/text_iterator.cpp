@@ -8,7 +8,7 @@ namespace ccl::text
         isl::string_view filename)
       : CrtpBasicTextIterator{input}
       , location{filename}
-      , lineTracker{input}
+      , wholeInput{input}
       , exceptionHandler{&exception_handler}
     {}
 
@@ -18,7 +18,7 @@ namespace ccl::text
         const Location &iterator_location)
       : CrtpBasicTextIterator{input}
       , location{iterator_location}
-      , lineTracker{input}
+      , wholeInput{input}
       , exceptionHandler{&exception_handler}
     {}
 

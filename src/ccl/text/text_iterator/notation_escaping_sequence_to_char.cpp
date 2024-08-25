@@ -41,7 +41,7 @@ namespace ccl::text
     auto NotationEscapingSequenceToChar::createSuggestionNotEnoughChars(
         std::size_t chars_count) const -> std::string
     {
-        auto suggestion_message = as<std::string>(textIterator.getWorkingLine());
+        auto suggestion_message = isl::as<std::string>(textIterator.getCurrentLine());
         insertExtraZerosToNotEnoughMessage(chars_count, suggestion_message);
         return suggestion_message;
     }

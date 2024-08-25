@@ -5,8 +5,6 @@
 #include <ccl/text/basic_text_iterator.hpp>
 #include <ccl/text/iterator_exception.hpp>
 #include <ccl/text/location.hpp>
-#include <ccl/text/text_iterator_modules/line_tracker.hpp>
-#include <ccl/text/text_iterator_modules/ts_tracker.hpp>
 #include <span>
 #include <utility>
 
@@ -18,8 +16,7 @@ namespace ccl::text
         using extra_symbols_t = std::span<const isl::Pair<char32_t, char32_t>>;
 
         Location location;
-        TsTracker tsTracker;
-        LineTracker lineTracker;
+        isl::string_view wholeInput;
         ExceptionHandler *exceptionHandler{};
 
     public:
@@ -68,15 +65,15 @@ namespace ccl::text
             return location.getFilename();
         }
 
-        [[nodiscard]] auto getWorkingLine() const noexcept -> isl::string_view
+        [[nodiscard]] auto getWholeInput() const noexcept -> isl::string_view
         {
-            return lineTracker.get();
+            return wholeInput;
         }
 
-        [[nodiscard]] auto
-            getTabsAndSpaces() const noexcept CCL_LIFETIMEBOUND -> const std::string &
+        [[nodiscard]] auto getCurrentLine() const -> isl::string_view
         {
-            return tsTracker.get();
+            const auto *current_it = getCarriage();
+            return linesOfFragment(wholeInput, {current_it, std::next(current_it)});
         }
 
         [[nodiscard]] auto getHandler() noexcept -> ExceptionHandler &
@@ -95,8 +92,6 @@ namespace ccl::text
         CCL_INLINE auto onCharacter(char32_t chr) -> void
         {
             location.next(chr);
-            tsTracker.next(chr);
-            lineTracker.next(chr);
         }
 
         [[noreturn]] auto utfError(char /* unused */) -> void
@@ -149,6 +144,9 @@ namespace ccl::text
             const TextIterator &iterator_location, ExceptionCriticality criticality,
             AnalysisStage stage, isl::string_view message,
             isl::string_view suggestion = {}) -> void;
+
+        static auto linesOfFragment(isl::string_view whole_input, isl::string_view fragment)
+            -> isl::string_view;
     };
 
     class TextIterator::EscapingSequenceToChar

@@ -22,9 +22,8 @@ namespace ccl::lexer
 
     struct TokenEnvironment
     {
-        std::string tabsAndSpaces;
         text::Location location;
-        isl::string_view workingLine;
+        isl::string_view wholeText;
 
         TokenEnvironment() = default;
         explicit TokenEnvironment(const text::TextIterator &text_iterator);
@@ -48,11 +47,12 @@ namespace ccl::lexer
         [[nodiscard]] explicit Token(SmallId token_id);
 
         [[nodiscard]] Token(
-            TokenEnvironment &&token_environment, isl::string_view token_repr, SmallId token_id);
+            const TokenEnvironment &token_environment, isl::string_view token_repr,
+            SmallId token_id);
 
         [[nodiscard]] Token(
-            TokenEnvironment &&token_environment, typename isl::string_view::iterator text_begin,
-            SmallId token_id);
+            const TokenEnvironment &token_environment,
+            typename isl::string_view::iterator text_begin, SmallId token_id);
 
         [[nodiscard]] Token(const text::TextIterator &text_iterator, SmallId token_id);
 
@@ -82,7 +82,7 @@ namespace ccl::lexer
             return environment;
         }
 
-        [[nodiscard]] auto getLocation() const noexcept CCL_LIFETIMEBOUND -> const text::Location &
+        [[nodiscard]] auto getLocation() const noexcept -> const text::Location &
         {
             return environment.location;
         }
@@ -102,12 +102,12 @@ namespace ccl::lexer
             return environment.location.getRealColumn();
         }
 
-        [[nodiscard]] auto getFilename() const noexcept CCL_LIFETIMEBOUND -> isl::string_view
+        [[nodiscard]] auto getFilename() const noexcept -> isl::string_view
         {
             return environment.location.getFilename();
         }
 
-        [[nodiscard]] auto getRepr() const noexcept CCL_LIFETIMEBOUND -> isl::string_view
+        [[nodiscard]] auto getRepr() const noexcept -> isl::string_view
         {
             return repr;
         }
@@ -124,15 +124,9 @@ namespace ccl::lexer
             return postfixes;
         }
 
-        [[nodiscard]] auto getInlineRepr() const noexcept CCL_LIFETIMEBOUND -> isl::string_view
-        {
-            return environment.workingLine;
-        }
+        [[nodiscard]] auto getInlineRepr() const noexcept -> isl::string_view;
 
-        [[nodiscard]] auto getTabsAndSpaces() const noexcept CCL_LIFETIMEBOUND -> std::string_view
-        {
-            return environment.tabsAndSpaces;
-        }
+        [[nodiscard]] auto getTabsAndSpaces() const noexcept -> isl::string_view;
 
         [[nodiscard]] auto cut(std::size_t first, std::size_t length) const -> Token;
 

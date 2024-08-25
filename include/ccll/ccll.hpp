@@ -6,7 +6,7 @@
 
 namespace ccll
 {
-    enum CcllAnalyzerToken : ccl::u32;
+    enum CcllAnalyzerToken : ccl::SmallId;
 }
 
 template<>
@@ -15,26 +15,26 @@ CCL_DECL auto ccl::lexer::lexerEnumToString<ccll::CcllAnalyzerToken>(ccll::CcllA
 
 namespace ccll
 {
-    enum CcllAnalyzerToken : ccl::u32
+    enum CcllAnalyzerToken : ccl::SmallId
     {
-        EOI = 0ULL,
-        BAD_TOKEN = 1ULL,
-        CUT = 2ULL,
-        GROUP_DECLARATION = 3ULL,
-        RULE = 4ULL,
-        DIRECTIVE = 5ULL,
-        BAD_GROUP_DECLARATION_EMPTY_NAME = 6ULL,
-        BAD_GROUP_DECLARATION_BRACKET_AND_NAME = 7ULL,
-        BAD_GROUP_NO_OPEN_BRACKET = 8ULL,
-        BAD_GROUP_DECLARATION_ONLY_BRACKET = 9ULL,
-        BAD_RULE_DECLARATION = 10ULL,
-        BAD_DIRECTIVE_DECLARATION = 11ULL,
-        BAD_RULE_OR_DIRECTIVE_DECLARATION = 12ULL,
-        COMMENT = 13ULL,
+        EOI = 0U,
+        BAD_TOKEN = 1U,
+        CUT = 2U,
+        GROUP_DECLARATION = 3U,
+        RULE = 4U,
+        DIRECTIVE = 5U,
+        BAD_GROUP_DECLARATION_EMPTY_NAME = 6U,
+        BAD_GROUP_DECLARATION_BRACKET_AND_NAME = 7U,
+        BAD_GROUP_NO_OPEN_BRACKET = 8U,
+        BAD_GROUP_DECLARATION_ONLY_BRACKET = 9U,
+        BAD_RULE_DECLARATION = 10U,
+        BAD_DIRECTIVE_DECLARATION = 11U,
+        BAD_RULE_OR_DIRECTIVE_DECLARATION = 12U,
+        COMMENT = 13U,
     };
 
     // NOLINTNEXTLINE
-    inline const auto CcllAnalyzer = ccl::lexer::LexicalAnalyzer{
+    inline auto const CcllAnalyzer = ccl::lexer::LexicalAnalyzer{
         ccl::handler::Cmd::instance(),
         {
             {CcllAnalyzerToken::GROUP_DECLARATION, R"( [\[]p ( [a-zA-Z_][a-zA-Z_0-9]* )p [\]]p )"},

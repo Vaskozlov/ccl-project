@@ -52,6 +52,7 @@ namespace ccl::text
                 ++realColumn;
             }
         }
+
         constexpr auto next(char32_t chr) noexcept -> void
         {
             if (chr == U'\n') {
@@ -65,16 +66,15 @@ namespace ccl::text
 }// namespace ccl::text
 
 template<>
-class fmt::formatter<ccl::text::Location>
+struct fmt::formatter<ccl::text::Location>
 {
-public:
     [[maybe_unused]] constexpr static auto parse(const format_parse_context &ctx)
     {
         return ctx.begin();
     }
 
-    template<typename FmtContext>
-    constexpr auto format(const ccl::text::Location &location, FmtContext &ctx) const
+    constexpr auto format(const ccl::text::Location &location, format_context &ctx) const
+        -> format_context::iterator
     {
         return fmt::format_to(
             ctx.out(), "{}, line: {}, column: {}", location.getFilename(), location.getLine(),

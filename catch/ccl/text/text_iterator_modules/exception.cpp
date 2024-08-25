@@ -11,7 +11,7 @@ TEST_CASE("TextIteratorExceptionConstruction", "[TextIterator]")
 
     auto exception = text::TextIteratorException(
         ExceptionCriticality::UNCRITICAL, AnalysisStage::LEXICAL_ANALYSIS,
-        text_iterator.getLocation(), 1, text_iterator.getWorkingLine(), "some message");
+        text_iterator.getLocation(), 1, text_iterator.getCurrentLine(), "some message");
 
     REQUIRE(exception.getColumn() == 0);
     REQUIRE(exception.getMessage() == "some message");
