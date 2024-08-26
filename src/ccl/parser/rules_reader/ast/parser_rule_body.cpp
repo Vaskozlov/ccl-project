@@ -45,6 +45,6 @@ namespace ccl::parser::reader::ast
         container->addItem(
             std::make_unique<lexer::rule::Sequence>(text::removeEscaping(str_without_quotes, {})));
 
-        parser_builder.addLexerRule(str, std::move(container));
+        parser_builder.addLexerRule(static_cast<std::string>(str), std::move(container));
     }
 }// namespace ccl::parser::reader::ast

@@ -97,7 +97,7 @@ namespace ccl::lexer::gen
             << fmt::format(
                    "template<>\n"
                    "CCL_DECL auto ccl::lexer::lexerEnumToString<{0}::{1}>({0}::{1} value) -> "
-                   "isl::string_view;",
+                   "std::string;",
                    nameSpace, enumName)
             << endl
             << endl;
@@ -247,7 +247,7 @@ namespace ccl::lexer::gen
 
         codeGenerator << fmt::format(
             "template<>\n"
-            "CCL_DECL auto lexerEnumToString<{0}::{1}>({0}::{1} value) -> isl::string_view ",
+            "CCL_DECL auto lexerEnumToString<{0}::{1}>({0}::{1} value) -> std::string ",
             nameSpace, enumName);
 
         codeGenerator << "{" << endl << push_scope;
@@ -256,6 +256,8 @@ namespace ccl::lexer::gen
             codeGenerator << pop_scope << endl << '}';
         }};
 
-        codeGenerator << fmt::format("return {}::ToString{}Token[value];", nameSpace, variableName);
+        codeGenerator << fmt::format(
+            "return static_cast<std::string>({}::ToString{}Token[value]);", nameSpace,
+            variableName);
     }
 }// namespace ccl::lexer::gen

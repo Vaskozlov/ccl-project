@@ -36,7 +36,9 @@ namespace ccl::parser::reader::ast
             rule_as_container->makeAsAnyPlaceItem();
         }
 
-        parser_builder.addLexerRule(rule_name, std::move(rule_as_container));
+        parser_builder.addLexerRule(
+            static_cast<std::string>(rule_name), std::move(rule_as_container));
+
         return isl::makeAny<isl::string_view>(rule_name);
     }
 }// namespace ccl::parser::reader::ast

@@ -15,7 +15,7 @@ TEST_CASE("LLParser", "[LLParser]")
     auto parser = math_rules_constructor.buildGLL();
 
     auto tokenizer = lexer.getTokenizer("1+2+3");
-    auto [roots] = parser.parse(tokenizer);
+    auto [roots, algorithm_name] = parser.parse(tokenizer);
     auto converter = std::views::transform(roots, [](auto &node) {
         return node.get();
     });

@@ -66,8 +66,8 @@ namespace ccl::parser::reader
             return ruleNameToId.contains(rule_name);
         }
 
-        auto addLexerRule(isl::string_view name, std::unique_ptr<lexer::rule::Container> container)
-            -> void
+        auto addLexerRule(
+            const std::string &name, std::unique_ptr<lexer::rule::Container> container) -> void
         {
             auto rule_id = addRule(name);
             container->setId(rule_id);

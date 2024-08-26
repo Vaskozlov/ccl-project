@@ -11,7 +11,7 @@ namespace ccll
 
 template<>
 CCL_DECL auto ccl::lexer::lexerEnumToString<ccll::CcllAnalyzerToken>(ccll::CcllAnalyzerToken value)
-    -> isl::string_view;
+    -> std::string;
 
 namespace ccll
 {
@@ -83,9 +83,9 @@ namespace ccll
 namespace ccl::lexer
 {
     template<>
-    CCL_DECL auto lexerEnumToString<ccll::CcllAnalyzerToken>(ccll::CcllAnalyzerToken value)
-        -> isl::string_view
+    CCL_DECL auto
+        lexerEnumToString<ccll::CcllAnalyzerToken>(ccll::CcllAnalyzerToken value) -> std::string
     {
-        return ccll::ToStringCcllAnalyzerToken[value];
+        return static_cast<std::string>(ccll::ToStringCcllAnalyzerToken[value]);
     }
 }// namespace ccl::lexer

@@ -1,5 +1,4 @@
 #include "ccl/parser/lr/glr_parser.hpp"
-#include "ccl/parser/ast/token_node.hpp"
 #include "ccl/parser/dot/dot_repr.hpp"
 #include "lr_parser_for_math.hpp"
 
@@ -15,7 +14,7 @@ TEST_CASE("GlrParser", "[GLR]")
     const auto math_lr_parser = math_rules_constructor.buildGlr();
 
     auto tokenizer = lexer.getTokenizer("1*2*3+4+5");
-    auto [roots] = math_lr_parser.parse(tokenizer);
+    auto [roots, algorithm_name] = math_lr_parser.parse(tokenizer);
     auto converter = std::views::transform(roots, [](auto &node) {
         return node.get();
     });

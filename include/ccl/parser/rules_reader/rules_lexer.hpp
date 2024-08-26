@@ -11,7 +11,7 @@ namespace ccl::parser::reader
 
 template<>
 CCL_DECL auto ccl::lexer::lexerEnumToString<ccl::parser::reader::RulesLexerToken>(
-    ccl::parser::reader::RulesLexerToken value) -> isl::string_view;
+    ccl::parser::reader::RulesLexerToken value) -> std::string;
 
 namespace ccl::parser::reader
 {
@@ -157,8 +157,8 @@ namespace ccl::lexer
 {
     template<>
     CCL_DECL auto lexerEnumToString<ccl::parser::reader::RulesLexerToken>(
-        ccl::parser::reader::RulesLexerToken value) -> isl::string_view
+        ccl::parser::reader::RulesLexerToken value) -> std::string
     {
-        return ccl::parser::reader::ToStringRulesLexerToken[value];
+        return std::string{ccl::parser::reader::ToStringRulesLexerToken[value]};
     }
 }// namespace ccl::lexer

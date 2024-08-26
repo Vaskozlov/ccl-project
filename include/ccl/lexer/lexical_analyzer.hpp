@@ -6,12 +6,12 @@
 namespace ccl::lexer
 {
     template<typename T>
-    CCL_DECL auto lexerEnumToString(T value) -> isl::string_view;
+    CCL_DECL auto lexerEnumToString(T value) -> std::string;
 
     template<>
-    [[nodiscard]] inline auto lexerEnumToString<SmallId>(SmallId value) -> isl::string_view
+    [[nodiscard]] inline auto lexerEnumToString<SmallId>(SmallId value) -> std::string
     {
-        return isl::as<isl::string_view>(fmt::to_string(value));
+        return fmt::to_string(value);
     }
 
     class LexicalAnalyzer
@@ -19,23 +19,23 @@ namespace ccl::lexer
     private:
         using Container = rule::Container;
         using RuleBlockInterface = rule::RuleBlockInterface;
-        using TextIterator = typename RuleBlockInterface::TextIterator;
+        using TextIterator = RuleBlockInterface::TextIterator;
 
-        struct CCL_TRIVIAL_ABI Rule
+        struct Rule
         {
+            std::string name;
             isl::string_view repr;
-            isl::string_view name;
             u32 id{};
 
             template<typename T>
             constexpr Rule(T rule_id, isl::string_view rule_repr)
-              : repr{rule_repr}
-              , name{lexerEnumToString<T>(rule_id)}
+              : name{lexerEnumToString<T>(rule_id)}
+              , repr{rule_repr}
               , id{isl::as<u32>(rule_id)}
             {}
         };
 
-        std::map<isl::string_view, Container *> allItemsMap;
+        ankerl::unordered_dense::map<std::string, Container *> allItemsMap;
         std::vector<std::unique_ptr<Container>> items;
         AnyPlaceItems anyPlaceItems;
         std::vector<u32> ignoredIds;
@@ -59,7 +59,7 @@ namespace ccl::lexer
             return anyPlaceItems;
         }
 
-        auto addContainer(isl::string_view rule_name, std::unique_ptr<Container> new_container)
+        auto addContainer(const std::string &rule_name, std::unique_ptr<Container> new_container)
             -> void;
 
         [[nodiscard]] auto getIgnoredIds() const CCL_LIFETIMEBOUND -> const std::vector<u32> &
@@ -68,12 +68,12 @@ namespace ccl::lexer
         }
 
         [[nodiscard]] auto
-            getByRuleName(isl::string_view name) const CCL_LIFETIMEBOUND -> const Container *
+            getByRuleName(const std::string &name) const CCL_LIFETIMEBOUND -> const Container *
         {
             return allItemsMap.at(name);
         }
 
-        [[nodiscard]] auto getByRuleName(isl::string_view name) CCL_LIFETIMEBOUND -> Container *
+        [[nodiscard]] auto getByRuleName(const std::string &name) CCL_LIFETIMEBOUND -> Container *
         {
             return allItemsMap.at(name);
         }

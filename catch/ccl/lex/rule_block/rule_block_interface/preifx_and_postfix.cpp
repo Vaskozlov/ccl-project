@@ -11,7 +11,6 @@ TEST_CASE("ContainerPrefixAndPostfix", "[Container]")
     auto container = lexer::rule::Container{
         empty_lexical_analyzer,
         text::TextIterator{R"([a-z]+p[_]"test"p)"},
-        debug::FirstUsableToken,
         true,
     };
 
