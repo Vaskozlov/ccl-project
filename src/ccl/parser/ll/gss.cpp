@@ -75,29 +75,27 @@ namespace ccl::parser::ll
 
     auto GSS::getDescriptor() -> Descriptor
     {
-        if (nonTerminalDescriptors.empty()) {
-            auto descriptor = terminalDescriptors.front();
-            terminalDescriptors.pop_front();
-            return descriptor;
-        }
+        const auto non_terminals_empty = nonTerminalDescriptors.empty();
+        const auto terminals_empty = terminalDescriptors.empty();
 
-        if (terminalDescriptors.empty()) {
-            auto descriptor = nonTerminalDescriptors.front();
-            nonTerminalDescriptors.pop_front();
+        if (non_terminals_empty || terminals_empty) {
+            auto &selectedList = non_terminals_empty ? terminalDescriptors : nonTerminalDescriptors;
 
-            return descriptor;
-        }
-
-        if (nonTerminalDescriptors.front().inputPosition <=
-            terminalDescriptors.front().inputPosition) {
-            auto descriptor = nonTerminalDescriptors.front();
-            nonTerminalDescriptors.pop_front();
+            auto descriptor = selectedList.front();
+            selectedList.pop_front();
 
             return descriptor;
         }
 
-        auto descriptor = terminalDescriptors.front();
-        terminalDescriptors.pop_front();
+        const auto &non_terminal_front = nonTerminalDescriptors.front();
+        const auto &terminal_front = terminalDescriptors.front();
+
+        auto &selectedList = (non_terminal_front.inputPosition <= terminal_front.inputPosition)
+                                 ? nonTerminalDescriptors
+                                 : terminalDescriptors;
+
+        auto descriptor = selectedList.front();
+        selectedList.pop_front();
 
         return descriptor;
     }
