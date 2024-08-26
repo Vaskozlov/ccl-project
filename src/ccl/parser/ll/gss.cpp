@@ -1,12 +1,12 @@
-#include <ccl/parser/ll/gss.hpp>
+#include <ccl/parser/ll/gss/gss.hpp>
 
 namespace ccl::parser::ll
 {
     isl::FixedSizeAllocator<sizeof(Node), alignof(Node)> detail::NodeAllocator;
 
-    auto GSS::Level::findNode(const SPPFNode &sppf_node) const -> Node *
+    auto Level::findNode(const SPPFNode &sppf_node) const -> Node *
     {
-        for (auto &node : *this) {
+        for (const auto &node : *this) {
             if (node->sppfNode == sppf_node) {
                 return node.get();
             }

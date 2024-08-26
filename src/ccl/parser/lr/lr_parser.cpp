@@ -23,7 +23,7 @@ namespace ccl::parser
     {
         using enum ParsingAction;
 
-        auto parsing_result = UnambiguousParsingResult{};
+        auto parsing_result = UnambiguousParsingResult{.algorithmName = "LR(1)"};
         auto word = ast::SharedNode<ast::TokenNode>{tokenizer.yield()};
 
         auto parser_state = ParserState{};

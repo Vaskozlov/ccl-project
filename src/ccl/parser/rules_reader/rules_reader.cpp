@@ -485,7 +485,7 @@ namespace ccl::parser::reader
             return std::string{ToStringRulesLexerToken.at(elem)};
         });
 
-        const auto [root_node] = lr_parser.parse(tokenizer);
+        const auto [root_node, algorithm] = lr_parser.parse(tokenizer);
         dynamic_cast<const ast::RulesReaderNode *>(root_node.get())->construct(rulesConstructor);
     }
 

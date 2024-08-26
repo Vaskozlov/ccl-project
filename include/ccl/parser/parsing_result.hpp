@@ -8,11 +8,13 @@ namespace ccl::parser
     struct UnambiguousParsingResult
     {
         ast::SharedNode<> root{};
+        isl::string_view algorithmName;
     };
 
     struct AmbiguousParsingResult
     {
-        std::vector<ast::SharedNode<>> roots;
+        std::vector<ast::SharedNode<>> roots{};
+        isl::string_view algorithmName;
     };
 }// namespace ccl::parser
 

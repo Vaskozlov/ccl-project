@@ -6,7 +6,6 @@
 #include <ccl/parser/lr/action.hpp>
 #include <ccl/parser/lr/detail/lr_parser_generator.hpp>
 #include <ccl/parser/parsing_result.hpp>
-#include <ccl/parser/table_entry.hpp>
 
 namespace ccl::parser
 {
@@ -22,7 +21,8 @@ namespace ccl::parser
             const LrItem &start_item,
             Symbol epsilon_symbol,
             const GrammarStorage &parser_rules,
-            std::function<std::string(SmallId)> id_to_string_converter = fmt::to_string<SmallId>);
+            const std::function<std::string(SmallId)> &id_to_string_converter =
+                fmt::to_string<SmallId>);
 
         [[nodiscard]] auto
             parse(lexer::LexicalAnalyzer::Tokenizer &tokenizer) const -> AmbiguousParsingResult;

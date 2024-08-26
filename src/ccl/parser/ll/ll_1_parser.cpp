@@ -17,24 +17,31 @@ namespace ccl::parser
 
     auto Ll1Parser::parse(lexer::LexicalAnalyzer::Tokenizer &tokenizer) -> UnambiguousParsingResult
     {
-        const auto *word = std::addressof(tokenizer.yield());
         auto stack = Stack<ast::Node *>{};
-        auto parsing_result = UnambiguousParsingResult{};
+        const auto *word = std::addressof(tokenizer.yield());
         auto goal = ast::SharedNode<ast::NodeOfNodes>(grammarGoalSymbol);
+        auto parsing_result = UnambiguousParsingResult{.algorithmName = "LL(1)"};
 
         stack.emplace(nullptr);
         stack.emplace(goal.get());
 
         while (true) {
             auto *focus = stack.top();
+            const auto token_type = word->getId();
 
-            if (focus == nullptr && word->getId() == 0) {
+            if (focus == nullptr && token_type == 0) {
                 parsing_result.root = goal;
                 return parsing_result;
             }
 
-            if (storage.isTerminal(focus->getType())) {
-                if (focus->getType() != word->getId()) {
+            if (focus == nullptr) {
+                return parsing_result;
+            }
+
+            const auto focus_type = focus->getType();
+
+            if (storage.isTerminal(focus_type)) {
+                if (focus_type != token_type) {
                     return parsing_result;
                 }
 
@@ -44,12 +51,10 @@ namespace ccl::parser
                 continue;
             }
 
-            const auto entry = TableEntry{
-                .state = focus->getType(),
-                .symbol = word->getId(),
-            };
-
-            auto rule_it = table.find(entry);
+            auto rule_it = table.find({
+                .state = focus_type,
+                .symbol = token_type,
+            });
 
             if (rule_it == table.end()) {
                 return parsing_result;
@@ -73,8 +78,8 @@ namespace ccl::parser
                     built_node = ast::SharedNode<ast::NodeOfNodes>(s);
                 }
 
+                stack.emplace(built_node.get());
                 focus_as_sequence->addNode(std::move(built_node));
-                stack.emplace(focus_as_sequence->getNodes().back().get());
             }
 
             focus_as_sequence->reverse();

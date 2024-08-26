@@ -1,15 +1,12 @@
-#include <ccl/parser/lr/gss.hpp>
+#include <ccl/parser/lr/gss/gss.hpp>
 
 namespace ccl::parser::lr
 {
     // NOLINTNEXTLINE
     isl::FixedSizeAllocator<sizeof(Node), alignof(Node)> detail::NodeAllocator{};
 
-    auto GSS::Reducer::reduce(
-        SmallId pop_count,
-        Node *node,
-        std::vector<ast::SharedNode<>>
-            arguments) -> void
+    auto Reducer::reduce(SmallId pop_count, Node *node, std::vector<ast::SharedNode<>> arguments)
+        -> void
     {
         pop_count -= 1;
         arguments.emplace_back(node->value);
@@ -40,22 +37,11 @@ namespace ccl::parser::lr
         }
     }
 
-    auto GSS::Level::findTerminal(SmallId parser_state) const -> Node *
-    {
-        for (const auto &node : terminals) {
-            if (node->parserState == parser_state) {
-                return node.get();
-            }
-        }
-
-        return nullptr;
-    }
-
-    auto GSS::Level::findNonTerminal(SmallId parsing_state, ast::NodeOfNodes *value) const -> Node *
+    auto Level::findNonTerminal(SmallId parsing_state, ast::NodeOfNodes *value) const -> Node *
     {
         for (const auto &node : nonTerminals) {
             if (node->parserState == parsing_state &&
-                isl::staticPointerCast<ast::NodeOfNodes>(node->value)->getNodes() ==
+                static_cast<ast::NodeOfNodes *>(node->value.get())->getNodes() ==
                     value->getNodes()) {
                 return node.get();
             }
@@ -76,23 +62,23 @@ namespace ccl::parser::lr
         }
 
         auto &level = levels.at(input_position);
-        auto *node = level.findTerminal(parser_state);
 
-        if (node == nullptr) {
-            auto created_node = UniqueGssNodePtr{
+        if (level.terminal == nullptr) {
+            level.terminal = UniqueGssNodePtr{
                 std::vector{parent},
                 std::move(token),
                 input_position,
                 parser_state,
             };
 
-            node = created_node.get();
-            level.terminals.emplace_back(std::move(created_node));
+            if (parent == nullptr) {
+                level.terminal->previous.pop_back();
+            }
         } else {
-            node->addPrevious(parent);
+            level.terminal->addPrevious(parent);
         }
 
-        return node;
+        return level.terminal.get();
     }
 
     auto GSS::pushNonTerminal(
@@ -107,7 +93,7 @@ namespace ccl::parser::lr
         }
 
         auto &level = levels.at(input_position);
-        auto node = level.findNonTerminal(input_position, non_terminal.get());
+        auto node = level.findNonTerminal(parser_state, non_terminal.get());
 
         // Is there any need to check?
         if (node == nullptr) {

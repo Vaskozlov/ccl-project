@@ -3,7 +3,7 @@
 #include "ccl/parser/ast/token_node.hpp"
 #include "ccl/parser/dot/dot_repr.hpp"
 #include "ccl/parser/lr/detail/lr_parser_generator.hpp"
-#include "ccl/parser/lr/gss.hpp"
+#include "ccl/parser/lr/gss/gss.hpp"
 #include <isl/dot_repr.hpp>
 #include <isl/io.hpp>
 
@@ -16,9 +16,7 @@ namespace ccl::parser
         auto result = std::vector<ast::Node *>{};
 
         for (const auto &level : gss.getLevels()) {
-            for (const auto &node : level.terminals) {
-                result.emplace_back(node->value.get());
-            }
+            result.emplace_back(level.terminal->value.get());
 
             for (const auto &node : level.nonTerminals) {
                 result.emplace_back(node->value.get());
@@ -33,9 +31,8 @@ namespace ccl::parser
         const LrItem &start_item,
         Symbol epsilon_symbol,
         const GrammarStorage &parser_rules,
-        std::function<std::string(SmallId)>
-            id_to_string_converter)
-      : idToStringConverter{std::move(id_to_string_converter)}
+        const std::function<std::string(SmallId)> &id_to_string_converter)
+      : idToStringConverter{id_to_string_converter}
     {
         auto parser_generator =
             lr::LrParserGenerator(start_item, epsilon_symbol, parser_rules, idToStringConverter);
@@ -49,11 +46,12 @@ namespace ccl::parser
     {
         using enum ParsingAction;
 
-        auto parsing_result = AmbiguousParsingResult{};
+        auto parsing_result = AmbiguousParsingResult{.algorithmName = "GLR"};
         auto token = ast::SharedNode<ast::TokenNode>(tokenizer.yield());
 
         auto gss = lr::GSS{};
         gss.nextWord();
+
         auto *start_node = gss.pushTerminal(nullptr, 0, 0, token);
 
         gss.add({

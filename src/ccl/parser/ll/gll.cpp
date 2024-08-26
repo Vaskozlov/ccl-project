@@ -1,6 +1,6 @@
 #include <ccl/parser/dot/dot_repr.hpp>
 #include <ccl/parser/ll/gll.hpp>
-#include <ccl/parser/ll/gss.hpp>
+#include <ccl/parser/ll/gss/gss.hpp>
 #include <ccl/parser/lr/lr_item.hpp>
 #include <isl/io.hpp>
 
@@ -34,7 +34,7 @@ namespace ccl::parser
 
     auto GllParser::parse(lexer::Tokenizer &tokenizer) -> AmbiguousParsingResult
     {
-        auto parsing_result = AmbiguousParsingResult{};
+        auto parsing_result = AmbiguousParsingResult{.algorithmName = "GLL"};
         auto token = ast::SharedNode<ast::TokenNode>{tokenizer.yield()};
         auto gss = ll::GSS{std::addressof(storage)};
         gss.nextWord();
@@ -102,12 +102,10 @@ namespace ccl::parser
                 continue;
             }
 
-            const auto entry = TableEntry{
+            auto rules_it = table.find({
                 .state = focus,
                 .symbol = token_type,
-            };
-
-            auto rules_it = table.find(entry);
+            });
 
             if (rules_it == table.end()) {
                 continue;
