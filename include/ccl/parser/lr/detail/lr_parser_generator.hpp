@@ -48,8 +48,6 @@ namespace ccl::parser::lr
         Symbol endOfInput;
         Symbol epsilonSymbol;
 
-        std::unordered_map<Symbol, std::unordered_set<Symbol>> firstSet;
-
         ankerl::unordered_dense::map<std::vector<LrItem>, std::vector<LrItem>>
             closureComputationOnItemsCache;
 

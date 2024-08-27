@@ -14,14 +14,12 @@ namespace ccl::parser::ll
     {
     private:
         Ll1Table table;
-        FirstSetEvaluator firstSetEvaluator;
-        FollowSetEvaluator followSetEvaluator;
         std::function<std::string(SmallId)> idToStringConverter;
         const GrammarStorage &storage;
 
     public:
         Ll1ParserGenerator(
-            SmallId start_symbol, const GrammarStorage &grammar_storage,
+            const GrammarStorage &grammar_storage,
             const std::function<std::string(SmallId)> &id_to_string_converter);
 
         [[nodiscard]] auto createLl1Table() const -> const Ll1Table &

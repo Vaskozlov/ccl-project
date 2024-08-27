@@ -11,7 +11,6 @@ namespace ccl::parser::lr
       , goalProduction{start_item.getProductionType()}
       , endOfInput{start_item.getLookAhead()}
       , epsilonSymbol{epsilon_symbol}
-      , firstSet{evaluateFirstSet(epsilonSymbol, grammarRules)}
     {
         constructCanonicalCollection(start_item);
         fillTables();

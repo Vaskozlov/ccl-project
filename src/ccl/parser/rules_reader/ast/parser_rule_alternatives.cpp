@@ -4,13 +4,20 @@ namespace ccl::parser::reader::ast
 {
     auto ParserRuleAlternatives::construct(ParserBuilder &parser_builder) const -> isl::UniqueAny
     {
-        auto result = std::vector<std::vector<SmallId>>();
+        const auto *lhs_node = static_cast<const RulesReaderNode *>(front().get());
+        auto lhs_result = lhs_node->construct(parser_builder);
 
-        for (const auto &node : nodes) {
-            const auto *alternative = static_cast<const RulesReaderNode *>(node.get());
-            result.emplace_back(
-                isl::get<std::vector<SmallId>>(alternative->construct(parser_builder)));
+        if (size() == 1) {
+            auto lhs_alternative = isl::get<std::vector<Symbol>>(std::move(lhs_result));
+            return isl::UniqueAny{std::vector<std::vector<Symbol>>{std::move(lhs_alternative)}};
         }
+
+        const auto *rhs_node = static_cast<const RulesReaderNode *>(back().get());
+        auto rhs_result = rhs_node->construct(parser_builder);
+        auto rhs_alternative = isl::get<std::vector<Symbol>>(std::move(rhs_result));
+
+        auto result = isl::get<std::vector<std::vector<Symbol>>>(std::move(lhs_result));
+        result.emplace_back(std::move(rhs_alternative));
 
         return isl::UniqueAny{std::move(result)};
     }

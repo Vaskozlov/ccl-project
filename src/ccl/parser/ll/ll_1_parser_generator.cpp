@@ -3,17 +3,9 @@
 namespace ccl::parser::ll
 {
     Ll1ParserGenerator::Ll1ParserGenerator(
-        SmallId start_symbol,
         const GrammarStorage &grammar_storage,
         const std::function<std::string(SmallId)> &id_to_string_converter)
-      : firstSetEvaluator{grammar_storage.getEpsilon(), grammar_storage}
-      , followSetEvaluator(
-            start_symbol,
-            std::to_underlying(lexer::ReservedTokenType::EOI),
-            grammar_storage.getEpsilon(),
-            grammar_storage,
-            firstSetEvaluator.getFirstSet())
-      , idToStringConverter{id_to_string_converter}
+      : idToStringConverter{id_to_string_converter}
       , storage{grammar_storage}
     {
         for (auto &[key, rule] : storage.rulesIterator()) {
@@ -23,13 +15,14 @@ namespace ccl::parser::ll
 
     auto Ll1ParserGenerator::generateUsingRule(Symbol production, const Rule &rule) -> void
     {
-        const auto &rule_first_set =
-            firstSetEvaluator.getFirstSetOfRules().at(std::addressof(rule));
+        auto set = rule.getFirstSet();
 
-        auto set = rule_first_set;
-
-        if (set.contains(storage.getEpsilon())) {
-            set.insert_range(followSetEvaluator.getFollowSet().at(production));
+        if (std::ranges::find(set, storage.getEpsilon()) != set.end()) {
+            for (auto symbol : rule.getFollowSet()) {
+                if (std::ranges::find(set, symbol) == set.end()) {
+                    set.emplace_back(symbol);
+                }
+            }
         }
 
         for (auto symbol : set) {

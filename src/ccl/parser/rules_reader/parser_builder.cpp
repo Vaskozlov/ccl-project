@@ -90,7 +90,7 @@ namespace ccl::parser::reader
         if (!rulesConstructorFinalized) {
             rulesConstructorMode = mode;
             rulesConstructorFinalized = true;
-            grammarRulesStorage.finishGrammar(mode == Mode::LR);
+            grammarRulesStorage.finishGrammar(getRuleId("GOAL"), mode == Mode::LR);
         }
 
         if (mode != rulesConstructorMode) {
@@ -98,7 +98,7 @@ namespace ccl::parser::reader
         }
     }
 
-    auto ParserBuilder::addRule(isl::string_view rule_name) -> SmallId
+    auto ParserBuilder::addRule(const std::string &rule_name) -> SmallId
     {
         if (auto it = ruleNameToId.find(rule_name); it != ruleNameToId.end()) {
             return it->second;
@@ -106,8 +106,8 @@ namespace ccl::parser::reader
 
         const auto rule_id = ruleIdGenerator.next();
 
-        auto [it, has_inserter] = ruleIdToName.try_emplace(rule_id, rule_name);
-        ruleNameToId.try_emplace(it->second, rule_id);
+        ruleIdToName.try_emplace(rule_id, rule_name);
+        ruleNameToId.try_emplace(rule_name, rule_id);
 
         return rule_id;
     }
@@ -128,12 +128,13 @@ namespace ccl::parser::reader
         auto first_rule_it = grammarRulesStorage.at(goal_id).begin();
 
         return LrItem{
-            {
-                .rule = std::addressof(*first_rule_it),
-                .dotPosition = 0,
-            },
-            goal_id,
-            0,
+            .dottedRule =
+                {
+                    .rule = std::addressof(*first_rule_it),
+                    .dotPosition = 0,
+                },
+            .production = goal_id,
+            .lookAhead = 0,
         };
     }
 

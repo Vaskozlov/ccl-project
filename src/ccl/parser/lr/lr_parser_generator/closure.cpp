@@ -17,7 +17,8 @@ namespace ccl::parser::lr
                                      ? item.getLookAhead()
                                      : item.dottedRule.at(item.dottedRule.dotPosition + 1);
 
-        for (const auto first_symbol : firstSet.at(next_symbol)) {
+        for (const auto &first_set = grammarRules.getFirstSet();
+             const auto first_symbol : first_set.at(next_symbol)) {
             for (const auto &rule : grammarRules.at(symbol)) {
                 result.emplace_back(
                     RuleWithDot{

@@ -157,11 +157,11 @@ namespace ccl::lexer
             -> void;
     };
 
-    template<isl::AnyTrait<std::is_integral, std::is_enum> T>
-    CCL_DECL auto isUsedDefinedTokenOrEoF(T token_id) -> bool
+    CCL_DECL auto isUserDefinedTokenOrEoF(SmallId token_id) -> bool
     {
-        return isl::as<std::size_t>(token_id) == isl::as<std::size_t>(ReservedTokenType::EOI) ||
-               isl::as<std::size_t>(token_id) > ReservedTokenMaxValue;
+        return token_id == std::to_underlying(ReservedTokenType::EOI)
+                   ? true
+                   : token_id > ReservedTokenMaxValue;
     }
 }// namespace ccl::lexer
 

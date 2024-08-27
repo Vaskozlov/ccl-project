@@ -21,7 +21,8 @@ namespace ccl::parser::reader::ast
     auto ParserRuleDecl::construct(ParserBuilder &parser_builder) const -> isl::UniqueAny
     {
         const auto production_name = getDeclarationName();
-        const auto production_id = parser_builder.addRule(production_name);
+        const auto production_id =
+            parser_builder.addRule(static_cast<std::string>(production_name));
         const auto *alternatives = getAlternatives();
 
         if (alternatives == nullptr) {

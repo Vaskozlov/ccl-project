@@ -50,32 +50,32 @@ namespace ccl::parser::ast
             return size() == 0;
         }
 
-        [[nodiscard]] auto at(std::size_t index) -> SharedNode<>
+        [[nodiscard]] auto at(std::size_t index) -> SharedNode<> &
         {
             return nodes.at(index);
         }
 
-        [[nodiscard]] auto at(std::size_t index) const -> SharedNode<>
+        [[nodiscard]] auto at(std::size_t index) const -> const SharedNode<> &
         {
             return nodes.at(index);
         }
 
-        [[nodiscard]] auto front() CCL_LIFETIMEBOUND -> SharedNode<>
+        [[nodiscard]] auto front() CCL_LIFETIMEBOUND -> SharedNode<> &
         {
             return nodes.front();
         }
 
-        [[nodiscard]] auto front() const CCL_LIFETIMEBOUND -> SharedNode<>
+        [[nodiscard]] auto front() const CCL_LIFETIMEBOUND -> const SharedNode<> &
         {
             return nodes.front();
         }
 
-        [[nodiscard]] auto back() CCL_LIFETIMEBOUND -> SharedNode<>
+        [[nodiscard]] auto back() CCL_LIFETIMEBOUND -> SharedNode<> &
         {
             return nodes.back();
         }
 
-        [[nodiscard]] auto back() const CCL_LIFETIMEBOUND -> SharedNode<>
+        [[nodiscard]] auto back() const CCL_LIFETIMEBOUND -> const SharedNode<> &
         {
             return nodes.back();
         }
@@ -85,6 +85,24 @@ namespace ccl::parser::ast
         auto reverse() -> void
         {
             std::ranges::reverse(nodes);
+        }
+
+        template<std::constructible_from<SmallId, std::vector<SharedNode<>>> T>
+            requires(SharedNode<>::canStore<T>())
+        static auto reconstructNode(NodeOfNodes *node) -> void
+        {
+            auto node_type = node->getType();
+            auto nodes = std::move(node->getNodes());
+
+            std::destroy_at(node);
+            new (node) T{node_type, std::move(nodes)};
+        }
+
+        auto castChildren(const ConversionTable &conversion_table) -> void
+        {
+            for (auto &node : nodes) {
+                cast(conversion_table, node.get());
+            }
         }
     };
 }// namespace ccl::parser::ast

@@ -251,18 +251,15 @@ namespace astlang::ast
         }
     }
 
-    auto Node::castToAstLangNode(const ConversionTable &conversion_table, SharedNode<> node)
-        -> SharedNode<>
+    auto Node::castToAstLangNode(const ConversionTable &conversion_table, SharedNode<> node) -> void
     {
-        auto node_as_sequence = isl::dynamicPointerCast<NodeOfNodes>(node);
+        auto *node_as_sequence = dynamic_cast<NodeOfNodes *>(node.get());
 
         if (node_as_sequence == nullptr) {
-            return node;
+            return;
         }
 
-        auto new_node = conversion_table[node_as_sequence->getType()](node_as_sequence);
-        dynamic_cast<Node *>(new_node.get())->castChildrenToAstLangNode(conversion_table);
-
-        return new_node;
+        conversion_table[node_as_sequence->getType()](node_as_sequence);
+        static_cast<Node *>(node_as_sequence)->castChildrenToAstLangNode(conversion_table);
     }
 }// namespace astlang::ast

@@ -1,4 +1,5 @@
 #include <ccl/parser/ast/node.hpp>
+#include <ccl/parser/ast/node_of_nodes.hpp>
 
 namespace ccl::parser::ast
 {
@@ -28,5 +29,19 @@ namespace ccl::parser::ast
         result.append(default_printing_shift * extra_expansion);
 
         return result;
+    }
+
+    auto Node::cast(const ConversionTable &conversion_table, Node *node) -> void
+    {
+        auto *node_as_sequence = dynamic_cast<NodeOfNodes *>(node);
+
+        if (node_as_sequence == nullptr) {
+            return;
+        }
+
+        const auto conversion_function = conversion_table.at(node_as_sequence->getType());
+        conversion_function(node_as_sequence);
+
+        std::launder(node_as_sequence)->castChildren(conversion_table);
     }
 }// namespace ccl::parser::ast

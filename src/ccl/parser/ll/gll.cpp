@@ -32,7 +32,7 @@ namespace ccl::parser
       , grammarGoalSymbol{start_symbol}
     {}
 
-    auto GllParser::parse(lexer::Tokenizer &tokenizer) -> AmbiguousParsingResult
+    auto GllParser::parse(lexer::Tokenizer &tokenizer) const -> AmbiguousParsingResult
     {
         auto parsing_result = AmbiguousParsingResult{.algorithmName = "GLL"};
         auto token = ast::SharedNode<ast::TokenNode>{tokenizer.yield()};

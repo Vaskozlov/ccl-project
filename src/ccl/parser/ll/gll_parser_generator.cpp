@@ -5,8 +5,7 @@ namespace ccl::parser::ll
     GllParserGenerator::GllParserGenerator(
         const GrammarStorage &grammar_storage,
         const std::function<std::string(SmallId)> &id_to_string_converter)
-      : firstSetEvaluator{grammar_storage.getEpsilon(), grammar_storage}
-      , idToStringConverter{id_to_string_converter}
+      : idToStringConverter{id_to_string_converter}
       , storage{grammar_storage}
     {
         for (auto &[key, rule] : storage.rulesIterator()) {
@@ -16,10 +15,7 @@ namespace ccl::parser::ll
 
     auto GllParserGenerator::generateUsingRule(Symbol production, const Rule &rule) -> void
     {
-        const auto &rule_first_set =
-            firstSetEvaluator.getFirstSetOfRules().at(std::addressof(rule));
-
-        for (auto symbol : rule_first_set) {
+        for (auto symbol : rule.getFirstSet()) {
             if (!storage.isTerminal(symbol) || symbol == storage.getEpsilon()) {
                 continue;
             }

@@ -18,6 +18,8 @@ namespace ccl::parser
         std::unordered_set<Symbol> nonTerminals;
         std::unordered_set<Symbol> grammarSymbols;
         std::unordered_set<Symbol> possiblyEmptyRules;
+        ankerl::unordered_dense::map<Symbol, std::unordered_set<Symbol>> firstSet;
+        ankerl::unordered_dense::map<Symbol, std::unordered_set<Symbol>> followSet;
         Symbol epsilonSymbol;
 
     public:
@@ -26,9 +28,10 @@ namespace ccl::parser
         GrammarStorage(
             bool remove_epsilon,
             Symbol epsilon,
+            Symbol goal_production,
             const std::initializer_list<isl::Pair<Symbol, std::vector<Rule>>> &initial_data);
 
-        auto finishGrammar(bool remove_epsilon) -> void;
+        auto finishGrammar(Symbol goal_production, bool remove_epsilon) -> void;
 
         auto tryEmplace(Symbol key, Rule rule) -> bool;
 
@@ -49,9 +52,19 @@ namespace ccl::parser
             return nonTerminals;
         }
 
-        [[nodiscard]] auto getGrammarSymbols() const noexcept -> const std::unordered_set<Symbol> &
+        [[nodiscard]] auto getGrammarSymbols() const noexcept -> const auto &
         {
             return grammarSymbols;
+        }
+
+        [[nodiscard]] auto getFirstSet() const noexcept -> const auto &
+        {
+            return firstSet;
+        }
+
+        [[nodiscard]] auto getFollowSet() const noexcept -> const auto &
+        {
+            return followSet;
         }
 
         [[nodiscard]] auto isTerminal(Symbol symbol) const noexcept -> bool

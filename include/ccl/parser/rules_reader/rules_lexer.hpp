@@ -6,7 +6,7 @@
 
 namespace ccl::parser::reader
 {
-    enum RulesLexerToken : ccl::u32;
+    enum RulesLexerToken : ccl::SmallId;
 }
 
 template<>
@@ -15,54 +15,48 @@ CCL_DECL auto ccl::lexer::lexerEnumToString<ccl::parser::reader::RulesLexerToken
 
 namespace ccl::parser::reader
 {
-    enum RulesLexerToken : ccl::u32
+    enum RulesLexerToken : ccl::SmallId
     {
-        EOI = 0,
-        BAD_TOKEN = 1,
-        CUT = 2,
-        LEXER_START = 3,
-        PARSER_START = 4,
-        OR = 5,
-        STAR = 6,
-        PLUS = 7,
-        EXCLAMATION_POINT = 8,
-        CURLY_OPEN = 9,
-        CURLY_CLOSE = 10,
-        COMMA = 11,
-        NUMBER = 12,
-        RULE_IDENTIFIER = 13,
-        IDENTIFIER = 14,
-        RULE_REFERENCE = 15,
-        STRING = 16,
-        ANY_PLACE_STRING = 17,
-        UNION = 18,
-        PREFIX_POSTFIX_OPERATOR = 19,
-        HIDE_OPERATOR = 20,
-        NOT_OPERATOR = 21,
-        COLUMN = 22,
-        ANGLE_OPEN = 23,
-        ANGLE_CLOSE = 24,
-        GOAL = 25,
-        EPSILON = 26,
-        LEXER_BLOCK = 27,
-        LEXER_BLOCK_DEFINITION = 28,
-        PARSER_BLOCK = 29,
-        PARSER_BLOCK_DEFINITION = 30,
-        ANY_BLOCK = 31,
-        LEXER_RULE = 32,
-        PARSER_RULE = 33,
-        PARSER_RULE_BODY = 34,
-        PARSER_RULE_DECL = 35,
-        PARSER_RULE_ALTERNATIVE = 36,
-        LEXER_RULE_BODY = 37,
-        LEXER_RULE_BLOCK = 38,
-        LEXER_RULE_ALTERNATIVE = 39,
-        LEXER_RULE_DECL = 40,
-        LEXER_RULE_OPTIONS = 41,
+        EOI = 0U,
+        BAD_TOKEN = 1U,
+        CUT = 2U,
+        LEXER_START = 3U,
+        PARSER_START = 4U,
+        OR = 5U,
+        STAR = 6U,
+        PLUS = 7U,
+        EXCLAMATION_POINT = 8U,
+        CURLY_OPEN = 9U,
+        CURLY_CLOSE = 10U,
+        COMMA = 11U,
+        NUMBER = 12U,
+        RULE_IDENTIFIER = 13U,
+        IDENTIFIER = 14U,
+        RULE_REFERENCE = 15U,
+        STRING = 16U,
+        ANY_PLACE_STRING = 17U,
+        UNION = 18U,
+        PREFIX_POSTFIX_OPERATOR = 19U,
+        HIDE_OPERATOR = 20U,
+        NOT_OPERATOR = 21U,
+        COLUMN = 22U,
+        ANGLE_OPEN = 23U,
+        ANGLE_CLOSE = 24U,
+        GOAL = 25U,
+        EPSILON = 26U,
+        BLOCKS = 27U,
+        LEXER_BLOCK = 28U,
+        PARSER_BLOCK = 29U,
+        LEXER_RULE = 30U,
+        PARSER_RULE = 31U,
+        PARSER_RULE_ALTERNATIVE = 32U,
+        LEXER_RULE_BLOCK = 33U,
+        LEXER_RULE_ALTERNATIVE = 34U,
+        LEXER_RULE_OPTIONS = 35U,
     };
 
     // NOLINTNEXTLINE
-    inline const auto RulesLexer = ccl::lexer::LexicalAnalyzer{
+    inline auto const RulesLexer = ccl::lexer::LexicalAnalyzer{
         ccl::handler::Cmd::instance(),
         {
             {RulesLexerToken::LEXER_START, R"( "%LEXER%" )"},
@@ -89,25 +83,18 @@ namespace ccl::parser::reader
             {RulesLexerToken::ANGLE_CLOSE, R"( ! [)] )"},
             {RulesLexerToken::GOAL, R"( [#] )"},
             {RulesLexerToken::EPSILON, R"( [#] )"},
+            {RulesLexerToken::BLOCKS, R"( [#] )"},
             {RulesLexerToken::LEXER_BLOCK, R"( [#] )"},
-            {RulesLexerToken::LEXER_BLOCK_DEFINITION, R"( [#] )"},
             {RulesLexerToken::PARSER_BLOCK, R"( [#] )"},
-            {RulesLexerToken::PARSER_BLOCK_DEFINITION, R"( [#] )"},
-            {RulesLexerToken::ANY_BLOCK, R"( [#] )"},
             {RulesLexerToken::LEXER_RULE, R"( [#] )"},
             {RulesLexerToken::PARSER_RULE, R"( [#] )"},
-            {RulesLexerToken::PARSER_RULE_BODY, R"( [#] )"},
-            {RulesLexerToken::PARSER_RULE_DECL, R"( [#] )"},
             {RulesLexerToken::PARSER_RULE_ALTERNATIVE, R"( [#] )"},
-            {RulesLexerToken::LEXER_RULE_BODY, R"( [#] )"},
             {RulesLexerToken::LEXER_RULE_BLOCK, R"( [#] )"},
             {RulesLexerToken::LEXER_RULE_ALTERNATIVE, R"( [#] )"},
-            {RulesLexerToken::LEXER_RULE_DECL, R"( [#] )"},
             {RulesLexerToken::LEXER_RULE_OPTIONS, R"( [#] )"},
-            {RulesLexerToken::LEXER_RULE_ALTERNATIVE, R"( [#] )"},
         }};
 
-    inline constexpr isl::StaticFlatmap<ccl::SmallId, isl::string_view, 43> ToStringRulesLexerToken{
+    inline constexpr isl::StaticFlatmap<ccl::SmallId, isl::string_view, 36> ToStringRulesLexerToken{
         {RulesLexerToken::EOI, "EOI"},
         {RulesLexerToken::BAD_TOKEN, "BAD_TOKEN"},
         {RulesLexerToken::CUT, "CUT"},
@@ -135,20 +122,14 @@ namespace ccl::parser::reader
         {RulesLexerToken::ANGLE_CLOSE, "ANGLE_CLOSE"},
         {RulesLexerToken::GOAL, "GOAL"},
         {RulesLexerToken::EPSILON, "EPSILON"},
+        {RulesLexerToken::BLOCKS, "BLOCKS"},
         {RulesLexerToken::LEXER_BLOCK, "LEXER_BLOCK"},
-        {RulesLexerToken::LEXER_BLOCK_DEFINITION, "LEXER_BLOCK_DEFINITION"},
         {RulesLexerToken::PARSER_BLOCK, "PARSER_BLOCK"},
-        {RulesLexerToken::PARSER_BLOCK_DEFINITION, "PARSER_BLOCK_DEFINITION"},
-        {RulesLexerToken::ANY_BLOCK, "ANY_BLOCK"},
         {RulesLexerToken::LEXER_RULE, "LEXER_RULE"},
         {RulesLexerToken::PARSER_RULE, "PARSER_RULE"},
-        {RulesLexerToken::PARSER_RULE_BODY, "PARSER_RULE_BODY"},
-        {RulesLexerToken::PARSER_RULE_DECL, "PARSER_RULE_DECL"},
         {RulesLexerToken::PARSER_RULE_ALTERNATIVE, "PARSER_RULE_ALTERNATIVE"},
-        {RulesLexerToken::LEXER_RULE_BODY, "LEXER_RULE_BODY"},
         {RulesLexerToken::LEXER_RULE_BLOCK, "LEXER_RULE_BLOCK"},
         {RulesLexerToken::LEXER_RULE_ALTERNATIVE, "LEXER_RULE_ALTERNATIVE"},
-        {RulesLexerToken::LEXER_RULE_DECL, "LEXER_RULE_DECL"},
         {RulesLexerToken::LEXER_RULE_OPTIONS, "LEXER_RULE_OPTIONS"},
     };
 }// namespace ccl::parser::reader
@@ -159,6 +140,6 @@ namespace ccl::lexer
     CCL_DECL auto lexerEnumToString<ccl::parser::reader::RulesLexerToken>(
         ccl::parser::reader::RulesLexerToken value) -> std::string
     {
-        return std::string{ccl::parser::reader::ToStringRulesLexerToken[value]};
+        return static_cast<std::string>(ccl::parser::reader::ToStringRulesLexerToken[value]);
     }
 }// namespace ccl::lexer

@@ -1,10 +1,10 @@
 #ifndef CCL_PROJECT_CONTAINER_HPP
 #define CCL_PROJECT_CONTAINER_HPP
 
-#include <ccl/lexer/token.hpp>
 #include <ccl/lexer/rule/binary_expression/binary_expression_base.hpp>
 #include <ccl/lexer/rule/closure.hpp>
 #include <ccl/lexer/rule/rule_block_interface.hpp>
+#include <ccl/lexer/token.hpp>
 
 namespace ccl::lexer
 {
@@ -24,7 +24,7 @@ namespace ccl::lexer::rule
     class Container final : public RuleBlockInterface
     {
         using RuleBlockInterface::canBeOptimized;
-        using typename RuleBlockInterface::TextIterator;
+        using RuleBlockInterface::TextIterator;
         using DotItemsStorage = std::vector<RuleBlock>;
 
         class RuleParser;
@@ -52,7 +52,7 @@ namespace ccl::lexer::rule
         [[nodiscard]] Container(
             LexicalAnalyzer &lexical_analyzer, bool main_item = false, bool is_special = false);
 
-        auto addItem(std::unique_ptr<RuleBlockInterface> new_item) -> void
+        auto addItem(RuleBlock new_item) -> void
         {
             items.emplace_back(std::move(new_item));
         }

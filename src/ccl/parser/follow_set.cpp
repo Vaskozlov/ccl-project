@@ -4,11 +4,11 @@ namespace ccl::parser
 {
     FollowSetEvaluator::FollowSetEvaluator(
         Symbol start_symbol, Symbol end_of_input, Symbol epsilon_symbol,
-        const GrammarStorage &parser_rules,
-        const std::unordered_map<Symbol, std::unordered_set<Symbol>> &first_set)
-        : FirstAndFollowSetsCommon{parser_rules}
-          , firstSet{first_set}
-          , epsilonSymbol{epsilon_symbol}
+        GrammarStorage &parser_rules,
+        const ankerl::unordered_dense::map<Symbol, std::unordered_set<Symbol>> &first_set)
+      : FirstAndFollowSetsCommon{parser_rules}
+      , firstSet{first_set}
+      , epsilonSymbol{epsilon_symbol}
     {
         initializeFollowSet(start_symbol, end_of_input);
         computeFollowSet();
@@ -16,10 +16,6 @@ namespace ccl::parser
 
     auto FollowSetEvaluator::initializeFollowSet(Symbol start_symbol, Symbol end_of_input) -> void
     {
-        for (const auto &[key, rule] : grammarRules.rulesIterator()) {
-            followSetOfRule.try_emplace(std::addressof(rule));
-        }
-
         for (auto symbol : grammarRules.getGrammarSymbols()) {
             if (isNonTerminal(symbol)) {
                 followSet.try_emplace(symbol);
@@ -31,12 +27,12 @@ namespace ccl::parser
 
     auto FollowSetEvaluator::computeFollowSet() -> void
     {
-        applyFixedPointAlgorithmOnAllRules([this](Symbol key, const Rule &rule) {
+        applyFixedPointAlgorithmOnAllRules([this](Symbol key, Rule &rule) {
             return followSetComputationIteration(key, rule);
         });
     }
 
-    auto FollowSetEvaluator::followSetComputationIteration(Symbol key, const Rule &rule) -> bool
+    auto FollowSetEvaluator::followSetComputationIteration(Symbol key, Rule &rule) -> bool
     {
         auto has_modifications = false;
         auto trailer = followSet.at(key);
@@ -54,32 +50,20 @@ namespace ccl::parser
     }
 
     auto FollowSetEvaluator::followSetNonTerminalCase(
-        const Rule &rule, Symbol elem, std::unordered_set<Symbol> &trailer) -> bool
+        Rule &rule, Symbol elem, std::unordered_set<Symbol> &trailer) -> bool
     {
         auto has_modifications = insertRange(followSet[elem], trailer);
         auto elem_first_set = firstSet.at(elem);
 
-        insertRange(followSetOfRule[std::addressof(rule)], trailer);
-
         if (elem_first_set.contains(epsilonSymbol)) {
             elem_first_set.erase(epsilonSymbol);
             insertRange(trailer, elem_first_set);
+            rule.setFollowSet(trailer);
         } else {
+            rule.setFollowSet(trailer);
             trailer = std::move(elem_first_set);
         }
 
         return has_modifications;
-    }
-
-    auto evaluateFollowSet(
-        Symbol start_symbol, Symbol end_of_input, Symbol epsilon_symbol,
-        const GrammarStorage &rules,
-        const std::unordered_map<Symbol, std::unordered_set<Symbol>> &first_set)
-        -> std::unordered_map<Symbol, std::unordered_set<Symbol>>
-    {
-        auto follow_set =
-            FollowSetEvaluator(start_symbol, end_of_input, epsilon_symbol, rules, first_set);
-
-        return std::move(follow_set.getFollowSet());
     }
 }// namespace ccl::parser

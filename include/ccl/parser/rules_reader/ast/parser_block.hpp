@@ -5,10 +5,12 @@
 
 namespace ccl::parser::reader::ast
 {
-    class ParserBlock : public LexerBlock
+    class ParserBlock : public RulesReaderNode
     {
     public:
-        using LexerBlock::LexerBlock;
+        using RulesReaderNode::RulesReaderNode;
+
+        auto construct(ParserBuilder &parser_builder) const -> isl::UniqueAny override;
     };
 }// namespace ccl::parser::reader::ast
 

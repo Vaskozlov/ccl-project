@@ -11,6 +11,7 @@ namespace ccl::debug
     const inline parser::GrammarStorage GrammarForFirstFollowSetTest{
         false,
         GrammarSymbol::EPSILON,
+        GrammarSymbol::GOAL,
         {
             {
                 GrammarSymbol::GOAL,
@@ -121,7 +122,7 @@ namespace ccl::debug
 template<>
 struct fmt::formatter<ccl::debug::GrammarSymbol> : formatter<std::string_view>
 {
-    constexpr auto format(const ccl::debug::GrammarSymbol &symbol, format_context &ctx) const
+    static constexpr auto format(const ccl::debug::GrammarSymbol &symbol, format_context &ctx)
         -> format_context::iterator
     {
         return fmt::format_to(ctx.out(), "{}", ccl::lexer::lexerEnumToString(symbol));

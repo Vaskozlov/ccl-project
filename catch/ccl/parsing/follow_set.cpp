@@ -10,11 +10,7 @@ TEST_CASE("FollowSetComputation", "[FollowSet]")
     using namespace ccl::debug;
     using namespace ccl::parser;
 
-    auto first_set = evaluateFirstSet(GrammarSymbol::EPSILON, GrammarForFirstFollowSetTest);
-
-    auto follow_Set = evaluateFollowSet(
-        GrammarSymbol::GOAL, GrammarSymbol::EOI, GrammarSymbol::EPSILON,
-        GrammarForFirstFollowSetTest, first_set);
+    const auto &follow_Set = GrammarForFirstFollowSetTest.getFollowSet();
 
     const auto &goal_follow_set = follow_Set.at(GrammarSymbol::GOAL);
     const auto &expr_follow_set = follow_Set.at(GrammarSymbol::EXPR);

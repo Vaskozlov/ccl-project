@@ -16,6 +16,8 @@ namespace ccl::parser
             Symbol, std::vector<ast::SharedNode<ast::Node>>)>;
 
     private:
+        std::vector<Symbol> firstSet;
+        std::vector<Symbol> followSet;
         RuleBuilderFunction builder;
 
     public:
@@ -28,6 +30,34 @@ namespace ccl::parser
             -> ast::SharedNode<ast::NodeOfNodes>
         {
             return builder(production, std::move(nodes));
+        }
+
+        [[nodiscard]] auto getFirstSet() const noexcept -> const std::vector<Symbol> &
+        {
+            return firstSet;
+        }
+
+        [[nodiscard]] auto getFollowSet() const noexcept -> const std::vector<Symbol> &
+        {
+            return followSet;
+        }
+
+        auto setFirstSet(isl::RangeOf<Symbol> auto &&first_set_addition) -> void
+        {
+            firstSet.clear();
+
+            for (Symbol symbol : first_set_addition) {
+                firstSet.emplace_back(symbol);
+            }
+        }
+
+        auto setFollowSet(isl::RangeOf<Symbol> auto &&follow_set_addition) -> void
+        {
+            followSet.clear();
+
+            for (Symbol symbol : follow_set_addition) {
+                followSet.emplace_back(symbol);
+            }
         }
 
     private:

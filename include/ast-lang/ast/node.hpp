@@ -21,21 +21,7 @@ namespace astlang::ast
     {
     private:
         using ConstructionFunction = ccl::parser::Rule::RuleBuilderFunction;
-        using ConversionTable =
-            isl::StaticFlatmap<SmallId, std::function<SharedNode<>(SharedNode<NodeOfNodes>)>, 50>;
-
-        template<std::constructible_from<SmallId, std::vector<SharedNode<>>> T>
-            requires(SharedNode<>::canStore<T>())
-        static auto reconstructNode(SharedNode<NodeOfNodes> node) -> SharedNode<>
-        {
-            auto node_type = node->getType();
-            auto nodes = std::move(node->getNodes());
-
-            std::destroy_at(node.get());
-            new (node.get()) T{node_type, std::move(nodes)};
-
-            return node;
-        }
+        using ConversionTable = isl::StaticFlatmap<SmallId, void (*)(NodeOfNodes *), 50>;
 
     public:
         using Interpreter = interpreter::Interpreter;
@@ -54,8 +40,8 @@ namespace astlang::ast
 
         auto castChildrenToAstLangNode(const ConversionTable &conversion_table) -> void;
 
-        static auto castToAstLangNode(const ConversionTable &conversion_table, SharedNode<> node)
-            -> SharedNode<>;
+        static auto
+            castToAstLangNode(const ConversionTable &conversion_table, SharedNode<> node) -> void;
     };
 
     struct NodePtr

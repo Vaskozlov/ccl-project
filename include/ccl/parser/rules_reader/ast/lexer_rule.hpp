@@ -5,7 +5,7 @@
 
 namespace ccl::parser::reader::ast
 {
-    class LexerRuleBody : public RulesReaderNode
+    class LexerRule : public RulesReaderNode
     {
     public:
         using RulesReaderNode::RulesReaderNode;

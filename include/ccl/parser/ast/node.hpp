@@ -6,6 +6,8 @@
 
 namespace ccl::parser::ast
 {
+    class NodeOfNodes;
+
     class Node
     {
     private:
@@ -18,6 +20,8 @@ namespace ccl::parser::ast
             const std::string &prefix, bool is_left, size_t extra_expansion = 1) -> std::string;
 
     public:
+        using ConversionTable = ankerl::unordered_dense::map<SmallId, void (*)(NodeOfNodes *)>;
+
         Node() = default;
 
         explicit Node(SmallId node_type)
@@ -42,6 +46,8 @@ namespace ccl::parser::ast
             std::function<std::string(SmallId)> id_converter = [](auto arg) {
                 return fmt::to_string(arg);
             }) const -> void = 0;
+
+        static auto cast(const ConversionTable &conversion_table, Node *node) -> void;
     };
 }// namespace ccl::parser::ast
 

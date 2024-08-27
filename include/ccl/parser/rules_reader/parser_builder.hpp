@@ -28,8 +28,8 @@ namespace ccl::parser::reader
     {
     private:
         lexer::LexicalAnalyzer lexicalAnalyzer{handler::Cmd::instance()};
-        std::map<SmallId, std::string> ruleIdToName;
-        std::map<isl::string_view, SmallId> ruleNameToId;
+        ankerl::unordered_dense::map<SmallId, std::string> ruleIdToName;
+        ankerl::unordered_dense::map<std::string, SmallId> ruleNameToId;
         isl::IdGenerator<SmallId> ruleIdGenerator;
         GrammarStorage grammarRulesStorage;
         Mode rulesConstructorMode{Mode::LR};
@@ -46,7 +46,7 @@ namespace ccl::parser::reader
 
         auto buildGLL() -> GllParser;
 
-        auto addRule(isl::string_view rule_name) -> SmallId;
+        auto addRule(const std::string &rule_name) -> SmallId;
 
         auto getIdToNameTranslationFunction() const CCL_LIFETIMEBOUND
             -> std::function<std::string(SmallId)>;
@@ -56,12 +56,12 @@ namespace ccl::parser::reader
             return ruleIdToName.at(rule_id);
         }
 
-        [[nodiscard]] auto getRuleId(isl::string_view rule_name) const -> SmallId
+        [[nodiscard]] auto getRuleId(const std::string &rule_name) const -> SmallId
         {
             return ruleNameToId.at(rule_name);
         }
 
-        [[nodiscard]] auto hasRule(isl::string_view rule_name) const -> bool
+        [[nodiscard]] auto hasRule(const std::string &rule_name) const -> bool
         {
             return ruleNameToId.contains(rule_name);
         }
@@ -74,13 +74,13 @@ namespace ccl::parser::reader
             lexicalAnalyzer.addContainer(name, std::move(container));
         }
 
-        auto addParserRule(isl::string_view name, parser::Rule rule) -> void
+        auto addParserRule(const std::string &name, Rule rule) -> void
         {
             const auto rule_id = addRule(name);
             addParserRule(rule_id, std::move(rule));
         }
 
-        auto addParserRule(SmallId rule_id, parser::Rule rule) -> void
+        auto addParserRule(SmallId rule_id, Rule rule) -> void
         {
             grammarRulesStorage.tryEmplace(rule_id, std::move(rule));
         }

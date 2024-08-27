@@ -4,7 +4,6 @@
 #include <ast-lang/interpreter/functions.hpp>
 #include <ast-lang/interpreter/stack.hpp>
 #include <ccl/parser/rules_reader/parser_builder.hpp>
-#include <isl/raii.hpp>
 
 namespace astlang::interpreter
 {
@@ -77,7 +76,7 @@ namespace astlang::interpreter
             return variables.globalRead(name);
         }
 
-        [[nodiscard]] auto getRuleId(isl::string_view rule_name) const -> SmallId
+        [[nodiscard]] auto getRuleId(const std::string &rule_name) const -> SmallId
         {
             return constructor.getRuleId(rule_name);
         }

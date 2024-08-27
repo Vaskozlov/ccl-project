@@ -13,7 +13,6 @@ namespace ccl::parser::ll
     {
     private:
         GllTable table;
-        FirstSetEvaluator firstSetEvaluator;
         std::function<std::string(SmallId)> idToStringConverter;
         const GrammarStorage &storage;
 

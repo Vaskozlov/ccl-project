@@ -5,7 +5,7 @@
 
 namespace ccl::parser::reader::ast
 {
-    class ParserRuleBody : public RulesReaderNode
+    class ParserRule : public RulesReaderNode
     {
     public:
         using RulesReaderNode::RulesReaderNode;
@@ -14,7 +14,7 @@ namespace ccl::parser::reader::ast
 
     private:
         auto addStringToLexicalAnalyzer(
-            isl::string_view str, ParserBuilder &parser_builder,
+            const std::string &str, ParserBuilder &parser_builder,
             bool is_any_place_string) const -> void;
     };
 }// namespace ccl::parser::reader::ast
