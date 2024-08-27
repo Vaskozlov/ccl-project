@@ -33,12 +33,10 @@ namespace ccl::parser
         while (true) {
             const auto state = parser_state.stateStack.top();
 
-            const auto entry = TableEntry{
+            auto action_table_it = actionTable.find({
                 .state = state,
                 .symbol = token->getType(),
-            };
-
-            auto action_table_it = actionTable.find(entry);
+            });
 
             if (action_table_it == actionTable.end()) {
                 return parsing_result;
@@ -84,9 +82,8 @@ namespace ccl::parser
 
         std::ranges::reverse(items_in_production);
 
-        const auto *rule = lr_item.dottedRule.rule;
-
-        auto reduced_item = rule->construct(production, std::move(items_in_production));
+        auto reduced_item =
+            ast::SharedNode<ast::NonTerminal>{production, std::move(items_in_production)};
 
         nodes_stack.emplace(std::move(reduced_item));
         state_stack.emplace(gotoTable.at({

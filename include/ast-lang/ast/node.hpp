@@ -19,10 +19,6 @@ namespace astlang::ast
 
     class Node : public ccl::parser::ast::NonTerminal
     {
-    private:
-        using ConstructionFunction = ccl::parser::Rule::RuleBuilderFunction;
-        using ConversionTable = isl::StaticFlatmap<SmallId, void (*)(NonTerminal *), 50>;
-
     public:
         using Interpreter = interpreter::Interpreter;
         using EvaluationResult = interpreter::EvaluationResult;
@@ -34,14 +30,8 @@ namespace astlang::ast
 
         virtual auto compute(Interpreter &interpreter) const -> EvaluationResult = 0;
 
-        static auto convertCclTreeToAstlang(
-            ccl::parser::reader::ParserBuilder &constructor,
-            Node *node) -> void;
-
-        auto castChildrenToAstLangNode(const ConversionTable &conversion_table) -> void;
-
-        static auto
-            castToAstLangNode(const ConversionTable &conversion_table, SharedNode<> node) -> void;
+        static auto buildConversionTable(const ccl::parser::reader::ParserBuilder &constructor)
+            -> ConversionTable;
     };
 
     struct NodePtr

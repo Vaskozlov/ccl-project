@@ -12,7 +12,7 @@ namespace ccl::parser::lr
         arguments.emplace_back(node->value);
 
         if (pop_count == 0) {
-            auto new_node = reducer(std::move(arguments));
+            auto new_node = ast::SharedNode<ast::NonTerminal>(production, std::move(arguments));
 
             for (auto *prev : node->previous) {
                 auto new_state = gotoTable->at({
@@ -135,12 +135,9 @@ namespace ccl::parser::lr
         SmallId pop_count,
         const ankerl::unordered_dense::map<TableEntry, State> *gotoTable,
         State production,
-        const std::function<ast::SharedNode<ast::NonTerminal>(std::vector<ast::SharedNode<>>)>
-            &reducer,
         const Descriptor &descriptor) -> void
     {
         Reducer{
-            .reducer = std::move(reducer),
             .gotoTable = gotoTable,
             .gss = this,
             .production = production,

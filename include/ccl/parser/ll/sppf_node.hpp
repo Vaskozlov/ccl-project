@@ -25,7 +25,7 @@ namespace ccl::parser
 
         [[nodiscard]] auto build() const -> ast::SharedNode<ast::NonTerminal>
         {
-            return rule.rule->construct(production, nodes);
+            return ast::SharedNode<ast::NonTerminal>{production, nodes};
         }
 
         [[nodiscard]] auto operator==(const SPPFNode &other) const -> bool

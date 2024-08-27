@@ -11,33 +11,23 @@ namespace ccl::parser
 {
     class Rule : public std::vector<Symbol>
     {
-    public:
-        using RuleBuilderFunction = std::function<ast::SharedNode<ast::NonTerminal>(
-            Symbol, std::vector<ast::SharedNode<ast::Node>>)>;
-
     private:
         std::vector<Symbol> firstSet;
         std::vector<Symbol> followSet;
-        RuleBuilderFunction builder;
 
     public:
-        explicit Rule(std::vector<Symbol> rule, RuleBuilderFunction rule_builder = defaultBuilder)
-          : std::vector<Symbol>{std::move(rule)}
-          , builder{std::move(rule_builder)}
+        using vector::vector;
+
+        explicit Rule(std::vector<Symbol> initial_value)
+          : vector{std::move(initial_value)}
         {}
 
-        [[nodiscard]] auto construct(Symbol production, std::vector<ast::SharedNode<>> nodes) const
-            -> ast::SharedNode<ast::NonTerminal>
-        {
-            return builder(production, std::move(nodes));
-        }
-
-        [[nodiscard]] auto getFirstSet() const noexcept -> const std::vector<Symbol> &
+        [[nodiscard]] auto getFirstSet() const noexcept -> const auto &
         {
             return firstSet;
         }
 
-        [[nodiscard]] auto getFollowSet() const noexcept -> const std::vector<Symbol> &
+        [[nodiscard]] auto getFollowSet() const noexcept -> const auto &
         {
             return followSet;
         }
@@ -58,13 +48,6 @@ namespace ccl::parser
             for (Symbol symbol : follow_set_addition) {
                 followSet.emplace_back(symbol);
             }
-        }
-
-    private:
-        static auto defaultBuilder(Symbol production, std::vector<ast::SharedNode<ast::Node>> nodes)
-            -> ast::SharedNode<ast::NonTerminal>
-        {
-            return ast::SharedNode<ast::NonTerminal>{production, std::move(nodes)};
         }
     };
 }// namespace ccl::parser

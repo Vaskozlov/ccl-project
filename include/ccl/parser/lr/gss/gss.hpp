@@ -64,10 +64,7 @@ namespace ccl::parser::lr
 
         auto reduce(
             SmallId pop_count, const ankerl::unordered_dense::map<TableEntry, State> *gotoTable,
-            State production,
-            const std::function<ast::SharedNode<ast::NonTerminal>(std::vector<ast::SharedNode<>>)>
-                &reducer,
-            const Descriptor &descriptor) -> void;
+            State production, const Descriptor &descriptor) -> void;
     };
 }// namespace ccl::parser::lr
 

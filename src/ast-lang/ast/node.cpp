@@ -70,9 +70,9 @@ namespace astlang::ast
         }
     }
 
-    auto Node::convertCclTreeToAstlang(reader::ParserBuilder &constructor, Node *node) -> void
+    auto Node::buildConversionTable(const reader::ParserBuilder &constructor) -> ConversionTable
     {
-        const auto conversion_table = ConversionTable{
+        return ConversionTable{
             {
                 constructor.getRuleId("GOAL"),
                 reconstructNode<Goal>,
@@ -234,32 +234,5 @@ namespace astlang::ast
                 reconstructNode<astlang::ast::Type>,
             },
         };
-
-        node->castChildrenToAstLangNode(conversion_table);
-    }
-
-    auto Node::castChildrenToAstLangNode(const ConversionTable &conversion_table) -> void
-    {
-        auto *self_as_non_terminal = dynamic_cast<NonTerminal *>(this);
-
-        if (self_as_non_terminal == nullptr) {
-            return;
-        }
-
-        for (auto &node : self_as_non_terminal->getNodes()) {
-            castToAstLangNode(conversion_table, node);
-        }
-    }
-
-    auto Node::castToAstLangNode(const ConversionTable &conversion_table, SharedNode<> node) -> void
-    {
-        auto *node_as_sequence = dynamic_cast<NonTerminal *>(node.get());
-
-        if (node_as_sequence == nullptr) {
-            return;
-        }
-
-        conversion_table[node_as_sequence->getType()](node_as_sequence);
-        static_cast<Node *>(node_as_sequence)->castChildrenToAstLangNode(conversion_table);
     }
 }// namespace astlang::ast

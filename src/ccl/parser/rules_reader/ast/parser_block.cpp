@@ -16,7 +16,7 @@ namespace ccl::parser::reader::ast
 
         for (auto &alternative : parser_alternatives) {
             parser_builder.addParserRule(
-                static_cast<std::string>(rule_name), Rule{std::move(alternative)});
+                static_cast<std::string>(rule_name), std::move(alternative));
         }
 
         if (size() == 3) {

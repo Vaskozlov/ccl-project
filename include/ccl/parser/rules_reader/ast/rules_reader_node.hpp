@@ -9,10 +9,6 @@ namespace ccl::parser::reader::ast
 {
     class RulesReaderNode : public parser::ast::NonTerminal
     {
-    private:
-        using ConstructionFunction = Rule::RuleBuilderFunction;
-        using ConversionTable = isl::StaticFlatmap<SmallId, ConstructionFunction, 15>;
-
     public:
         using NonTerminal::NonTerminal;
 

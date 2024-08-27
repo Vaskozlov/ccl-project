@@ -106,16 +106,10 @@ namespace ccl::parser
                     const auto number_of_elements_to_pop =
                         static_cast<SmallId>(lr_item.dottedRule.size());
 
-                    auto reducer = [rule, production](std::vector<ast::SharedNode<>> nodes) {
-                        std::ranges::reverse(nodes);
-                        return rule->construct(production, std::move(nodes));
-                    };
-
                     gss.reduce(
                         number_of_elements_to_pop,
                         &gotoTable,
                         production,
-                        std::move(reducer),
                         descriptor);
 
                     break;

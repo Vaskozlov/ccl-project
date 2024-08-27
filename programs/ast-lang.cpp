@@ -4,6 +4,7 @@
 #include <ccl/lexer/tokenizer.hpp>
 #include <ccl/parser/dot/dot_repr.hpp>
 #include <ccl/parser/ll/gll.hpp>
+#include <ccl/parser/lr/glr_parser.hpp>
 #include <ccl/parser/lr/lr_parser.hpp>
 #include <ccl/parser/rules_reader/rules_reader.hpp>
 #include <isl/io.hpp>
@@ -16,7 +17,7 @@ auto main() -> int
     using namespace ccl;
     using namespace ccl::parser;
 
-    auto filename = std::filesystem::path(
+    const auto filename = std::filesystem::path(
         "/Users/vaskozlov/CLionProjects/ccl-project/include/ast-lang/ast-lang.cclp");
 
     reader::RulesReader reader(isl::io::readFile(filename), filename.string());
@@ -29,28 +30,29 @@ auto main() -> int
         isl::io::readFile("/Users/vaskozlov/CLionProjects/ccl-project/programs/test.astlang");
     auto tokenizer = lexer.getTokenizer(input);
 
-    auto lr_parser = constructor.buildLr1();
-    auto [node] = lr_parser.parse(tokenizer);
+    auto lr_parser = constructor.buildGLL();
+    auto [nodes, algorithm] = lr_parser.parse(tokenizer);
+    auto converter = std::views::transform(nodes, [](auto &node) {
+        return node.get();
+    });
 
-    auto dot_repr = dot::createDotRepresentation({node.get()}, to_str);
+    auto dot_repr = dot::createDotRepresentation(
+        std::vector<ast::Node *>{converter.begin(), converter.end()}, to_str);
 
-    isl::io::writeToFile(
-        "/Users/vaskozlov/CLionProjects/ccl-project/cmake-build-debug-clang/test.dot", dot_repr);
+    isl::io::writeToFile(fmt::format("/Volumes/ramdisk/{}.dot", algorithm), dot_repr);
 
-    auto *result_as_sequence = dynamic_cast<ast::NodeOfNodes *>(node.get());
+    auto *row_root = nodes.front().get();
+    auto conversion_table = astlang::ast::Node::buildConversionTable(constructor);
+    ccl::parser::ast::Node::cast(conversion_table, row_root);
 
-    auto global_declarations_node = std::make_unique<astlang::ast::GlobalDeclarations>(
-        node->getType(), std::move(result_as_sequence->getNodes()));
-
-    astlang::ast::Node::convertCclTreeToAstlang(constructor, global_declarations_node.get());
-
+    auto *astlang_root = dynamic_cast<astlang::ast::Node *>(row_root);
     auto interpreter = Interpreter{constructor};
 
-    // global_declarations_node->print("", false, to_str);
-    global_declarations_node->runRecursiveOptimization();
+    astlang_root->print("", false, to_str);
+    astlang_root->runRecursiveOptimization();
 
-    // global_declarations_node->print("", false, to_str);
-    global_declarations_node->compute(interpreter);
+    astlang_root->print("", false, to_str);
+    astlang_root->compute(interpreter);
 
     return 0;
 }
