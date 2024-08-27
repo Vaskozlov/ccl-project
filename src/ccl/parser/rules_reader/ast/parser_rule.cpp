@@ -1,5 +1,5 @@
 #include <ccl/lexer/rule/sequence.hpp>
-#include <ccl/parser/ast/token_node.hpp>
+#include <ccl/parser/ast/terminal.hpp>
 #include <ccl/parser/rules_reader/ast/parser_rule.hpp>
 #include <ccl/parser/rules_reader/rules_lexer.hpp>
 #include <ccl/text/remove_escaping.hpp>
@@ -9,7 +9,7 @@ namespace ccl::parser::reader::ast
     auto ParserRule::construct(ParserBuilder &parser_builder) const -> isl::UniqueAny
     {
         auto result = std::vector<SmallId>{};
-        const auto *parser_rule_block = static_cast<const parser::ast::TokenNode *>(front().get());
+        const auto *parser_rule_block = static_cast<const parser::ast::Terminal *>(front().get());
         const auto token_type = parser_rule_block->getType();
         const auto repr = parser_rule_block->getToken().getRepr();
 

@@ -1,6 +1,6 @@
 #include "ccl/parser/lr/lr_parser.hpp"
 #include "ccl/lexer/tokenizer.hpp"
-#include "ccl/parser/ast/token_node.hpp"
+#include "ccl/parser/ast/terminal.hpp"
 #include "ccl/parser/lr/detail/lr_parser_generator.hpp"
 
 namespace ccl::parser
@@ -24,7 +24,7 @@ namespace ccl::parser
         using enum ParsingAction;
 
         auto parsing_result = UnambiguousParsingResult{.algorithmName = "LR(1)"};
-        auto word = ast::SharedNode<ast::TokenNode>{tokenizer.yield()};
+        auto token = ast::SharedNode<ast::Terminal>{tokenizer.yield()};
 
         auto parser_state = ParserState{};
 
@@ -35,7 +35,7 @@ namespace ccl::parser
 
             const auto entry = TableEntry{
                 .state = state,
-                .symbol = word->getType(),
+                .symbol = token->getType(),
             };
 
             auto action_table_it = actionTable.find(entry);
@@ -47,9 +47,9 @@ namespace ccl::parser
             switch (const auto &action = action_table_it->second; action.getParsingAction()) {
             case SHIFT: {
                 auto &[state_stack, nodes_stack] = parser_state;
-                nodes_stack.emplace(std::move(word));
+                nodes_stack.emplace(std::move(token));
                 state_stack.emplace(action.getShiftingState());
-                word = ast::SharedNode<ast::TokenNode>{tokenizer.yield()};
+                token = ast::SharedNode<ast::Terminal>{tokenizer.yield()};
                 break;
             }
 

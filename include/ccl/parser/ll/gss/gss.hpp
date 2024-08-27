@@ -1,7 +1,7 @@
 #ifndef CCL_PROJECT_LL_GSS_HPP
 #define CCL_PROJECT_LL_GSS_HPP
 
-#include <ccl/parser/ast/token_node.hpp>
+#include <ccl/parser/ast/terminal.hpp>
 #include <ccl/parser/ll/gss/descriptor.hpp>
 #include <ccl/parser/ll/gss/level.hpp>
 #include <ccl/parser/ll/gss/passed_descriptor.hpp>

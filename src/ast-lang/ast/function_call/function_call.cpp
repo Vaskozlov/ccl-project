@@ -8,7 +8,7 @@ namespace astlang::ast::function::call
     auto FunctionCall::compute(Interpreter &interpreter) const -> EvaluationResult
     {
         const auto front_node = ConstNodePtr{front().get()};
-        const auto &front_token = front_node.tokenNode->getToken();
+        const auto &front_token = front_node.terminalNode->getToken();
         const auto function_name = front_token.getRepr();
 
         auto call_arguments = ConstNodePtr{at(2).get()};

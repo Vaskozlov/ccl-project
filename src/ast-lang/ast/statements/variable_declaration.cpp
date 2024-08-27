@@ -7,10 +7,10 @@ namespace astlang::ast::statement
 
     auto VariableDeclaration::compute(Interpreter &interpreter) const -> EvaluationResult
     {
-        auto name_node = ConstNodePtr{at(1).get()};
-        auto expression_node = ConstNodePtr{this->back().get()};
+        const auto name_node = ConstNodePtr{at(1).get()};
+        const auto expression_node = ConstNodePtr{this->back().get()};
 
-        const auto &name_token = name_node.tokenNode->getToken();
+        const auto &name_token = name_node.terminalNode->getToken();
         const auto variable_name = name_token.getRepr();
         auto value = expression_node.astlangNode->compute(interpreter);
 

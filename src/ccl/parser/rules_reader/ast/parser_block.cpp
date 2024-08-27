@@ -4,7 +4,7 @@ namespace ccl::parser::reader::ast
 {
     auto ParserBlock::construct(ParserBuilder &parser_builder) const -> isl::UniqueAny
     {
-        const auto *rule_identifier = static_cast<const parser::ast::TokenNode *>(front().get());
+        const auto *rule_identifier = static_cast<const parser::ast::Terminal *>(front().get());
         const auto *rule_alternative = static_cast<const RulesReaderNode *>(at(1).get());
 
         const lexer::Token &rule_identifier_token = rule_identifier->getToken();

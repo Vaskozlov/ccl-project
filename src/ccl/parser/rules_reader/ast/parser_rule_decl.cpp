@@ -1,4 +1,4 @@
-#include <ccl/parser/ast/token_node.hpp>
+#include <ccl/parser/ast/terminal.hpp>
 #include <ccl/parser/rules_reader/ast/parser_rule_decl.hpp>
 
 namespace ccl::parser::reader::ast
@@ -6,7 +6,7 @@ namespace ccl::parser::reader::ast
     auto ParserRuleDecl::getDeclarationName() const -> isl::string_view
     {
         const auto *value_node = front().get();
-        const auto *declaration_token = dynamic_cast<const parser::ast::TokenNode *>(value_node);
+        const auto *declaration_token = dynamic_cast<const parser::ast::Terminal *>(value_node);
         const auto &token = declaration_token->getToken();
 
         return token.getPrefixes().front();

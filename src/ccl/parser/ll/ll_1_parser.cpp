@@ -1,5 +1,5 @@
 #include <ccl/lexer/tokenizer.hpp>
-#include <ccl/parser/ast/token_node.hpp>
+#include <ccl/parser/ast/terminal.hpp>
 #include <ccl/parser/ll/ll_1_parser.hpp>
 #include <ccl/parser/parsing_result.hpp>
 
@@ -8,8 +8,7 @@ namespace ccl::parser
     Ll1Parser::Ll1Parser(
         SmallId start_symbol, const GrammarStorage &grammar_storage,
         const std::function<std::string(SmallId)> &id_to_string_converter)
-      : table{ll::Ll1ParserGenerator{start_symbol, grammar_storage, id_to_string_converter}
-                  .createLl1Table()}
+      : table{ll::Ll1ParserGenerator{grammar_storage, id_to_string_converter}.createLl1Table()}
       , idToStringConverter{id_to_string_converter}
       , storage{grammar_storage}
       , grammarGoalSymbol{start_symbol}
@@ -19,7 +18,7 @@ namespace ccl::parser
     {
         auto stack = Stack<ast::Node *>{};
         const auto *word = std::addressof(tokenizer.yield());
-        auto goal = ast::SharedNode<ast::NodeOfNodes>(grammarGoalSymbol);
+        auto goal = ast::SharedNode<ast::NonTerminal>(grammarGoalSymbol);
         auto parsing_result = UnambiguousParsingResult{.algorithmName = "LL(1)"};
 
         stack.emplace(nullptr);
@@ -45,7 +44,7 @@ namespace ccl::parser
                     return parsing_result;
                 }
 
-                dynamic_cast<ast::TokenNode *>(focus)->setToken(*word);
+                dynamic_cast<ast::Terminal *>(focus)->setToken(*word);
                 stack.pop();
                 word = std::addressof(tokenizer.yield());
                 continue;
@@ -61,7 +60,7 @@ namespace ccl::parser
             }
 
             const auto *rule = rule_it->second;
-            auto *focus_as_sequence = static_cast<ast::NodeOfNodes *>(focus);
+            auto *focus_as_sequence = static_cast<ast::NonTerminal *>(focus);
 
             stack.pop();
 
@@ -73,9 +72,9 @@ namespace ccl::parser
                 auto built_node = ast::SharedNode<>{};
 
                 if (storage.isTerminal(s)) {
-                    built_node = ast::SharedNode<ast::TokenNode>(s);
+                    built_node = ast::SharedNode<ast::Terminal>(s);
                 } else {
-                    built_node = ast::SharedNode<ast::NodeOfNodes>(s);
+                    built_node = ast::SharedNode<ast::NonTerminal>(s);
                 }
 
                 stack.emplace(built_node.get());

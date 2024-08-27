@@ -1,7 +1,7 @@
 #ifndef CCL_PROJECT_LR_GSS_HPP
 #define CCL_PROJECT_LR_GSS_HPP
 
-#include <ccl/parser/ast/token_node.hpp>
+#include <ccl/parser/ast/terminal.hpp>
 #include <ccl/parser/lr/gss/descriptor.hpp>
 #include <ccl/parser/lr/gss/level.hpp>
 #include <ccl/parser/lr/gss/node.hpp>
@@ -46,11 +46,11 @@ namespace ccl::parser::lr
 
         [[nodiscard]] auto pushTerminal(
             Node *parent, SmallId input_position, SmallId parser_state,
-            ast::SharedNode<ast::TokenNode> token) -> Node *;
+            ast::SharedNode<ast::Terminal> token) -> Node *;
 
         [[nodiscard]] auto pushNonTerminal(
             Node *parent, SmallId input_position, SmallId parser_state,
-            ast::SharedNode<ast::NodeOfNodes> non_terminal) -> Node *;
+            ast::SharedNode<ast::NonTerminal> non_terminal) -> Node *;
 
         auto add(Descriptor descriptor) -> void;
 
@@ -65,7 +65,7 @@ namespace ccl::parser::lr
         auto reduce(
             SmallId pop_count, const ankerl::unordered_dense::map<TableEntry, State> *gotoTable,
             State production,
-            const std::function<ast::SharedNode<ast::NodeOfNodes>(std::vector<ast::SharedNode<>>)>
+            const std::function<ast::SharedNode<ast::NonTerminal>(std::vector<ast::SharedNode<>>)>
                 &reducer,
             const Descriptor &descriptor) -> void;
     };

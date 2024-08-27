@@ -6,22 +6,22 @@
 
 namespace ccl::parser::ast
 {
-    class TokenNode : public Node
+    class Terminal : public Node
     {
     private:
         lexer::Token token;
 
     public:
-        explicit TokenNode(SmallId node_type_id)
+        explicit Terminal(SmallId node_type_id)
           : Node{node_type_id}
         {}
 
-        explicit TokenNode(lexer::Token l_token)
+        explicit Terminal(lexer::Token l_token)
           : Node{l_token.getId()}
           , token{std::move(l_token)}
         {}
 
-        explicit TokenNode(SmallId node_type_id, lexer::Token l_token)
+        explicit Terminal(SmallId node_type_id, lexer::Token l_token)
           : Node{node_type_id}
           , token{std::move(l_token)}
         {}

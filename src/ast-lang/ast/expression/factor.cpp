@@ -8,7 +8,7 @@ namespace astlang::ast::expression
 
     static auto constructNumber(ConstNodePtr node) -> EvaluationResult
     {
-        const auto &token = node.tokenNode->getToken();
+        const auto &token = node.terminalNode->getToken();
         const auto repr = token.getRepr();
 
         auto value = isl::ssize_t{};
@@ -22,7 +22,7 @@ namespace astlang::ast::expression
 
     static auto constructString(ConstNodePtr node) -> EvaluationResult
     {
-        const auto &token = node.tokenNode->getToken();
+        const auto &token = node.terminalNode->getToken();
         const auto repr = token.getRepr();
         const auto repr_without_quotes = repr.substr(1, repr.size() - 2);
         auto repr_with_escaping = ccl::text::removeEscaping(repr_without_quotes, {});
@@ -33,13 +33,13 @@ namespace astlang::ast::expression
 
     static auto readVariable(Interpreter &interpreter, ConstNodePtr node) -> EvaluationResult &
     {
-        const auto &token = node.tokenNode->getToken();
+        const auto &token = node.terminalNode->getToken();
         return interpreter.read(std::string{token.getRepr()});
     }
 
     static auto constructBoolean(Interpreter &interpreter, ConstNodePtr node) -> EvaluationResult
     {
-        const auto &token = node.tokenNode->getToken();
+        const auto &token = node.terminalNode->getToken();
 
         return EvaluationResult{
             .value = isl::makeAny<bool>(token.getId() == interpreter.TRUE),

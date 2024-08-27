@@ -1,5 +1,5 @@
 #include <ccl/parser/ast/node.hpp>
-#include <ccl/parser/ast/node_of_nodes.hpp>
+#include <ccl/parser/ast/non_terminal.hpp>
 
 namespace ccl::parser::ast
 {
@@ -33,7 +33,7 @@ namespace ccl::parser::ast
 
     auto Node::cast(const ConversionTable &conversion_table, Node *node) -> void
     {
-        auto *node_as_sequence = dynamic_cast<NodeOfNodes *>(node);
+        auto *node_as_sequence = dynamic_cast<NonTerminal *>(node);
 
         if (node_as_sequence == nullptr) {
             return;

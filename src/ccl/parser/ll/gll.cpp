@@ -35,7 +35,7 @@ namespace ccl::parser
     auto GllParser::parse(lexer::Tokenizer &tokenizer) const -> AmbiguousParsingResult
     {
         auto parsing_result = AmbiguousParsingResult{.algorithmName = "GLL"};
-        auto token = ast::SharedNode<ast::TokenNode>{tokenizer.yield()};
+        auto token = ast::SharedNode<ast::Terminal>{tokenizer.yield()};
         auto gss = ll::GSS{std::addressof(storage)};
         gss.nextWord();
 
@@ -66,7 +66,7 @@ namespace ccl::parser
             auto input_position = descriptor.inputPosition;
 
             if (input_position == gss.getGlobalInputPosition()) {
-                token = ast::SharedNode<ast::TokenNode>(tokenizer.yield());
+                token = ast::SharedNode<ast::Terminal>(tokenizer.yield());
                 gss.nextWord();
             }
 

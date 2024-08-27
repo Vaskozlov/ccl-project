@@ -23,7 +23,7 @@ namespace ccl::parser
             return rule.atDot();
         }
 
-        [[nodiscard]] auto build() const -> ast::SharedNode<ast::NodeOfNodes>
+        [[nodiscard]] auto build() const -> ast::SharedNode<ast::NonTerminal>
         {
             return rule.rule->construct(production, nodes);
         }

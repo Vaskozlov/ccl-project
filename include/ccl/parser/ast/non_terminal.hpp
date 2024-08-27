@@ -6,17 +6,17 @@
 
 namespace ccl::parser::ast
 {
-    class NodeOfNodes : public Node
+    class NonTerminal : public Node
     {
     protected:
         std::vector<SharedNode<>> nodes;
 
     public:
-        explicit NodeOfNodes(SmallId node_type_id)
+        explicit NonTerminal(SmallId node_type_id)
           : Node{node_type_id}
         {}
 
-        explicit NodeOfNodes(SmallId node_type_id, std::vector<SharedNode<>> initial_nodes)
+        explicit NonTerminal(SmallId node_type_id, std::vector<SharedNode<>> initial_nodes)
           : Node{node_type_id}
           , nodes{std::move(initial_nodes)}
         {}
@@ -89,7 +89,7 @@ namespace ccl::parser::ast
 
         template<std::constructible_from<SmallId, std::vector<SharedNode<>>> T>
             requires(SharedNode<>::canStore<T>())
-        static auto reconstructNode(NodeOfNodes *node) -> void
+        static auto reconstructNode(NonTerminal *node) -> void
         {
             auto node_type = node->getType();
             auto nodes = std::move(node->getNodes());
@@ -105,6 +105,8 @@ namespace ccl::parser::ast
             }
         }
     };
+
+    static_assert(SharedNode<>::canStore<NonTerminal>());
 }// namespace ccl::parser::ast
 
 

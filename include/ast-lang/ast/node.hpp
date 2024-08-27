@@ -2,8 +2,8 @@
 #define CCL_PROJECT_ASTLANG_NODE_HPP
 
 #include <ast-lang/ast-lang.hpp>
-#include <ccl/parser/ast/node_of_nodes.hpp>
-#include <ccl/parser/ast/token_node.hpp>
+#include <ccl/parser/ast/non_terminal.hpp>
+#include <ccl/parser/ast/terminal.hpp>
 #include <ccl/parser/rules_reader/parser_builder.hpp>
 
 namespace astlang::interpreter
@@ -17,16 +17,16 @@ namespace astlang::ast
     template<std::derived_from<ccl::parser::ast::Node> T = ccl::parser::ast::Node>
     using SharedNode = ccl::parser::ast::SharedNode<T>;
 
-    class Node : public ccl::parser::ast::NodeOfNodes
+    class Node : public ccl::parser::ast::NonTerminal
     {
     private:
         using ConstructionFunction = ccl::parser::Rule::RuleBuilderFunction;
-        using ConversionTable = isl::StaticFlatmap<SmallId, void (*)(NodeOfNodes *), 50>;
+        using ConversionTable = isl::StaticFlatmap<SmallId, void (*)(NonTerminal *), 50>;
 
     public:
         using Interpreter = interpreter::Interpreter;
         using EvaluationResult = interpreter::EvaluationResult;
-        using NodeOfNodes::NodeOfNodes;
+        using NonTerminal::NonTerminal;
 
         auto runRecursiveOptimization() -> void;
 
@@ -48,8 +48,8 @@ namespace astlang::ast
     {
         union {
             ccl::parser::ast::Node *cclNode;
-            ccl::parser::ast::TokenNode *tokenNode;
-            ccl::parser::ast::NodeOfNodes *nodeSequence;
+            ccl::parser::ast::Terminal *terminalNode;
+            ccl::parser::ast::NonTerminal *nonTerminalNode;
             Node *astlangNode;
         };
 
@@ -62,8 +62,8 @@ namespace astlang::ast
     {
         union {
             const ccl::parser::ast::Node *cclNode;
-            const ccl::parser::ast::TokenNode *tokenNode;
-            const ccl::parser::ast::NodeOfNodes *nodeSequence;
+            const ccl::parser::ast::Terminal *terminalNode;
+            const ccl::parser::ast::NonTerminal *nonTerminalNode;
             const Node *astlangNode;
         };
 

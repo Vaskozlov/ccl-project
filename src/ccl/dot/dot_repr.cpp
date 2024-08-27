@@ -1,5 +1,5 @@
-#include <ccl/parser/ast/node_of_nodes.hpp>
-#include <ccl/parser/ast/token_node.hpp>
+#include <ccl/parser/ast/non_terminal.hpp>
+#include <ccl/parser/ast/terminal.hpp>
 #include <ccl/parser/dot/dot_repr.hpp>
 #include <isl/dot_repr.hpp>
 
@@ -19,14 +19,14 @@ namespace ccl::parser::dot
         isl::ssize_t child_index,
         TreeInformation<ast::Node *, SmallId> &tree_data) -> void
     {
-        const auto *node_as_sequence = dynamic_cast<const ast::NodeOfNodes *>(root);
-        const auto *node_as_token = dynamic_cast<const ast::TokenNode *>(root);
+        const auto *non_terminal_node = dynamic_cast<const ast::NonTerminal *>(root);
+        const auto *terminal_node = dynamic_cast<const ast::Terminal *>(root);
         auto node_label_str = tree_data.nodeTypeToString(root->getType());
 
         auto node_id = tree_data.createIdForNode(root);
 
-        if (node_as_token != nullptr) {
-            const auto &token = node_as_token->getToken();
+        if (terminal_node != nullptr) {
+            const auto &token = terminal_node->getToken();
             node_label_str += fmt::format(": {}", token.getRepr());
         }
 
@@ -48,8 +48,8 @@ namespace ccl::parser::dot
                 });
         }
 
-        if (node_as_sequence != nullptr && inserted) {
-            auto nodes = node_as_sequence->getNodes();
+        if (non_terminal_node != nullptr && inserted) {
+            auto nodes = non_terminal_node->getNodes();
             auto number_of_nodes = static_cast<isl::ssize_t>(nodes.size());
 
             for (std::size_t i = 0; i != nodes.size(); ++i) {

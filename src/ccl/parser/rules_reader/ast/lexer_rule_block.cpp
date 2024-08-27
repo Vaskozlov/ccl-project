@@ -43,10 +43,10 @@ namespace ccl::parser::reader::ast
             lexer_rule_alternative->construct(parser_builder));
     }
 
-    auto LexerRuleBlock::getValue() const -> const parser::ast::TokenNode *
+    auto LexerRuleBlock::getValue() const -> const parser::ast::Terminal *
     {
         const auto *value_node = front().get();
-        return isl::as<const parser::ast::TokenNode *>(value_node);
+        return isl::as<const parser::ast::Terminal *>(value_node);
     }
 
     auto LexerRuleBlock::getOptions() const -> const LexerRuleOptions *
@@ -59,7 +59,7 @@ namespace ccl::parser::reader::ast
     {
         using namespace lexer::rule;
 
-        const auto *rule_block = static_cast<const parser::ast::TokenNode *>(front().get());
+        const auto *rule_block = static_cast<const parser::ast::Terminal *>(front().get());
         auto resulted_block = RuleBlock{};
 
         switch (rule_block->getType()) {

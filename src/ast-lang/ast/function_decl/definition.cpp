@@ -15,10 +15,10 @@ namespace astlang::ast::function::decl
 
     auto Definition::compute(Interpreter &interpreter) const -> EvaluationResult
     {
-        auto function_name_node = ConstNodePtr{at(FUNCTION_NAME_INDEX).get()};
-        auto function_arguments_node = ConstNodePtr{at(FUNCTION_ARGUMENTS_INDEX).get()};
+        const auto function_name_node = ConstNodePtr{at(FUNCTION_NAME_INDEX).get()};
+        const auto function_arguments_node = ConstNodePtr{at(FUNCTION_ARGUMENTS_INDEX).get()};
 
-        const auto &function_name_token = function_name_node.tokenNode->getToken();
+        const auto &function_name_token = function_name_node.terminalNode->getToken();
         const auto function_name = function_name_token.getRepr();
 
         auto function_arguments = function_arguments_node.astlangNode->compute(interpreter);

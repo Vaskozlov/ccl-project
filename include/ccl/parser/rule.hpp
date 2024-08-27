@@ -3,7 +3,7 @@
 
 #include <ccl/parser/ast/allocator.hpp>
 #include <ccl/parser/ast/node.hpp>
-#include <ccl/parser/ast/node_of_nodes.hpp>
+#include <ccl/parser/ast/non_terminal.hpp>
 #include <ccl/parser/types.hpp>
 #include <functional>
 
@@ -12,7 +12,7 @@ namespace ccl::parser
     class Rule : public std::vector<Symbol>
     {
     public:
-        using RuleBuilderFunction = std::function<ast::SharedNode<ast::NodeOfNodes>(
+        using RuleBuilderFunction = std::function<ast::SharedNode<ast::NonTerminal>(
             Symbol, std::vector<ast::SharedNode<ast::Node>>)>;
 
     private:
@@ -27,7 +27,7 @@ namespace ccl::parser
         {}
 
         [[nodiscard]] auto construct(Symbol production, std::vector<ast::SharedNode<>> nodes) const
-            -> ast::SharedNode<ast::NodeOfNodes>
+            -> ast::SharedNode<ast::NonTerminal>
         {
             return builder(production, std::move(nodes));
         }
@@ -62,9 +62,9 @@ namespace ccl::parser
 
     private:
         static auto defaultBuilder(Symbol production, std::vector<ast::SharedNode<ast::Node>> nodes)
-            -> ast::SharedNode<ast::NodeOfNodes>
+            -> ast::SharedNode<ast::NonTerminal>
         {
-            return ast::SharedNode<ast::NodeOfNodes>{production, std::move(nodes)};
+            return ast::SharedNode<ast::NonTerminal>{production, std::move(nodes)};
         }
     };
 }// namespace ccl::parser

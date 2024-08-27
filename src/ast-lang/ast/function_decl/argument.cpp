@@ -7,11 +7,11 @@ namespace astlang::ast::function::decl
 
     auto Argument::compute(Interpreter &interpreter) const -> EvaluationResult
     {
-        auto front_node = ConstNodePtr{this->front().get()};
-        auto name_node = ConstNodePtr{this->back().get()};
+        const auto front_node = ConstNodePtr{this->front().get()};
+        const auto name_node = ConstNodePtr{this->back().get()};
 
         auto type = Type::fromNode(front_node.cclNode);
-        auto &name_token = name_node.tokenNode->getToken();
+        auto &name_token = name_node.terminalNode->getToken();
         auto argument_name = name_token.getRepr();
 
         return EvaluationResult{

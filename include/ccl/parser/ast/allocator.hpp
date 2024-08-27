@@ -1,14 +1,14 @@
 #ifndef CCL_PROJECT_PARSER_AST_ALLOCATOR_HPP
 #define CCL_PROJECT_PARSER_AST_ALLOCATOR_HPP
 
-#include <ccl/parser/ast/token_node.hpp>
+#include <ccl/parser/ast/terminal.hpp>
 #include <isl/memory.hpp>
 
 namespace ccl::parser::ast
 {
     namespace detail
     {
-        using SharedPtrFrame = isl::SharedPtrFrameFor<TokenNode>;
+        using SharedPtrFrame = isl::SharedPtrFrameFor<Terminal>;
 
         // NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
         extern isl::FixedSizeAllocator<sizeof(SharedPtrFrame), alignof(SharedPtrFrame)>

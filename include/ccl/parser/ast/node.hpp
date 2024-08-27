@@ -6,7 +6,7 @@
 
 namespace ccl::parser::ast
 {
-    class NodeOfNodes;
+    class NonTerminal;
 
     class Node
     {
@@ -20,7 +20,7 @@ namespace ccl::parser::ast
             const std::string &prefix, bool is_left, size_t extra_expansion = 1) -> std::string;
 
     public:
-        using ConversionTable = ankerl::unordered_dense::map<SmallId, void (*)(NodeOfNodes *)>;
+        using ConversionTable = ankerl::unordered_dense::map<SmallId, void (*)(NonTerminal *)>;
 
         Node() = default;
 

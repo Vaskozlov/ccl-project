@@ -1,11 +1,11 @@
-#include <ccl/parser/ast/node_of_nodes.hpp>
+#include <ccl/parser/ast/non_terminal.hpp>
 #include <iostream>
 
 namespace ccl::parser::ast
 {
-    auto NodeOfNodes::joinWithNode(SharedNode<> node) -> void
+    auto NonTerminal::joinWithNode(SharedNode<> node) -> void
     {
-        if (auto *casted = dynamic_cast<NodeOfNodes *>(node.get()); casted != nullptr) {
+        if (auto *casted = dynamic_cast<NonTerminal *>(node.get()); casted != nullptr) {
             for (auto &elem : casted->nodes) {
                 addNode(elem);
             }
@@ -16,7 +16,7 @@ namespace ccl::parser::ast
         addNode(std::move(node));
     }
 
-    auto NodeOfNodes::print(
+    auto NonTerminal::print(
         const std::string &prefix, bool is_left,
         std::function<std::string(SmallId)> id_converter) const -> void
     {

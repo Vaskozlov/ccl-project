@@ -1,6 +1,6 @@
 #include "ccl/parser/lr/glr_parser.hpp"
 #include "ccl/lexer/tokenizer.hpp"
-#include "ccl/parser/ast/token_node.hpp"
+#include "ccl/parser/ast/terminal.hpp"
 #include "ccl/parser/dot/dot_repr.hpp"
 #include "ccl/parser/lr/detail/lr_parser_generator.hpp"
 #include "ccl/parser/lr/gss/gss.hpp"
@@ -47,7 +47,7 @@ namespace ccl::parser
         using enum ParsingAction;
 
         auto parsing_result = AmbiguousParsingResult{.algorithmName = "GLR"};
-        auto token = ast::SharedNode<ast::TokenNode>(tokenizer.yield());
+        auto token = ast::SharedNode<ast::Terminal>(tokenizer.yield());
 
         auto gss = lr::GSS{};
         gss.nextWord();
@@ -65,7 +65,7 @@ namespace ccl::parser
             const auto parser_state = descriptor.parserState;
 
             if (descriptor.inputPosition == gss.getGlobalInputPosition()) {
-                token = ast::SharedNode<ast::TokenNode>(tokenizer.yield());
+                token = ast::SharedNode<ast::Terminal>(tokenizer.yield());
                 gss.nextWord();
             }
 

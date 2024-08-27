@@ -11,7 +11,7 @@ namespace astlang::ast::statement
         auto type_node = ConstNodePtr{at(3).get()};
         auto expression_node = ConstNodePtr{back().get()};
 
-        const auto &name_token = name_node.tokenNode->getToken();
+        const auto &name_token = name_node.terminalNode->getToken();
         const auto variable_name = name_token.getRepr();
         auto value = expression_node.astlangNode->compute(interpreter);
         auto expected_type = interpreter::Type::fromNode(type_node.cclNode);

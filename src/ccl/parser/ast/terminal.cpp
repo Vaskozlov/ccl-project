@@ -1,9 +1,9 @@
-#include <ccl/parser/ast/token_node.hpp>
+#include <ccl/parser/ast/terminal.hpp>
 #include <iostream>
 
 namespace ccl::parser::ast
 {
-    auto TokenNode::print(
+    auto Terminal::print(
         const std::string &prefix, bool is_left,
         std::function<std::string(SmallId)> id_converter) const -> void
     {

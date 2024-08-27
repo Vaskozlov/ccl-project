@@ -17,39 +17,39 @@ namespace ccl::parser::reader
     static const parser::ast::Node::ConversionTable ConversionTable{
         {
             BLOCKS,
-            parser::ast::NodeOfNodes::reconstructNode<ast::Blocks>,
+            parser::ast::NonTerminal::reconstructNode<ast::Blocks>,
         },
         {
             LEXER_BLOCK,
-            parser::ast::NodeOfNodes::reconstructNode<ast::LexerBlock>,
+            parser::ast::NonTerminal::reconstructNode<ast::LexerBlock>,
         },
         {
             LEXER_RULE_ALTERNATIVE,
-            parser::ast::NodeOfNodes::reconstructNode<ast::LexerRuleAlternative>,
+            parser::ast::NonTerminal::reconstructNode<ast::LexerRuleAlternative>,
         },
         {
             LEXER_RULE,
-            parser::ast::NodeOfNodes::reconstructNode<ast::LexerRule>,
+            parser::ast::NonTerminal::reconstructNode<ast::LexerRule>,
         },
         {
             LEXER_RULE_BLOCK,
-            parser::ast::NodeOfNodes::reconstructNode<ast::LexerRuleBlock>,
+            parser::ast::NonTerminal::reconstructNode<ast::LexerRuleBlock>,
         },
         {
             LEXER_RULE_OPTIONS,
-            parser::ast::NodeOfNodes::reconstructNode<ast::LexerRuleOptions>,
+            parser::ast::NonTerminal::reconstructNode<ast::LexerRuleOptions>,
         },
         {
             PARSER_BLOCK,
-            parser::ast::NodeOfNodes::reconstructNode<ast::ParserBlock>,
+            parser::ast::NonTerminal::reconstructNode<ast::ParserBlock>,
         },
         {
             PARSER_RULE_ALTERNATIVE,
-            parser::ast::NodeOfNodes::reconstructNode<ast::ParserRuleAlternatives>,
+            parser::ast::NonTerminal::reconstructNode<ast::ParserRuleAlternatives>,
         },
         {
             PARSER_RULE,
-            parser::ast::NodeOfNodes::reconstructNode<ast::ParserRule>,
+            parser::ast::NonTerminal::reconstructNode<ast::ParserRule>,
         },
     };
 
@@ -259,14 +259,14 @@ namespace ccl::parser::reader
             return std::string{ToStringRulesLexerToken.at(elem)};
         };
 
-        const auto gll_parser = LrParser(start_item, EPSILON, RulesGrammar, id_to_str);
-        const auto [root, algorithm] = gll_parser.parse(tokenizer);
+        const auto gll_parser = GllParser(GOAL, RulesGrammar, id_to_str);
+        const auto [roots, algorithm] = gll_parser.parse(tokenizer);
 
-        // if (roots.size() != 1) {
-            // throw std::runtime_error{"Unable to construct tree"};
-        // }
+        if (roots.size() != 1) {
+            throw std::runtime_error{"Unable to construct tree"};
+        }
 
-        // auto root = isl::staticPointerCast<parser::ast::NodeOfNodes>(std::move(roots.front()));
+        auto root = isl::staticPointerCast<parser::ast::NonTerminal>(std::move(roots.front()));
         parser::ast::Node::cast(ConversionTable, root.get());
 
         static_cast<ast::RulesReaderNode *>(root.get())->construct(rulesConstructor);

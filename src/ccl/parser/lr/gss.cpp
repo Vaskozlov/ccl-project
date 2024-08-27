@@ -37,12 +37,13 @@ namespace ccl::parser::lr
         }
     }
 
-    auto Level::findNonTerminal(SmallId parsing_state, ast::NodeOfNodes *value) const -> Node *
+    auto Level::findNonTerminal(ast::NonTerminal *value) const -> Node *
     {
         for (const auto &node : nonTerminals) {
-            if (node->parserState == parsing_state &&
-                static_cast<ast::NodeOfNodes *>(node->value.get())->getNodes() ==
-                    value->getNodes()) {
+            const auto *node_as_non_terminal =
+                static_cast<const ast::NonTerminal *>(node->value.get());
+
+            if (node_as_non_terminal->getNodes() == value->getNodes()) {
                 return node.get();
             }
         }
@@ -54,7 +55,7 @@ namespace ccl::parser::lr
         Node *parent,
         SmallId input_position,
         SmallId parser_state,
-        ast::SharedNode<ast::TokenNode>
+        ast::SharedNode<ast::Terminal>
             token) -> Node *
     {
         if (input_position >= levels.size()) {
@@ -85,7 +86,7 @@ namespace ccl::parser::lr
         Node *parent,
         SmallId input_position,
         SmallId parser_state,
-        ast::SharedNode<ast::NodeOfNodes>
+        ast::SharedNode<ast::NonTerminal>
             non_terminal) -> Node *
     {
         if (input_position >= levels.size()) {
@@ -93,7 +94,7 @@ namespace ccl::parser::lr
         }
 
         auto &level = levels.at(input_position);
-        auto node = level.findNonTerminal(parser_state, non_terminal.get());
+        auto *node = level.findNonTerminal(non_terminal.get());
 
         // Is there any need to check?
         if (node == nullptr) {
@@ -134,7 +135,7 @@ namespace ccl::parser::lr
         SmallId pop_count,
         const ankerl::unordered_dense::map<TableEntry, State> *gotoTable,
         State production,
-        const std::function<ast::SharedNode<ast::NodeOfNodes>(std::vector<ast::SharedNode<>>)>
+        const std::function<ast::SharedNode<ast::NonTerminal>(std::vector<ast::SharedNode<>>)>
             &reducer,
         const Descriptor &descriptor) -> void
     {
