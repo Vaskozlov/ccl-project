@@ -6,7 +6,7 @@
 namespace ccl::lexer
 {
     template<typename T>
-    CCL_DECL auto lexerEnumToString(T value) -> std::string;
+    CCL_DECL auto lexerEnumToString(SmallId value) -> std::string;
 
     template<>
     [[nodiscard]] inline auto lexerEnumToString<SmallId>(SmallId value) -> std::string

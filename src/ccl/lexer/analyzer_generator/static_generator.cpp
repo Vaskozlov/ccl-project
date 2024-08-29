@@ -96,7 +96,7 @@ namespace ccl::lexer::gen
         codeGenerator
             << fmt::format(
                    "template<>\n"
-                   "CCL_DECL auto ccl::lexer::lexerEnumToString<{0}::{1}>({0}::{1} value) -> "
+                   "CCL_DECL auto ccl::lexer::lexerEnumToString<{0}::{1}>(SmallId value) -> "
                    "std::string;",
                    nameSpace, enumName)
             << endl

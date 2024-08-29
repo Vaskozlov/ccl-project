@@ -10,8 +10,7 @@ namespace math
 }
 
 template<>
-CCL_DECL auto
-    ccl::lexer::lexerEnumToString<math::MathLexerToken>(math::MathLexerToken value) -> std::string;
+CCL_DECL auto ccl::lexer::lexerEnumToString<math::MathLexerToken>(SmallId value) -> std::string;
 
 namespace math
 {
@@ -87,8 +86,7 @@ namespace math
 namespace ccl::lexer
 {
     template<>
-    CCL_DECL auto
-        lexerEnumToString<math::MathLexerToken>(math::MathLexerToken value) -> std::string
+    CCL_DECL auto lexerEnumToString<math::MathLexerToken>(SmallId value) -> std::string
     {
         return std::string{math::ToStringMathLexerToken[value]};
     }

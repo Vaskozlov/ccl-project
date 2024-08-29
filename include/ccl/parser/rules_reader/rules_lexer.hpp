@@ -10,8 +10,8 @@ namespace ccl::parser::reader
 }
 
 template<>
-CCL_DECL auto ccl::lexer::lexerEnumToString<ccl::parser::reader::RulesLexerToken>(
-    ccl::parser::reader::RulesLexerToken value) -> std::string;
+CCL_DECL auto ccl::lexer::lexerEnumToString<ccl::parser::reader::RulesLexerToken>(SmallId value)
+    -> std::string;
 
 namespace ccl::parser::reader
 {
@@ -137,8 +137,8 @@ namespace ccl::parser::reader
 namespace ccl::lexer
 {
     template<>
-    CCL_DECL auto lexerEnumToString<ccl::parser::reader::RulesLexerToken>(
-        ccl::parser::reader::RulesLexerToken value) -> std::string
+    CCL_DECL auto
+        lexerEnumToString<ccl::parser::reader::RulesLexerToken>(SmallId value) -> std::string
     {
         return static_cast<std::string>(ccl::parser::reader::ToStringRulesLexerToken[value]);
     }

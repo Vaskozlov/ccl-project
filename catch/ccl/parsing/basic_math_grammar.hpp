@@ -125,7 +125,8 @@ struct fmt::formatter<ccl::debug::GrammarSymbol> : formatter<std::string_view>
     static constexpr auto format(const ccl::debug::GrammarSymbol &symbol, format_context &ctx)
         -> format_context::iterator
     {
-        return fmt::format_to(ctx.out(), "{}", ccl::lexer::lexerEnumToString(symbol));
+        return fmt::format_to(
+            ctx.out(), "{}", ccl::lexer::lexerEnumToString<ccl::debug::GrammarSymbol>(symbol));
     }
 };
 
