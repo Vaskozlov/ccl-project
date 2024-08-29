@@ -2,6 +2,7 @@
 #include <ccl/parser/ll/gll.hpp>
 #include <ccl/parser/ll/gss/gss.hpp>
 #include <ccl/parser/lr/lr_item.hpp>
+#include <ccl/lexer/tokenizer.hpp>
 #include <isl/io.hpp>
 
 namespace ccl::parser

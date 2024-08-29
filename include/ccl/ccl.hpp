@@ -12,6 +12,8 @@
 #include <fmt/format.h>
 #include <fmt/ranges.h>
 
+#include <ankerl/unordered_dense.h>
+
 #define CCL_DECL ISL_DECL
 #define CCL_INLINE ISL_INLINE
 #define CCL_LIFETIMEBOUND ISL_LIFETIMEBOUND

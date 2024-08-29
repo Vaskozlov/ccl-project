@@ -73,7 +73,7 @@ struct fmt::formatter<ccl::text::Location>
         return ctx.begin();
     }
 
-    static constexpr auto
+    static auto
         format(const ccl::text::Location &location, format_context &ctx) -> format_context::iterator
     {
         return fmt::format_to(

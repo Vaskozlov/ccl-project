@@ -1,6 +1,9 @@
 #include "ccl/parser/lr/glr_parser.hpp"
 #include "ccl/parser/dot/dot_repr.hpp"
 #include "lr_parser_for_math.hpp"
+#include "ccl/debug/debug.hpp"
+#include "ccl/lexer/tokenizer.hpp"
+#include <isl/io.hpp>
 
 TEST_CASE("GlrParser", "[GLR]")
 {

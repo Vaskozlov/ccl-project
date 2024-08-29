@@ -1,5 +1,8 @@
 #include "ccl/parser/detail/empty_moves_fixer.hpp"
 #include "ccl/parser/rules_reader/rules_lexer.hpp"
+
+#include <ccl/parser/first_set.hpp>
+#include <ccl/parser/follow_set.hpp>
 #include <ccl/parser/grammar_rules_storage.hpp>
 
 namespace ccl::parser

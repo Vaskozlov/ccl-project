@@ -6,8 +6,10 @@
 #include <ccl/parser/ll/gss/level.hpp>
 #include <ccl/parser/ll/gss/passed_descriptor.hpp>
 #include <deque>
+#include <ccl/parser/grammar_rules_storage.hpp>
 
-namespace ccl::parser::ll
+namespace ccl::parser {
+class GrammarStorage;}namespace ccl::parser::ll
 {
     class GSS
     {

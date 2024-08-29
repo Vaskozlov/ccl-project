@@ -122,7 +122,7 @@ namespace ccl::debug
 template<>
 struct fmt::formatter<ccl::debug::GrammarSymbol> : formatter<std::string_view>
 {
-    static constexpr auto format(const ccl::debug::GrammarSymbol &symbol, format_context &ctx)
+    static auto format(const ccl::debug::GrammarSymbol &symbol, format_context &ctx)
         -> format_context::iterator
     {
         return fmt::format_to(

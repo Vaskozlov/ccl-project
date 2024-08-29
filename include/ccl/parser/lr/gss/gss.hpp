@@ -3,6 +3,7 @@
 
 #include <ccl/parser/ast/terminal.hpp>
 #include <ccl/parser/lr/gss/descriptor.hpp>
+#include <ccl/parser/ast/non_terminal.hpp>
 #include <ccl/parser/lr/gss/level.hpp>
 #include <ccl/parser/lr/gss/node.hpp>
 #include <ccl/parser/lr/gss/reducer.hpp>

@@ -1,5 +1,6 @@
 #include "ccl/debug/debug.hpp"
-#include "ccl/parser/ast/token_node.hpp"
+#include "ccl/parser/ast/terminal.hpp"
+#include "ccl/lexer/tokenizer.hpp"
 #include "lr_parser_for_math.hpp"
 
 TEST_CASE("TreeStructureTest", "[TreeParsing]")

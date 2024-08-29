@@ -3,6 +3,8 @@
 #include <ccl/parser/ll/gll.hpp>
 #include <ccl/parser/ll/ll_1_parser.hpp>
 #include <isl/io.hpp>
+#include <ccl/lexer/tokenizer.hpp>
+#include <ccl/debug/debug.hpp>
 
 TEST_CASE("LLParser", "[LLParser]")
 {

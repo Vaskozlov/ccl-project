@@ -1,4 +1,5 @@
 #include <ccl/parser/dot/dot_repr.hpp>
+#include <ccl/parser/ll/gll.hpp>
 #include <ccl/parser/rules_reader/ast/blocks.hpp>
 #include <ccl/parser/rules_reader/ast/lexer_block.hpp>
 #include <ccl/parser/rules_reader/ast/lexer_rule.hpp>
@@ -9,6 +10,7 @@
 #include <ccl/parser/rules_reader/ast/parser_rule.hpp>
 #include <ccl/parser/rules_reader/rules_lexer.hpp>
 #include <ccl/parser/rules_reader/rules_reader.hpp>
+#include <ccl/parser/rules_reader/ast/parser_rule_alternatives.hpp>
 #include <ccll/ccll.hpp>
 #include <isl/io.hpp>
 

@@ -8,7 +8,7 @@ namespace ccl::debug
     constexpr inline isl::string_view SimpleLlGrammarDefinition = R"(
 %PARSER%
 GOAL:
-    EXPR EOI
+    EXPR
 
 EXPR:
     EXPR '+' TERM
