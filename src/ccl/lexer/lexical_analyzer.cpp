@@ -3,15 +3,15 @@
 
 namespace ccl::lexer
 {
-    LexicalAnalyzer::LexicalAnalyzer(ExceptionHandler &exception_handler)
-      : exceptionHandler{exception_handler}
+    LexicalAnalyzer::LexicalAnalyzer(const ExceptionHandler &exception_handler)
+      : exceptionHandler{std::addressof(exception_handler)}
     {}
 
     LexicalAnalyzer::LexicalAnalyzer(
-        ExceptionHandler &exception_handler, const std::initializer_list<Rule> &rules,
-        isl::string_view filename, std::vector<u32> ignored_ids)
+        const ExceptionHandler &exception_handler, const std::initializer_list<Rule> &rules,
+        isl::string_view filename, std::vector<SmallId> ignored_ids)
       : ignoredIds{std::move(ignored_ids)}
-      , exceptionHandler{exception_handler}
+      , exceptionHandler{std::addressof(exception_handler)}
     {
         for (const auto &rule : rules) {
             createContainer(rule, rule.id, filename);
@@ -22,7 +22,7 @@ namespace ccl::lexer
         -> void
     {
         auto container = std::make_unique<Container>(
-            *this, TextIterator{rule.repr, exceptionHandler, filename}, true);
+            *this, TextIterator{rule.repr, *exceptionHandler, filename}, true);
 
         container->setId(id);
         addContainer(rule.name, std::move(container));

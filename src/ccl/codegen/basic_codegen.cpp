@@ -11,17 +11,18 @@ namespace ccl::codegen
     auto BasicCodeGenerator::newLine() -> void
     {
         getCurrentStream().push_back('\n');
-
         addScope(scopesCounter);
     }
 
     auto BasicCodeGenerator::addScope(std::size_t scopes_count) -> void
     {
-        for (std::size_t i = 0; i < scopes_count * scopeSize; i += 4) {
+        const auto whitespaces_count = scopes_count * scopeSize;
+
+        for (std::size_t i = 0; i < whitespaces_count; i += 4) {
             getCurrentStream().append("    ");
         }
 
-        for (std::size_t i = 0; i != scopes_count * scopeSize % 4; ++i) {
+        for (std::size_t i = 0; i != whitespaces_count % 4; ++i) {
             getCurrentStream().push_back(' ');
         }
     }
@@ -78,12 +79,12 @@ namespace ccl::codegen
 
     auto BasicCodeGenerator::operator<<(char character) -> BasicCodeGenerator &
     {
-        if (character == '\n') [[unlikely]] {
+        if (character == '\n') {
             newLine();
-        } else [[likely]] {
-            getCurrentStream().push_back(character);
+            return *this;
         }
 
+        getCurrentStream().push_back(character);
         return *this;
     }
 }// namespace ccl::codegen

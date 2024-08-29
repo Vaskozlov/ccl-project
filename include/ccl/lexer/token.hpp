@@ -20,41 +20,28 @@ namespace ccl::lexer
         class Container;
     }
 
-    struct TokenEnvironment
-    {
-        text::Location location;
-        isl::string_view wholeText;
-
-        TokenEnvironment() = default;
-        explicit TokenEnvironment(const text::TextIterator &text_iterator);
-    };
-
     class Token
     {
     private:
         friend class LexicalAnalyzer;
         friend class rule::Container;
 
-        std::vector<isl::string_view> prefixes;
-        std::vector<isl::string_view> postfixes;
-        TokenEnvironment environment;
+        std::vector<isl::string_view> extractedParts;
         isl::string_view repr;
+        text::Location location;
+        const text::InputInfo *inputInfo{};
         SmallId id{};
 
     public:
         Token() = default;
 
-        [[nodiscard]] explicit Token(SmallId token_id);
+        [[nodiscard]] explicit Token(SmallId token_id, const text::InputInfo *input_info);
 
         [[nodiscard]] Token(
-            const TokenEnvironment &token_environment, isl::string_view token_repr,
-            SmallId token_id);
+            SmallId token_id, isl::string_view token_repr, text::Location token_location,
+            const text::InputInfo *input_info);
 
-        [[nodiscard]] Token(
-            const TokenEnvironment &token_environment,
-            typename isl::string_view::iterator text_begin, SmallId token_id);
-
-        [[nodiscard]] Token(const text::TextIterator &text_iterator, SmallId token_id);
+        [[nodiscard]] Token(SmallId token_id, const text::TextIterator &text_iterator);
 
         [[nodiscard]] auto getId() const noexcept -> SmallId
         {
@@ -76,35 +63,26 @@ namespace ccl::lexer
             return repr.size();
         }
 
-        [[nodiscard]] auto
-            getTokenEnvironment() const noexcept CCL_LIFETIMEBOUND -> const TokenEnvironment &
-        {
-            return environment;
-        }
-
         [[nodiscard]] auto getLocation() const noexcept CCL_LIFETIMEBOUND -> const text::Location &
         {
-            return environment.location;
+            return location;
         }
 
         [[nodiscard]] auto getLine() const noexcept -> u32
         {
-            return environment.location.getLine();
+            return location.line;
         }
 
         [[nodiscard]] auto getColumn() const noexcept -> u32
         {
-            return environment.location.getColumn();
+            return location.column;
         }
 
-        [[nodiscard]] auto getRealColumn() const noexcept -> u32
-        {
-            return environment.location.getRealColumn();
-        }
+        [[nodiscard]] auto getRealColumn() const -> u32;
 
         [[nodiscard]] auto getFilename() const noexcept CCL_LIFETIMEBOUND -> isl::string_view
         {
-            return environment.location.getFilename();
+            return inputInfo->filename;
         }
 
         [[nodiscard]] auto getRepr() const noexcept CCL_LIFETIMEBOUND -> isl::string_view
@@ -112,16 +90,9 @@ namespace ccl::lexer
             return repr;
         }
 
-        [[nodiscard]] auto
-            getPrefixes() const noexcept CCL_LIFETIMEBOUND -> const std::vector<isl::string_view> &
+        [[nodiscard]] auto getExtractedParts() const noexcept CCL_LIFETIMEBOUND -> const auto &
         {
-            return prefixes;
-        }
-
-        [[nodiscard]] auto
-            getPostfixes() const noexcept CCL_LIFETIMEBOUND -> const std::vector<isl::string_view> &
-        {
-            return postfixes;
+            return extractedParts;
         }
 
         [[nodiscard]] auto getInlineRepr() const noexcept -> isl::string_view;
@@ -138,14 +109,9 @@ namespace ccl::lexer
             repr = repr.changeLength<isl::FunctionAPI::UNSAFE>(length);
         }
 
-        auto addPrefix(isl::string_view prefix) -> void
+        auto addExtractedPart(isl::string_view prefix) -> void
         {
-            prefixes.push_back(prefix);
-        }
-
-        auto addPostfix(isl::string_view postfix) -> void
-        {
-            postfixes.push_back(postfix);
+            extractedParts.push_back(prefix);
         }
 
         CCL_INLINE auto setEnd(isl::string_view::iterator end_of_repr) noexcept -> void

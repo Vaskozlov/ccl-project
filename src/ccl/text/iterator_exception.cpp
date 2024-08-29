@@ -4,13 +4,13 @@ namespace ccl::text
 {
     TextIteratorException::TextIteratorException(
         ExceptionCriticality exception_criticality, AnalysisStage analysis_stage,
-        const Location &exception_location, std::size_t exception_length,
-        isl::string_view working_line, std::string exception_message,
-        std::string exception_suggestion)
-      : location{exception_location}
-      , message{std::move(exception_message)}
+        Location exception_location, std::string name_of_file, std::size_t exception_length,
+        std::string working_line, std::string exception_message, std::string exception_suggestion)
+      : message{std::move(exception_message)}
       , suggestion{std::move(exception_suggestion)}
-      , workingLine{working_line}
+      , filename{std::move(name_of_file)}
+      , workingLine{std::move(working_line)}
+      , location{exception_location}
       , length{exception_length}
       , criticality{exception_criticality}
       , stage{analysis_stage}
@@ -23,8 +23,9 @@ namespace ccl::text
 
     auto TextIteratorException::createFullMessage() const -> std::string
     {
-        auto full_message =
-            fmt::format("Error occurred at: {}, message: {}\n{}\n", location, message, workingLine);
+        auto full_message = fmt::format(
+            "Error occurred at: {}, {}, message: {}\n{}\n", filename, location, message,
+            workingLine);
 
         addArrowToError(full_message);
         addSuggestion(full_message);
@@ -34,8 +35,8 @@ namespace ccl::text
 
     auto TextIteratorException::addArrowToError(std::string &full_message) const -> void
     {
-        const auto column_pos = location.getColumn();
-        auto new_message_size = full_message.size() + (column_pos > 0 ? column_pos - 1 : 0);
+        const auto column_pos = location.column;
+        const auto new_message_size = full_message.size() + (column_pos > 0 ? column_pos - 1 : 0);
 
         full_message.resize(new_message_size, ' ');
         full_message.push_back('^');

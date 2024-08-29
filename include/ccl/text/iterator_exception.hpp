@@ -7,7 +7,7 @@ namespace ccl
 {
     ISL_EXCEPTION(BasicTextIteratorException, std::exception, exception);
 
-    enum struct ExceptionCriticality : u32
+    enum struct ExceptionCriticality : u8
     {
         NONE,
         SUGGESTION,
@@ -17,7 +17,7 @@ namespace ccl
         PANIC
     };
 
-    enum struct AnalysisStage : u32
+    enum struct AnalysisStage : u8
     {
         NONE,
         LEXICAL_ANALYSIS,
@@ -30,10 +30,11 @@ namespace ccl::text
     class TextIteratorException : public BasicTextIteratorException
     {
     private:
-        Location location;
         std::string message;
         std::string suggestion;
-        isl::string_view workingLine;
+        std::string filename;
+        std::string workingLine;
+        Location location;
         std::size_t length{1};
         ExceptionCriticality criticality{ExceptionCriticality::NONE};
         AnalysisStage stage{AnalysisStage::NONE};
@@ -43,18 +44,18 @@ namespace ccl::text
 
         [[nodiscard]] TextIteratorException(
             ExceptionCriticality exception_criticality, AnalysisStage analysis_stage,
-            const Location &exception_location, std::size_t exception_length,
-            isl::string_view working_line, std::string exception_message,
+            Location exception_location, std::string name_of_file, std::size_t exception_length,
+            std::string working_line, std::string exception_message,
             std::string exception_suggestion = std::string{});
 
         [[nodiscard]] auto getLine() const noexcept -> std::size_t
         {
-            return location.getLine();
+            return location.line;
         }
 
         [[nodiscard]] auto getColumn() const noexcept -> std::size_t
         {
-            return location.getColumn();
+            return location.column;
         }
 
         [[nodiscard]] auto getLength() const noexcept -> std::size_t
@@ -64,7 +65,7 @@ namespace ccl::text
 
         [[nodiscard]] auto getFilename() const noexcept -> isl::string_view
         {
-            return location.getFilename();
+            return filename;
         }
 
         [[nodiscard]] auto getLocation() const noexcept CCL_LIFETIMEBOUND -> const Location &
@@ -72,18 +73,17 @@ namespace ccl::text
             return location;
         }
 
-        [[nodiscard]] auto
-            getWorkingLine() const noexcept CCL_LIFETIMEBOUND -> const isl::string_view &
+        [[nodiscard]] auto getWorkingLine() const noexcept CCL_LIFETIMEBOUND -> const std::string &
         {
             return workingLine;
         }
 
-        [[nodiscard]] auto getMessage() const noexcept -> isl::string_view
+        [[nodiscard]] auto getMessage() const noexcept CCL_LIFETIMEBOUND -> const std::string &
         {
             return message;
         }
 
-        [[nodiscard]] auto getSuggestion() const noexcept -> isl::string_view
+        [[nodiscard]] auto getSuggestion() const noexcept CCL_LIFETIMEBOUND -> const std::string &
         {
             return suggestion;
         }

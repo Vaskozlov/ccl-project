@@ -23,7 +23,7 @@ namespace ccl::lexer::rule
         postCreationCheck();
     }
 
-    auto Container::RuleParser::hasMovedToTheNextChar() -> bool
+    auto Container::RuleParser::hasMovedToTheNextChar() const -> bool
     {
         return !isEoF(ruleIterator.advance());
     }
@@ -53,27 +53,27 @@ namespace ccl::lexer::rule
             break;
 
         case U'*':
-            addRepetition(Closure{0, Closure::max()});
+            setClosure(Closure{0, Closure::max()});
             break;
 
         case U'+':
-            addRepetition(Closure{1, Closure::max()});
+            setClosure(Closure{1, Closure::max()});
             break;
 
         case U'?':
-            addRepetition(Closure{0, 1});
+            setClosure(Closure{0, 1});
             break;
 
         case U'{':
-            addRepetition(Closure{ruleIterator});
+            setClosure(Closure{ruleIterator});
             break;
 
         case U'^':
             reverseLastItem();
             break;
 
-        case U'p':
-            addPrefixPostfix();
+        case U'e':
+            makeLastItemExtractable();
             break;
 
         case U'h':
@@ -208,21 +208,15 @@ namespace ccl::lexer::rule
         last_item->hideFromParser();
     }
 
-    auto Container::RuleParser::addPrefixPostfix() -> void
+    auto Container::RuleParser::makeLastItemExtractable() -> void
     {
         checkAbilityToCreatePrefixOrPostfix();
 
         auto &last_item = items.back();
-        auto is_prefix = items.size() == 1 || items[items.size() - 2]->hasPrefix();
-
-        if (is_prefix) {
-            last_item->setPrefix();
-        } else {
-            last_item->setPostfix();
-        }
+        last_item->makeExtractable();
     }
 
-    auto Container::RuleParser::addRepetition(Closure new_repetition) -> void
+    auto Container::RuleParser::setClosure(Closure new_repetition) -> void
     {
         if (items.empty()) {
             throwUnableToApply("no items found to set repetition");
@@ -263,19 +257,6 @@ namespace ccl::lexer::rule
 
     auto Container::RuleParser::postCreationCheck() -> void
     {
-        const auto postfix_elem = std::ranges::find_if(items, [](const RuleBlock &elem) {
-            return elem->hasPostfix();
-        });
-
-        const bool postfixes_correct =
-            std::ranges::all_of(postfix_elem, items.cend(), [](const RuleBlock &elem) {
-                return elem->hasPostfix();
-            });
-
-        if (!postfixes_correct) {
-            throwUnableToApply("item without postfix modifier exists after items with it");
-        }
-
         if (constructedLhs.has_value() && !rhsItemConstructed) {
             throwUnableToApply("no rhs items to apply operation");
         }
@@ -286,11 +267,11 @@ namespace ccl::lexer::rule
         }
 
         completePreviousItemInitialization();
-        RuleBlockInterface::neverRecognizedSuggestion(ruleIterator, items.empty() && !isReversed());
-        RuleBlockInterface::alwaysRecognizedSuggestion(ruleIterator, items.empty() && isReversed());
+        neverRecognizedSuggestion(ruleIterator, items.empty() && !isReversed());
+        alwaysRecognizedSuggestion(ruleIterator, items.empty() && isReversed());
     }
 
-    auto Container::RuleParser::findContainerEnd(isl::string_view repr) -> std::size_t
+    auto Container::RuleParser::findContainerEnd(isl::string_view repr) const -> std::size_t
     {
         const auto closing_bracket_index = repr.findMatchingPair('(', ')');
 
@@ -322,26 +303,22 @@ namespace ccl::lexer::rule
 
         const auto &last_item = items.back();
 
-        if (last_item->hasPrefix()) {
-            throwUnableToApply("item already has prefix modifier");
-        }
-
-        if (last_item->hasPostfix()) {
-            throwUnableToApply("item already has postfix modifier");
+        if (last_item->isExtractable()) {
+            throwUnableToApply("item is already extractable");
         }
     }
 
     auto Container::RuleParser::throwUnableToApply(
         isl::string_view reason,
-        isl::string_view suggestion) -> void
+        isl::string_view suggestion) const -> void
     {
-        auto message = fmt::format("unable to apply: {}", reason);
+        const auto message = fmt::format("unable to apply: {}", reason);
 
         ruleIterator.throwCriticalError(AnalysisStage::LEXICAL_ANALYSIS, message, suggestion);
         throw UnrecoverableError{"unrecoverable error in ContainerType"};
     }
 
-    auto Container::RuleParser::throwUndefinedAction() -> void
+    auto Container::RuleParser::throwUndefinedAction() const -> void
     {
         using namespace isl::string_view_literals;
 

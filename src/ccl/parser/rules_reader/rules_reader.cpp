@@ -171,7 +171,7 @@ namespace ccl::parser::reader
                         LEXER_RULE_OPTIONS,
                     },
                     Rule{
-                        PREFIX_POSTFIX_OPERATOR,
+                        EXTRACTABLE_MODIFIER,
                         LEXER_RULE_OPTIONS,
                     },
                     Rule{

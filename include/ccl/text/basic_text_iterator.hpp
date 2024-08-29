@@ -137,7 +137,7 @@ namespace ccl::text
 
         CCL_DECL auto getRemainingText() const noexcept -> isl::string_view
         {
-            if (isInitialized()) [[likely]] {
+            if (isInitialized()) {
                 return {carriage + isl::utf8::size(getNextCarriageValue()), end};
             }
 
@@ -163,7 +163,7 @@ namespace ccl::text
             end = new_end;
         }
 
-        constexpr auto skip(std::size_t n) CCL_NOEXCEPT_IF(moveCarriageToTheNextByte()) -> void
+        constexpr auto skip(std::size_t n) -> void
         {
             ISL_UNROLL_N(4)
             for (auto i = isl::as<std::size_t>(0); i != n; ++i) {
@@ -171,18 +171,18 @@ namespace ccl::text
             }
         }
 
-        constexpr auto moveToCleanChar() CCL_NOEXCEPT_IF(advance()) -> void
+        constexpr auto moveToCleanChar() -> void
         {
             while (isLayout(futureChar())) {
                 advance();
             }
         }
 
-        constexpr auto advance() CCL_NOEXCEPT_IF(moveCarriageToTheNextByte()) -> char32_t
+        constexpr auto advance() -> char32_t
         {
             moveCarriageToTheNextByte();
 
-            while (remainingBytesToFinishSymbol != 0) [[unlikely]] {
+            while (remainingBytesToFinishSymbol != 0) {
                 moveCarriageToTheNextByte();
             }
 
@@ -246,13 +246,11 @@ namespace ccl::text
             return *carriage;
         }
 
-        constexpr auto modifyCurrentChar() noexcept(
-            noexcept(onNextCharacter(char32_t{})) && noexcept(onCarriageMove(char{})) &&
-            noexcept(onUtfError(char{}))) -> void
+        constexpr auto modifyCurrentChar() -> void
         {
             using namespace std::string_view_literals;
 
-            char chr = *carriage;
+            const char chr = *carriage;
             onCarriageMove(chr);
 
             if (remainingBytesToFinishSymbol != 0) {
@@ -266,7 +264,7 @@ namespace ccl::text
             }
         }
 
-        constexpr auto trailingCharacterMove(char chr) CCL_NOEXCEPT_IF(onUtfError(chr)) -> void
+        constexpr auto trailingCharacterMove(char chr) -> void
         {
             if (!isl::utf8::isTrailingCharacter(chr)) [[unlikely]] {
                 onUtfError(chr);
@@ -281,7 +279,7 @@ namespace ccl::text
             }
         }
 
-        constexpr auto newCharacterMove(char chr) CCL_NOEXCEPT_IF(onUtfError(chr)) -> void
+        constexpr auto newCharacterMove(char chr) -> void
         {
             remainingBytesToFinishSymbol = isl::utf8::size(chr);
 
@@ -299,7 +297,7 @@ namespace ccl::text
     class CCL_TRIVIAL_ABI BasicTextIterator final : public CrtpBasicTextIterator<BasicTextIterator>
     {
     public:
-        using CrtpBasicTextIterator<BasicTextIterator>::CrtpBasicTextIterator;
+        using CrtpBasicTextIterator::CrtpBasicTextIterator;
 
         constexpr static auto onMove(char /* chr */) noexcept -> void
         {

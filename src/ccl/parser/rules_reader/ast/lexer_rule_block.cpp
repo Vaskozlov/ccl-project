@@ -110,8 +110,8 @@ namespace ccl::parser::reader::ast
                 rule_block->setClosure(lexer::rule::Closure{1, lexer::rule::Closure::max()});
                 break;
 
-            case PREFIX_POSTFIX_OPERATOR:
-                rule_block->setPrefix();
+            case EXTRACTABLE_MODIFIER:
+                rule_block->makeExtractable();
                 break;
 
             case NOT_OPERATOR:

@@ -100,7 +100,7 @@ namespace ccl::lexer::rule
         [[nodiscard]] auto
             itemSuccessfullyEnded(const ForkedGenerator &text_iterator) const -> bool;
 
-        static auto addPrefixOrPostfix(
+        static auto addExtractedPart(
             const RuleBlockInterface *item, Token &token, isl::string_view repr) -> void;
     };
 
@@ -135,7 +135,7 @@ namespace ccl::lexer::rule
 
         auto tryToFinishBinaryExpression() -> void;
 
-        [[nodiscard]] auto hasMovedToTheNextChar() -> bool;
+        [[nodiscard]] auto hasMovedToTheNextChar() const -> bool;
 
         [[nodiscard]] auto constructBinaryExpression() -> RuleBlock;
 
@@ -155,9 +155,9 @@ namespace ccl::lexer::rule
 
         auto hideFromParser() -> void;
 
-        auto addPrefixPostfix() -> void;
+        auto makeLastItemExtractable() -> void;
 
-        auto addRepetition(Closure new_repetition) -> void;
+        auto setClosure(Closure new_repetition) -> void;
 
         auto makeSpecial() -> void;
 
@@ -165,16 +165,16 @@ namespace ccl::lexer::rule
 
         auto postCreationCheck() -> void;
 
-        [[nodiscard]] auto findContainerEnd(isl::string_view repr) -> std::size_t;
+        [[nodiscard]] auto findContainerEnd(isl::string_view repr) const -> std::size_t;
 
         auto checkThereIsLhsItem() -> void;
 
         auto checkAbilityToCreatePrefixOrPostfix() -> void;
 
         [[noreturn]] auto
-            throwUnableToApply(isl::string_view reason, isl::string_view suggestion = {}) -> void;
+            throwUnableToApply(isl::string_view reason, isl::string_view suggestion = {}) const -> void;
 
-        [[noreturn]] auto throwUndefinedAction() -> void;
+        [[noreturn]] auto throwUndefinedAction() const -> void;
     };
 
     class RuleBlockInterface::AnyPlaceItems

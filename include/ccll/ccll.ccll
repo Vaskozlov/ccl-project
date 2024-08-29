@@ -3,9 +3,9 @@ VAR_NAME    = "CcllAnalyzer"
 HANDLER     = "ccl::handler::Cmd::instance()"
 
 [SUCCESS]
-GROUP_DECLARATION:                      [\[]p ( [a-zA-Z_][a-zA-Z_0-9]* )p [\]]p
-RULE:                                   ( [a-zA-Z_][a-zA-Z_0-9]* )p [ \t]* [:] [ \t]* ( [\n]+^ )p
-DIRECTIVE:                              ( [a-zA-Z_][a-zA-Z_0-9]* )p [ \t]* [=] [ \t]* ("\"" (["]^ | "\\\"" )* "\"")p
+GROUP_DECLARATION:                      [\[]e ( [a-zA-Z_][a-zA-Z_0-9]* )e [\]]e
+RULE:                                   ( [a-zA-Z_][a-zA-Z_0-9]* )e [ \t]* [:] [ \t]* ( [\n]+^ )e
+DIRECTIVE:                              ( [a-zA-Z_][a-zA-Z_0-9]* )e [ \t]* [=] [ \t]* ("\"" (["]^ | "\\\"" )* "\"")e
 
 [FAILURE]
 BAD_GROUP_DECLARATION_EMPTY_NAME:       [\[] [\]] [\n]*^
@@ -13,8 +13,8 @@ BAD_GROUP_DECLARATION_BRACKET_AND_NAME: [\[] [a-zA-Z_][a-zA-Z_0-9]*[\n]*^
 BAD_GROUP_NO_OPEN_BRACKET:              [a-zA-Z_][a-zA-Z_0-9]* [\]] [\n]*^
 BAD_GROUP_DECLARATION_ONLY_BRACKET:     [\[] [\n]*^
 
-BAD_RULE_DECLARATION:                   ( [a-zA-Z_][a-zA-Z_0-9]* )p [ \t]* [:] [\n]*^
-BAD_DIRECTIVE_DECLARATION:              ( [a-zA-Z_][a-zA-Z_0-9]* )p [ \t]* [=] [\n]*^
+BAD_RULE_DECLARATION:                   ( [a-zA-Z_][a-zA-Z_0-9]* )e [ \t]* [:] [\n]*^
+BAD_DIRECTIVE_DECLARATION:              ( [a-zA-Z_][a-zA-Z_0-9]* )e [ \t]* [=] [\n]*^
 BAD_RULE_OR_DIRECTIVE_DECLARATION:      [a-zA-Z_][a-zA-Z_0-9]* [\n]*^
 
 [EXTRA]

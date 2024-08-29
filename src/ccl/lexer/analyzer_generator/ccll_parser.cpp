@@ -3,13 +3,13 @@
 
 namespace ccl::lexer::parser
 {
-    static auto EmptyLexicalAnalyzer = lexer::LexicalAnalyzer(ExceptionHandler::instance(), {});
+    static auto EmptyLexicalAnalyzer = LexicalAnalyzer(ExceptionHandler::instance(), {});
 
     CcllParser::Rule::Rule(
         SmallId rule_id, isl::string_view rule_name, isl::string_view rule_definition)
       : name{rule_name}
       , definition{rule_definition}
-      , id{static_cast<u32>(rule_id)}
+      , id{rule_id}
     {}
 
     CcllParser::CcllParser(Tokenizer &input_tokenizer)
@@ -76,11 +76,10 @@ namespace ccl::lexer::parser
 
     auto CcllParser::completeRule(const Token &token) -> void
     {
-        const auto &prefixes = token.getPrefixes();
-        const auto &postfixes = token.getPostfixes();
+        const auto &extracted_parts = token.getExtractedParts();
 
-        auto name = prefixes.at(0);
-        auto rule = postfixes.at(0);
+        auto name = extracted_parts.at(0);
+        auto rule = extracted_parts.at(1);
 
         checkRule(token);
         rules.emplace_back(idGenerator.next(), name, rule);
@@ -88,11 +87,10 @@ namespace ccl::lexer::parser
 
     auto CcllParser::completeDirective(const Token &token) -> void
     {
-        const auto &prefixes = token.getPrefixes();
-        const auto &postfixes = token.getPostfixes();
+        const auto &extracted_parts = token.getExtractedParts();
 
-        const auto &name = prefixes.at(0);
-        auto value = postfixes.at(0);
+        const auto &name = extracted_parts.at(0);
+        auto value = extracted_parts.at(1);
 
         // value is represented as string, so we need to remove " from both sides
         value = value.substr(1, value.size() - 2);
@@ -107,10 +105,8 @@ namespace ccl::lexer::parser
         auto text_iterator = text::TextIterator{
             line_repr, tokenizer.getHandler(),
             text::Location{
-                location.getFilename(),
-                location.getLine(),
-                location.getColumn() - 1,
-                location.getRealColumn() - 1,
+                .line = location.line,
+                .column = location.column - 1,
             }};
 
         // NOLINTNEXTLINE : is guaranteed by lexical analyzer rule

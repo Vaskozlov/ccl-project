@@ -31,28 +31,28 @@ namespace ccl::lexer
             constexpr Rule(T rule_id, isl::string_view rule_repr)
               : name{lexerEnumToString<T>(rule_id)}
               , repr{rule_repr}
-              , id{isl::as<u32>(rule_id)}
+              , id{std::to_underlying(rule_id)}
             {}
         };
 
         ankerl::unordered_dense::map<std::string, Container *> allItemsMap;
         std::vector<std::unique_ptr<Container>> items;
         AnyPlaceItems anyPlaceItems;
-        std::vector<u32> ignoredIds;
+        std::vector<SmallId> ignoredIds;
         mutable std::string skippedCharacters;
 
         // NOLINTNEXTLINE reference
-        ExceptionHandler &exceptionHandler;
+        const ExceptionHandler *exceptionHandler;
 
     public:
         class Tokenizer;
         class PegParser;
 
-        [[nodiscard]] explicit LexicalAnalyzer(ExceptionHandler &exception_handler);
+        [[nodiscard]] explicit LexicalAnalyzer(const ExceptionHandler &exception_handler);
 
         [[nodiscard]] LexicalAnalyzer(
-            ExceptionHandler &exception_handler, const std::initializer_list<Rule> &rules,
-            isl::string_view filename = {}, std::vector<u32> ignored_ids = {});
+            const ExceptionHandler &exception_handler, const std::initializer_list<Rule> &rules,
+            isl::string_view filename = {}, std::vector<SmallId> ignored_ids = {});
 
         [[nodiscard]] auto shareAnyPlaceItems() CCL_LIFETIMEBOUND -> AnyPlaceItems &
         {
@@ -62,7 +62,7 @@ namespace ccl::lexer
         auto addContainer(const std::string &rule_name, std::unique_ptr<Container> new_container)
             -> void;
 
-        [[nodiscard]] auto getIgnoredIds() const CCL_LIFETIMEBOUND -> const std::vector<u32> &
+        [[nodiscard]] auto getIgnoredIds() const CCL_LIFETIMEBOUND -> const std::vector<SmallId> &
         {
             return ignoredIds;
         }

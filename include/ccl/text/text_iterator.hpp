@@ -9,14 +9,20 @@
 
 namespace ccl::text
 {
+    struct InputInfo
+    {
+        isl::string_view wholeText;
+        isl::string_view filename;
+    };
+
     class TextIterator : public CrtpBasicTextIterator<TextIterator>
     {
     private:
         using extra_symbols_t = std::span<const isl::Pair<char32_t, char32_t>>;
 
+        InputInfo inputInfo;
         Location location;
-        isl::string_view wholeInput;
-        ExceptionHandler *exceptionHandler{};
+        const ExceptionHandler *exceptionHandler{};
 
     public:
         class EscapingSequenceToChar;
@@ -31,12 +37,12 @@ namespace ccl::text
 
         [[nodiscard]] explicit TextIterator(
             isl::string_view input,
-            ExceptionHandler &exception_handler = ExceptionHandler::instance(),
+            const ExceptionHandler &exception_handler = ExceptionHandler::instance(),
             isl::string_view filename = {});
 
         [[nodiscard]] explicit TextIterator(
             isl::string_view input,
-            ExceptionHandler &exception_handler,
+            const ExceptionHandler &exception_handler,
             const Location &iterator_location);
 
         [[nodiscard]] auto getLocation() const noexcept CCL_LIFETIMEBOUND -> const Location &
@@ -46,36 +52,38 @@ namespace ccl::text
 
         [[nodiscard]] auto getLine() const noexcept -> u32
         {
-            return location.getLine();
+            return location.line;
         }
 
         [[nodiscard]] auto getColumn() const noexcept -> u32
         {
-            return location.getColumn();
+            return location.column;
         }
 
-        [[nodiscard]] auto getRealColumn() const noexcept -> u32
-        {
-            return location.getRealColumn();
-        }
+        [[nodiscard]] auto getRealColumn() const -> u32;
 
         [[nodiscard]] auto getFilename() const noexcept -> isl::string_view
         {
-            return location.getFilename();
+            return inputInfo.filename;
         }
 
         [[nodiscard]] auto getWholeInput() const noexcept -> isl::string_view
         {
-            return wholeInput;
+            return inputInfo.wholeText;
+        }
+
+        [[nodiscard]] auto getInputInfo() const noexcept -> const InputInfo *
+        {
+            return std::addressof(inputInfo);
         }
 
         [[nodiscard]] auto getCurrentLine() const -> isl::string_view
         {
             const auto *current_it = getCarriage();
-            return linesOfFragment(wholeInput, {current_it, std::next(current_it)});
+            return linesOfFragment(inputInfo.wholeText, {current_it, std::next(current_it)});
         }
 
-        [[nodiscard]] auto getHandler() noexcept -> ExceptionHandler &
+        [[nodiscard]] auto getHandler() const noexcept -> const ExceptionHandler &
         {
             return *exceptionHandler;
         }
@@ -83,17 +91,15 @@ namespace ccl::text
         auto nextCharWithEscapingSymbols(const extra_symbols_t &extra_symbols = {})
             -> isl::Pair<bool, char32_t>;
 
-        CCL_INLINE auto onMove(char chr) -> void
-        {
-            location.intermediateNext(chr);
-        }
+        CCL_INLINE static auto onMove(char /* unused */) -> void
+        {}
 
         CCL_INLINE auto onCharacter(char32_t chr) -> void
         {
             location.next(chr);
         }
 
-        [[noreturn]] auto utfError(char /* unused */) -> void
+        [[noreturn]] auto utfError(char /* unused */) const -> void
         {
             throwPanicError(AnalysisStage::LEXICAL_ANALYSIS, "invalid utf symbol");
             throw UnrecoverableError{"unable to recover, because of invalid utf symbol"};
@@ -215,15 +221,15 @@ namespace ccl::text
         [[nodiscard]] auto isOutOfNotation(char32_t chr) const -> bool;
 
         auto checkNotation() const -> void;
+
         auto checkAllCharsUsage(u32 chars_count) const -> void;
 
         auto throwNotEnoughCharsException(u32 chars_count) const -> void;
 
-        [[nodiscard]] auto
-            createSuggestionNotEnoughChars(u32 chars_count) const -> std::string;
+        [[nodiscard]] auto createSuggestionNotEnoughChars(u32 chars_count) const -> std::string;
 
-        auto insertExtraZerosToNotEnoughMessage(u32 chars_count, std::string &message) const
-            -> void;
+        auto
+            insertExtraZerosToNotEnoughMessage(u32 chars_count, std::string &message) const -> void;
     };
 
     extern template class CrtpBasicTextIterator<TextIterator>;

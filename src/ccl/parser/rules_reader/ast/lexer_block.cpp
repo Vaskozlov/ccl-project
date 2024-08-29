@@ -15,7 +15,7 @@ namespace ccl::parser::reader::ast
 
         const lexer::Token &rule_identifier_token = rule_identifier->getToken();
         const auto rule_name =
-            static_cast<std::string>(rule_identifier_token.getPrefixes().front());
+            static_cast<std::string>(rule_identifier_token.getExtractedParts().front());
 
         auto rule_block = isl::get<std::unique_ptr<lexer::rule::Container>>(
             rule_alternative->construct(parser_builder));

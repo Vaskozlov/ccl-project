@@ -49,52 +49,61 @@ namespace ccl::lexer
         }
     };
 
-    TokenEnvironment::TokenEnvironment(const text::TextIterator &text_iterator)
-      : location{text_iterator.getLocation()}
-      , wholeText{text_iterator.getWholeInput()}
-    {}
 
-    Token::Token(SmallId token_id)
-      : id{token_id}
-    {}
-
-    Token::Token(
-        const TokenEnvironment &token_environment, isl::string_view token_repr, SmallId token_id)
-      : environment{token_environment}
-      , repr{token_repr}
+    Token::Token(SmallId token_id, const text::InputInfo *input_info)
+      : inputInfo{input_info}
       , id{token_id}
     {}
 
+
     Token::Token(
-        const TokenEnvironment &token_environment, isl::string_view::iterator text_begin,
-        SmallId token_id)
-      : Token{token_environment, {text_begin, isl::as<std::size_t>(0)}, token_id}
+        SmallId token_id, isl::string_view token_repr, text::Location token_location,
+        const text::InputInfo *input_info)
+      : repr{token_repr}
+      , location{token_location}
+      , inputInfo{input_info}
+      , id{token_id}
     {}
 
-    Token::Token(const text::TextIterator &text_iterator, SmallId token_id)
-      : environment{text_iterator}
-      , repr{text_iterator.getRemaining()}
+    Token::Token(SmallId token_id, const text::TextIterator &text_iterator)
+      : repr{text_iterator.getRemaining()}
+      , inputInfo{text_iterator.getInputInfo()}
       , id{token_id}
     {}
 
     auto Token::clear(SmallId new_id) noexcept -> void
     {
         id = new_id;
-        prefixes.clear();
-        postfixes.clear();
+        extractedParts.clear();
+    }
+
+    auto Token::getRealColumn() const -> u32
+    {
+        const auto *it = repr.begin();
+        const auto *text_begin = inputInfo->wholeText.begin();
+
+        while (it >= text_begin) {
+            if (*it == '\n') {
+                break;
+            }
+
+            --it;
+        }
+
+        return isl::as<u32>(std::distance(it, repr.begin()));
     }
 
     auto Token::getInlineRepr() const noexcept -> isl::string_view
     {
-        return text::TextIterator::linesOfFragment(environment.wholeText, repr);
+        return text::TextIterator::linesOfFragment(inputInfo->wholeText, repr);
     }
 
     auto Token::getTabsAndSpaces() const noexcept -> isl::string_view
     {
-        const auto whole_input = environment.wholeText;
+        const auto *text_begin = inputInfo->wholeText.begin();
         const auto *it = std::next(repr.begin(), -1);
 
-        while (it >= whole_input.begin()) {
+        while (it >= text_begin) {
             if (!isTabOrSpace(*it)) {
                 break;
             }
@@ -114,9 +123,11 @@ namespace ccl::lexer
         text_iterator.skip(first);
 
         new_token.repr = text_iterator.getRemaining();
-        new_token.environment.location = text::Location{
-            getFilename(), getLine(), getColumn() + text_iterator.getSkippedCharacters(),
-            getRealColumn() + text_iterator.getSkippedBytes()};
+
+        new_token.location = text::Location{
+            .line = getLine(),
+            .column = getColumn() + text_iterator.getSkippedCharacters(),
+        };
 
         text_iterator.clearAccumulator();
         text_iterator.skip(length);
@@ -131,7 +142,7 @@ namespace ccl::lexer
     {
         text_iterator.skip(1);
         repr = text_iterator.getRemainingWithCurrent();
-        environment = TokenEnvironment{text_iterator};
+        location = text_iterator.getLocation();
 
         setReprLength(totally_skipped);
         text_iterator.skip(totally_skipped - 1);

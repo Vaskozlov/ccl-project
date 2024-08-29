@@ -16,30 +16,29 @@ namespace math
 {
     enum MathLexerToken : ccl::SmallId
     {
-        NONE = 0ULL,
-        EOI = 0ULL,
-        BAD_TOKEN = 1ULL,
-        CUT = 2ULL,
-        ANGLE_OPEN = 3ULL,
-        ANGLE_CLOSE = 4ULL,
-        ADD = 5ULL,
-        SUB = 6ULL,
-        MUL = 7ULL,
-        DIV = 8ULL,
-        NUMBER = 9ULL,
-        NAME = 10ULL,
-        GOAL = 11ULL,
-        EPSILON = 12ULL,
-        EXPR = 13ULL,
-        EXPR_C = 14ULL,
-        TERM = 15ULL,
-        TERM_C = 16ULL,
-        VALUE = 17ULL,
-        FACTOR = 18ULL,
+        EOI = 0U,
+        BAD_TOKEN = 1U,
+        CUT = 2U,
+        ANGLE_OPEN = 3U,
+        ANGLE_CLOSE = 4U,
+        ADD = 5U,
+        SUB = 6U,
+        MUL = 7U,
+        DIV = 8U,
+        NUMBER = 9U,
+        NAME = 10U,
+        GOAL = 11U,
+        EPSILON = 12U,
+        EXPR = 13U,
+        EXPR_C = 14U,
+        TERM = 15U,
+        TERM_C = 16U,
+        VALUE = 17U,
+        FACTOR = 18U,
     };
 
     // NOLINTNEXTLINE
-    inline const auto MathLexer = ccl::lexer::LexicalAnalyzer{
+    inline auto const MathLexer = ccl::lexer::LexicalAnalyzer{
         ccl::handler::Cmd::instance(),
         {
             {MathLexerToken::ANGLE_OPEN, R"( ![(] )"},
@@ -88,6 +87,6 @@ namespace ccl::lexer
     template<>
     CCL_DECL auto lexerEnumToString<math::MathLexerToken>(SmallId value) -> std::string
     {
-        return std::string{math::ToStringMathLexerToken[value]};
+        return static_cast<std::string>(math::ToStringMathLexerToken[value]);
     }
 }// namespace ccl::lexer

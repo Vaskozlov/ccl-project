@@ -6,12 +6,17 @@ TEST_CASE("TextIteratorExceptionConstruction", "[TextIterator]")
 {
     using namespace ccl;
 
-    auto text_iterator = text::TextIterator(
+    const auto text_iterator = text::TextIterator(
         "Hello, World!\nIt's a test string!", ExceptionHandler::instance(), "builtin");
 
-    auto exception = text::TextIteratorException(
-        ExceptionCriticality::UNCRITICAL, AnalysisStage::LEXICAL_ANALYSIS,
-        text_iterator.getLocation(), 1, text_iterator.getCurrentLine(), "some message");
+    const auto exception = text::TextIteratorException{
+        ExceptionCriticality::UNCRITICAL,
+        AnalysisStage::LEXICAL_ANALYSIS,
+        text_iterator.getLocation(),
+        "builtin",
+        1,
+        static_cast<std::string>(text_iterator.getCurrentLine()),
+        "some message"};
 
     REQUIRE(exception.getColumn() == 0);
     REQUIRE(exception.getMessage() == "some message");

@@ -102,16 +102,10 @@ namespace ccl::parser
                 case REDUCE: {
                     const auto &lr_item = action.getReducingItem();
                     const auto production = lr_item.production;
-                    const auto *rule = lr_item.dottedRule.rule;
                     const auto number_of_elements_to_pop =
                         static_cast<SmallId>(lr_item.dottedRule.size());
 
-                    gss.reduce(
-                        number_of_elements_to_pop,
-                        &gotoTable,
-                        production,
-                        descriptor);
-
+                    gss.reduce(number_of_elements_to_pop, &gotoTable, production, descriptor);
                     break;
                 }
 

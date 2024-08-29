@@ -9,8 +9,6 @@ namespace ccl::lexer::gen
     using codegen::pop_scope;
     using codegen::push_scope;
 
-    constexpr static auto ShiftSize = sizeof(std::size_t) * 8 / 2;
-
     constexpr static auto IncludedHeaders = []() {
         std::array<isl::string_view, 3> result = {
             "<ccl/handler/cmd.hpp>", "<ccl/lexer/tokenizer.hpp>", "<isl/static_flat_map.hpp>"};
@@ -45,9 +43,16 @@ namespace ccl::lexer::gen
             } else if (name_str == "NAMESPACE") {
                 nameSpace = std::move(value_str);
             } else {
-                auto exception = text::TextIteratorException(
-                    ExceptionCriticality::CRITICAL, AnalysisStage::PARSING, name.getLocation(),
-                    name_str.size(), name.getInlineRepr(), "unrecognizable directive");
+                auto exception = text::TextIteratorException{
+                    ExceptionCriticality::CRITICAL,
+                    AnalysisStage::PARSING,
+                    name.getLocation(),
+                    filename,
+                    name_str.size(),
+                    static_cast<std::string>(name.getInlineRepr()),
+                    "unrecognizable directive",
+                };
+
                 tokenizer.getHandler().handle(exception);
             }
         }
@@ -247,7 +252,7 @@ namespace ccl::lexer::gen
 
         codeGenerator << fmt::format(
             "template<>\n"
-            "CCL_DECL auto lexerEnumToString<{0}::{1}>({0}::{1} value) -> std::string ",
+            "CCL_DECL auto lexerEnumToString<{0}::{1}>(SmallId value) -> std::string ",
             nameSpace, enumName);
 
         codeGenerator << "{" << endl << push_scope;

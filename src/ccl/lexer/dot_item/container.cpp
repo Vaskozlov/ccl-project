@@ -3,17 +3,11 @@
 
 namespace ccl::lexer::rule
 {
-    CCL_INLINE auto Container::addPrefixOrPostfix(
+    CCL_INLINE auto Container::addExtractedPart(
         const RuleBlockInterface *item, Token &token, isl::string_view repr) -> void
     {
-        if (repr.empty()) [[unlikely]] {
-            return;
-        }
-
-        if (item->hasPrefix()) [[unlikely]] {
-            token.addPrefix(repr);
-        } else if (item->hasPostfix()) [[unlikely]] {
-            token.addPostfix(repr);
+        if (item->isExtractable()) [[unlikely]] {
+            token.addExtractedPart(repr);
         }
     }
 
@@ -64,7 +58,7 @@ namespace ccl::lexer::rule
             const auto prefix_or_postfix_repr = isl::string_view{
                 local_iterator.getRemainingAsCarriage(), scan_result.getBytesCount()};
 
-            addPrefixOrPostfix(item.get(), token, prefix_or_postfix_repr);
+            addExtractedPart(item.get(), token, prefix_or_postfix_repr);
 
             totally_skipped += scan_result.getBytesCount();
             local_iterator.skip(scan_result.getBytesCount());

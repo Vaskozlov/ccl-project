@@ -9,7 +9,7 @@ namespace ccl::parser::reader::ast
         const auto *declaration_token = dynamic_cast<const parser::ast::Terminal *>(value_node);
         const auto &token = declaration_token->getToken();
 
-        return token.getPrefixes().front();
+        return token.getExtractedParts().front();
     }
 
     auto ParserRuleDecl::getAlternatives() const -> const ParserRuleAlternatives *

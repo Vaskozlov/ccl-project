@@ -2,7 +2,7 @@
 #include <ccl/lexer/lexical_analyzer.hpp>
 #include <ccl/lexer/rule/container.hpp>
 
-TEST_CASE("ContainerPrefixAndPostfix", "[Container]")
+TEST_CASE("ContainerTwoExtractablePartsCreation", "[Container]")
 {
     using namespace ccl;
 
@@ -10,14 +10,14 @@ TEST_CASE("ContainerPrefixAndPostfix", "[Container]")
 
     auto container = lexer::rule::Container{
         empty_lexical_analyzer,
-        text::TextIterator{R"([a-z]+p[_]"test"p)"},
+        text::TextIterator{R"([a-z]*e[_]e"test")"},
         true,
+        false,
     };
 
     DEBUG_VAR items = container.getItems();
 
-    REQUIRE(items.at(0)->hasPrefix());
-    REQUIRE(!items.at(1)->hasPrefix());
-    REQUIRE(!items.at(1)->hasPostfix());
-    REQUIRE(items.at(2)->hasPostfix());
+    REQUIRE(items.at(0)->isExtractable());
+    REQUIRE(items.at(1)->isExtractable());
+    REQUIRE(!items.at(2)->isExtractable());
 }

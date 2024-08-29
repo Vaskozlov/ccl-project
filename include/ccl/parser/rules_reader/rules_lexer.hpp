@@ -4,19 +4,16 @@
 #include <ccl/lexer/tokenizer.hpp>
 #include <isl/static_flat_map.hpp>
 
-namespace ccl::parser::reader
-{
+namespace ccl::parser::reader{    
     enum RulesLexerToken : ccl::SmallId;
 }
 
 template<>
-CCL_DECL auto ccl::lexer::lexerEnumToString<ccl::parser::reader::RulesLexerToken>(SmallId value)
-    -> std::string;
+CCL_DECL auto ccl::lexer::lexerEnumToString<ccl::parser::reader::RulesLexerToken>(SmallId value) -> std::string;
 
 namespace ccl::parser::reader
 {
-    enum RulesLexerToken : ccl::SmallId
-    {
+    enum RulesLexerToken : ccl::SmallId {    
         EOI = 0U,
         BAD_TOKEN = 1U,
         CUT = 2U,
@@ -36,7 +33,7 @@ namespace ccl::parser::reader
         STRING = 16U,
         ANY_PLACE_STRING = 17U,
         UNION = 18U,
-        PREFIX_POSTFIX_OPERATOR = 19U,
+        EXTRACTABLE_MODIFIER = 19U,
         HIDE_OPERATOR = 20U,
         NOT_OPERATOR = 21U,
         COLUMN = 22U,
@@ -54,11 +51,11 @@ namespace ccl::parser::reader
         LEXER_RULE_ALTERNATIVE = 34U,
         LEXER_RULE_OPTIONS = 35U,
     };
-
+    
     // NOLINTNEXTLINE
-    inline auto const RulesLexer = ccl::lexer::LexicalAnalyzer{
+    inline auto const RulesLexer = ccl::lexer::LexicalAnalyzer{    
         ccl::handler::Cmd::instance(),
-        {
+        {    
             {RulesLexerToken::LEXER_START, R"( "%LEXER%" )"},
             {RulesLexerToken::PARSER_START, R"( "%PARSER%" )"},
             {RulesLexerToken::OR, R"( ! [|] )"},
@@ -69,13 +66,13 @@ namespace ccl::parser::reader
             {RulesLexerToken::CURLY_CLOSE, R"( ! [}] )"},
             {RulesLexerToken::COMMA, R"( ! [,] )"},
             {RulesLexerToken::NUMBER, R"( [0-9]+ )"},
-            {RulesLexerToken::RULE_IDENTIFIER, R"( 'IDENTIFIER'p [ \t]* [:] )"},
+            {RulesLexerToken::RULE_IDENTIFIER, R"( 'IDENTIFIER'e [ \t]* [:] )"},
             {RulesLexerToken::IDENTIFIER, R"( [a-zA-Z_][a-zA-Z0-9_]* )"},
             {RulesLexerToken::RULE_REFERENCE, R"( ! [<] [>]^* [>] )"},
             {RulesLexerToken::STRING, R"( ! ["] ("\\\"" | ["]^)* ["] )"},
             {RulesLexerToken::ANY_PLACE_STRING, R"( ! ['] ([']^ | "\"")* ['] )"},
             {RulesLexerToken::UNION, R"( ! [\[] ("\\\]" | [\]]^)* [\]] )"},
-            {RulesLexerToken::PREFIX_POSTFIX_OPERATOR, R"( ! [p] )"},
+            {RulesLexerToken::EXTRACTABLE_MODIFIER, R"( ! [e] )"},
             {RulesLexerToken::HIDE_OPERATOR, R"( ! [h] )"},
             {RulesLexerToken::NOT_OPERATOR, R"( ! [^] )"},
             {RulesLexerToken::COLUMN, R"( ! [:] )"},
@@ -92,9 +89,11 @@ namespace ccl::parser::reader
             {RulesLexerToken::LEXER_RULE_BLOCK, R"( [#] )"},
             {RulesLexerToken::LEXER_RULE_ALTERNATIVE, R"( [#] )"},
             {RulesLexerToken::LEXER_RULE_OPTIONS, R"( [#] )"},
-        }};
-
-    inline constexpr isl::StaticFlatmap<ccl::SmallId, isl::string_view, 36> ToStringRulesLexerToken{
+        }
+    };
+    
+    inline constexpr isl::StaticFlatmap<ccl::SmallId, isl::string_view, 36> ToStringRulesLexerToken
+    {    
         {RulesLexerToken::EOI, "EOI"},
         {RulesLexerToken::BAD_TOKEN, "BAD_TOKEN"},
         {RulesLexerToken::CUT, "CUT"},
@@ -114,7 +113,7 @@ namespace ccl::parser::reader
         {RulesLexerToken::STRING, "STRING"},
         {RulesLexerToken::ANY_PLACE_STRING, "ANY_PLACE_STRING"},
         {RulesLexerToken::UNION, "UNION"},
-        {RulesLexerToken::PREFIX_POSTFIX_OPERATOR, "PREFIX_POSTFIX_OPERATOR"},
+        {RulesLexerToken::EXTRACTABLE_MODIFIER, "EXTRACTABLE_MODIFIER"},
         {RulesLexerToken::HIDE_OPERATOR, "HIDE_OPERATOR"},
         {RulesLexerToken::NOT_OPERATOR, "NOT_OPERATOR"},
         {RulesLexerToken::COLUMN, "COLUMN"},
@@ -134,12 +133,10 @@ namespace ccl::parser::reader
     };
 }// namespace ccl::parser::reader
 
-namespace ccl::lexer
-{
+namespace ccl::lexer {
     template<>
-    CCL_DECL auto
-        lexerEnumToString<ccl::parser::reader::RulesLexerToken>(SmallId value) -> std::string
-    {
+    CCL_DECL auto lexerEnumToString<ccl::parser::reader::RulesLexerToken>(SmallId value) -> std::string {
         return static_cast<std::string>(ccl::parser::reader::ToStringRulesLexerToken[value]);
     }
-}// namespace ccl::lexer
+}
+

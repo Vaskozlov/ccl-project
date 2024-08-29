@@ -74,10 +74,16 @@ namespace ccl::text
         const TextIterator &iterator_location, ExceptionCriticality criticality,
         AnalysisStage stage, isl::string_view message, isl::string_view suggestion) const -> void
     {
-        auto exception = TextIteratorException(
-            criticality, stage, iterator_location.getLocation(), 1,
-            iterator_location.getCurrentLine(), as<std::string>(message),
-            as<std::string>(suggestion));
+        auto exception = TextIteratorException{
+            criticality,
+            stage,
+            iterator_location.getLocation(),
+            static_cast<std::string>(inputInfo.filename),
+            1,
+            static_cast<std::string>(iterator_location.getCurrentLine()),
+            static_cast<std::string>(message),
+            static_cast<std::string>(suggestion),
+        };
 
         if (exceptionHandler == nullptr) {
             throw std::move(exception);

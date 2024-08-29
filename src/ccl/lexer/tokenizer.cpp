@@ -5,16 +5,17 @@ namespace ccl::lexer
     using Tokenizer = LexicalAnalyzer::Tokenizer;
 
     Tokenizer::Tokenizer(
-        const LexicalAnalyzer &lexical_analyzer, isl::string_view text, isl::string_view filename)
-      : lexicalAnalyzer{lexical_analyzer}
-      , textIterator{text, lexical_analyzer.exceptionHandler, filename}
+        const LexicalAnalyzer &lexical_analyzer, const isl::string_view text,
+        const isl::string_view filename)
+      : Tokenizer{lexical_analyzer, text, filename, *lexical_analyzer.exceptionHandler}
     {}
 
     Tokenizer::Tokenizer(
-        const LexicalAnalyzer &lexical_analyzer, isl::string_view text, isl::string_view filename,
-        ExceptionHandler &exception_handler)
-      : lexicalAnalyzer{lexical_analyzer}
-      , textIterator{text, exception_handler, filename}
+        const LexicalAnalyzer &lexical_analyzer, const isl::string_view text,
+        const isl::string_view filename, const ExceptionHandler &exception_handler)
+      : textIterator{text, exception_handler, filename}
+      , inputInfo{.wholeText = text, .filename = filename}
+      , lexicalAnalyzer{lexical_analyzer}
     {}
 
     auto Tokenizer::shouldIgnoreToken(const Token &token) const -> bool
@@ -42,7 +43,8 @@ namespace ccl::lexer
 
         if (lexicalAnalyzer.anyPlaceItems.isSuccessfulScan(textIterator, token) ||
             std::ranges::any_of(lexicalAnalyzer.items, scan_container)) {
-            return returnIfNotInIgnored(token);
+            returnIfNotInIgnored(token);
+            return;
         }
 
         const char next_carriage_value = textIterator.getNextCarriageValue();
@@ -50,20 +52,21 @@ namespace ccl::lexer
         if (isLayout(next_carriage_value)) {
             chars_to_skip.push_back(next_carriage_value);
             textIterator.skip(1);
-            return nextToken(token);
+            nextToken(token);
+            return;
         }
 
         constructBadToken(token);
 
-        if (shouldIgnoreToken(token)) [[unlikely]] {
-            return nextToken(token);
+        if (shouldIgnoreToken(token)) {
+            nextToken(token);
         }
     }
 
     // NOLINTNEXTLINE (recursive function)
     CCL_INLINE auto LexicalAnalyzer::Tokenizer::returnIfNotInIgnored(Token &token) -> void
     {
-        if (shouldIgnoreToken(token)) [[unlikely]] {
+        if (shouldIgnoreToken(token)) {
             nextToken(token);
         }
     }
@@ -100,12 +103,12 @@ namespace ccl::lexer
 
     CCL_INLINE auto Tokenizer::constructEoiToken(Token &token) const -> void
     {
-        token = {textIterator, std::to_underlying(ReservedTokenType::EOI)};
+        token = {std::to_underlying(ReservedTokenType::EOI), textIterator};
     }
 
     CCL_INLINE auto Tokenizer::constructBadToken(Token &token) -> void
     {
-        token = {textIterator, std::to_underlying(ReservedTokenType::BAD_TOKEN)};
+        token = {std::to_underlying(ReservedTokenType::BAD_TOKEN), textIterator};
 
         while (!isLayoutOrEoF(textIterator.getNextCarriageValue())) {
             textIterator.advance();

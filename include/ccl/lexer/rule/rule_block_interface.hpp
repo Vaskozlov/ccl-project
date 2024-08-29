@@ -20,8 +20,7 @@ namespace ccl::lexer::rule
         struct CCL_TRIVIAL_ABI Flags
         {
             bool reversed{};
-            bool isPrefix{};
-            bool isPostfix{};
+            bool extractable{};
             bool sequenceIsMultiline{};
             bool noEscapingSymbols{};
             bool isHiddenFromParser{};
@@ -35,7 +34,7 @@ namespace ccl::lexer::rule
     public:
         RuleBlockInterface() = default;
 
-        [[nodiscard]] RuleBlockInterface(Flags item_flags)
+        [[nodiscard]] explicit RuleBlockInterface(Flags item_flags)
           : flags{item_flags}
         {}
 
@@ -62,14 +61,9 @@ namespace ccl::lexer::rule
             return flags.reversed;
         }
 
-        [[nodiscard]] auto hasPrefix() const noexcept -> bool
+        [[nodiscard]] auto isExtractable() const noexcept -> bool
         {
-            return flags.isPrefix;
-        }
-
-        [[nodiscard]] auto hasPostfix() const noexcept -> bool
-        {
-            return flags.isPostfix;
+            return flags.extractable;
         }
 
         void setId(SmallId new_id) noexcept
@@ -77,14 +71,9 @@ namespace ccl::lexer::rule
             id = new_id;
         }
 
-        void setPrefix() noexcept
+        void makeExtractable() noexcept
         {
-            flags.isPrefix = true;
-        }
-
-        void setPostfix() noexcept
-        {
-            flags.isPostfix = true;
+            flags.extractable = true;
         }
 
         void hideFromParser() noexcept

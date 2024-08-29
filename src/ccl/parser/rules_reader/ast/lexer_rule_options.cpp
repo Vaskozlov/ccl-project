@@ -15,8 +15,8 @@ namespace ccl::parser::reader::ast
             '^',
         },
         {
-            PREFIX_POSTFIX_OPERATOR,
-            'p',
+            EXTRACTABLE_MODIFIER,
+            'e',
         },
         {
             PLUS,

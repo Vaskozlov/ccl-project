@@ -4,23 +4,42 @@ namespace ccl::text
 {
     TextIterator::TextIterator(
         isl::string_view input,
-        ExceptionHandler &exception_handler,
+        const ExceptionHandler &exception_handler,
         isl::string_view filename)
       : CrtpBasicTextIterator{input}
-      , location{filename}
-      , wholeInput{input}
-      , exceptionHandler{&exception_handler}
+      , inputInfo{.wholeText = input, .filename = filename}
+      , exceptionHandler{std::addressof(exception_handler)}
     {}
 
     TextIterator::TextIterator(
         isl::string_view input,
-        ExceptionHandler &exception_handler,
+        const ExceptionHandler &exception_handler,
         const Location &iterator_location)
       : CrtpBasicTextIterator{input}
+      , inputInfo{.wholeText = input, .filename = {}}
       , location{iterator_location}
-      , wholeInput{input}
-      , exceptionHandler{&exception_handler}
+      , exceptionHandler{std::addressof(exception_handler)}
     {}
+
+    auto TextIterator::getRealColumn() const -> u32
+    {
+        if (!isInitialized()) {
+            return 0;
+        }
+
+        const auto *it = getCarriage();
+        const auto *text_begin = inputInfo.wholeText.begin();
+
+        while (it >= text_begin) {
+            if (*it == '\n') {
+                break;
+            }
+
+            std::next(it, -1);
+        }
+
+        return isl::as<u32>(std::distance(it, getCarriage()));
+    }
 
     auto TextIterator::nextCharWithEscapingSymbols(const extra_symbols_t &extra_symbols)
         -> isl::Pair<bool, char32_t>
@@ -28,7 +47,7 @@ namespace ccl::text
         auto escaping = false;
         char32_t chr = advance();
 
-        if (U'\\' == chr) {
+        if (chr == U'\\') {
             escaping = true;
             chr = doEscapeSymbolizing(*this, extra_symbols);
         }
@@ -46,9 +65,9 @@ namespace ccl::text
 
     auto TextIterator::calculateNotationEscapeSymbol(
         TextIterator &text_iterator,
-        u16 max_times,
-        u16 notation_power,
-        bool need_all_chars) -> char32_t
+        const u16 max_times,
+        const u16 notation_power,
+        const bool need_all_chars) -> char32_t
     {
         return NotationEscapingSequenceToChar(
                    text_iterator, max_times, notation_power, need_all_chars)

@@ -67,8 +67,8 @@ RETURN:             "return"
 STRUCT:             "struct"
 
 [DECLS]
-NUMBER:             [0-9]+ ( [a-zA-Z_]+ [a-zA-Z0-9_]* )?p
-FLOAT:              [0-9]+"."[0-9]* ( [a-zA-Z_]+ [a-zA-Z0-9_]* )?p
+NUMBER:             [0-9]+ ( [a-zA-Z_]+ [a-zA-Z0-9_]* )?e
+FLOAT:              [0-9]+"."[0-9]* ( [a-zA-Z_]+ [a-zA-Z0-9_]* )?e
 IDENTIFIER:         [a-zA-Z_]+[a-zA-Z0-9_]*
 CHAR:               ! "\'" ([']^ | "\\\'" ) "\'"
 STRING:             ! "\"" (["]^ | "\\\"")* "\""

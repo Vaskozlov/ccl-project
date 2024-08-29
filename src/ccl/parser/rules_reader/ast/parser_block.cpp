@@ -9,7 +9,7 @@ namespace ccl::parser::reader::ast
 
         const lexer::Token &rule_identifier_token = rule_identifier->getToken();
 
-        const auto rule_name = rule_identifier_token.getPrefixes().front();
+        const auto rule_name = rule_identifier_token.getExtractedParts().front();
 
         auto parser_alternatives =
             isl::get<std::vector<std::vector<Symbol>>>(rule_alternative->construct(parser_builder));
