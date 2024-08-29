@@ -54,10 +54,10 @@ namespace ccl::parser::ll
 
         auto getDescriptor() -> Descriptor;
 
-        auto createNode(Node *parent, SPPFNode sppf_node, SmallId input_position)
+        auto pushNode(Node *parent, SPPFNode sppf_node, SmallId input_position)
             CCL_LIFETIMEBOUND -> Node *;
 
-        auto createNode(
+        auto pushNode(
             const std::vector<Node *> &parents,
             SPPFNode sppf_node,
             SmallId input_position) CCL_LIFETIMEBOUND -> Node *;

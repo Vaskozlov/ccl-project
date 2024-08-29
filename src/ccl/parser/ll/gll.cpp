@@ -47,7 +47,7 @@ namespace ccl::parser
             .dotPosition = 0,
         };
 
-        auto *start_node = gss.createNode(
+        auto *start_node = gss.pushNode(
             nullptr,
             SPPFNode{
                 .nodes = {},
@@ -112,7 +112,7 @@ namespace ccl::parser
             }
 
             for (const auto *rule : rules_it->second) {
-                auto *new_node = gss.createNode(
+                auto *new_node = gss.pushNode(
                     descriptor.stack,
                     SPPFNode{
                         .nodes = {},
