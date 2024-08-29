@@ -13,6 +13,10 @@ include(programs/CMakeLists.txt)
 include(src/CMakeLists.txt)
 include(catch/CMakeLists.txt)
 
+if (CCL_INCLUDE_BENCHMARK)
+    include(benchmark/CMakeLists.txt)
+endif ()
+
 install(TARGETS ccl ccl-lexer unordered_dense astlang
         EXPORT cclTargets
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
