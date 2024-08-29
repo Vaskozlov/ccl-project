@@ -46,15 +46,14 @@ struct std::hash<ccl::parser::TableEntry>
 template<typename T>
 struct fmt::formatter<ccl::parser::TableEntryPrintHelper<T>> : formatter<std::string_view>
 {
-    constexpr auto
-        format(ccl::parser::TableEntryPrintHelper<T> entry_print_helper, format_context &ctx) const
-        -> format_context::iterator
+    constexpr auto format(
+        ccl::parser::TableEntryPrintHelper<T> entry_print_helper,
+        format_context &ctx) const -> format_context::iterator
     {
         const auto &entry = entry_print_helper.entry;
 
         return fmt::format_to(
-            ctx.out(), "{}-{}", entry.state,
-            ccl::lexer::lexerEnumToString(isl::as<T>(entry.symbol)));
+            ctx.out(), "{}-{}", entry.state, ccl::lexer::lexerEnumToString<T>(entry.symbol));
     }
 };
 

@@ -6,6 +6,8 @@
 
 namespace ccl::parser::reader
 {
+    extern const GrammarStorage RulesGrammar;
+
     class RulesReader
     {
     private:

@@ -54,7 +54,7 @@ namespace ccl::parser::reader
     };
 
     // NOLINTNEXTLINE
-    static const GrammarStorage RulesGrammar{
+    const GrammarStorage RulesGrammar{
         true,
         EPSILON,
         GOAL,
@@ -63,7 +63,7 @@ namespace ccl::parser::reader
                 GOAL,
                 {
                     Rule{
-                        {BLOCKS},
+                        BLOCKS,
                     },
                 },
             },
@@ -71,13 +71,17 @@ namespace ccl::parser::reader
                 BLOCKS,
                 {
                     Rule{
-                        {EPSILON},
+                        EPSILON,
                     },
                     Rule{
-                        {LEXER_START, LEXER_BLOCK, BLOCKS},
+                        LEXER_START,
+                        LEXER_BLOCK,
+                        BLOCKS,
                     },
                     Rule{
-                        {PARSER_START, PARSER_BLOCK, BLOCKS},
+                        PARSER_START,
+                        PARSER_BLOCK,
+                        BLOCKS,
                     },
                 },
             },
@@ -85,22 +89,18 @@ namespace ccl::parser::reader
                 LEXER_BLOCK,
                 {
                     Rule{
-                        {EPSILON},
+                        EPSILON,
                     },
                     Rule{
-                        {
-                            RULE_IDENTIFIER,
-                            LEXER_RULE_ALTERNATIVE,
-                            LEXER_BLOCK,
-                        },
+                        RULE_IDENTIFIER,
+                        LEXER_RULE_ALTERNATIVE,
+                        LEXER_BLOCK,
                     },
                     Rule{
-                        {
-                            RULE_IDENTIFIER,
-                            EXCLAMATION_POINT,
-                            LEXER_RULE_ALTERNATIVE,
-                            LEXER_BLOCK,
-                        },
+                        RULE_IDENTIFIER,
+                        EXCLAMATION_POINT,
+                        LEXER_RULE_ALTERNATIVE,
+                        LEXER_BLOCK,
                     },
                 },
             },
@@ -108,10 +108,12 @@ namespace ccl::parser::reader
                 LEXER_RULE_ALTERNATIVE,
                 {
                     Rule{
-                        {LEXER_RULE_ALTERNATIVE, OR, LEXER_RULE},
+                        LEXER_RULE_ALTERNATIVE,
+                        OR,
+                        LEXER_RULE,
                     },
                     Rule{
-                        {LEXER_RULE},
+                        LEXER_RULE,
                     },
                 },
             },
@@ -119,30 +121,36 @@ namespace ccl::parser::reader
                 LEXER_RULE,
                 {
                     Rule{
-                        {LEXER_RULE, LEXER_RULE_BLOCK},
+                        {
+                            LEXER_RULE,
+                            LEXER_RULE_BLOCK,
+                        },
                     },
-                    Rule{{EPSILON}},
+                    Rule{
+                        EPSILON,
+                    },
                 },
             },
             {
                 LEXER_RULE_BLOCK,
                 {
                     Rule{
-                        {UNION, LEXER_RULE_OPTIONS},
+                        UNION,
+                        LEXER_RULE_OPTIONS,
                     },
                     Rule{
-                        {STRING, LEXER_RULE_OPTIONS},
+                        STRING,
+                        LEXER_RULE_OPTIONS,
                     },
                     Rule{
-                        {RULE_REFERENCE, LEXER_RULE_OPTIONS},
+                        RULE_REFERENCE,
+                        LEXER_RULE_OPTIONS,
                     },
                     Rule{
-                        {
-                            ANGLE_OPEN,
-                            LEXER_RULE_ALTERNATIVE,
-                            ANGLE_CLOSE,
-                            LEXER_RULE_OPTIONS,
-                        },
+                        ANGLE_OPEN,
+                        LEXER_RULE_ALTERNATIVE,
+                        ANGLE_CLOSE,
+                        LEXER_RULE_OPTIONS,
                     },
                 },
             },
@@ -150,40 +158,41 @@ namespace ccl::parser::reader
                 LEXER_RULE_OPTIONS,
                 {
                     Rule{
-                        {EPSILON},
+                        EPSILON,
                     },
                     Rule{
-                        {PLUS, LEXER_RULE_OPTIONS},
+                        PLUS,
+                        LEXER_RULE_OPTIONS,
                     },
                     Rule{
-                        {STAR, LEXER_RULE_OPTIONS},
+                        STAR,
+                        LEXER_RULE_OPTIONS,
                     },
                     Rule{
-                        {PREFIX_POSTFIX_OPERATOR, LEXER_RULE_OPTIONS},
+                        PREFIX_POSTFIX_OPERATOR,
+                        LEXER_RULE_OPTIONS,
                     },
                     Rule{
-                        {HIDE_OPERATOR, LEXER_RULE_OPTIONS},
+                        HIDE_OPERATOR,
+                        LEXER_RULE_OPTIONS,
                     },
                     Rule{
-                        {NOT_OPERATOR, LEXER_RULE_OPTIONS},
+                        NOT_OPERATOR,
+                        LEXER_RULE_OPTIONS,
                     },
                     Rule{
-                        {
-                            CURLY_OPEN,
-                            NUMBER,
-                            CURLY_CLOSE,
-                            LEXER_RULE_OPTIONS,
-                        },
+                        CURLY_OPEN,
+                        NUMBER,
+                        CURLY_CLOSE,
+                        LEXER_RULE_OPTIONS,
                     },
                     Rule{
-                        {
-                            CURLY_OPEN,
-                            NUMBER,
-                            COMMA,
-                            NUMBER,
-                            CURLY_CLOSE,
-                            LEXER_RULE_OPTIONS,
-                        },
+                        CURLY_OPEN,
+                        NUMBER,
+                        COMMA,
+                        NUMBER,
+                        CURLY_CLOSE,
+                        LEXER_RULE_OPTIONS,
                     },
                 },
             },
@@ -191,10 +200,12 @@ namespace ccl::parser::reader
                 PARSER_BLOCK,
                 {
                     Rule{
-                        {EPSILON},
+                        EPSILON,
                     },
                     Rule{
-                        {RULE_IDENTIFIER, PARSER_RULE_ALTERNATIVE, PARSER_BLOCK},
+                        RULE_IDENTIFIER,
+                        PARSER_RULE_ALTERNATIVE,
+                        PARSER_BLOCK,
                     },
                 },
             },
@@ -202,10 +213,12 @@ namespace ccl::parser::reader
                 PARSER_RULE_ALTERNATIVE,
                 {
                     Rule{
-                        {PARSER_RULE_ALTERNATIVE, OR, PARSER_RULE},
+                        PARSER_RULE_ALTERNATIVE,
+                        OR,
+                        PARSER_RULE,
                     },
                     Rule{
-                        {PARSER_RULE},
+                        PARSER_RULE,
                     },
                 },
             },
@@ -213,22 +226,25 @@ namespace ccl::parser::reader
                 PARSER_RULE,
                 {
                     Rule{
-                        {IDENTIFIER},
+                        IDENTIFIER,
                     },
                     Rule{
-                        {STRING},
+                        STRING,
                     },
                     Rule{
-                        {ANY_PLACE_STRING},
+                        ANY_PLACE_STRING,
                     },
                     Rule{
-                        {IDENTIFIER, PARSER_RULE},
+                        IDENTIFIER,
+                        PARSER_RULE,
                     },
                     Rule{
-                        {STRING, PARSER_RULE},
+                        STRING,
+                        PARSER_RULE,
                     },
                     Rule{
-                        {ANY_PLACE_STRING, PARSER_RULE},
+                        ANY_PLACE_STRING,
+                        PARSER_RULE,
                     },
                 },
             },
@@ -241,23 +257,10 @@ namespace ccl::parser::reader
             ReaderOption::SUGGESTIONS_ENABLE,
         }
     {
-        auto initial_rule = Rule{{BLOCKS}};
-
-        const auto start_item = LrItem{
-            .dottedRule =
-                {
-                    .rule = std::addressof(initial_rule),
-                    .dotPosition = 0,
-                },
-            .production = GOAL,
-            .lookAhead = EOI,
-        };
-
+        using namespace std::chrono_literals;
         auto tokenizer = RulesLexer.getTokenizer(input, filename);
 
-        auto id_to_str = [](auto elem) {
-            return std::string{ToStringRulesLexerToken.at(elem)};
-        };
+        const auto id_to_str = ccl::lexer::lexerEnumToString<RulesLexerToken>;
 
         const auto gll_parser = GllParser(GOAL, RulesGrammar, id_to_str);
         const auto [roots, algorithm] = gll_parser.parse(tokenizer);
