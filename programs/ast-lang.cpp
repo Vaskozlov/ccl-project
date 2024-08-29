@@ -42,7 +42,7 @@ auto main() -> int
     isl::io::writeToFile(fmt::format("/Volumes/ramdisk/{}.dot", algorithm), dot_repr);
 
     auto *row_root = nodes.front().get();
-    auto conversion_table = astlang::ast::Node::buildConversionTable(constructor);
+    const auto conversion_table = astlang::ast::Node::buildConversionTable(constructor);
     ccl::parser::ast::Node::cast(conversion_table, row_root);
 
     auto *astlang_root = dynamic_cast<astlang::ast::Node *>(row_root);
