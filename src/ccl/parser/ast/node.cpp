@@ -31,9 +31,9 @@ namespace ccl::parser::ast
         return result;
     }
 
-    auto Node::cast(const ConversionTable &conversion_table, Node *node) -> void
+    auto Node::cast(const ConversionTable &conversion_table) -> void
     {
-        auto *node_as_sequence = dynamic_cast<NonTerminal *>(node);
+        auto *node_as_sequence = dynamic_cast<NonTerminal *>(this);
 
         if (node_as_sequence == nullptr) {
             return;

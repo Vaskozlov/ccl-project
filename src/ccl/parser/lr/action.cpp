@@ -17,7 +17,7 @@ auto fmt::formatter<ccl::parser::ActionPrintWrapper>::format(
         overloaded{
             [&ctx, &action_print_wrapper](const LrItem&arg) {
                 return fmt::format_to(
-                    ctx.out(), "{}", LrItemPrintWrapper(arg, action_print_wrapper.idToStr));
+                    ctx.out(), "{}", LrItemPrintWrapper(arg, action_print_wrapper.idToStringConverter));
             },
             [&ctx](auto arg) {
                 return fmt::format_to(ctx.out(), "{}", arg);

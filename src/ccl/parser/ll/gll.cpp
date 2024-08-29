@@ -19,8 +19,7 @@ namespace ccl::parser
         }
 
         auto tree_repr = dot::createDotRepresentation(result, function);
-        isl::io::writeToFile(
-            std::filesystem::path("/Volumes/ramdisk").append("gll.dot"), tree_repr);
+        isl::io::writeToFile(std::filesystem::current_path().append("gll.dot"), tree_repr);
     }
 
     GllParser::GllParser(
@@ -29,8 +28,11 @@ namespace ccl::parser
       : table{ll::GllParserGenerator{grammar_storage, id_to_string_converter}.createGllTable()}
       , idToStringConverter{id_to_string_converter}
       , storage{grammar_storage}
+      , startRule{*storage.getStartRule(start_symbol)}
       , grammarGoalSymbol{start_symbol}
-    {}
+    {
+        startRule.emplace_back(0);
+    }
 
     auto GllParser::parse(lexer::Tokenizer &tokenizer) const -> AmbiguousParsingResult
     {
@@ -39,11 +41,8 @@ namespace ccl::parser
         auto gss = ll::GSS{std::addressof(storage)};
         gss.nextWord();
 
-        auto start_rule = storage.at(grammarGoalSymbol).front();
-        start_rule.emplace_back(0);
-
         const auto start_rule_with_dot = RuleWithDot{
-            .rule = &start_rule,
+            .rule = std::addressof(startRule),
             .dotPosition = 0,
         };
 

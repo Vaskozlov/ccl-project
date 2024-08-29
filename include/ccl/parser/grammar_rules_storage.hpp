@@ -37,7 +37,7 @@ namespace ccl::parser
 
         auto eraseRule(Symbol key, const Rule &rule) -> void;
 
-        [[nodiscard]] auto at(Symbol key) const -> const auto &
+        [[nodiscard]] auto at(Symbol key) const CCL_LIFETIMEBOUND -> const auto &
         {
             return Self::at(key);
         }
@@ -47,32 +47,36 @@ namespace ccl::parser
             return epsilonSymbol;
         }
 
-        [[nodiscard]] auto getNonTerminals() const noexcept -> const auto &
+        [[nodiscard]] auto getNonTerminals() const noexcept CCL_LIFETIMEBOUND -> const auto &
         {
             return nonTerminals;
         }
 
-        [[nodiscard]] auto getGrammarSymbols() const noexcept -> const auto &
+        [[nodiscard]] auto getGrammarSymbols() const noexcept CCL_LIFETIMEBOUND -> const auto &
         {
             return grammarSymbols;
         }
 
-        [[nodiscard]] auto getFirstSet() const noexcept -> const auto &
+        [[nodiscard]] auto getFirstSet() const noexcept CCL_LIFETIMEBOUND -> const auto &
         {
             return firstSet;
         }
 
-        [[nodiscard]] auto getFollowSet() const noexcept -> const auto &
+        [[nodiscard]] auto getFollowSet() const noexcept CCL_LIFETIMEBOUND -> const auto &
         {
             return followSet;
         }
+
+        [[nodiscard]] auto
+            getStartRule(Symbol start_production_id) const CCL_LIFETIMEBOUND -> const Rule *;
 
         [[nodiscard]] auto isTerminal(Symbol symbol) const noexcept -> bool
         {
             return !nonTerminals.contains(symbol);
         }
 
-        [[nodiscard]] auto rulesIterator() -> isl::Generator<isl::Pair<Symbol, Rule &>>
+        [[nodiscard]] auto
+            rulesIterator() CCL_LIFETIMEBOUND -> isl::Generator<isl::Pair<Symbol, Rule &>>
         {
             for (auto &[key, rule_alternatives] : *this) {
                 for (auto &rule : rule_alternatives) {
@@ -81,7 +85,8 @@ namespace ccl::parser
             }
         }
 
-        [[nodiscard]] auto rulesIterator() const -> isl::Generator<isl::Pair<Symbol, const Rule &>>
+        [[nodiscard]] auto rulesIterator() const CCL_LIFETIMEBOUND
+            -> isl::Generator<isl::Pair<Symbol, const Rule &>>
         {
             for (const auto &[key, rule_alternatives] : *this) {
                 for (const auto &rule : rule_alternatives) {

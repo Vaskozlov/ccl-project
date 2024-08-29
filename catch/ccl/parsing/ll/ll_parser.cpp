@@ -24,6 +24,5 @@ TEST_CASE("LLParser", "[LLParser]")
         std::vector<ast::Node *>{converter.begin(), converter.end()},
         math_rules_constructor.getIdToNameTranslationFunction());
 
-    isl::io::writeToFile(
-        std::filesystem::path("/Volumes/ramdisk").append("gll-final.dot"), tree_repr);
+    isl::io::writeToFile(std::filesystem::current_path().append("gll-final.dot"), tree_repr);
 }

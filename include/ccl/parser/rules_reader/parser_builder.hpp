@@ -30,8 +30,8 @@ namespace ccl::parser::reader
         lexer::LexicalAnalyzer lexicalAnalyzer{handler::Cmd::instance()};
         ankerl::unordered_dense::map<SmallId, std::string> ruleIdToName;
         ankerl::unordered_dense::map<std::string, SmallId> ruleNameToId;
-        isl::IdGenerator<SmallId> ruleIdGenerator;
         GrammarStorage grammarRulesStorage;
+        isl::IdGenerator<SmallId> ruleIdGenerator;
         Mode rulesConstructorMode{Mode::LR};
         bool rulesConstructorFinalized{};
 
@@ -48,8 +48,10 @@ namespace ccl::parser::reader
 
         auto addRule(const std::string &rule_name) -> SmallId;
 
-        auto getIdToNameTranslationFunction() const CCL_LIFETIMEBOUND
+        [[nodiscard]] auto getIdToNameTranslationFunction() const CCL_LIFETIMEBOUND
             -> std::function<std::string(SmallId)>;
+
+        [[nodiscard]] auto getStartRule() const CCL_LIFETIMEBOUND -> const Rule *;
 
         [[nodiscard]] auto getRuleName(SmallId rule_id) const -> const std::string &
         {
@@ -103,7 +105,7 @@ namespace ccl::parser::reader
     private:
         auto finishGrammar(Mode mode) -> void;
 
-        auto getStartItem() const -> LrItem;
+        [[nodiscard]] auto getStartItem() const -> LrItem;
     };
 }// namespace ccl::parser::reader
 

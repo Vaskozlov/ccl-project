@@ -101,7 +101,7 @@ namespace ccl::parser::ast
         auto castChildren(const ConversionTable &conversion_table) -> void
         {
             for (auto &node : nodes) {
-                cast(conversion_table, node.get());
+                node->cast(conversion_table);
             }
         }
     };

@@ -1,7 +1,6 @@
 #ifndef CCL_PROJECT_LL_PARSER_FOR_MATH_HPP
 #define CCL_PROJECT_LL_PARSER_FOR_MATH_HPP
 
-#include <ccl/parser/lr/lr_parser.hpp>
 #include <ccl/parser/rules_reader/rules_reader.hpp>
 
 namespace ccl::debug
@@ -12,7 +11,11 @@ GOAL:
     EXPR EOI
 
 EXPR:
-    EXPR '+' EXPR
+    EXPR '+' TERM
+    | NUMBER
+
+TERM:
+    TERM '*' NUMBER
     | NUMBER
 
 %LEXER%

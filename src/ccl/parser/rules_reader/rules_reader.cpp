@@ -266,11 +266,11 @@ namespace ccl::parser::reader
         const auto [roots, algorithm] = gll_parser.parse(tokenizer);
 
         if (roots.size() != 1) {
-            throw std::runtime_error{"Unable to construct tree"};
+            throw std::runtime_error{"Unable to construct unambiguous tree"};
         }
 
         auto root = isl::staticPointerCast<parser::ast::NonTerminal>(std::move(roots.front()));
-        parser::ast::Node::cast(ConversionTable, root.get());
+        root->cast(ConversionTable);
 
         static_cast<ast::RulesReaderNode *>(root.get())->construct(rulesConstructor);
     }

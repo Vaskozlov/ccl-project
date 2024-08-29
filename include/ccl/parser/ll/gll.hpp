@@ -12,6 +12,7 @@ namespace ccl::parser
         ll::GllTable table;
         std::function<std::string(SmallId)> idToStringConverter;
         const GrammarStorage &storage;
+        Rule startRule;
         SmallId grammarGoalSymbol;
 
     public:

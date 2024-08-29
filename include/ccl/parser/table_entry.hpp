@@ -16,10 +16,10 @@ namespace ccl::parser
             operator<=>(const TableEntry &other) const noexcept -> std::strong_ordering = default;
     };
 
-    template<typename T>
     struct TableEntryPrintHelper
     {
         const TableEntry &entry;
+        std::function<std::string(SmallId)> idToStringConverter;
     };
 }// namespace ccl::parser
 
@@ -39,21 +39,21 @@ struct std::hash<ccl::parser::TableEntry>
 {
     [[nodiscard]] auto operator()(const ccl::parser::TableEntry &entry) const noexcept -> uint64_t
     {
-        return ankerl::unordered_dense::detail::wyhash::hash(&entry, sizeof(entry));
+        return ankerl::unordered_dense::hash<ccl::parser::TableEntry>{}(entry);
     }
 };
 
-template<typename T>
-struct fmt::formatter<ccl::parser::TableEntryPrintHelper<T>> : formatter<std::string_view>
+template<>
+struct fmt::formatter<ccl::parser::TableEntryPrintHelper> : formatter<std::string_view>
 {
-    constexpr auto format(
-        ccl::parser::TableEntryPrintHelper<T> entry_print_helper,
-        format_context &ctx) const -> format_context::iterator
+    static auto format(
+        const ccl::parser::TableEntryPrintHelper &entry_print_helper,
+        format_context &ctx) -> format_context::iterator
     {
-        const auto &entry = entry_print_helper.entry;
+        const auto &[state, symbol] = entry_print_helper.entry;
 
         return fmt::format_to(
-            ctx.out(), "{}-{}", entry.state, ccl::lexer::lexerEnumToString<T>(entry.symbol));
+            ctx.out(), "{}-{}", state, entry_print_helper.idToStringConverter(symbol));
     }
 };
 

@@ -1,4 +1,4 @@
-#include "test_grammar.hpp"
+#include <ast-lang/ast-lang.hpp>
 #include <benchmark/benchmark.h>
 #include <ccl/parser/ll/gll.hpp>
 #include <ccl/parser/rules_reader/rules_lexer.hpp>
@@ -8,7 +8,7 @@ static void gllParserWithConstruction(benchmark::State &state)
 {
     for (auto _ : state) {
         auto tokenizer =
-            ccl::parser::reader::RulesLexer.getTokenizer(ccl::benchmark::AstLangGrammar);
+            ccl::parser::reader::RulesLexer.getTokenizer(astlang::AstLangGrammar);
 
         const auto id_to_str = ccl::lexer::lexerEnumToString<ccl::parser::reader::RulesLexerToken>;
 
@@ -32,7 +32,7 @@ static void gllParserWithoutConstruction(benchmark::State &state)
 
     for (auto _ : state) {
         auto tokenizer =
-            ccl::parser::reader::RulesLexer.getTokenizer(ccl::benchmark::AstLangGrammar);
+            ccl::parser::reader::RulesLexer.getTokenizer(astlang::AstLangGrammar);
 
         const auto [roots, algorithm] = gll_parser.parse(tokenizer);
 

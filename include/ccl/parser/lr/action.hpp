@@ -71,7 +71,7 @@ namespace ccl::parser
     struct ActionPrintWrapper
     {
         const Action &action;
-        std::function<std::string(SmallId)> idToStr;
+        std::function<std::string(SmallId)> idToStringConverter;
     };
 }// namespace ccl::parser
 

@@ -17,7 +17,7 @@ namespace ccl::parser::lr
                         "Action: {}",
                         ActionPrintWrapper{
                             .action = action,
-                            .idToStr = idToStringConverter,
+                            .idToStringConverter = idToStringConverter,
                         });
                 }
 

@@ -47,7 +47,7 @@ namespace ccl::parser::ast
                 return fmt::to_string(arg);
             }) const -> void = 0;
 
-        static auto cast(const ConversionTable &conversion_table, Node *node) -> void;
+        auto cast(const ConversionTable &conversion_table) -> void;
     };
 }// namespace ccl::parser::ast
 

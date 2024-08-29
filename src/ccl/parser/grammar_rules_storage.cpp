@@ -40,9 +40,7 @@ namespace ccl::parser
 
     auto GrammarStorage::eraseRule(Symbol key, const Rule &rule) -> void
     {
-        auto it = Self::find(key);
-
-        if (it != Self::end()) {
+        if (auto it = find(key); it != end()) {
             it->second.erase(std::ranges::find(it->second, rule));
         }
     }
@@ -52,6 +50,28 @@ namespace ccl::parser
         for (const auto symbol : rule) {
             grammarSymbols.emplace(symbol);
         }
+    }
+
+    auto GrammarStorage::getStartRule(Symbol start_production_id) const CCL_LIFETIMEBOUND
+        -> const Rule *
+    {
+        const auto &start_rules = at(start_production_id);
+
+        if (start_rules.size() > 1) [[unlikely]] {
+            throw std::runtime_error{"Grammar must define only one goal production."};
+        }
+
+        if (start_rules.empty()) [[unlikely]] {
+            throw std::runtime_error{"No goal production found."};
+        }
+
+        const auto *start_rule = std::addressof(start_rules.front());
+
+        if (start_rule->size() != 1) [[unlikely]] {
+            throw std::runtime_error{"Goal production must have one symbol."};
+        }
+
+        return start_rule;
     }
 
     auto GrammarStorage::finishGrammar(Symbol goal_production, bool remove_epsilon) -> void

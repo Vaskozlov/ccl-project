@@ -20,6 +20,10 @@ namespace ccl::parser::reader
                 std::to_underlying(lexer::ReservedTokenType::CUT),
                 "CUT",
             },
+            {
+                lexer::ReservedTokenMaxValue + 1,
+                "EPSILON",
+            },
         },
       ruleNameToId{
           {
@@ -34,9 +38,13 @@ namespace ccl::parser::reader
               "CUT",
               std::to_underlying(lexer::ReservedTokenType::CUT),
           },
+          {
+              "EPSILON",
+              lexer::ReservedTokenMaxValue + 1,
+          },
       },
-      ruleIdGenerator{lexer::ReservedTokenMaxValue + 1},
-      grammarRulesStorage{addRule("EPSILON")}
+      grammarRulesStorage{getRuleId("EPSILON")},
+      ruleIdGenerator{lexer::ReservedTokenMaxValue + 2}
     {}
 
     auto ParserBuilder::buildLr1() -> LrParser
@@ -115,22 +123,11 @@ namespace ccl::parser::reader
     auto ParserBuilder::getStartItem() const -> LrItem
     {
         const auto goal_id = getRuleId("GOAL");
-        const auto &start_rules = grammarRulesStorage.at(goal_id);
-
-        if (start_rules.size() > 1) {
-            throw std::runtime_error{"Grammar must define only one goal production."};
-        }
-
-        if (start_rules.empty()) {
-            throw std::runtime_error{"No goal production found."};
-        }
-
-        auto first_rule_it = grammarRulesStorage.at(goal_id).begin();
 
         return LrItem{
             .dottedRule =
                 {
-                    .rule = std::addressof(*first_rule_it),
+                    .rule = grammarRulesStorage.getStartRule(goal_id),
                     .dotPosition = 0,
                 },
             .production = goal_id,

@@ -4,6 +4,7 @@
 #include <ankerl/unordered_dense.h>
 #include <ccl/ccl.hpp>
 #include <ccl/parser/types.hpp>
+#include <isl/string_view.hpp>
 
 #define ASTLANG_DECL CCL_DECL
 #define ASTLANG_INLINE CCL_INLINE
@@ -29,6 +30,8 @@ namespace astlang
 
     using f32 = ccl::f32;
     using f64 = ccl::f64;
+
+    extern const isl::string_view AstLangGrammar;
 }// namespace astlang
 
 #endif /* CCL_PROJECT_ASTLANG_AST_LANG_HPP */
