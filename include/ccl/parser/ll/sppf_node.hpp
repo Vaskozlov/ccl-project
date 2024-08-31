@@ -8,7 +8,7 @@ namespace ccl::parser
 {
     struct SPPFNode
     {
-        std::vector<ast::SharedNode<>> nodes;
+        ast::SmallVectorOfNodes nodes;
         RuleWithDot rule{};
         Symbol production{};
 

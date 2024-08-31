@@ -7,7 +7,7 @@ namespace astlang::ast
 
     auto GlobalDeclaration::compute(Interpreter &interpreter) const -> EvaluationResult
     {
-        auto front_node_ptr = ConstNodePtr{front().get()};
+        const auto front_node_ptr = ConstNodePtr{front().get()};
         front_node_ptr.astlangNode->compute(interpreter);
 
         return EvaluationResult{

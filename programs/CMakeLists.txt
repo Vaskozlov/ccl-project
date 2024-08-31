@@ -3,7 +3,7 @@ add_executable(
         programs/ccll.cpp
 )
 
-isl_set_project_warnings(
+isl_set_target_flags(
         ccl-lexer
         ${CCL_STRICT_COMPILATION}
         ""
@@ -15,11 +15,11 @@ isl_set_project_warnings(
         ${CCL_UNITY_BUILD}
 )
 
-if (PRECOMPILED_HEADER)
+if (CCL_PRECOMPILED_HEADERS)
     target_precompile_headers(
             ccl-lexer
-            PUBLIC
-            "pch.hpp"
+            REUSE_FROM
+            ccl
     )
 endif ()
 
@@ -35,7 +35,7 @@ add_executable(
         programs/ast-lang.cpp
 )
 
-isl_set_project_warnings(
+isl_set_target_flags(
         ast-lang
         ${CCL_STRICT_COMPILATION}
         ""
@@ -47,11 +47,11 @@ isl_set_project_warnings(
         ${CCL_UNITY_BUILD}
 )
 
-if (PRECOMPILED_HEADER)
+if (CCL_PRECOMPILED_HEADERS)
     target_precompile_headers(
             ast-lang
-            PUBLIC
-            "pch.hpp"
+            REUSE_FROM
+            ccl
     )
 endif ()
 

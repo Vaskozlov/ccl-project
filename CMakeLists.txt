@@ -9,8 +9,8 @@ include(CMakePackageConfigHelpers)
 include(cmake/Libraries.cmake)
 include(cmake/ProjectOptions.cmake)
 
-include(programs/CMakeLists.txt)
 include(src/CMakeLists.txt)
+include(programs/CMakeLists.txt)
 include(catch/CMakeLists.txt)
 
 if (CCL_INCLUDE_BENCHMARK)

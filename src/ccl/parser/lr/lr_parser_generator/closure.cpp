@@ -2,7 +2,7 @@
 
 namespace ccl::parser::lr
 {
-    auto LrParserGenerator::computeClosure(const LrItem &item) -> const std::vector<LrItem> &
+    auto LrParserGenerator::computeClosure(const LrItem &item) const -> const std::vector<LrItem> &
     {
         auto [it, inserted] = closureComputationCache.try_emplace(item);
 
@@ -32,7 +32,7 @@ namespace ccl::parser::lr
         return it->second = std::move(result);
     }
 
-    auto LrParserGenerator::computeClosureOnItems(std::vector<LrItem> s)
+    auto LrParserGenerator::computeClosureOnItems(std::vector<LrItem> s) const
         -> const std::vector<LrItem> &
     {
         auto [it, inserted] = closureComputationOnItemsCache.try_emplace(s);

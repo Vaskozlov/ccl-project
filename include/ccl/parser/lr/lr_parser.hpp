@@ -46,7 +46,9 @@ namespace ccl::parser
         }
 
     private:
-        auto reduceAction(const LrItem &lr_item, ParserState &parser_state) const -> void;
+        auto reduceAction(
+            Symbol production_type, SmallId number_of_elements,
+            ParserState &parser_state) const -> void;
     };
 }// namespace ccl::parser
 

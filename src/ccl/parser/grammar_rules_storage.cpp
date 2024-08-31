@@ -7,14 +7,14 @@
 
 namespace ccl::parser
 {
-    GrammarStorage::GrammarStorage(Symbol epsilon)
+    GrammarStorage::GrammarStorage(const Symbol epsilon)
       : grammarSymbols{0, epsilon}
       , possiblyEmptyRules{epsilon}
       , epsilonSymbol{epsilon}
     {}
 
     GrammarStorage::GrammarStorage(
-        bool remove_epsilon, Symbol epsilon, Symbol goal_production,
+        const bool remove_epsilon, const Symbol epsilon, const Symbol goal_production,
         const std::initializer_list<isl::Pair<Symbol, std::vector<Rule>>> &initial_data)
       : grammarSymbols{0, epsilon}
       , possiblyEmptyRules{epsilon}
@@ -29,9 +29,9 @@ namespace ccl::parser
         finishGrammar(goal_production, remove_epsilon);
     }
 
-    auto GrammarStorage::tryEmplace(Symbol key, Rule rule) -> bool
+    auto GrammarStorage::tryEmplace(const Symbol key, Rule rule) -> bool
     {
-        auto [it, inserted] = try_emplace(key);
+        auto [it, inserted] = rules.try_emplace(key);
 
         if (std::ranges::find(it->second, rule) == it->second.end()) {
             it->second.emplace_back(std::move(rule));
@@ -41,9 +41,9 @@ namespace ccl::parser
         return false;
     }
 
-    auto GrammarStorage::eraseRule(Symbol key, const Rule &rule) -> void
+    auto GrammarStorage::eraseRule(const Symbol key, const Rule &rule) -> void
     {
-        if (auto it = find(key); it != end()) {
+        if (auto it = rules.find(key); it != rules.end()) {
             it->second.erase(std::ranges::find(it->second, rule));
         }
     }
@@ -79,7 +79,7 @@ namespace ccl::parser
 
     auto GrammarStorage::finishGrammar(Symbol goal_production, bool remove_epsilon) -> void
     {
-        for (const auto &[key, rules] : *this) {
+        for (const auto &[key, rules] : rules) {
             nonTerminals.emplace(key);
             grammarSymbols.emplace(key);
 

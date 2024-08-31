@@ -108,7 +108,7 @@ namespace ccl::parser::reader
 
     auto ParserBuilder::addRule(const std::string &rule_name) -> SmallId
     {
-        if (auto it = ruleNameToId.find(rule_name); it != ruleNameToId.end()) {
+        if (const auto it = ruleNameToId.find(rule_name); it != ruleNameToId.end()) {
             return it->second;
         }
 

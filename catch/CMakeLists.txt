@@ -11,7 +11,7 @@ add_executable(
         ${CCL_CATCH_OBJECTS}
 )
 
-isl_set_project_warnings(
+isl_set_target_flags(
         ccl-catch
         ${CCL_STRICT_COMPILATION}
         ""
@@ -31,17 +31,11 @@ target_link_libraries(
         Catch2::Catch2WithMain
 )
 
-if (PRECOMPILED_HEADER)
+if (CCL_PRECOMPILED_HEADERS)
     target_precompile_headers(
             ccl-catch
             REUSE_FROM
-            ccl-lexer
-    )
-
-    target_precompile_headers(
-            ccl-catch
-            PRIVATE
-            <ccl/debug/debug_file.hpp>
+            ccl
     )
 endif ()
 

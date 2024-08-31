@@ -7,7 +7,7 @@ namespace ccl::parser
 {
     LrParser::LrParser(
         const LrItem &start_item,
-        Symbol epsilon_symbol,
+        const Symbol epsilon_symbol,
         const GrammarStorage &parser_rules,
         const std::function<std::string(SmallId)> &id_to_string_converter)
     {
@@ -42,17 +42,16 @@ namespace ccl::parser
                 return parsing_result;
             }
 
-            switch (const auto &action = action_table_it->second; action.getParsingAction()) {
-            case SHIFT: {
-                auto &[state_stack, nodes_stack] = parser_state;
-                nodes_stack.emplace(std::move(token));
-                state_stack.emplace(action.getShiftingState());
+            switch (const Action &action = action_table_it->second; action.parsingAction) {
+            case SHIFT:
+                parser_state.nodesStack.emplace(std::move(token));
+                parser_state.stateStack.emplace(action.shiftingState);
                 token = ast::SharedNode<ast::Terminal>{tokenizer.yield()};
                 break;
-            }
 
             case REDUCE:
-                reduceAction(action.getReducingItem(), parser_state);
+                reduceAction(
+                    action.productionType, action.numberOfElementsInProduction, parser_state);
                 break;
 
             case ACCEPT:
@@ -65,30 +64,26 @@ namespace ccl::parser
         }
     }
 
-    auto LrParser::reduceAction(const LrItem &lr_item, ParserState &parser_state) const -> void
+    auto LrParser::reduceAction(
+        Symbol production_type,
+        const SmallId number_of_elements,
+        ParserState &parser_state) const -> void
     {
         auto &[state_stack, nodes_stack] = parser_state;
+        auto reduced_item = ast::SharedNode<ast::NonTerminal>{production_type};
 
-        const auto number_of_elements_to_take_from_stack = lr_item.dottedRule.size();
-
-        auto items_in_production = std::vector<ast::SharedNode<>>();
-        const auto production = lr_item.getProductionType();
-
-        for (std::size_t i = 0; i != number_of_elements_to_take_from_stack; ++i) {
-            items_in_production.emplace_back(std::move(nodes_stack.top()));
+        for (std::size_t i = 0; i != number_of_elements; ++i) {
+            reduced_item->addNode(std::move(nodes_stack.top()));
             nodes_stack.pop();
             state_stack.pop();
         }
 
-        std::ranges::reverse(items_in_production);
-
-        auto reduced_item =
-            ast::SharedNode<ast::NonTerminal>{production, std::move(items_in_production)};
-
+        reduced_item->reverse();
         nodes_stack.emplace(std::move(reduced_item));
+
         state_stack.emplace(gotoTable.at({
-            state_stack.top(),
-            production,
+            .state = state_stack.top(),
+            .symbol = production_type,
         }));
     }
 }// namespace ccl::parser

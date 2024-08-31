@@ -2,6 +2,7 @@
 #define CCL_PROJECT_LEXICAL_ANALYZER_HPP
 
 #include <ccl/lexer/rule/container.hpp>
+#include <utility>
 
 namespace ccl::lexer
 {
@@ -31,7 +32,7 @@ namespace ccl::lexer
             constexpr Rule(T rule_id, isl::string_view rule_repr)
               : name{lexerEnumToString<T>(rule_id)}
               , repr{rule_repr}
-              , id{std::to_underlying(rule_id)}
+              , id{static_cast<SmallId>(rule_id)}
             {}
         };
 

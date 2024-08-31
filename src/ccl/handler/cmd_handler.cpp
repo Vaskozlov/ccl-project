@@ -34,8 +34,8 @@ namespace ccl::handler
         formatMessage();
         formatLineNumber();
 
-        auto tabs_count = formatWorkingLine();
-        auto arrow_position = formatArrow(tabs_count);
+        const auto tabs_count = formatWorkingLine();
+        const auto arrow_position = formatArrow(tabs_count);
 
         formatSuggestion(arrow_position);
 

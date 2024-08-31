@@ -6,27 +6,12 @@
 
 namespace ccl::parser
 {
-    class Action
+    struct Action
     {
-    private:
-        std::variant<std::monostate, State, LrItem> data;
         ParsingAction parsingAction;
-
-    public:
-        explicit Action(State state)
-          : data{state}
-          , parsingAction{ParsingAction::SHIFT}
-        {}
-
-        explicit Action(const LrItem &item)
-          : data{item}
-          , parsingAction{ParsingAction::REDUCE}
-        {}
-
-        explicit Action(std::monostate accept_state)
-          : data{accept_state}
-          , parsingAction{ParsingAction::ACCEPT}
-        {}
+        State shiftingState{};
+        Symbol productionType{};
+        SmallId numberOfElementsInProduction{};
 
         [[nodiscard]] auto
             operator<=>(const Action &other) const noexcept -> std::weak_ordering = default;
@@ -45,27 +30,6 @@ namespace ccl::parser
         {
             return parsingAction == ParsingAction::ACCEPT;
         }
-
-        [[nodiscard]] auto getParsingAction() const noexcept -> ParsingAction
-        {
-            return parsingAction;
-        }
-
-        [[nodiscard]] auto getStoredData() const noexcept CCL_LIFETIMEBOUND
-            -> const std::variant<std::monostate, State, LrItem> &
-        {
-            return data;
-        }
-
-        [[nodiscard]] auto getShiftingState() const -> State
-        {
-            return std::get<State>(data);
-        }
-
-        [[nodiscard]] auto getReducingItem() const CCL_LIFETIMEBOUND -> const LrItem &
-        {
-            return std::get<LrItem>(data);
-        }
     };
 
     struct ActionPrintWrapper
@@ -78,8 +42,9 @@ namespace ccl::parser
 template<>
 struct fmt::formatter<ccl::parser::ActionPrintWrapper> : formatter<std::string_view>
 {
-    auto format(const ccl::parser::ActionPrintWrapper &action_print_wrapper, format_context &ctx)
-        const -> format_context::iterator;
+    static auto format(
+        const ccl::parser::ActionPrintWrapper &action_print_wrapper,
+        format_context &ctx) -> format_context::iterator;
 };
 
 #endif /* CCL_PROJECT_ACTION_HPP */

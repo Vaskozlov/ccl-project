@@ -4,17 +4,22 @@
 #include <ccl/parser/rule.hpp>
 #include <ccl/parser/types.hpp>
 #include <isl/coroutine/generator.hpp>
-#include <list>
+#include <unordered_map>
+#include <unordered_set>
+#include <zpp_bits.hpp>
 
 namespace ccl::parser
 {
-    class GrammarStorage : private std::unordered_map<Symbol, std::vector<Rule>>
+    class GrammarStorage
     {
+    public:
+        friend zpp::bits::access;
+        using serialize = zpp::bits::members<7>;
+
     private:
-        using Self = std::unordered_map<Symbol, std::vector<Rule>>;
         using AlternativesConstRuleIterator = std::vector<Rule>::const_iterator;
 
-        // TODO: change to ankerl?
+        std::unordered_map<Symbol, std::vector<Rule>> rules;
         std::unordered_set<Symbol> nonTerminals;
         std::unordered_set<Symbol> grammarSymbols;
         std::unordered_set<Symbol> possiblyEmptyRules;
@@ -39,7 +44,7 @@ namespace ccl::parser
 
         [[nodiscard]] auto at(Symbol key) const CCL_LIFETIMEBOUND -> const auto &
         {
-            return Self::at(key);
+            return rules.at(key);
         }
 
         [[nodiscard]] auto getEpsilon() const noexcept -> Symbol
@@ -78,7 +83,7 @@ namespace ccl::parser
         [[nodiscard]] auto
             rulesIterator() CCL_LIFETIMEBOUND -> isl::Generator<isl::Pair<Symbol, Rule &>>
         {
-            for (auto &[key, rule_alternatives] : *this) {
+            for (auto &[key, rule_alternatives] : rules) {
                 for (auto &rule : rule_alternatives) {
                     co_yield isl::Pair<Symbol, Rule &>{key, rule};
                 }
@@ -88,7 +93,7 @@ namespace ccl::parser
         [[nodiscard]] auto rulesIterator() const CCL_LIFETIMEBOUND
             -> isl::Generator<isl::Pair<Symbol, const Rule &>>
         {
-            for (const auto &[key, rule_alternatives] : *this) {
+            for (const auto &[key, rule_alternatives] : rules) {
                 for (const auto &rule : rule_alternatives) {
                     co_yield isl::Pair<Symbol, const Rule &>{key, rule};
                 }

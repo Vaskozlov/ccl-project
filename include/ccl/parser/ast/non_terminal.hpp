@@ -3,20 +3,24 @@
 
 #include <ccl/parser/ast/allocator.hpp>
 #include <ccl/parser/ast/node.hpp>
+#include <isl/small_vector.hpp>
+#include <utility>
 
 namespace ccl::parser::ast
 {
+    using SmallVectorOfNodes = isl::SmallVector<SharedNode<>, 6>;
+
     class NonTerminal : public Node
     {
     protected:
-        std::vector<SharedNode<>> nodes;
+        SmallVectorOfNodes nodes;
 
     public:
         explicit NonTerminal(SmallId node_type_id)
           : Node{node_type_id}
         {}
 
-        explicit NonTerminal(SmallId node_type_id, std::vector<SharedNode<>> initial_nodes)
+        explicit NonTerminal(SmallId node_type_id, SmallVectorOfNodes initial_nodes)
           : Node{node_type_id}
           , nodes{std::move(initial_nodes)}
         {}
@@ -50,12 +54,12 @@ namespace ccl::parser::ast
             return size() == 0;
         }
 
-        [[nodiscard]] auto at(std::size_t index) -> SharedNode<> &
+        [[nodiscard]] auto at(u32 index) -> SharedNode<> &
         {
             return nodes.at(index);
         }
 
-        [[nodiscard]] auto at(std::size_t index) const -> const SharedNode<> &
+        [[nodiscard]] auto at(u32 index) const -> const SharedNode<> &
         {
             return nodes.at(index);
         }
@@ -87,7 +91,7 @@ namespace ccl::parser::ast
             std::ranges::reverse(nodes);
         }
 
-        template<std::constructible_from<SmallId, std::vector<SharedNode<>>> T>
+        template<std::constructible_from<SmallId, SmallVectorOfNodes> T>
             requires(SharedNode<>::canStore<T>())
         static auto reconstructNode(NonTerminal *node) -> void
         {

@@ -10,7 +10,7 @@ else ()
     add_library(ccl SHARED ${CCL_OBJECTS})
 endif ()
 
-isl_set_project_warnings(
+isl_set_target_flags(
         ccl
         ${CCL_STRICT_COMPILATION}
         ""
@@ -21,6 +21,14 @@ isl_set_project_warnings(
         ${CCL_LIBCPP}
         ${CCL_UNITY_BUILD}
 )
+
+if (CCL_PRECOMPILED_HEADERS)
+    target_precompile_headers(
+            ccl
+            PUBLIC
+            "pch.hpp"
+    )
+endif ()
 
 add_dependencies(
         ccl

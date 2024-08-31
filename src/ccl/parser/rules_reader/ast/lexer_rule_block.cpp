@@ -9,14 +9,16 @@ namespace ccl::parser::reader::ast
 {
     using enum RulesLexerToken;
 
-    static auto constructUnion(const lexer::Token &token) -> lexer::rule::RuleBlock
+    static auto constructUnion(const lexer::Token &token)
+        -> std::unique_ptr<lexer::rule::RuleBlockInterface>
     {
         const auto repr = token.getRepr();
         auto [ascii_symbols, ranges] = lexer::rule::parseUnionDecl(repr);
         return std::make_unique<lexer::rule::Union>(isl::UtfSet(ascii_symbols, ranges));
     }
 
-    static auto constructSequence(const lexer::Token &token) -> lexer::rule::RuleBlock
+    static auto constructSequence(const lexer::Token &token)
+        -> std::unique_ptr<lexer::rule::RuleBlockInterface>
     {
         auto repr = token.getRepr();
         repr = repr.substr(1, repr.size() - 2);
@@ -25,7 +27,7 @@ namespace ccl::parser::reader::ast
     }
 
     static auto constructRuleReference(ParserBuilder &parser_builder, const lexer::Token &token)
-        -> lexer::rule::RuleBlock
+        -> std::unique_ptr<lexer::rule::RuleBlockInterface>
     {
         auto repr = token.getRepr();
         repr = repr.substr(1, repr.size() - 2);
@@ -35,12 +37,11 @@ namespace ccl::parser::reader::ast
     }
 
     static auto constructContainer(ParserBuilder &parser_builder, const parser::ast::Node *node)
-        -> lexer::rule::RuleBlock
+        -> std::unique_ptr<lexer::rule::RuleBlockInterface>
     {
         const auto *lexer_rule_alternative = static_cast<const RulesReaderNode *>(node);
 
-        return isl::get<std::unique_ptr<lexer::rule::Container>>(
-            lexer_rule_alternative->construct(parser_builder));
+        return lexer_rule_alternative->construct(parser_builder).release<lexer::rule::Container>();
     }
 
     auto LexerRuleBlock::getValue() const -> const parser::ast::Terminal *
@@ -60,7 +61,7 @@ namespace ccl::parser::reader::ast
         using namespace lexer::rule;
 
         const auto *rule_block = static_cast<const parser::ast::Terminal *>(front().get());
-        auto resulted_block = RuleBlock{};
+        auto resulted_block = std::unique_ptr<RuleBlockInterface>{};
 
         switch (rule_block->getType()) {
         case ANGLE_OPEN:

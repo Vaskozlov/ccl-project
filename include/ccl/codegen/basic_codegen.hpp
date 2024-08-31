@@ -2,7 +2,6 @@
 #define CCL_PROJECT_BASIC_CODEGEN_HPP
 
 #include <ccl/ccl.hpp>
-#include <isl/const_string.hpp>
 #include <isl/string_view.hpp>
 #include <map>
 

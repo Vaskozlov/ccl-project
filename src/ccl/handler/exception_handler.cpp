@@ -16,24 +16,23 @@ namespace ccl
     {
         switch (error->getCriticality()) {
         case ExceptionCriticality::SUGGESTION:
-            std::atomic_fetch_add_explicit(&suggestionsCounter, 1UL, std::memory_order_relaxed);
+            suggestionsCounter.fetch_add(1, std::memory_order_relaxed);
             break;
 
         case ExceptionCriticality::WARNING:
-            std::atomic_fetch_add_explicit(&warningsCounter, 1UL, std::memory_order_relaxed);
+            warningsCounter.fetch_add(1, std::memory_order_relaxed);
             break;
 
         case ExceptionCriticality::UNCRITICAL:
-            std::atomic_fetch_add_explicit(
-                &uncriticalErrorsCounter, 1UL, std::memory_order_relaxed);
+            uncriticalErrorsCounter.fetch_add(1, std::memory_order_relaxed);
             break;
 
         case ExceptionCriticality::CRITICAL:
-            std::atomic_fetch_add_explicit(&criticalErrorsCounter, 1UL, std::memory_order_relaxed);
+            criticalErrorsCounter.fetch_add(1, std::memory_order_relaxed);
             break;
 
         case ExceptionCriticality::PANIC:
-            std::atomic_fetch_add_explicit(&panicErrorsCounter, 1UL, std::memory_order_relaxed);
+            panicErrorsCounter.fetch_add(1, std::memory_order_relaxed);
             break;
 
         default:
@@ -46,7 +45,7 @@ namespace ccl
     // NOLINTNEXTLINE recursive call
     auto ExceptionHandler::onHandle(const ExceptionT *const error) const -> void
     {
-        auto &cmd_handler = handler::Cmd::instance();
+        const auto &cmd_handler = handler::Cmd::instance();
 
         if (error->getCriticality() >= ExceptionCriticality::CRITICAL) {
             throw ExceptionT(*error);

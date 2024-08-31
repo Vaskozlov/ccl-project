@@ -10,7 +10,7 @@ else ()
     add_library(astlang SHARED ${ASTLANG_OBJECTS})
 endif ()
 
-isl_set_project_warnings(
+isl_set_target_flags(
         astlang
         ${CCL_STRICT_COMPILATION}
         ""
@@ -21,6 +21,14 @@ isl_set_project_warnings(
         ${CCL_LIBCPP}
         ${CCL_UNITY_BUILD}
 )
+
+if (CCL_PRECOMPILED_HEADERS)
+    target_precompile_headers(
+            astlang
+            REUSE_FROM
+            ccl
+    )
+endif ()
 
 add_dependencies(
         astlang
@@ -37,14 +45,6 @@ target_link_libraries(
         fmt::fmt-header-only
         unordered_dense::unordered_dense
 )
-
-if (CCL_PRECOMPILED_HEADERS)
-    target_precompile_headers(
-            astlang
-            PUBLIC
-            "pch.hpp"
-    )
-endif ()
 
 target_include_directories(astlang
         PUBLIC

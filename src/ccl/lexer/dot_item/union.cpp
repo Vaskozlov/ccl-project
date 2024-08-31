@@ -2,7 +2,7 @@
 
 namespace ccl::lexer::rule
 {
-    auto parseUnionDecl(isl::string_view union_decl)
+    auto parseUnionDecl(const isl::string_view union_decl)
         -> isl::Pair<std::bitset<isl::UtfSet::asciiStorageSize>, std::vector<isl::Range<char32_t>>>
     {
         static constexpr isl::StaticFlatmap<char32_t, char32_t, 3> special_symbols = {

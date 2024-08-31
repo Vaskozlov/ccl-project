@@ -8,9 +8,9 @@
 #include <ccl/parser/rules_reader/ast/lexer_rule_options.hpp>
 #include <ccl/parser/rules_reader/ast/parser_block.hpp>
 #include <ccl/parser/rules_reader/ast/parser_rule.hpp>
+#include <ccl/parser/rules_reader/ast/parser_rule_alternatives.hpp>
 #include <ccl/parser/rules_reader/rules_lexer.hpp>
 #include <ccl/parser/rules_reader/rules_reader.hpp>
-#include <ccl/parser/rules_reader/ast/parser_rule_alternatives.hpp>
 #include <ccll/ccll.hpp>
 #include <isl/io.hpp>
 
@@ -123,10 +123,8 @@ namespace ccl::parser::reader
                 LEXER_RULE,
                 {
                     Rule{
-                        {
-                            LEXER_RULE,
-                            LEXER_RULE_BLOCK,
-                        },
+                        LEXER_RULE,
+                        LEXER_RULE_BLOCK,
                     },
                     Rule{
                         EPSILON,
@@ -253,7 +251,7 @@ namespace ccl::parser::reader
         },
     };
 
-    RulesReader::RulesReader(isl::string_view input, isl::string_view filename)
+    RulesReader::RulesReader(const isl::string_view input, const isl::string_view filename)
       : readerOptions{
             ReaderOption::WARNINGS_ENABLE,
             ReaderOption::SUGGESTIONS_ENABLE,
@@ -265,7 +263,7 @@ namespace ccl::parser::reader
         const auto id_to_str = ccl::lexer::lexerEnumToString<RulesLexerToken>;
 
         const auto gll_parser = GllParser(GOAL, RulesGrammar, id_to_str);
-        const auto [roots, algorithm] = gll_parser.parse(tokenizer);
+        auto [roots, algorithm] = gll_parser.parse(tokenizer);
 
         if (roots.size() != 1) {
             throw std::runtime_error{"Unable to construct unambiguous tree"};

@@ -14,8 +14,7 @@ namespace ccl::parser::lr
         State production;
         SmallId inputLevel;
 
-        auto
-            reduce(SmallId pop_count, Node *node, std::vector<ast::SharedNode<>> arguments) -> void;
+        auto reduce(SmallId pop_count, Node *node, ast::SmallVectorOfNodes arguments) -> void;
     };
 }// namespace ccl::parser::lr
 

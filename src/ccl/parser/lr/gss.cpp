@@ -5,17 +5,17 @@ namespace ccl::parser::lr
     // NOLINTNEXTLINE
     isl::FixedSizeAllocator<sizeof(Node), alignof(Node)> detail::NodeAllocator{};
 
-    auto Reducer::reduce(SmallId pop_count, Node *node, std::vector<ast::SharedNode<>> arguments)
-        -> void
+    auto Reducer::reduce(SmallId pop_count, Node *node, ast::SmallVectorOfNodes arguments) -> void
     {
         pop_count -= 1;
         arguments.emplace_back(node->value);
 
         if (pop_count == 0) {
             auto new_node = ast::SharedNode<ast::NonTerminal>(production, std::move(arguments));
+            new_node->reverse();
 
             for (auto *prev : node->previous) {
-                auto new_state = gotoTable->at({
+                const auto new_state = gotoTable->at({
                     .state = prev->parserState,
                     .symbol = production,
                 });
@@ -94,22 +94,16 @@ namespace ccl::parser::lr
         }
 
         auto &level = levels.at(input_position);
-        auto *node = level.findNonTerminal(non_terminal.get());
 
-        // Is there any need to check?
-        if (node == nullptr) {
-            auto created_node = UniqueGssNodePtr{
-                std::vector{parent},
-                std::move(non_terminal),
-                input_position,
-                parser_state,
-            };
+        auto created_node = UniqueGssNodePtr{
+            std::vector{parent},
+            std::move(non_terminal),
+            input_position,
+            parser_state,
+        };
 
-            node = created_node.get();
-            level.nonTerminals.emplace_back(std::move(created_node));
-        } else {
-            node->addPrevious(parent);
-        }
+        auto *node = created_node.get();
+        level.nonTerminals.emplace_back(std::move(created_node));
 
         return node;
     }
@@ -126,15 +120,16 @@ namespace ccl::parser::lr
 
         if (descriptor.inputPosition == globalInputPosition) {
             descriptors.emplace_back(descriptor);
-        } else {
-            descriptors.emplace_front(descriptor);
+            return;
         }
+
+        descriptors.emplace_front(descriptor);
     }
 
     auto GSS::reduce(
-        SmallId pop_count,
+        const SmallId pop_count,
         const ankerl::unordered_dense::map<TableEntry, State> *gotoTable,
-        State production,
+        const State production,
         const Descriptor &descriptor) -> void
     {
         Reducer{

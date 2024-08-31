@@ -88,7 +88,7 @@ namespace ccl::parser::ll
         }
 
         const auto &non_terminal_front = nonTerminalDescriptors.front();
-        const auto & [stack, inputPosition] = terminalDescriptors.front();
+        const auto &[stack, inputPosition] = terminalDescriptors.front();
 
         auto &selectedList = (non_terminal_front.inputPosition <= inputPosition)
                                  ? nonTerminalDescriptors
@@ -144,7 +144,7 @@ namespace ccl::parser::ll
     }
 
 
-    auto GSS::getLevel(SmallId input_position) -> Level &
+    auto GSS::getLevel(const SmallId input_position) -> Level &
     {
         if (input_position >= levels.size()) {
             levels.resize(input_position + 1);

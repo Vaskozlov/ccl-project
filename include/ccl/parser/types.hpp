@@ -2,6 +2,7 @@
 #define CCL_PROJECT_TYPES_HPP
 
 #include <ccl/ccl.hpp>
+#include <stack>
 
 namespace ccl::parser
 {

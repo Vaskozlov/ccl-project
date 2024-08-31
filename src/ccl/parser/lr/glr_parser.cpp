@@ -29,7 +29,7 @@ namespace ccl::parser
 
     GlrParser::GlrParser(
         const LrItem &start_item,
-        Symbol epsilon_symbol,
+        const Symbol epsilon_symbol,
         const GrammarStorage &parser_rules,
         const std::function<std::string(SmallId)> &id_to_string_converter)
       : idToStringConverter{id_to_string_converter}
@@ -69,45 +69,36 @@ namespace ccl::parser
                 gss.nextWord();
             }
 
-            const auto entry = TableEntry{
+            auto possible_actions_it = actionTable.find({
                 .state = parser_state,
                 .symbol = token->getType(),
-            };
-
-            auto possible_actions_it = actionTable.find(entry);
+            });
 
             if (possible_actions_it == actionTable.end()) {
                 continue;
             }
 
-            const auto &possible_actions = possible_actions_it->second;
-
-            for (const auto &action : possible_actions) {
-                switch (action.getParsingAction()) {
-                case SHIFT: {
-                    auto *new_node = gss.pushTerminal(
-                        descriptor.stack,
-                        descriptor.inputPosition,
-                        action.getShiftingState(),
-                        token);
-
+            for (const Action &action : possible_actions_it->second) {
+                switch (action.parsingAction) {
+                case SHIFT:
                     gss.add({
-                        .stack = new_node,
+                        .stack = gss.pushTerminal(
+                            descriptor.stack,
+                            descriptor.inputPosition,
+                            action.shiftingState,
+                            token),
                         .inputPosition = descriptor.inputPosition + 1,
-                        .parserState = action.getShiftingState(),
+                        .parserState = action.shiftingState,
                     });
                     break;
-                }
 
-                case REDUCE: {
-                    const auto &lr_item = action.getReducingItem();
-                    const auto production = lr_item.production;
-                    const auto number_of_elements_to_pop =
-                        static_cast<SmallId>(lr_item.dottedRule.size());
-
-                    gss.reduce(number_of_elements_to_pop, &gotoTable, production, descriptor);
+                case REDUCE:
+                    gss.reduce(
+                        action.numberOfElementsInProduction,
+                        &gotoTable,
+                        action.productionType,
+                        descriptor);
                     break;
-                }
 
                 case ACCEPT:
                     parsing_result.roots.emplace_back(descriptor.stack->value);
@@ -117,8 +108,6 @@ namespace ccl::parser
                     isl::unreachable();
                 }
             }
-
-            // debugGlr(gss, idToStringConverter);
         }
 
         return parsing_result;

@@ -50,9 +50,9 @@ namespace ccl::parser
     }
 
     auto FollowSetEvaluator::followSetNonTerminalCase(
-        Rule &rule, Symbol elem, std::unordered_set<Symbol> &trailer) -> bool
+        Rule &rule, const Symbol elem, std::unordered_set<Symbol> &trailer) -> bool
     {
-        auto has_modifications = insertRange(followSet[elem], trailer);
+        const auto has_modifications = insertRange(followSet[elem], trailer);
         auto elem_first_set = firstSet.at(elem);
 
         if (elem_first_set.contains(epsilonSymbol)) {

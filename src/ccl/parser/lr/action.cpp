@@ -1,27 +1,22 @@
 #include <ccl/parser/lr/action.hpp>
 
-template<class... Ts>
-struct overloaded : Ts... {
-    using Ts::operator()...;
-};
-
 auto fmt::formatter<ccl::parser::ActionPrintWrapper>::format(
-    const ccl::parser::ActionPrintWrapper&action_print_wrapper,
-    format_context&ctx) const -> format_context::iterator {
+    const ccl::parser::ActionPrintWrapper &action_print_wrapper,
+    format_context &ctx) -> format_context::iterator
+{
     using namespace ccl::parser;
 
-    const auto&action = action_print_wrapper.action;
-    fmt::format_to(ctx.out(), "{} ", action.getParsingAction());
+    const auto &action = action_print_wrapper.action;
+    fmt::format_to(ctx.out(), "{} ", action.parsingAction);
 
-    return std::visit(
-        overloaded{
-            [&ctx, &action_print_wrapper](const LrItem&arg) {
-                return fmt::format_to(
-                    ctx.out(), "{}", LrItemPrintWrapper(arg, action_print_wrapper.idToStringConverter));
-            },
-            [&ctx](auto arg) {
-                return fmt::format_to(ctx.out(), "{}", arg);
-            },
-        },
-        action.getStoredData());
+    if (action.isShift()) {
+        return fmt::format_to(ctx.out(), "{}", action.shiftingState);
+    }
+
+    if (action.isReduce()) {
+        return fmt::format_to(
+            ctx.out(), "{}", action_print_wrapper.idToStringConverter(action.productionType));
+    }
+
+    return fmt::format_to(ctx.out(), "{}", std::monostate{});
 }

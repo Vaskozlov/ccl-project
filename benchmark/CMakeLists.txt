@@ -9,7 +9,7 @@ add_executable(
         ${CCL_BENCH_OBJECTS}
 )
 
-isl_set_project_warnings(
+isl_set_target_flags(
         ccl-bench
         ${CCL_STRICT_COMPILATION}
         ""
@@ -20,6 +20,14 @@ isl_set_project_warnings(
         ${CCL_LIBCPP}
         OFF
 )
+
+if (CCL_PRECOMPILED_HEADERS)
+    target_precompile_headers(
+            ccl-bench
+            REUSE_FROM
+            ccl
+    )
+endif ()
 
 add_dependencies(
         ccl-bench

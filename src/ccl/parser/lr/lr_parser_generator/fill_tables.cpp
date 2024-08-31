@@ -59,11 +59,13 @@ namespace ccl::parser::lr
 
         if (is_dot_in_the_end && item.getProductionType() == goalProduction) {
             insertIntoActionTable(
-                TableEntry{
+                {
                     .state = cc.id,
                     .symbol = endOfInput,
                 },
-                std::monostate{});
+                {
+                    .parsingAction = ACCEPT,
+                });
             return;
         }
 
@@ -73,7 +75,11 @@ namespace ccl::parser::lr
                     .state = cc.id,
                     .symbol = item.getLookAhead(),
                 },
-                item);
+                {
+                    .parsingAction = REDUCE,
+                    .productionType = item.production,
+                    .numberOfElementsInProduction = static_cast<SmallId>(item.dottedRule.size()),
+                });
             return;
         }
 
@@ -88,7 +94,12 @@ namespace ccl::parser::lr
             .symbol = symbol_at_dot,
         };
 
-        insertIntoActionTable(entry, transitions.at(entry));
+        insertIntoActionTable(
+            entry,
+            {
+                .parsingAction = SHIFT,
+                .shiftingState = transitions.at(entry),
+            });
     }
 
     auto LrParserGenerator::fillGotoTableEntry(const CanonicalCollection &cc, Symbol symbol) -> void
@@ -112,15 +123,11 @@ namespace ccl::parser::lr
         }
     }
 
-    template<typename... Ts>
-    auto LrParserGenerator::insertIntoActionTable(TableEntry entry, Ts &&...args) -> void
+    auto LrParserGenerator::insertIntoActionTable(TableEntry entry, Action action) -> void
     {
-        auto action = Action{std::forward<Ts>(args)...};
-
         auto [it, inserted] = actionTable.try_emplace(entry);
-        auto &actions = it->second;
 
-        if (std::ranges::find(actions, action) == actions.end()) {
+        if (auto &actions = it->second; std::ranges::find(actions, action) == actions.end()) {
             actions.emplace_back(action);
         }
     }

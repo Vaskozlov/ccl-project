@@ -12,7 +12,8 @@ namespace ccl::parser::lr
     }
 
     auto LrParserGenerator::moveCollectionItemsOverSymbol(
-        const CanonicalCollection &canonical_collection, Symbol symbol) -> std::vector<LrItem>
+        const CanonicalCollection &canonical_collection,
+        const Symbol symbol) const -> std::vector<LrItem>
     {
         auto moved = std::vector<LrItem>{};
         moved.reserve(canonical_collection.items.size());
@@ -50,7 +51,7 @@ namespace ccl::parser::lr
 
     auto LrParserGenerator::generateCanonicalCollection() -> isl::Task<>
     {
-        auto collection_end = canonicalCollection.end();
+        const auto collection_end = canonicalCollection.end();
         auto max_polled_it_copy = lastPolledCanonicalCollection;
 
         for (auto it = max_polled_it_copy; it != collection_end; ++it) {
@@ -89,7 +90,7 @@ namespace ccl::parser::lr
         auto task = runtime::async(generateCanonicalCollection());
 
         while (true) {
-            auto pop_result = tryPopFromPipe(result);
+            const auto pop_result = tryPopFromPipe(result);
 
             if (pop_result == PIPE_EMPTY) {
                 std::this_thread::sleep_for(100us);
@@ -134,11 +135,10 @@ namespace ccl::parser::lr
     {
         auto closure_id = isl::IdGenerator<SmallId>{1};
 
-        canonicalCollection.emplace_back(
-            CanonicalCollection{
-                .items = computeClosureOnItems({start_item}),
-                .id = 0,
-            });
+        canonicalCollection.push_back({
+            .items = computeClosureOnItems({start_item}),
+            .id = 0,
+        });
 
         lastPolledCanonicalCollection = canonicalCollection.begin();
         CCL_REPEAT_WHILE(fillCanonicalCollection(closure_id))
@@ -149,13 +149,12 @@ auto fmt::formatter<ccl::parser::CanonicalCollectionPrintWrapper>::format(
     const ccl::parser::CanonicalCollectionPrintWrapper &collection_print_wrapper,
     format_context &ctx) -> format_context::iterator
 {
-    const auto &collection = collection_print_wrapper.canonicalCollection;
+    const auto &[items, id] = collection_print_wrapper.canonicalCollection;
 
     return fmt::format_to(
-        ctx.out(), "{}: {}", collection.id,
-        std::views::transform(
-            collection.items, [&collection_print_wrapper](const ccl::parser::LrItem &item) {
-                return ccl::parser::LrItemPrintWrapper(
-                    item, collection_print_wrapper.idToStringConversionFunction);
-            }));
+        ctx.out(), "{}: {}", id,
+        std::views::transform(items, [&collection_print_wrapper](const ccl::parser::LrItem &item) {
+            return ccl::parser::LrItemPrintWrapper(
+                item, collection_print_wrapper.idToStringConversionFunction);
+        }));
 }

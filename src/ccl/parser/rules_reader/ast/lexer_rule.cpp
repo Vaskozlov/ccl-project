@@ -9,20 +9,23 @@ namespace ccl::parser::reader::ast
         auto &lexical_analyzer = parser_builder.getLexicalAnalyzer();
 
         if (size() == 1) {
-            auto container = std::make_unique<Container>(lexical_analyzer);
+            auto result = isl::makeAny<Container>(lexical_analyzer);
             const auto *first_block = static_cast<const RulesReaderNode *>(front().get());
-            container->addItem(isl::get<RuleBlock>(first_block->construct(parser_builder)));
 
-            return isl::UniqueAny{std::move(container)};
+            isl::observe<Container>(result)->addItem(
+                RuleBlock{first_block->construct(parser_builder).release<RuleBlockInterface>()});
+
+            return result;
         }
 
         const auto *constructed_rule_blocks = static_cast<const RulesReaderNode *>(front().get());
-        auto container = isl::get<std::unique_ptr<Container>>(
-            constructed_rule_blocks->construct(parser_builder));
+        auto container = constructed_rule_blocks->construct(parser_builder);
 
         const auto *next_block = static_cast<const RulesReaderNode *>(back().get());
-        container->addItem(isl::get<RuleBlock>(next_block->construct(parser_builder)));
 
-        return isl::UniqueAny{std::move(container)};
+        isl::observe<Container>(container)->addItem(
+            RuleBlock{next_block->construct(parser_builder).release<RuleBlockInterface>()});
+
+        return container;
     }
 }// namespace ccl::parser::reader::ast

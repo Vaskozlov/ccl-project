@@ -34,7 +34,7 @@ namespace ccl::handler
 
     auto Cmd::CmdFormatter::formatMessage() -> void
     {
-        fmt::format_to(std::back_inserter(formattingBuffer), "{}\n", as<std::string_view>(message));
+        fmt::format_to(std::back_inserter(formattingBuffer), "{}\n", message);
     }
 
     auto Cmd::CmdFormatter::formatLineNumber() -> void
@@ -72,8 +72,7 @@ namespace ccl::handler
             fmt::format_to(std::back_inserter(formattingBuffer), "{:>6}", '|');
             fmt::format_to(
                 std::back_inserter(formattingBuffer), "{1:>{0}} {2}\n",
-                std::max<std::size_t>(1, arrow_position),
-                "Suggestion: ", as<std::string_view>(suggestion));
+                std::max<std::size_t>(1, arrow_position), "Suggestion: ", suggestion);
         }
     }
 }// namespace ccl::handler

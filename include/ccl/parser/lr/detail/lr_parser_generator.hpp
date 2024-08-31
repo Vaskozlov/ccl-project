@@ -48,10 +48,10 @@ namespace ccl::parser::lr
         Symbol endOfInput;
         Symbol epsilonSymbol;
 
-        ankerl::unordered_dense::map<std::vector<LrItem>, std::vector<LrItem>>
+       mutable ankerl::unordered_dense::map<std::vector<LrItem>, std::vector<LrItem>>
             closureComputationOnItemsCache;
 
-        ankerl::unordered_dense::map<LrItem, std::vector<LrItem>> closureComputationCache;
+       mutable ankerl::unordered_dense::map<LrItem, std::vector<LrItem>> closureComputationCache;
 
         runtime::Pipe<GotoResult, 256> pipe;
 
@@ -81,7 +81,7 @@ namespace ccl::parser::lr
 
         auto moveCollectionItemsOverSymbol(
             const CanonicalCollection &canonical_collection,
-            Symbol symbol) -> std::vector<LrItem>;
+            Symbol symbol) const -> std::vector<LrItem>;
 
         auto moveCollectionItemsOverRemainingSymbols(
             const CanonicalCollection &canonical_collection) -> void;
@@ -92,9 +92,9 @@ namespace ccl::parser::lr
 
         auto constructCanonicalCollection(const LrItem &start_item) -> void;
 
-        auto computeClosure(const LrItem &item) -> const std::vector<LrItem> &;
+        auto computeClosure(const LrItem &item) const -> const std::vector<LrItem> &;
 
-        auto computeClosureOnItems(std::vector<LrItem> s) -> const std::vector<LrItem> &;
+        auto computeClosureOnItems(std::vector<LrItem> s) const -> const std::vector<LrItem> &;
 
         auto fillTablesUsingCanonicalCollection(const CanonicalCollection &cc) -> void;
 
@@ -104,8 +104,7 @@ namespace ccl::parser::lr
 
         auto fillTables() -> void;
 
-        template<typename... Ts>
-        auto insertIntoActionTable(TableEntry entry, Ts &&...args) -> void;
+        auto insertIntoActionTable(TableEntry entry, Action action) -> void;
 
         auto insertIntoGotoTable(TableEntry entry, State state) -> void;
     };

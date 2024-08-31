@@ -23,22 +23,24 @@ namespace ccl::parser::reader::ast
         const auto production_name = getDeclarationName();
         const auto production_id =
             parser_builder.addRule(static_cast<std::string>(production_name));
+
         const auto *alternatives = getAlternatives();
 
         if (alternatives == nullptr) {
             auto not_casted_rule =
                 static_cast<const RulesReaderNode *>(back().get())->construct(parser_builder);
-            auto rule = isl::get<std::vector<SmallId>>(not_casted_rule);
 
-            parser_builder.addParserRule(production_id, Rule{{rule}});
+            parser_builder.addParserRule(
+                production_id, isl::get<std::vector<SmallId>>(not_casted_rule));
+
             return std::nullopt;
         }
 
         auto not_casted_rules = alternatives->construct(parser_builder);
-        const auto rules = isl::get<std::vector<std::vector<SmallId>>>(not_casted_rules);
+        auto rules = isl::get<std::vector<std::vector<SmallId>>>(not_casted_rules);
 
-        for (const auto &alternative : rules) {
-            parser_builder.addParserRule(production_id, Rule{alternative});
+        for (auto &alternative : rules) {
+            parser_builder.addParserRule(production_id, std::move(alternative));
         }
 
         return std::nullopt;

@@ -1,4 +1,3 @@
-#include <ast-lang/ast/global_declarations.hpp>
 #include <ast-lang/ast/node.hpp>
 #include <ast-lang/interpreter/interpreter.hpp>
 #include <ccl/lexer/tokenizer.hpp>
@@ -12,7 +11,7 @@
 using namespace ccl::lexer;
 using namespace astlang::interpreter;
 
-auto Input = isl::string_view{R"(
+constexpr static auto Input = isl::string_view{R"(
 def main(int a)
 {
     if a > 10
