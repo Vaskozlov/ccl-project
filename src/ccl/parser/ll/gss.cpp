@@ -41,11 +41,7 @@ namespace ccl::parser::ll
         const auto input_position = descriptor.inputPosition;
         auto &current_set = passed.at(input_position % 2);
 
-        std::tie(std::ignore, inserted) = current_set.emplace(
-            PassedDescriptor{
-                .sppfNode = node->sppfNode,
-                .inputPosition = node->inputPosition,
-            });
+        std::tie(std::ignore, inserted) = current_set.emplace(node);
 
         if (!inserted) {
             return;
@@ -106,8 +102,11 @@ namespace ccl::parser::ll
         auto *node = level.findNode(sppf_node);
 
         if (node == nullptr) {
-            auto constructed_node =
-                UniqueGssNodePtr(std::vector{parent}, std::move(sppf_node), input_position);
+            auto constructed_node = UniqueGssNodePtr{
+                Node::Vector{parent},
+                std::move(sppf_node),
+                input_position,
+            };
 
             node = constructed_node.get();
             level.emplace_back(std::move(constructed_node));
@@ -120,7 +119,7 @@ namespace ccl::parser::ll
     }
 
     auto GSS::pushNode(
-        const std::vector<Node *> &parents,
+        const Node::Vector &parents,
         SPPFNode sppf_node,
         SmallId input_position) -> Node *
     {
@@ -148,6 +147,7 @@ namespace ccl::parser::ll
     {
         if (input_position >= levels.size()) {
             levels.resize(input_position + 1);
+            levels.back().reserve(8);
         }
 
         return levels.at(input_position);

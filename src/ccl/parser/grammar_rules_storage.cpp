@@ -79,11 +79,11 @@ namespace ccl::parser
 
     auto GrammarStorage::finishGrammar(Symbol goal_production, bool remove_epsilon) -> void
     {
-        for (const auto &[key, rules] : rules) {
+        for (const auto &[key, alternatives] : rules) {
             nonTerminals.emplace(key);
             grammarSymbols.emplace(key);
 
-            for (const auto &rule : rules) {
+            for (const auto &rule : alternatives) {
                 registerAllRuleSymbols(rule);
             }
         }

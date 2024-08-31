@@ -97,11 +97,12 @@ namespace ccl::parser::reader::ast
         }
 
         const auto *rule_option = static_cast<const LexerRuleOptions *>(back().get());
-        const auto options = isl::get<std::vector<SmallId>>(rule_option->construct(parser_builder));
+        auto rule_options = rule_option->construct(parser_builder);
+        const auto *options = isl::observe<isl::SmallVector<SmallId, 4>>(rule_options);
 
         // TODO: add support for custom repetition
 
-        for (const auto option : options) {
+        for (const auto option : *options) {
             switch (option) {
             case STAR:
                 rule_block->setClosure(lexer::rule::Closure{0, lexer::rule::Closure::max()});

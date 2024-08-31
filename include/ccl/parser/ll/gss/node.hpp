@@ -7,7 +7,9 @@ namespace ccl::parser::ll
 {
     struct Node
     {
-        std::vector<Node *> previous;
+        using Vector = isl::SmallVector<Node *, 6>;
+
+        Vector previous;
         SPPFNode sppfNode;
         SmallId inputPosition{};
 

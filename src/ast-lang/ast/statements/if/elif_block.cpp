@@ -5,8 +5,8 @@ namespace astlang::ast::statement::if_statement
 {
     auto ElifBlock::compute(Interpreter &interpreter) const -> EvaluationResult
     {
-        auto condition = ConstNodePtr{nodes.at(1).get()};
-        auto block = ConstNodePtr{nodes.at(3).get()};
+        const auto condition = ConstNodePtr{nodes.at(1).get()};
+        const auto block = ConstNodePtr{nodes.at(3).get()};
 
         auto conditionResult = condition.astlangNode->compute(interpreter);
 
@@ -15,7 +15,7 @@ namespace astlang::ast::statement::if_statement
         }
 
         if (size() == 6) {
-            auto elif_block = ConstNodePtr{nodes.at(5).get()};
+            const auto elif_block = ConstNodePtr{nodes.at(5).get()};
             return elif_block.astlangNode->compute(interpreter);
         }
 

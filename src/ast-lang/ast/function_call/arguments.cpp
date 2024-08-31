@@ -8,9 +8,9 @@ namespace astlang::ast::function::call
     auto Arguments::compute(Interpreter &interpreter) const -> EvaluationResult
     {
         auto result = std::vector<EvaluationResult>{};
-        auto front_node = ConstNodePtr{this->front().get()};
+        const auto front_node = ConstNodePtr{front().get()};
 
-        if (this->size() == 1) {
+        if (size() == 1) {
             result.emplace_back(front_node.astlangNode->compute(interpreter));
 
             return EvaluationResult{
@@ -19,12 +19,15 @@ namespace astlang::ast::function::call
             };
         }
 
-        auto back_node = ConstNodePtr{this->back().get()};
+        const auto back_node = ConstNodePtr{back().get()};
         auto next_arguments = back_node.astlangNode->compute(interpreter);
-        auto casted_next_arguments = isl::get<EvaluationResult>(next_arguments.value);
-        auto resulted_list = isl::get<std::vector<EvaluationResult>>(casted_next_arguments.value);
 
-        for (auto &argument : resulted_list) {
+        auto *casted_next_arguments = isl::observe<EvaluationResult>(next_arguments.value);
+
+        auto *resulted_list =
+            isl::observe<std::vector<EvaluationResult>>(casted_next_arguments->value);
+
+        for (auto &argument : *resulted_list) {
             result.emplace_back(std::move(argument));
         }
 

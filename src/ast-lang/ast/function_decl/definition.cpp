@@ -37,7 +37,7 @@ namespace astlang::ast::function::decl
                 at(FUNCTION_BODY_INDEX_IN_CASE_OF_EXPLICIT_RETURN_TYPE).get(),
             };
 
-            auto return_type_node = ConstNodePtr{at(FUNCTION_RETURN_TYPE_INDEX).get()};
+            const auto return_type_node = ConstNodePtr{at(FUNCTION_RETURN_TYPE_INDEX).get()};
             auto return_type_evaluation = return_type_node.astlangNode->compute(interpreter);
 
             return_type = std::move(return_type_evaluation.type);

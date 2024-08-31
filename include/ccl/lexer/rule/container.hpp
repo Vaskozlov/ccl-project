@@ -5,6 +5,7 @@
 #include <ccl/lexer/rule/closure.hpp>
 #include <ccl/lexer/rule/rule_block_interface.hpp>
 #include <ccl/lexer/token.hpp>
+#include <isl/small_vector.hpp>
 
 namespace ccl::lexer
 {
@@ -25,7 +26,7 @@ namespace ccl::lexer::rule
     {
         using RuleBlockInterface::canBeOptimized;
         using RuleBlockInterface::TextIterator;
-        using DotItemsStorage = std::vector<RuleBlock>;
+        using DotItemsStorage = isl::SmallVector<RuleBlock, 4>;
 
         class RuleParser;
 
@@ -49,7 +50,7 @@ namespace ccl::lexer::rule
             LexicalAnalyzer &lexical_analyzer, const TextIterator &rule_iterator,
             bool main_item = false, bool is_special = false);
 
-        [[nodiscard]] Container(
+        [[nodiscard]] explicit Container(
             LexicalAnalyzer &lexical_analyzer, bool main_item = false, bool is_special = false);
 
         auto addItem(RuleBlock new_item) -> void
@@ -171,8 +172,8 @@ namespace ccl::lexer::rule
 
         auto checkAbilityToCreatePrefixOrPostfix() -> void;
 
-        [[noreturn]] auto
-            throwUnableToApply(isl::string_view reason, isl::string_view suggestion = {}) const -> void;
+        [[noreturn]] auto throwUnableToApply(
+            isl::string_view reason, isl::string_view suggestion = {}) const -> void;
 
         [[noreturn]] auto throwUndefinedAction() const -> void;
     };

@@ -5,7 +5,7 @@
 
 namespace astlang::ast
 {
-    class GlobalDeclarations : public Node
+    class GlobalDeclarations final : public Node
     {
     public:
         using Node::Node;

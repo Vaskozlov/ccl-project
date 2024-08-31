@@ -2,14 +2,17 @@
 #define CCL_PROJECT_LL_GSS_HPP
 
 #include <ccl/parser/ast/terminal.hpp>
+#include <ccl/parser/grammar_rules_storage.hpp>
 #include <ccl/parser/ll/gss/descriptor.hpp>
 #include <ccl/parser/ll/gss/level.hpp>
-#include <ccl/parser/ll/gss/passed_descriptor.hpp>
 #include <deque>
-#include <ccl/parser/grammar_rules_storage.hpp>
 
-namespace ccl::parser {
-class GrammarStorage;}namespace ccl::parser::ll
+namespace ccl::parser
+{
+    class GrammarStorage;
+}
+
+namespace ccl::parser::ll
 {
     class GSS
     {
@@ -20,7 +23,7 @@ class GrammarStorage;}namespace ccl::parser::ll
         Levels levels;
         std::deque<Descriptor> terminalDescriptors;
         std::deque<Descriptor> nonTerminalDescriptors;
-        std::array<ankerl::unordered_dense::set<PassedDescriptor>, 2> passed;
+        std::array<ankerl::unordered_dense::set<const Node *>, 2> passed;
         const GrammarStorage *storage{};
         SmallId globalInputPosition{};
 
@@ -59,9 +62,11 @@ class GrammarStorage;}namespace ccl::parser::ll
         auto pushNode(Node *parent, SPPFNode sppf_node, SmallId input_position)
             CCL_LIFETIMEBOUND -> Node *;
 
+        auto pushNode(Node *parent, RuleWithDot rule, Symbol production, SmallId input_position)
+            CCL_LIFETIMEBOUND -> Node *;
+
         auto pushNode(
-            const std::vector<Node *> &parents,
-            SPPFNode sppf_node,
+            const Node::Vector &parents, SPPFNode sppf_node,
             SmallId input_position) CCL_LIFETIMEBOUND -> Node *;
 
     private:

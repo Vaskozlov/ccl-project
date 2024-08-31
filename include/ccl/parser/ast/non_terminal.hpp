@@ -16,11 +16,11 @@ namespace ccl::parser::ast
         SmallVectorOfNodes nodes;
 
     public:
-        explicit NonTerminal(SmallId node_type_id)
+        explicit NonTerminal(const SmallId node_type_id)
           : Node{node_type_id}
         {}
 
-        explicit NonTerminal(SmallId node_type_id, SmallVectorOfNodes initial_nodes)
+        explicit NonTerminal(const SmallId node_type_id, SmallVectorOfNodes initial_nodes)
           : Node{node_type_id}
           , nodes{std::move(initial_nodes)}
         {}

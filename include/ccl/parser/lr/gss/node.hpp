@@ -7,7 +7,9 @@ namespace ccl::parser::lr
 {
     struct Node
     {
-        std::vector<Node *> previous;
+        using PreviousVector = isl::SmallVector<Node *, 4>;
+
+        PreviousVector previous;
         ast::SharedNode<> value{};
         SmallId inputPosition{};
         SmallId parserState{};

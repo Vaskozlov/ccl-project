@@ -6,7 +6,7 @@ namespace astlang::ast::expression
 {
     using namespace interpreter;
 
-    static auto constructNumber(ConstNodePtr node) -> EvaluationResult
+    static auto constructNumber(const ConstNodePtr node) -> EvaluationResult
     {
         const auto &token = node.terminalNode->getToken();
         const auto repr = token.getRepr();
@@ -20,24 +20,28 @@ namespace astlang::ast::expression
         };
     }
 
-    static auto constructString(ConstNodePtr node) -> EvaluationResult
+    static auto constructString(const ConstNodePtr node) -> EvaluationResult
     {
         const auto &token = node.terminalNode->getToken();
         const auto repr = token.getRepr();
         const auto repr_without_quotes = repr.substr(1, repr.size() - 2);
         auto repr_with_escaping = ccl::text::removeEscaping(repr_without_quotes, {});
 
-        return interpreter::EvaluationResult{
-            isl::makeAny<std::string>(repr_with_escaping), Type::STRING};
+        return EvaluationResult{
+            isl::makeAny<std::string>(repr_with_escaping),
+            Type::STRING,
+        };
     }
 
-    static auto readVariable(Interpreter &interpreter, ConstNodePtr node) -> EvaluationResult &
+    static auto
+        readVariable(Interpreter &interpreter, const ConstNodePtr node) -> EvaluationResult &
     {
         const auto &token = node.terminalNode->getToken();
         return interpreter.read(std::string{token.getRepr()});
     }
 
-    static auto constructBoolean(Interpreter &interpreter, ConstNodePtr node) -> EvaluationResult
+    static auto constructBoolean(const Interpreter &interpreter, const ConstNodePtr node)
+        -> EvaluationResult
     {
         const auto &token = node.terminalNode->getToken();
 
@@ -53,8 +57,8 @@ namespace astlang::ast::expression
             return computeExpression(interpreter);
         }
 
-        auto node = ConstNodePtr{this->front().get()};
-        auto node_type = node.cclNode->getType();
+        const auto node = ConstNodePtr{front().get()};
+        const auto node_type = node.cclNode->getType();
 
         if (node_type == interpreter.NUMBER) {
             return constructNumber(node);
@@ -91,7 +95,7 @@ namespace astlang::ast::expression
 
     auto Factor::computeExpression(Interpreter &interpreter) const -> EvaluationResult
     {
-        auto middle_node = ConstNodePtr{at(1).get()};
+        const auto middle_node = ConstNodePtr{at(1).get()};
         return middle_node.astlangNode->compute(interpreter);
     }
 }// namespace astlang::ast::expression

@@ -5,7 +5,7 @@ namespace astlang::ast::statement::if_statement
 {
     auto ElseBlock::compute(Interpreter &interpreter) const -> EvaluationResult
     {
-        auto block = ConstNodePtr{nodes.at(2).get()};
+        const auto block = ConstNodePtr{nodes.at(2).get()};
         return block.astlangNode->compute(interpreter);
     }
 }// namespace astlang::ast::statement::if_statement

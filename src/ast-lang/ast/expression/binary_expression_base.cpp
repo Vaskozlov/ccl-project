@@ -10,14 +10,14 @@ namespace astlang::ast::expression
         const std::vector<std::pair<SmallId, std::string>> &token_to_function_name) const
         -> interpreter::EvaluationResult
     {
-        auto front_node = ConstNodePtr{front().get()};
+        const auto front_node = ConstNodePtr{front().get()};
 
         if (size() == 1) {
             return front_node.astlangNode->compute(interpreter);
         }
 
         const auto *middle_node = at(1).get();
-        auto back_node = ConstNodePtr{back().get()};
+        const auto back_node = ConstNodePtr{back().get()};
         auto arguments = FunctionCallArguments{};
         arguments.reserve(2);
 

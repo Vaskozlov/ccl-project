@@ -66,7 +66,7 @@ namespace ccl::parser::lr
 
         if (level.terminal == nullptr) {
             level.terminal = UniqueGssNodePtr{
-                std::vector{parent},
+                Node::PreviousVector{parent},
                 std::move(token),
                 input_position,
                 parser_state,
@@ -96,7 +96,7 @@ namespace ccl::parser::lr
         auto &level = levels.at(input_position);
 
         auto created_node = UniqueGssNodePtr{
-            std::vector{parent},
+            Node::PreviousVector{parent},
             std::move(non_terminal),
             input_position,
             parser_state,

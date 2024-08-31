@@ -7,7 +7,7 @@ namespace astlang::ast::function::decl
 
     auto ReturnType::compute(Interpreter & /* unused */) const -> EvaluationResult
     {
-        auto return_type_node = ConstNodePtr{back().get()};
+        const auto return_type_node = ConstNodePtr{back().get()};
         auto type = Type::fromNode(return_type_node.cclNode);
 
         return EvaluationResult{

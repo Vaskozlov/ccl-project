@@ -62,6 +62,7 @@ struct ankerl::unordered_dense::hash<std::vector<T>>
 
     [[nodiscard]] auto operator()(const std::vector<T> &vector) const noexcept -> auto
     {
+        static_assert(std::has_unique_object_representations_v<T>);
         return detail::wyhash::hash(vector.data(), sizeof(T) * vector.size());
     }
 };
@@ -80,6 +81,7 @@ struct std::hash<ccl::parser::LrItem>
 {
     auto operator()(const ccl::parser::LrItem &item) const noexcept -> auto
     {
+        static_assert(std::has_unique_object_representations_v<ccl::parser::LrItem>);
         return ankerl::unordered_dense::hash<ccl::parser::LrItem>{}(item);
     }
 };

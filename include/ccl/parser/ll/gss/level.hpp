@@ -10,6 +10,9 @@ namespace ccl::parser::ll
         using vector::vector;
 
         [[nodiscard]] auto findNode(const SPPFNode &sppf_node) const CCL_LIFETIMEBOUND -> Node *;
+
+        [[nodiscard]] auto
+            findNode(RuleWithDot rule, Symbol production) const CCL_LIFETIMEBOUND -> Node *;
     };
 }// namespace ccl::parser::ll
 

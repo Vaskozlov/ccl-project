@@ -7,7 +7,7 @@ namespace astlang::ast::statement
 
     auto ReturnStatement::compute(Interpreter &interpreter) const -> EvaluationResult
     {
-        if (this->size() == 1) {
+        if (size() == 1) {
             return EvaluationResult{
                 .value = std::nullopt, .type = interpreter::Type::VOID, .needToReturn = true};
         }

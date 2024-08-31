@@ -8,7 +8,7 @@ namespace ccl::parser
     struct RuleWithDot
     {
         const Rule *rule{};
-        SmallId dotPosition{};
+        std::size_t dotPosition{};
 
         [[nodiscard]] auto
             operator<=>(const RuleWithDot &other) const noexcept -> std::weak_ordering = default;

@@ -7,11 +7,10 @@ namespace astlang::ast::function::decl
 
     auto Arguments::compute(Interpreter &interpreter) const -> EvaluationResult
     {
-        // TODO
         auto result = std::vector<EvaluationResult>{};
-        auto front_node = ConstNodePtr{front().get()};
+        const auto front_node = ConstNodePtr{front().get()};
 
-        if (this->size() == 1) {
+        if (size() == 1) {
             result.emplace_back(front_node.astlangNode->compute(interpreter));
 
             return EvaluationResult{
@@ -20,11 +19,11 @@ namespace astlang::ast::function::decl
             };
         }
 
-        auto back_node = ConstNodePtr{back().get()};
+        const auto back_node = ConstNodePtr{back().get()};
         auto next_arguments = back_node.astlangNode->compute(interpreter);
-        auto resulted_list = isl::get<std::vector<EvaluationResult>>(next_arguments.value);
+        auto *resulted_list = isl::observe<std::vector<EvaluationResult>>(next_arguments.value);
 
-        for (auto &argument : resulted_list) {
+        for (auto &argument : *resulted_list) {
             result.emplace_back(std::move(argument));
         }
 

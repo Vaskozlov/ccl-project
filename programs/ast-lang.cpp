@@ -44,7 +44,7 @@ auto main() -> int
     reader::RulesReader reader(astlang::AstLangGrammar);
 
     auto &constructor = reader.getParserBuilder();
-    auto &lexer = constructor.getLexicalAnalyzer();
+    const auto &lexer = constructor.getLexicalAnalyzer();
     auto to_str = constructor.getIdToNameTranslationFunction();
 
     auto tokenizer = lexer.getTokenizer(Input, __FILE__);

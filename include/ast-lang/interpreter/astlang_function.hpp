@@ -6,14 +6,14 @@
 
 namespace astlang::interpreter
 {
-    class AstlangFunction : public FunctionInterface
+    class AstlangFunction final : public FunctionInterface
     {
     private:
-        const astlang::ast::Node *functionBody;
+        const ast::Node *functionBody;
 
     public:
         explicit AstlangFunction(
-            std::vector<std::string> arguments_names, const astlang::ast::Node *function_body)
+            std::vector<std::string> arguments_names, const ast::Node *function_body)
           : FunctionInterface{std::move(arguments_names)}
           , functionBody(function_body)
         {}
