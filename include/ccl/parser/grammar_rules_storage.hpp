@@ -6,16 +6,11 @@
 #include <isl/coroutine/generator.hpp>
 #include <unordered_map>
 #include <unordered_set>
-#include <zpp_bits.hpp>
 
 namespace ccl::parser
 {
     class GrammarStorage
     {
-    public:
-        friend zpp::bits::access;
-        using serialize = zpp::bits::members<7>;
-
     private:
         using AlternativesConstRuleIterator = std::vector<Rule>::const_iterator;
 

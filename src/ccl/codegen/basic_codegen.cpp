@@ -14,7 +14,7 @@ namespace ccl::codegen
         addScope(scopesCounter);
     }
 
-    auto BasicCodeGenerator::addScope(std::size_t scopes_count) -> void
+    auto BasicCodeGenerator::addScope(const std::size_t scopes_count) -> void
     {
         const auto whitespaces_count = scopes_count * scopeSize;
 
@@ -38,12 +38,12 @@ namespace ccl::codegen
         return result;
     }
 
-    auto BasicCodeGenerator::reserve(std::size_t size) -> void
+    auto BasicCodeGenerator::reserve(const std::size_t size) -> void
     {
         getCurrentStream().reserve(size);
     }
 
-    auto BasicCodeGenerator::operator<<(ScopeSize scope_size) -> BasicCodeGenerator &
+    auto BasicCodeGenerator::operator<<(const ScopeSize scope_size) -> BasicCodeGenerator &
     {
         if (scope_size.size == 0) [[unlikely]] {
             throw std::logic_error{"Scope size can not be equal to zero."};
@@ -70,14 +70,14 @@ namespace ccl::codegen
         return *this;
     }
 
-    auto BasicCodeGenerator::operator<<(StreamId stream_id) -> BasicCodeGenerator &
+    auto BasicCodeGenerator::operator<<(const StreamId stream_id) -> BasicCodeGenerator &
     {
         streamId = stream_id.streamId;
         generatedCode.try_emplace(streamId);
         return *this;
     }
 
-    auto BasicCodeGenerator::operator<<(char character) -> BasicCodeGenerator &
+    auto BasicCodeGenerator::operator<<(const char character) -> BasicCodeGenerator &
     {
         if (character == '\n') {
             newLine();

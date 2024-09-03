@@ -57,18 +57,19 @@ namespace ccl::lexer::rule
         auto skipStringDefinition(TextIterator &rule_iterator) const -> void;
 
         auto checkForUnexpectedEnd(
-            TextIterator &rule_iterator, bool is_escaping, char32_t chr) const -> void;
+            const TextIterator &rule_iterator, bool is_escaping, char32_t chr) const -> void;
 
-        auto checkSequenceArguments(TextIterator &rule_iterator) const -> void;
+        auto checkSequenceArguments(const TextIterator &rule_iterator) const -> void;
 
-        [[noreturn]] auto throwStringBeginException(TextIterator &rule_iterator) const -> void;
+        [[noreturn]] auto
+            throwStringBeginException(const TextIterator &rule_iterator) const -> void;
 
-        [[noreturn]] static auto throwEmptyStringEnd(TextIterator &rule_iterator) -> void;
+        [[noreturn]] static auto throwEmptyStringEnd(const TextIterator &rule_iterator) -> void;
 
-        [[noreturn]] static auto throwEmptyStringBegin(TextIterator &rule_iterator) -> void;
+        [[noreturn]] static auto throwEmptyStringBegin(const TextIterator &rule_iterator) -> void;
 
         [[noreturn]] static auto throwUnterminatedString(
-            TextIterator &rule_iterator,
+            const TextIterator &rule_iterator,
             isl::string_view message,
             isl::string_view suggestion = {}) -> void;
     };

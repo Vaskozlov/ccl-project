@@ -7,7 +7,7 @@ namespace astlang::interpreter
       : argumentsNames{std::move(arguments_names)}
     {}
 
-    auto FunctionInterface::call(Interpreter &interpreter, FunctionCallArguments arguments)
+    auto FunctionInterface::call(Interpreter &interpreter, FunctionCallArguments arguments) const
         -> EvaluationResult
     {
         auto scope_life = interpreter.createsHardScope();

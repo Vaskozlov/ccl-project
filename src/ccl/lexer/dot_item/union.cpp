@@ -61,7 +61,7 @@ namespace ccl::lexer::rule
 
         auto is_range = false;
         auto previous_chr = U'\0';
-        auto begin_iterator_state = rule_iterator;
+        const auto begin_iterator_state = rule_iterator;
 
         checkUnionBegin(rule_iterator);
 
@@ -107,13 +107,13 @@ namespace ccl::lexer::rule
         return chr == U'-';
     }
 
-    CCL_INLINE auto Union::isUnionEnd(bool is_escaping, char32_t chr) noexcept -> bool
+    CCL_INLINE auto Union::isUnionEnd(const bool is_escaping, const char32_t chr) noexcept -> bool
     {
         return !is_escaping && chr == U']';
     }
 
-    CCL_INLINE auto
-        Union::addCharactersToTheBitset(bool &is_range, char32_t previous_chr, char32_t chr) -> void
+    CCL_INLINE auto Union::addCharactersToTheBitset(
+        bool &is_range, char32_t previous_chr, const char32_t chr) -> void
     {
         if (is_range) {
             storedSymbols.set({previous_chr, chr + 1}, true);
@@ -124,46 +124,47 @@ namespace ccl::lexer::rule
     }
 
     CCL_INLINE auto Union::checkForUnexpectedEnd(
-        TextIterator &rule_iterator, bool is_escaping, char32_t chr) -> void
+        const TextIterator &rule_iterator, const bool is_escaping, const char32_t chr) -> void
     {
         if (!is_escaping && isEoF(chr)) {
             throwUnterminatedUnion(rule_iterator);
         }
     }
 
-    CCL_INLINE auto Union::checkUnionBegin(TextIterator &rule_iterator) -> void
+    CCL_INLINE auto Union::checkUnionBegin(const TextIterator &rule_iterator) -> void
     {
-        if (U'[' != rule_iterator.getCurrentChar()) {
+        if (rule_iterator.getCurrentChar() != U'[') {
             throwUnionBeginException(rule_iterator);
         }
     }
 
-    CCL_INLINE auto
-        Union::checkForClosedRange(TextIterator &rule_iterator, bool is_ranged_opened) -> void
+    CCL_INLINE auto Union::checkForClosedRange(
+        const TextIterator &rule_iterator, const bool is_ranged_opened) -> void
     {
         if (is_ranged_opened) {
             throwUnterminatedRangeException(rule_iterator);
         }
     }
 
-    CCL_INLINE auto Union::throwUnterminatedUnion(TextIterator &rule_iterator) -> void
+    CCL_INLINE auto Union::throwUnterminatedUnion(const TextIterator &rule_iterator) -> void
     {
         rule_iterator.throwPanicError(AnalysisStage::LEXICAL_ANALYSIS, "unterminated union item");
         throw UnrecoverableError{"unrecoverable error in Union"};
     }
 
-    CCL_INLINE auto Union::throwUnterminatedRangeException(TextIterator &rule_iterator) -> void
+    CCL_INLINE auto
+        Union::throwUnterminatedRangeException(const TextIterator &rule_iterator) -> void
     {
         rule_iterator.throwPanicError(AnalysisStage::LEXICAL_ANALYSIS, "unterminated range");
         throw UnrecoverableError{"unrecoverable error in Union"};
     }
 
-    CCL_INLINE auto Union::throwUnionBeginException(TextIterator &rule_iterator) -> void
+    CCL_INLINE auto Union::throwUnionBeginException(const TextIterator &rule_iterator) -> void
     {
         auto buffer = std::string{};
         isl::utf8::appendUtf32ToUtf8Container(buffer, rule_iterator.getCurrentChar());
 
-        auto message =
+        const auto message =
             fmt::format("expected `[` at the beginning of union item declaration, got {}", buffer);
 
         rule_iterator.throwPanicError(AnalysisStage::LEXICAL_ANALYSIS, message);

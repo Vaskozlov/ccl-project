@@ -147,7 +147,7 @@ namespace ccl::lexer::gen
             BuiltinRules.size() + rules.size(), variableName);
         codeGenerator << '{' << push_scope;
 
-        for (const auto &[rule, id] : BuiltinRules) {
+        for (const auto &rule : BuiltinRules | std::views::keys) {
             output_rule(rule);
         }
 
@@ -186,7 +186,7 @@ namespace ccl::lexer::gen
         auto generated_enum_cases = std::set<isl::string_view>{};
         const auto &rules = ccllParser.getRules();
 
-        const auto output_enum_case = [this](isl::string_view name, SmallId id) {
+        const auto output_enum_case = [this](const isl::string_view name, const SmallId id) {
             codeGenerator << endl << name << " = " << fmt::to_string(id) << "U,";
         };
 

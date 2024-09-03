@@ -10,7 +10,7 @@ namespace ccl::handler
         auto replaced_tabs = isl::as<std::size_t>(0);
 
         ISL_UNROLL_N(4)
-        for (auto chr : string) {
+        for (const auto chr : string) {
             if ('\t' == chr) {
                 ++replaced_tabs;
                 result.append("    "sv);
@@ -51,7 +51,7 @@ namespace ccl::handler
         return tabs_number;
     }
 
-    auto Cmd::CmdFormatter::formatArrow(std::size_t tabs_number) -> std::size_t
+    auto Cmd::CmdFormatter::formatArrow(const std::size_t tabs_number) -> std::size_t
     {
         constexpr auto total_line_number_width = 6U;
         auto arrow_position =
@@ -66,7 +66,7 @@ namespace ccl::handler
         return arrow_position;
     }
 
-    auto Cmd::CmdFormatter::formatSuggestion(std::size_t arrow_position) -> void
+    auto Cmd::CmdFormatter::formatSuggestion(const std::size_t arrow_position) -> void
     {
         if (!suggestion.empty()) {
             fmt::format_to(std::back_inserter(formattingBuffer), "{:>6}", '|');

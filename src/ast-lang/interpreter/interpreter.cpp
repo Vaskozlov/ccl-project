@@ -21,7 +21,7 @@ namespace astlang::interpreter
                 }));
     }
 
-    template<typename T, typename... Ts>
+    template<typename T>
     static auto createPrintFunction(
         Interpreter &interpreter, const std::string &name, std::string_view fmt,
         const Type &type) -> void

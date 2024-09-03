@@ -6,7 +6,8 @@ namespace ccl::lexer::parser
     static auto EmptyLexicalAnalyzer = LexicalAnalyzer(ExceptionHandler::instance(), {});
 
     CcllParser::Rule::Rule(
-        SmallId rule_id, isl::string_view rule_name, isl::string_view rule_definition)
+        const SmallId rule_id, const isl::string_view rule_name,
+        const isl::string_view rule_definition)
       : name{rule_name}
       , definition{rule_definition}
       , id{rule_id}
@@ -97,24 +98,26 @@ namespace ccl::lexer::parser
         directives.try_emplace(token.cut(0, name.size()), value);
     }
 
-    auto CcllParser::checkRule(const Token &token) -> void
+    auto CcllParser::checkRule(const Token &token) const -> void
     {
         const auto line_repr = token.getInlineRepr();
-        const auto &location = token.getLocation();
+        const auto [line, column] = token.getLocation();
 
         auto text_iterator = text::TextIterator{
-            line_repr, tokenizer.getHandler(),
+            line_repr,
+            tokenizer.getHandler(),
             text::Location{
-                .line = location.line,
-                .column = location.column - 1,
-            }};
+                .line = line,
+                .column = column - 1,
+            },
+        };
 
-        // NOLINTNEXTLINE : is guaranteed by lexical analyzer rule
-        text_iterator.skip(line_repr.find(':').value() + 1);
+        text_iterator.skip(line_repr.find(':') + 1);
         std::ignore = rule::Container{EmptyLexicalAnalyzer, text_iterator, true};
     }
 
-    auto CcllParser::parsingError(isl::string_view message, isl::string_view suggestion) -> void
+    auto CcllParser::parsingError(
+        const isl::string_view message, const isl::string_view suggestion) const -> void
     {
         tokenizer.throwExceptionToHandler(ExceptionCriticality::PANIC, message, suggestion);
     }

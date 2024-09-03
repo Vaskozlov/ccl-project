@@ -3,16 +3,16 @@
 namespace ccl::text
 {
     TextIterator::TextIterator(
-        isl::string_view input,
+        const isl::string_view input,
         const ExceptionHandler &exception_handler,
-        isl::string_view filename)
+        const isl::string_view filename)
       : CrtpBasicTextIterator{input}
       , inputInfo{.wholeText = input, .filename = filename}
       , exceptionHandler{std::addressof(exception_handler)}
     {}
 
     TextIterator::TextIterator(
-        isl::string_view input,
+        const isl::string_view input,
         const ExceptionHandler &exception_handler,
         const Location &iterator_location)
       : CrtpBasicTextIterator{input}
@@ -35,7 +35,7 @@ namespace ccl::text
                 break;
             }
 
-            std::next(it, -1);
+            --it;
         }
 
         return isl::as<u32>(std::distance(it, getCarriage()));

@@ -43,15 +43,20 @@ namespace ccl::lexer::rule
         auto addCharactersToTheBitset(bool &is_range, char32_t previous_chr, char32_t chr) -> void;
 
         static auto checkForUnexpectedEnd(
-            TextIterator &rule_iterator, bool is_escaping, char32_t chr) -> void;
+            const TextIterator &rule_iterator, bool is_escaping, char32_t chr) -> void;
 
-        static auto checkUnionBegin(TextIterator &rule_iterator) -> void;
-        static auto checkForClosedRange(TextIterator &rule_iterator, bool is_ranged_opened) -> void;
+        static auto checkUnionBegin(const TextIterator &rule_iterator) -> void;
 
-        [[noreturn]] static auto throwUnterminatedUnion(TextIterator &rule_iterator) -> void;
-        [[noreturn]] static auto throwUnionBeginException(TextIterator &rule_iterator) -> void;
+        static auto
+            checkForClosedRange(const TextIterator &rule_iterator, bool is_ranged_opened) -> void;
+
+        [[noreturn]] static auto throwUnterminatedUnion(const TextIterator &rule_iterator) -> void;
+
         [[noreturn]] static auto
-            throwUnterminatedRangeException(TextIterator &rule_iterator) -> void;
+            throwUnionBeginException(const TextIterator &rule_iterator) -> void;
+
+        [[noreturn]] static auto
+            throwUnterminatedRangeException(const TextIterator &rule_iterator) -> void;
     };
 }// namespace ccl::lexer::rule
 

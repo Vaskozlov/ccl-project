@@ -10,7 +10,7 @@ namespace astlang::interpreter
 
         auto &last_scope = localScopes.back();
 
-        if (auto it = last_scope.find(name); it != last_scope.end()) {
+        if (const auto it = last_scope.find(name); it != last_scope.end()) {
             return it->second;
         }
 
@@ -25,7 +25,9 @@ namespace astlang::interpreter
         }
 
         auto &last_scope = localScopes.back();
-        auto [it, has_inserted] = last_scope.try_emplace(name, std::move(value));
+
+        auto has_inserted = false;
+        std::tie(std::ignore, has_inserted) = last_scope.try_emplace(name, std::move(value));
 
         if (!has_inserted) {
             throw std::runtime_error("Variable already exists");
@@ -34,7 +36,8 @@ namespace astlang::interpreter
 
     auto Stack::createGlobalVariable(const std::string &name, EvaluationResult value) -> void
     {
-        auto [it, has_inserted] = globalScope.try_emplace(name, std::move(value));
+        auto has_inserted = false;
+        std::tie(std::ignore, has_inserted) = globalScope.try_emplace(name, std::move(value));
 
         if (!has_inserted) {
             throw std::runtime_error("Variable already exists");

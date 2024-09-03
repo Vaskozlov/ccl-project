@@ -26,7 +26,8 @@ namespace astlang::interpreter
         auto operator=(FunctionInterface &&other) -> FunctionInterface & = delete;
         auto operator=(const FunctionInterface &other) -> FunctionInterface & = delete;
 
-        auto call(Interpreter &interpreter, FunctionCallArguments arguments) -> EvaluationResult;
+        auto call(Interpreter &interpreter, FunctionCallArguments arguments) const
+            -> EvaluationResult;
 
         virtual auto doCall(Interpreter &interpreter) const -> EvaluationResult = 0;
     };

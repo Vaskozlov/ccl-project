@@ -6,9 +6,9 @@ namespace ccl::text
 
     NotationEscapingSequenceToChar::NotationEscapingSequenceToChar(
         TextIterator &text_iterator,
-        u16 maximum_symbols,
-        u16 notation_power,
-        bool are_all_chars_required)
+        const u16 maximum_symbols,
+        const u16 notation_power,
+        const bool are_all_chars_required)
       : textIterator{text_iterator}
       , maximumSymbols{maximum_symbols}
       , notationPower{notation_power}
@@ -20,17 +20,17 @@ namespace ccl::text
 
     auto NotationEscapingSequenceToChar::calculateResult() -> void
     {
-        auto chars_count = isl::as<u32>(0);
+        auto chars_count = u32{};
 
         for (; chars_count != maximumSymbols; ++chars_count) {
-            char32_t chr = textIterator.futureChar();
+            auto chr = textIterator.futureChar();
 
             if (isEoF(chr) || isOutOfNotation(chr)) [[unlikely]] {
                 break;
             }
 
-            result = isl::as<char32_t>(result << notationPower);
-            result += isl::as<char32_t>(HexadecimalCharsToInt.at(chr));
+            result = static_cast<char32_t>(result << notationPower);
+            result += static_cast<char32_t>(HexadecimalCharsToInt.at(chr));
 
             textIterator.advance();
         }
@@ -38,7 +38,7 @@ namespace ccl::text
         checkAllCharsUsage(chars_count);
     }
 
-    auto NotationEscapingSequenceToChar::createSuggestionNotEnoughChars(u32 chars_count) const
+    auto NotationEscapingSequenceToChar::createSuggestionNotEnoughChars(const u32 chars_count) const
         -> std::string
     {
         auto suggestion_message = isl::as<std::string>(textIterator.getCurrentLine());
@@ -47,7 +47,7 @@ namespace ccl::text
     }
 
     auto NotationEscapingSequenceToChar::insertExtraZerosToNotEnoughMessage(
-        u32 chars_count,
+        const u32 chars_count,
         std::string &message) const -> void
     {
         const auto column = textIterator.getColumn();

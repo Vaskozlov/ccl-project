@@ -13,8 +13,8 @@ namespace ccl::parser::detail
         fixEmptyRules();
     }
 
-    auto EmptyMovesFixer::fixRule(Symbol key, const Rule &rule, std::size_t current_symbol_index)
-        -> void
+    auto EmptyMovesFixer::fixRule(
+        Symbol key, const Rule &rule, const std::size_t current_symbol_index) -> void
     {
         for (auto i = current_symbol_index; i < rule.size(); ++i) {
             const auto symbol = rule.at(i);
@@ -39,7 +39,7 @@ namespace ccl::parser::detail
     auto EmptyMovesFixer::findEmptyRules() -> void
     {
         auto has_changes = true;
-        auto is_symbol_in_possible_empty = [this](Symbol symbol) {
+        auto is_symbol_in_possible_empty = [this](const Symbol symbol) {
             return possiblyEmptyRules.contains(symbol);
         };
 
@@ -49,7 +49,7 @@ namespace ccl::parser::detail
             for (auto &[key, rule] : storage.rulesIterator()) {
                 if (std::ranges::all_of(rule, is_symbol_in_possible_empty)) {
                     auto [it, has_inserter] = possiblyEmptyRules.emplace(key);
-                    has_changes = has_inserter;
+                    has_changes = has_inserter || has_changes;
                 }
             }
         }

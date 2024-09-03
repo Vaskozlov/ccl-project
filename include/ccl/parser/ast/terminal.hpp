@@ -12,7 +12,7 @@ namespace ccl::parser::ast
         lexer::Token token;
 
     public:
-        explicit Terminal(SmallId node_type_id)
+        explicit Terminal(const SmallId node_type_id)
           : Node{node_type_id}
         {}
 
@@ -21,7 +21,7 @@ namespace ccl::parser::ast
           , token{std::move(l_token)}
         {}
 
-        explicit Terminal(SmallId node_type_id, lexer::Token l_token)
+        explicit Terminal(const SmallId node_type_id, lexer::Token l_token)
           : Node{node_type_id}
           , token{std::move(l_token)}
         {}
@@ -38,7 +38,7 @@ namespace ccl::parser::ast
 
         auto print(
             const std::string &prefix, bool is_left,
-            std::function<std::string(SmallId)> id_converter) const -> void override;
+            const std::function<std::string(SmallId)> &id_converter) const -> void override;
     };
 }// namespace ccl::parser::ast
 

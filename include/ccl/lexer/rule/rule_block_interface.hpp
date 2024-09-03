@@ -66,7 +66,7 @@ namespace ccl::lexer::rule
             return flags.extractable;
         }
 
-        void setId(SmallId new_id) noexcept
+        void setId(const SmallId new_id) noexcept
         {
             id = new_id;
         }
@@ -102,8 +102,11 @@ namespace ccl::lexer::rule
             return id;
         }
 
-        static auto alwaysRecognizedSuggestion(TextIterator &text_iterator, bool condition) -> void;
-        static auto neverRecognizedSuggestion(TextIterator &text_iterator, bool condition) -> void;
+        static auto
+            alwaysRecognizedSuggestion(const TextIterator &text_iterator, bool condition) -> void;
+
+        static auto
+            neverRecognizedSuggestion(const TextIterator &text_iterator, bool condition) -> void;
 
         [[nodiscard]] auto scan(ForkedGenerator text_iterator) const -> ScanResult;
 

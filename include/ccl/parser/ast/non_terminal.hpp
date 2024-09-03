@@ -27,7 +27,7 @@ namespace ccl::parser::ast
 
         auto print(
             const std::string &prefix, bool is_left,
-            std::function<std::string(SmallId)> id_converter) const -> void override;
+            const std::function<std::string(SmallId)> &id_converter) const -> void override;
 
         [[nodiscard]] auto getNodes() -> auto &
         {

@@ -28,7 +28,7 @@ namespace ccl::parser
 
         auto parser_state = ParserState{};
 
-        parser_state.stateStack.push(0);
+        parser_state.stateStack.emplace();
 
         while (true) {
             const auto state = parser_state.stateStack.top();

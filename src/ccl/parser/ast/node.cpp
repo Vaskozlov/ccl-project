@@ -3,30 +3,30 @@
 
 namespace ccl::parser::ast
 {
-    static auto operator*(std::string_view str, size_t repeat) -> std::string
+    static auto repeatString(const std::string_view str, const std::size_t times) -> std::string
     {
         auto result = std::string{};
-        result.reserve(str.size() * repeat);
+        result.reserve(str.size() * times);
 
-        for (auto i = isl::as<size_t>(0); i != repeat; ++i) {
+        for (auto i = std::size_t{}; i != times; ++i) {
             result.append(str);
         }
 
         return result;
     }
 
-    auto Node::getPrintingPrefix(const std::string &prefix, bool is_left) -> std::string
+    auto Node::getPrintingPrefix(const std::string &prefix, const bool is_left) -> std::string
     {
         return prefix + (is_left ? "├──" : "└──");
     }
 
-    auto Node::expandPrefix(const std::string &prefix, bool is_left, size_t extra_expansion)
+    auto Node::expandPrefix(const std::string &prefix, const bool is_left, const std::size_t extra_expansion)
         -> std::string
     {
         static constexpr auto default_printing_shift = std::string_view{"   "};
 
         auto result = prefix + (is_left ? "│   " : "    ");
-        result.append(default_printing_shift * extra_expansion);
+        result.append(repeatString(default_printing_shift, extra_expansion));
 
         return result;
     }

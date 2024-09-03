@@ -17,7 +17,7 @@ namespace ccl::text
     class CCL_TRIVIAL_ABI CrtpBasicTextIterator
     {
     public:
-        using iterator = typename isl::string_view::iterator;
+        using iterator = isl::string_view::iterator;
 
     private:
         iterator carriage{};
@@ -58,7 +58,7 @@ namespace ccl::text
 
         CrtpBasicTextIterator() noexcept = default;
 
-        [[nodiscard]] constexpr explicit CrtpBasicTextIterator(isl::string_view input) noexcept
+        [[nodiscard]] constexpr explicit CrtpBasicTextIterator(const isl::string_view input) noexcept
           : carriage{input.begin()}
           , end{input.end()}
         {}
@@ -154,7 +154,7 @@ namespace ccl::text
             currentChar = new_current_char;
         }
 
-        constexpr auto setEnd(iterator new_end) -> void
+        constexpr auto setEnd(const iterator new_end) -> void
         {
             if (new_end < carriage) [[unlikely]] {
                 throw std::invalid_argument{"end must be above carriage"};
@@ -163,7 +163,7 @@ namespace ccl::text
             end = new_end;
         }
 
-        constexpr auto skip(std::size_t n) -> void
+        constexpr auto skip(const std::size_t n) -> void
         {
             ISL_UNROLL_N(4)
             for (auto i = isl::as<std::size_t>(0); i != n; ++i) {

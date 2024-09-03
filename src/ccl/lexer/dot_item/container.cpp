@@ -4,7 +4,7 @@
 namespace ccl::lexer::rule
 {
     CCL_INLINE auto Container::addExtractedPart(
-        const RuleBlockInterface *item, Token &token, isl::string_view repr) -> void
+        const RuleBlockInterface *item, Token &token, const isl::string_view repr) -> void
     {
         if (item->isExtractable()) [[unlikely]] {
             token.addExtractedPart(repr);
@@ -12,8 +12,8 @@ namespace ccl::lexer::rule
     }
 
     Container::Container(
-        LexicalAnalyzer &lexical_analyzer, TextIterator &rule_iterator, bool main_item,
-        bool is_special)
+        LexicalAnalyzer &lexical_analyzer, TextIterator &rule_iterator, const bool main_item,
+        const bool is_special)
       : lexicalAnalyzer{lexical_analyzer}
       , anyPlaceItems{lexicalAnalyzer.shareAnyPlaceItems()}
       , flags{.isMain = main_item, .isAnyPlace = is_special}
@@ -22,8 +22,8 @@ namespace ccl::lexer::rule
     }
 
     Container::Container(
-        LexicalAnalyzer &lexical_analyzer, const TextIterator &rule_iterator, bool main_item,
-        bool is_special)
+        LexicalAnalyzer &lexical_analyzer, const TextIterator &rule_iterator, const bool main_item,
+        const bool is_special)
       : lexicalAnalyzer{lexical_analyzer}
       , anyPlaceItems{lexical_analyzer.shareAnyPlaceItems()}
       , flags{.isMain = main_item, .isAnyPlace = is_special}
@@ -32,16 +32,17 @@ namespace ccl::lexer::rule
         parseRule(text_iterator_copy);
     }
 
-    Container::Container(LexicalAnalyzer &lexical_analyzer, bool main_item, bool is_special)
+    Container::Container(
+        LexicalAnalyzer &lexical_analyzer, const bool main_item, const bool is_special)
       : lexicalAnalyzer{lexical_analyzer}
       , anyPlaceItems{lexical_analyzer.shareAnyPlaceItems()}
       , flags{.isMain = main_item, .isAnyPlace = is_special}
     {}
 
     auto Container::beginScan(
-        TextIterator &text_iterator, Token &token, ScanType special_scan) const -> bool
+        TextIterator &text_iterator, Token &token, const ScanType special_scan) const -> bool
     {
-        auto totally_skipped = isl::as<std::size_t>(0);
+        auto totally_skipped = std::size_t{};
         auto local_iterator = text_iterator.fork();
 
         token.clear(getId());
@@ -81,7 +82,7 @@ namespace ccl::lexer::rule
 
     auto Container::scanIteration(const ForkedGenerator &text_iterator) const -> ScanResult
     {
-        auto totally_skipped = isl::as<std::size_t>(0);
+        auto totally_skipped = std::size_t{};
         auto local_iterator = text_iterator;
 
         for (const RuleBlock &item : items) {

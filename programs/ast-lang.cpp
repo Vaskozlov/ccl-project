@@ -58,7 +58,7 @@ auto main() -> int
     auto dot_repr = dot::createDotRepresentation(
         std::vector<ast::Node *>{converter.begin(), converter.end()}, to_str);
 
-    isl::io::writeToFile(
+    isl::io::write(
         std::filesystem::current_path().append(fmt::format("{}.dot", algorithm)), dot_repr);
 
     auto *row_root = nodes.front().get();
@@ -74,5 +74,6 @@ auto main() -> int
     astlang_root->print("", false, to_str);
     astlang_root->compute(interpreter);
 
+    fmt::println("{} {}", sizeof(ast::Terminal), sizeof(ast::NonTerminal));
     return 0;
 }

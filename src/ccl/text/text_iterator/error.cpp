@@ -3,76 +3,82 @@
 namespace ccl::text
 {
     auto TextIterator::throwSuggestion(
-        AnalysisStage stage, const TextIterator &iterator_location, isl::string_view message,
-        isl::string_view suggestion) const -> void
+        const AnalysisStage stage, const TextIterator &iterator_location,
+        const isl::string_view message, const isl::string_view suggestion) const -> void
     {
         throwToHandle(
             iterator_location, ExceptionCriticality::SUGGESTION, stage, message, suggestion);
     }
 
     auto TextIterator::throwWarning(
-        AnalysisStage stage, const TextIterator &iterator_location, isl::string_view message,
-        isl::string_view suggestion) const -> void
+        const AnalysisStage stage, const TextIterator &iterator_location,
+        const isl::string_view message, const isl::string_view suggestion) const -> void
     {
         throwToHandle(iterator_location, ExceptionCriticality::WARNING, stage, message, suggestion);
     }
 
     auto TextIterator::throwUncriticalError(
-        AnalysisStage stage, const TextIterator &iterator_location, isl::string_view message,
-        isl::string_view suggestion) const -> void
+        const AnalysisStage stage, const TextIterator &iterator_location,
+        const isl::string_view message, const isl::string_view suggestion) const -> void
     {
         throwToHandle(
             iterator_location, ExceptionCriticality::SUGGESTION, stage, message, suggestion);
     }
 
     auto TextIterator::throwCriticalError(
-        AnalysisStage stage, const TextIterator &iterator_location, isl::string_view message,
-        isl::string_view suggestion) const -> void
+        const AnalysisStage stage, const TextIterator &iterator_location,
+        const isl::string_view message, const isl::string_view suggestion) const -> void
     {
         throwToHandle(
             iterator_location, ExceptionCriticality::CRITICAL, stage, message, suggestion);
     }
 
     auto TextIterator::throwPanicError(
-        AnalysisStage stage, const TextIterator &iterator_location, isl::string_view message,
-        isl::string_view suggestion) const -> void
+        const AnalysisStage stage, const TextIterator &iterator_location,
+        const isl::string_view message, const isl::string_view suggestion) const -> void
     {
         throwToHandle(iterator_location, ExceptionCriticality::PANIC, stage, message, suggestion);
     }
 
     auto TextIterator::throwSuggestion(
-        AnalysisStage stage, isl::string_view message, isl::string_view suggestion) const -> void
+        const AnalysisStage stage, const isl::string_view message,
+        const isl::string_view suggestion) const -> void
     {
         throwToHandle(*this, ExceptionCriticality::SUGGESTION, stage, message, suggestion);
     }
 
     auto TextIterator::throwWarning(
-        AnalysisStage stage, isl::string_view message, isl::string_view suggestion) const -> void
+        const AnalysisStage stage, const isl::string_view message,
+        const isl::string_view suggestion) const -> void
     {
         throwToHandle(*this, ExceptionCriticality::WARNING, stage, message, suggestion);
     }
 
     auto TextIterator::throwUncriticalError(
-        AnalysisStage stage, isl::string_view message, isl::string_view suggestion) const -> void
+        const AnalysisStage stage, const isl::string_view message,
+        const isl::string_view suggestion) const -> void
     {
         throwToHandle(*this, ExceptionCriticality::UNCRITICAL, stage, message, suggestion);
     }
 
     auto TextIterator::throwCriticalError(
-        AnalysisStage stage, isl::string_view message, isl::string_view suggestion) const -> void
+        const AnalysisStage stage, const isl::string_view message,
+        const isl::string_view suggestion) const -> void
     {
         throwToHandle(*this, ExceptionCriticality::CRITICAL, stage, message, suggestion);
     }
 
     auto TextIterator::throwPanicError(
-        AnalysisStage stage, isl::string_view message, isl::string_view suggestion) const -> void
+        const AnalysisStage stage, const isl::string_view message,
+        const isl::string_view suggestion) const -> void
     {
         throwToHandle(*this, ExceptionCriticality::PANIC, stage, message, suggestion);
     }
 
     auto TextIterator::throwToHandle(
-        const TextIterator &iterator_location, ExceptionCriticality criticality,
-        AnalysisStage stage, isl::string_view message, isl::string_view suggestion) const -> void
+        const TextIterator &iterator_location, const ExceptionCriticality criticality,
+        const AnalysisStage stage, const isl::string_view message,
+        const isl::string_view suggestion) const -> void
     {
         auto exception = TextIteratorException{
             criticality,
@@ -92,8 +98,8 @@ namespace ccl::text
         exceptionHandler->handle(exception);
     }
 
-    auto TextIterator::linesOfFragment(isl::string_view whole_input, isl::string_view fragment)
-        -> isl::string_view
+    auto TextIterator::linesOfFragment(
+        const isl::string_view whole_input, const isl::string_view fragment) -> isl::string_view
     {
         const auto *front_it = std::next(fragment.begin(), -1);
         const auto *back_it = fragment.end();

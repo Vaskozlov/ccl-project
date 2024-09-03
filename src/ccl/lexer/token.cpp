@@ -57,21 +57,21 @@ namespace ccl::lexer
 
 
     Token::Token(
-        SmallId token_id, isl::string_view token_repr, text::Location token_location,
-        const text::InputInfo *input_info)
+        const SmallId token_id, const isl::string_view token_repr,
+        const text::Location token_location, const text::InputInfo *input_info)
       : repr{token_repr}
       , location{token_location}
       , inputInfo{input_info}
       , id{token_id}
     {}
 
-    Token::Token(SmallId token_id, const text::TextIterator &text_iterator)
+    Token::Token(const SmallId token_id, const text::TextIterator &text_iterator)
       : repr{text_iterator.getRemaining()}
       , inputInfo{text_iterator.getInputInfo()}
       , id{token_id}
     {}
 
-    auto Token::clear(SmallId new_id) noexcept -> void
+    auto Token::clear(const SmallId new_id) noexcept -> void
     {
         id = new_id;
         extractedParts.clear();
@@ -114,7 +114,7 @@ namespace ccl::lexer
         return {std::next(it), repr.begin()};
     }
 
-    auto Token::cut(std::size_t first, std::size_t length) const -> Token
+    auto Token::cut(const std::size_t first, const std::size_t length) const -> Token
     {
         auto new_token = *this;
         new_token.clear(isl::as<std::size_t>(ReservedTokenType::CUT));
@@ -137,7 +137,7 @@ namespace ccl::lexer
         return new_token;
     }
 
-    auto Token::finishInitialization(text::TextIterator &text_iterator, std::size_t totally_skipped)
+    auto Token::finishInitialization(text::TextIterator &text_iterator, const std::size_t totally_skipped)
         -> void
     {
         text_iterator.skip(1);

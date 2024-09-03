@@ -106,10 +106,10 @@ namespace ccl::lexer
 
         auto setReprLength(std::size_t length) noexcept -> void
         {
-            repr = repr.changeLength<isl::FunctionAPI::UNSAFE>(length);
+            repr = repr.setLength(length);
         }
 
-        auto addExtractedPart(isl::string_view prefix) -> void
+        auto addExtractedPart(const isl::string_view prefix) -> void
         {
             extractedParts.push_back(prefix);
         }

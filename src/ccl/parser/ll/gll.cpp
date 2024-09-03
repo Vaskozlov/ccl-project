@@ -7,7 +7,7 @@
 
 namespace ccl::parser
 {
-    static auto debugGll(ll::GSS &gss, auto &&function) -> void
+    static auto debugGll(const ll::GSS &gss, const auto &function) -> void
     {
         auto result = std::vector<ast::Node *>{};
 
@@ -20,11 +20,11 @@ namespace ccl::parser
         }
 
         auto tree_repr = dot::createDotRepresentation(result, function);
-        isl::io::writeToFile(std::filesystem::current_path().append("gll.dot"), tree_repr);
+        isl::io::write(std::filesystem::current_path().append("gll.dot"), tree_repr);
     }
 
     GllParser::GllParser(
-        SmallId start_symbol, const GrammarStorage &grammar_storage,
+        const SmallId start_symbol, const GrammarStorage &grammar_storage,
         const std::function<std::string(SmallId)> &id_to_string_converter)
       : table{ll::GllParserGenerator{grammar_storage, id_to_string_converter}.createGllTable()}
       , idToStringConverter{id_to_string_converter}

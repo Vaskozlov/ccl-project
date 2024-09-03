@@ -18,14 +18,14 @@ namespace ccl::lexer::rule
             return item_concept.scanIteration(textIterator);
         }
 
-        [[nodiscard]] static auto constructResult(std::size_t totally_skipped) -> ScanResult
+        [[nodiscard]] static auto constructResult(const std::size_t totally_skipped) -> ScanResult
         {
             return ScanResult{totally_skipped};
         }
     };
 
-    auto RuleBlockInterface::alwaysRecognizedSuggestion(TextIterator &text_iterator, bool condition)
-        -> void
+    auto RuleBlockInterface::alwaysRecognizedSuggestion(
+        const TextIterator &text_iterator, const bool condition) -> void
     {
         if (condition) [[unlikely]] {
             text_iterator.throwWarning(
@@ -33,8 +33,8 @@ namespace ccl::lexer::rule
         }
     }
 
-    auto RuleBlockInterface::neverRecognizedSuggestion(TextIterator &text_iterator, bool condition)
-        -> void
+    auto RuleBlockInterface::neverRecognizedSuggestion(
+        const TextIterator &text_iterator, const bool condition) -> void
     {
         if (condition) [[unlikely]] {
             text_iterator.throwWarning(

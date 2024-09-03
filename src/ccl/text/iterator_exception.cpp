@@ -3,9 +3,10 @@
 namespace ccl::text
 {
     TextIteratorException::TextIteratorException(
-        ExceptionCriticality exception_criticality, AnalysisStage analysis_stage,
-        Location exception_location, std::string name_of_file, std::size_t exception_length,
-        std::string working_line, std::string exception_message, std::string exception_suggestion)
+        const ExceptionCriticality exception_criticality, const AnalysisStage analysis_stage,
+        const Location exception_location, std::string name_of_file,
+        const std::size_t exception_length, std::string working_line, std::string exception_message,
+        std::string exception_suggestion)
       : message{std::move(exception_message)}
       , suggestion{std::move(exception_suggestion)}
       , filename{std::move(name_of_file)}

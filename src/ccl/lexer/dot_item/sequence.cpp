@@ -3,14 +3,14 @@
 namespace ccl::lexer::rule
 {
     Sequence::Sequence(
-        SequenceFlags sequence_flags, isl::string_view sequence_begin_and_end,
+        const SequenceFlags sequence_flags, const isl::string_view sequence_begin_and_end,
         TextIterator &rule_iterator)
       : Sequence{sequence_flags, sequence_begin_and_end, sequence_begin_and_end, rule_iterator}
     {}
 
     Sequence::Sequence(
-        SequenceFlags sequence_flags, isl::string_view sequence_starter,
-        isl::string_view sequence_ender, TextIterator &rule_iterator)
+        const SequenceFlags sequence_flags, const isl::string_view sequence_starter,
+        const isl::string_view sequence_ender, TextIterator &rule_iterator)
       : RuleBlockInterface{Flags{
             .sequenceIsMultiline = sequence_flags.multiline,
             .noEscapingSymbols = sequence_flags.noEscaping}}
@@ -58,7 +58,7 @@ namespace ccl::lexer::rule
 
     auto Sequence::scanIteration(const ForkedGenerator &text_iterator) const -> ScanResult
     {
-        auto future_text = text_iterator.getRemainingText();
+        const auto future_text = text_iterator.getRemainingText();
 
         if (future_text.startsWith(sequenceValue) != isReversed()) [[unlikely]] {
             return isReversed() ? ScanResult{isl::utf8::size(future_text[0])}
@@ -68,21 +68,21 @@ namespace ccl::lexer::rule
         return ScanResult::failure();
     }
 
-    CCL_INLINE auto
-        Sequence::isStringEnd(const TextIterator &rule_iterator, bool is_escaping) const -> bool
+    CCL_INLINE auto Sequence::isStringEnd(
+        const TextIterator &rule_iterator, const bool is_escaping) const -> bool
     {
         if (is_escaping) {
             return false;
         }
 
-        auto text = rule_iterator.getRemainingWithCurrent();
+        const auto text = rule_iterator.getRemainingWithCurrent();
         return text.startsWith(isl::as<isl::string_view>(ender));
     }
 
     CCL_INLINE auto Sequence::checkForUnexpectedEnd(
-        TextIterator &rule_iterator,
-        bool is_escaping,
-        char32_t chr) const -> void
+        const TextIterator &rule_iterator,
+        const bool is_escaping,
+        const char32_t chr) const -> void
     {
         if (is_escaping) {
             return;
@@ -92,10 +92,12 @@ namespace ccl::lexer::rule
             throwUnterminatedString(rule_iterator, "unterminated sequence");
         }
 
-        if ('\n' == chr && !getFlags().sequenceIsMultiline) [[unlikely]] {
+        if (chr == U'\n' && !getFlags().sequenceIsMultiline) [[unlikely]] {
             constexpr auto message =
                 std::string_view{"new line is reached, but sequence has not been terminated"};
-            auto suggestion = fmt::format("use multiline sequence or close it with `{}`", ender);
+
+            const auto suggestion =
+                fmt::format("use multiline sequence or close it with `{}`", ender);
 
             throwUnterminatedString(rule_iterator, message, suggestion);
         }
@@ -106,9 +108,10 @@ namespace ccl::lexer::rule
         rule_iterator.skip(starter.size() - 1);
     }
 
-    CCL_INLINE auto Sequence::checkSequenceArguments(TextIterator &rule_iterator) const -> void
+    CCL_INLINE auto
+        Sequence::checkSequenceArguments(const TextIterator &rule_iterator) const -> void
     {
-        auto text = rule_iterator.getRemainingWithCurrent();
+        const auto text = rule_iterator.getRemainingWithCurrent();
 
         if (starter.empty()) [[unlikely]] {
             throwEmptyStringBegin(rule_iterator);
@@ -123,14 +126,14 @@ namespace ccl::lexer::rule
         }
     }
 
-    CCL_INLINE auto Sequence::throwEmptyStringBegin(TextIterator &rule_iterator) -> void
+    CCL_INLINE auto Sequence::throwEmptyStringBegin(const TextIterator &rule_iterator) -> void
     {
         rule_iterator.throwPanicError(
             AnalysisStage::LEXICAL_ANALYSIS, "sequence item begin cannot be empty");
         throw UnrecoverableError{"unrecoverable error in SequenceType"};
     }
 
-    CCL_INLINE auto Sequence::throwEmptyStringEnd(TextIterator &rule_iterator) -> void
+    CCL_INLINE auto Sequence::throwEmptyStringEnd(const TextIterator &rule_iterator) -> void
     {
         rule_iterator.throwPanicError(
             AnalysisStage::LEXICAL_ANALYSIS, "sequence item end cannot be empty");
@@ -138,17 +141,18 @@ namespace ccl::lexer::rule
     }
 
     CCL_INLINE auto Sequence::throwUnterminatedString(
-        TextIterator &rule_iterator,
-        isl::string_view message,
-        isl::string_view suggestion) -> void
+        const TextIterator &rule_iterator,
+        const isl::string_view message,
+        const isl::string_view suggestion) -> void
     {
         rule_iterator.throwPanicError(AnalysisStage::LEXICAL_ANALYSIS, message, suggestion);
         throw UnrecoverableError{"unrecoverable error in SequenceType"};
     }
 
-    CCL_INLINE auto Sequence::throwStringBeginException(TextIterator &rule_iterator) const -> void
+    CCL_INLINE auto
+        Sequence::throwStringBeginException(const TextIterator &rule_iterator) const -> void
     {
-        auto message = fmt::format("string literal must begin with {}", starter);
+        const auto message = fmt::format("string literal must begin with {}", starter);
 
         rule_iterator.throwPanicError(AnalysisStage::LEXICAL_ANALYSIS, message);
         throw UnrecoverableError{"unrecoverable error in SequenceType"};

@@ -6,7 +6,7 @@ namespace ccl::text
 
     EscapingSequenceToChar::EscapingSequenceToChar(
         TextIterator &text_iterator,
-        extra_symbols_t extra_symbols) noexcept
+        const extra_symbols_t extra_symbols) noexcept
       : extraSymbols{extra_symbols}
       , textIterator{text_iterator}
     {}

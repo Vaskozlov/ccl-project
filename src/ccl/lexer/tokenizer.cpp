@@ -27,6 +27,8 @@ namespace ccl::lexer
     // NOLINTNEXTLINE (recursive function)
     auto Tokenizer::nextToken(Token &token) -> void
     {
+        token.inputInfo = getInputInfo();
+
         auto &chars_to_skip = lexicalAnalyzer.skippedCharacters;
         auto scan_container = [this, &token](const std::unique_ptr<Container> &container) {
             return container->beginScan(textIterator, token);

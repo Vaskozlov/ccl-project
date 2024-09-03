@@ -11,7 +11,7 @@ namespace ccl::parser
 {
     using enum ParsingAction;
 
-    static auto debugGlr(lr::GSS &gss, auto &&function) -> void
+    static auto debugGlr(const lr::GSS &gss, const auto &function) -> void
     {
         auto result = std::vector<ast::Node *>{};
 
@@ -24,7 +24,7 @@ namespace ccl::parser
         }
 
         auto tree_repr = dot::createDotRepresentation(result, function);
-        isl::io::writeToFile(std::filesystem::current_path().append("glr.dot"), tree_repr);
+        isl::io::write(std::filesystem::current_path().append("glr.dot"), tree_repr);
     }
 
     GlrParser::GlrParser(
@@ -95,7 +95,7 @@ namespace ccl::parser
                 case REDUCE:
                     gss.reduce(
                         action.numberOfElementsInProduction,
-                        &gotoTable,
+                        std::addressof(gotoTable),
                         action.productionType,
                         descriptor);
                     break;

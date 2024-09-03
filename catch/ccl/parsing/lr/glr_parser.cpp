@@ -24,5 +24,4 @@ TEST_CASE("GlrParser", "[GLR]")
 
     auto tree_repr = dot::createDotRepresentation(
         std::vector<ast::Node *>{converter.begin(), converter.end()}, math_token_to_string);
-    isl::io::writeToFile(std::filesystem::current_path().append("glr-final.dot"), tree_repr);
 }

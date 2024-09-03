@@ -43,13 +43,12 @@ namespace ccl::lexer::parser
     public:
         explicit CcllParser(Tokenizer &input_tokenizer);
 
-        [[nodiscard]] auto getRules() const CCL_LIFETIMEBOUND -> const std::vector<Rule> &
+        [[nodiscard]] auto getRules() const CCL_LIFETIMEBOUND -> const auto &
         {
             return rules;
         }
 
-        [[nodiscard]] auto getDirectives() const CCL_LIFETIMEBOUND
-            -> const std::map<Token, isl::string_view, CompareTokensByRepr> &
+        [[nodiscard]] auto getDirectives() const CCL_LIFETIMEBOUND -> const auto &
         {
             return directives;
         }
@@ -60,9 +59,9 @@ namespace ccl::lexer::parser
         auto completeRule(const Token &token) -> void;
         auto completeDirective(const Token &token) -> void;
 
-        auto checkRule(const Token &token) -> void;
+        auto checkRule(const Token &token) const -> void;
 
-        auto parsingError(isl::string_view message, isl::string_view suggestion = {}) -> void;
+        auto parsingError(isl::string_view message, isl::string_view suggestion = {}) const -> void;
     };
 }// namespace ccl::lexer::parser
 

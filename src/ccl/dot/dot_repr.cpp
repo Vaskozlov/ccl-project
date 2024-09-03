@@ -16,7 +16,7 @@ namespace ccl::parser::dot
     static auto createDotRepresentation(
         ast::Node *root,
         std::size_t parent_id,
-        isl::ssize_t child_index,
+        const isl::ssize_t child_index,
         TreeInformation<ast::Node *, SmallId> &tree_data) -> void
     {
         const auto *non_terminal_node = dynamic_cast<const ast::NonTerminal *>(root);

@@ -5,7 +5,7 @@ namespace astlang::ast::function::decl
 {
     using namespace astlang::interpreter;
 
-    auto Argument::compute(Interpreter &interpreter) const -> EvaluationResult
+    auto Argument::compute(Interpreter &/* unused */) const -> EvaluationResult
     {
         const auto front_node = ConstNodePtr{front().get()};
         const auto name_node = ConstNodePtr{back().get()};

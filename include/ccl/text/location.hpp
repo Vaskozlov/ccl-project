@@ -11,7 +11,7 @@ namespace ccl::text
         u32 line{1};
         u32 column{};
 
-        constexpr auto next(char32_t chr) noexcept -> void
+        constexpr auto next(const char32_t chr) noexcept -> void
         {
             const auto is_new_line = chr == U'\n';
             column = is_new_line ? 0 : column + 1;
@@ -21,14 +21,8 @@ namespace ccl::text
 }// namespace ccl::text
 
 template<>
-struct fmt::formatter<ccl::text::Location>
+struct fmt::formatter<ccl::text::Location> : formatter<std::string_view>
 {
-    [[maybe_unused]] constexpr static auto
-        parse(const format_parse_context &ctx) -> format_parse_context::iterator
-    {
-        return ctx.begin();
-    }
-
     static auto
         format(const ccl::text::Location &location, format_context &ctx) -> format_context::iterator
     {

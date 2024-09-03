@@ -7,8 +7,8 @@ namespace ccl::lexer
 {
     auto AnalyzerGenerator::generateStaticVersion(const std::filesystem::path &path) -> std::string
     {
-        auto filename = path.string();
-        auto file_content = isl::io::readFile(path);
+        const auto filename = path.string();
+        const auto file_content = isl::io::read(path);
 
         return generateStaticVersion(filename, file_content);
     }
@@ -17,7 +17,7 @@ namespace ccl::lexer
         -> std::string
     {
         auto tokenizer = ccll::CcllAnalyzer.getTokenizer(text, filename);
-        auto static_generator = gen::StaticGenerator{tokenizer};
+        const auto static_generator = gen::StaticGenerator{tokenizer};
 
         return static_generator.getCode();
     }

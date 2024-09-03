@@ -8,14 +8,13 @@ namespace ccl::parser::detail
     class EmptyMovesFixer
     {
     private:
-        std::unordered_map<Symbol, std::map<Rule, std::size_t>> scannedParts;
-        std::set<Symbol> possiblyEmptyRules;
+        ankerl::unordered_dense::set<Symbol> possiblyEmptyRules;
         std::vector<isl::Pair<Symbol, Rule>> pendingRulesToAdd;
         std::vector<isl::Pair<Symbol, Rule>> pendingRulesToRemove;
         GrammarStorage &storage;
 
     public:
-        EmptyMovesFixer(GrammarStorage &grammar_storage);
+        explicit EmptyMovesFixer(GrammarStorage &grammar_storage);
 
         auto apply() -> void;
 

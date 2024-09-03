@@ -5,8 +5,8 @@
 namespace ccl::text
 {
     auto removeEscaping(
-        isl::string_view input,
-        std::span<isl::Pair<char32_t, char32_t>>
+        const isl::string_view input,
+        const std::span<isl::Pair<char32_t, char32_t>>
             additional_escaping_symbols) -> std::string
     {
         auto result = std::string{};

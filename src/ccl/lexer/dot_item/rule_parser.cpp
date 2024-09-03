@@ -273,10 +273,10 @@ namespace ccl::lexer::rule
 
     auto Container::RuleParser::findContainerEnd(isl::string_view repr) const -> std::size_t
     {
-        const auto closing_bracket_index = repr.findMatchingPair('(', ')');
+        const auto closing_bracket_index = repr.findRangeEnd('(', ')');
 
-        if (closing_bracket_index.has_value()) {
-            return *closing_bracket_index;
+        if (closing_bracket_index != isl::string_view::npos) {
+            return closing_bracket_index;
         }
 
         ruleIterator.throwPanicError(AnalysisStage::LEXICAL_ANALYSIS, "unterminated dot item");
