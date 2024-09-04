@@ -2,9 +2,9 @@
 
 namespace ccl::lexer
 {
-    CCL_INLINE static auto isTabOrSpace(char chr) noexcept -> bool
+    CCL_INLINE static auto isTabOrSpace(const char chr) noexcept -> bool
     {
-        return '\t' == chr || ' ' == chr;
+        return chr == '\t' || chr == ' ';
     }
 
     class TextIteratorWithSkippedCharactersAccumulator
@@ -50,7 +50,7 @@ namespace ccl::lexer
     };
 
 
-    Token::Token(SmallId token_id, const text::InputInfo *input_info)
+    Token::Token(const SmallId token_id, const text::InputInfo *input_info)
       : inputInfo{input_info}
       , id{token_id}
     {}
@@ -137,8 +137,8 @@ namespace ccl::lexer
         return new_token;
     }
 
-    auto Token::finishInitialization(text::TextIterator &text_iterator, const std::size_t totally_skipped)
-        -> void
+    auto Token::finishInitialization(
+        text::TextIterator &text_iterator, const std::size_t totally_skipped) -> void
     {
         text_iterator.skip(1);
         repr = text_iterator.getRemainingWithCurrent();

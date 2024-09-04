@@ -13,7 +13,7 @@ namespace ccl::parser::ll
         }
     }
 
-    auto Ll1ParserGenerator::generateUsingRule(Symbol production, const Rule &rule) -> void
+    auto Ll1ParserGenerator::generateUsingRule(const Symbol production, const Rule &rule) -> void
     {
         auto set = rule.getFirstSet();
 
@@ -25,7 +25,7 @@ namespace ccl::parser::ll
             }
         }
 
-        for (auto symbol : set) {
+        for (const auto symbol : set) {
             if (!storage.isTerminal(symbol) || symbol == storage.getEpsilon()) {
                 continue;
             }
@@ -39,9 +39,10 @@ namespace ccl::parser::ll
         }
     }
 
-    auto Ll1ParserGenerator::insertIntoTable(TableEntry entry, const Rule *rule) -> void
+    auto Ll1ParserGenerator::insertIntoTable(const TableEntry entry, const Rule *rule) -> void
     {
-        auto [it, inserted] = table.try_emplace(entry, rule);
+        auto inserted = false;
+        std::tie(std::ignore, inserted) = table.try_emplace(entry, rule);
 
         if (!inserted) {
             throw std::runtime_error{"Grammar is not LL(1) backtrack free."};

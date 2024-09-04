@@ -149,6 +149,7 @@ namespace ccl::lexer::rule
     CCL_INLINE auto Union::throwUnterminatedUnion(const TextIterator &rule_iterator) -> void
     {
         rule_iterator.throwPanicError(AnalysisStage::LEXICAL_ANALYSIS, "unterminated union item");
+
         throw UnrecoverableError{"unrecoverable error in Union"};
     }
 
@@ -156,6 +157,7 @@ namespace ccl::lexer::rule
         Union::throwUnterminatedRangeException(const TextIterator &rule_iterator) -> void
     {
         rule_iterator.throwPanicError(AnalysisStage::LEXICAL_ANALYSIS, "unterminated range");
+
         throw UnrecoverableError{"unrecoverable error in Union"};
     }
 

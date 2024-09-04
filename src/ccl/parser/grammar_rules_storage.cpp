@@ -43,7 +43,7 @@ namespace ccl::parser
 
     auto GrammarStorage::eraseRule(const Symbol key, const Rule &rule) -> void
     {
-        if (auto it = rules.find(key); it != rules.end()) {
+        if (const auto it = rules.find(key); it != rules.end()) {
             it->second.erase(std::ranges::find(it->second, rule));
         }
     }
@@ -55,8 +55,7 @@ namespace ccl::parser
         }
     }
 
-    auto GrammarStorage::getStartRule(Symbol start_production_id) const CCL_LIFETIMEBOUND
-        -> const Rule *
+    auto GrammarStorage::getStartRule(const Symbol start_production_id) const -> const Rule *
     {
         const auto &start_rules = at(start_production_id);
 
@@ -77,7 +76,8 @@ namespace ccl::parser
         return start_rule;
     }
 
-    auto GrammarStorage::finishGrammar(Symbol goal_production, bool remove_epsilon) -> void
+    auto GrammarStorage::finishGrammar(const Symbol goal_production, const bool remove_epsilon)
+        -> void
     {
         for (const auto &[key, alternatives] : rules) {
             nonTerminals.emplace(key);

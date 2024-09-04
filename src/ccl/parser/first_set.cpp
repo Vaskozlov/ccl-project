@@ -3,7 +3,7 @@
 
 namespace ccl::parser
 {
-    FirstSetEvaluator::FirstSetEvaluator(Symbol epsilon_symbol, GrammarStorage &parser_rules)
+    FirstSetEvaluator::FirstSetEvaluator(const Symbol epsilon_symbol, GrammarStorage &parser_rules)
       : FirstAndFollowSetsCommon{parser_rules}
       , epsilonSymbol{epsilon_symbol}
     {
@@ -28,12 +28,12 @@ namespace ccl::parser
 
     auto FirstSetEvaluator::computeFirstSet() -> void
     {
-        applyFixedPointAlgorithmOnAllRules([this](Symbol key, Rule &rule) {
+        applyFixedPointAlgorithmOnAllRules([this](const Symbol key, Rule &rule) {
             return firstSetComputationIteration(key, rule);
         });
     }
 
-    auto FirstSetEvaluator::firstSetComputationIteration(Symbol key, Rule &rule) -> bool
+    auto FirstSetEvaluator::firstSetComputationIteration(const Symbol key, Rule &rule) -> bool
     {
         const auto front_element = rule.front();
         const auto back_element = rule.back();

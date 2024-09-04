@@ -25,8 +25,8 @@ namespace astlang::interpreter
 
     auto Type::operator<=>(const Type &other) const -> std::weak_ordering
     {
-        if (mainType != other.mainType) {
-            return mainType <=> other.mainType;
+        if (const auto cmp = mainType <=> other.mainType; cmp != 0) {
+            return cmp;
         }
 
         return subTypes <=> other.subTypes;

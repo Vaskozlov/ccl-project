@@ -37,7 +37,7 @@ namespace ccl::parser
 
         auto eraseRule(Symbol key, const Rule &rule) -> void;
 
-        [[nodiscard]] auto at(Symbol key) const CCL_LIFETIMEBOUND -> const auto &
+        [[nodiscard]] auto at(const Symbol key) const CCL_LIFETIMEBOUND -> const auto &
         {
             return rules.at(key);
         }
@@ -70,7 +70,7 @@ namespace ccl::parser
         [[nodiscard]] auto
             getStartRule(Symbol start_production_id) const CCL_LIFETIMEBOUND -> const Rule *;
 
-        [[nodiscard]] auto isTerminal(Symbol symbol) const noexcept -> bool
+        [[nodiscard]] auto isTerminal(const Symbol symbol) const noexcept -> bool
         {
             return !nonTerminals.contains(symbol);
         }

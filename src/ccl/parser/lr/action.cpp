@@ -7,15 +7,15 @@ auto fmt::formatter<ccl::parser::ActionPrintWrapper>::format(
     using namespace ccl::parser;
 
     const auto &action = action_print_wrapper.action;
-    fmt::format_to(ctx.out(), "{} ", action.parsingAction);
+    fmt::format_to(ctx.out(), "{} ", action.getActionType());
 
     if (action.isShift()) {
-        return fmt::format_to(ctx.out(), "{}", action.shiftingState);
+        return fmt::format_to(ctx.out(), "{}", action.getShiftingState());
     }
 
     if (action.isReduce()) {
         return fmt::format_to(
-            ctx.out(), "{}", action_print_wrapper.idToStringConverter(action.productionType));
+            ctx.out(), "{}", action_print_wrapper.idToStringConverter(action.getProductionType()));
     }
 
     return fmt::format_to(ctx.out(), "{}", std::monostate{});

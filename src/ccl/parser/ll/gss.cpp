@@ -20,7 +20,7 @@ namespace ccl::parser::ll
         const auto input_position = descriptor.inputPosition;
         auto constructed_node = descriptor.stack->sppfNode.build();
 
-        for (Node *prev : descriptor.stack->previous) {
+        for (const Node *prev : descriptor.stack->previous) {
             auto new_sppf = prev->sppfNode;
             new_sppf.next(constructed_node);
 
@@ -118,10 +118,8 @@ namespace ccl::parser::ll
         return node;
     }
 
-    auto GSS::pushNode(
-        const Node::Vector &parents,
-        SPPFNode sppf_node,
-        SmallId input_position) -> Node *
+    auto GSS::pushNode(const Node::Vector &parents, SPPFNode sppf_node, SmallId input_position)
+        -> Node *
     {
         auto &level = getLevel(input_position);
         auto *node = level.findNode(sppf_node);

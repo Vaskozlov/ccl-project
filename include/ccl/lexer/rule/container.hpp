@@ -154,23 +154,23 @@ namespace ccl::lexer::rule
 
         auto completePreviousItemInitialization() -> void;
 
-        auto hideFromParser() -> void;
+        auto hideFromParser() const -> void;
 
         auto makeLastItemExtractable() -> void;
 
-        auto setClosure(Closure new_repetition) -> void;
+        auto setClosure(Closure new_repetition) const -> void;
 
-        auto makeSpecial() -> void;
+        auto makeSpecial() const -> void;
 
-        auto reverseLastItem() -> void;
+        auto reverseLastItem() const -> void;
 
         auto postCreationCheck() -> void;
 
         [[nodiscard]] auto findContainerEnd(isl::string_view repr) const -> std::size_t;
 
-        auto checkThereIsLhsItem() -> void;
+        auto checkThereIsLhsItem() const -> void;
 
-        auto checkAbilityToCreatePrefixOrPostfix() -> void;
+        auto checkAbilityToCreatePrefixOrPostfix() const -> void;
 
         [[noreturn]] auto throwUnableToApply(
             isl::string_view reason, isl::string_view suggestion = {}) const -> void;

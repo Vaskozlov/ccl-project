@@ -2,7 +2,7 @@
 
 namespace ccl::handler
 {
-    static auto replaceTabWithSpaces(isl::string_view string) -> isl::Pair<std::size_t, std::string>
+    static auto replaceTabWithSpaces(const isl::string_view string) -> isl::Pair<std::size_t, std::string>
     {
         using namespace std::string_view_literals;
 

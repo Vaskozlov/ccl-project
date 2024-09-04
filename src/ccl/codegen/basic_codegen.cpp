@@ -31,7 +31,7 @@ namespace ccl::codegen
     {
         auto result = std::string{};
 
-        for (const auto &[id, stream] : generatedCode) {
+        for (const auto &stream : generatedCode | std::views::values) {
             result.append(stream);
         }
 

@@ -202,7 +202,7 @@ namespace ccl::lexer::rule
             ruleIterator, item_repetition.to != 0 && item->empty() && item->isReversed());
     }
 
-    auto Container::RuleParser::hideFromParser() -> void
+    auto Container::RuleParser::hideFromParser() const -> void
     {
         auto &last_item = items.back();
         last_item->hideFromParser();
@@ -212,17 +212,17 @@ namespace ccl::lexer::rule
     {
         checkAbilityToCreatePrefixOrPostfix();
 
-        auto &last_item = items.back();
+        const auto &last_item = items.back();
         last_item->makeExtractable();
     }
 
-    auto Container::RuleParser::setClosure(Closure new_repetition) -> void
+    auto Container::RuleParser::setClosure(const Closure new_repetition) const -> void
     {
         if (items.empty()) {
             throwUnableToApply("no items found to set repetition");
         }
 
-        auto &last_item = items.back();
+        const auto &last_item = items.back();
 
         if (last_item->getClosure() != Closure{1, 1}) {
             throwUnableToApply("item already has repetition");
@@ -231,7 +231,7 @@ namespace ccl::lexer::rule
         last_item->setClosure(new_repetition);
     }
 
-    auto Container::RuleParser::makeSpecial() -> void
+    auto Container::RuleParser::makeSpecial() const -> void
     {
         if (!items.empty()) {
             throwUnableToApply("special must be applied before anything else");
@@ -240,13 +240,13 @@ namespace ccl::lexer::rule
         container.flags.isAnyPlace = true;
     }
 
-    auto Container::RuleParser::reverseLastItem() -> void
+    auto Container::RuleParser::reverseLastItem() const -> void
     {
         if (items.empty()) {
             throwUnableToApply("no items to reverse");
         }
 
-        auto &last_item = items.back();
+        const auto &last_item = items.back();
 
         if (last_item->isReversed()) {
             throwUnableToApply("item already has reverse modifier");
@@ -271,7 +271,7 @@ namespace ccl::lexer::rule
         alwaysRecognizedSuggestion(ruleIterator, items.empty() && isReversed());
     }
 
-    auto Container::RuleParser::findContainerEnd(isl::string_view repr) const -> std::size_t
+    auto Container::RuleParser::findContainerEnd(const isl::string_view repr) const -> std::size_t
     {
         const auto closing_bracket_index = repr.findRangeEnd('(', ')');
 
@@ -283,14 +283,14 @@ namespace ccl::lexer::rule
         throw UnrecoverableError{"unrecoverable error in ContainerType"};
     }
 
-    auto Container::RuleParser::checkThereIsLhsItem() -> void
+    auto Container::RuleParser::checkThereIsLhsItem() const -> void
     {
         if (items.empty()) [[unlikely]] {
             throwUnableToApply("no left hand side items to apply operation");
         }
     }
 
-    auto Container::RuleParser::checkAbilityToCreatePrefixOrPostfix() -> void
+    auto Container::RuleParser::checkAbilityToCreatePrefixOrPostfix() const -> void
     {
         if (!container.flags.isMain) {
             throwUnableToApply(
@@ -309,12 +309,13 @@ namespace ccl::lexer::rule
     }
 
     auto Container::RuleParser::throwUnableToApply(
-        isl::string_view reason,
-        isl::string_view suggestion) const -> void
+        const isl::string_view reason,
+        const isl::string_view suggestion) const -> void
     {
-        const auto message = fmt::format("unable to apply: {}", reason);
-
-        ruleIterator.throwCriticalError(AnalysisStage::LEXICAL_ANALYSIS, message, suggestion);
+        ruleIterator.throwCriticalError(
+            AnalysisStage::LEXICAL_ANALYSIS,
+            fmt::format("unable to apply: {}", reason),
+            suggestion);
         throw UnrecoverableError{"unrecoverable error in ContainerType"};
     }
 

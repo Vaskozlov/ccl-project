@@ -97,30 +97,4 @@ namespace ccl::text
 
         exceptionHandler->handle(exception);
     }
-
-    auto TextIterator::linesOfFragment(
-        const isl::string_view whole_input, const isl::string_view fragment) -> isl::string_view
-    {
-        const auto *front_it = std::next(fragment.begin(), -1);
-        const auto *back_it = fragment.end();
-
-        while (front_it >= whole_input.begin()) {
-            if (*front_it == U'\n') {
-                break;
-            }
-
-            front_it = std::next(front_it, -1);
-        }
-
-        while (back_it < whole_input.end()) {
-            if (*back_it == U'\n') {
-                break;
-            }
-
-            back_it = std::next(back_it);
-        }
-
-        return {std::next(front_it), back_it};
-    }
-
 }// namespace ccl::text

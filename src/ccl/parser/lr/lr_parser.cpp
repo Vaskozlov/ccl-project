@@ -42,16 +42,18 @@ namespace ccl::parser
                 return parsing_result;
             }
 
-            switch (const Action &action = action_table_it->second; action.parsingAction) {
+            switch (const Action &action = action_table_it->second; action.getActionType()) {
             case SHIFT:
                 parser_state.nodesStack.emplace(std::move(token));
-                parser_state.stateStack.emplace(action.shiftingState);
+                parser_state.stateStack.emplace(action.getShiftingState());
                 token = ast::SharedNode<ast::Terminal>{tokenizer.yield()};
                 break;
 
             case REDUCE:
                 reduceAction(
-                    action.productionType, action.numberOfElementsInProduction, parser_state);
+                    action.getProductionType(),
+                    action.getNumberOfElementsInProduction(),
+                    parser_state);
                 break;
 
             case ACCEPT:
@@ -72,7 +74,7 @@ namespace ccl::parser
         auto &[state_stack, nodes_stack] = parser_state;
         auto reduced_item = ast::SharedNode<ast::NonTerminal>{production_type};
 
-        for (std::size_t i = 0; i != number_of_elements; ++i) {
+        for (auto i = std::size_t{}; i != number_of_elements; ++i) {
             reduced_item->addNode(std::move(nodes_stack.top()));
             nodes_stack.pop();
             state_stack.pop();

@@ -63,9 +63,7 @@ namespace ccl::parser::lr
                     .state = cc.id,
                     .symbol = endOfInput,
                 },
-                {
-                    .parsingAction = ACCEPT,
-                });
+                Action{});
             return;
         }
 
@@ -75,10 +73,9 @@ namespace ccl::parser::lr
                     .state = cc.id,
                     .symbol = item.getLookAhead(),
                 },
-                {
-                    .parsingAction = REDUCE,
-                    .productionType = item.production,
-                    .numberOfElementsInProduction = static_cast<SmallId>(item.dottedRule.size()),
+                Action{
+                    item.production,
+                    static_cast<SmallId>(item.dottedRule.size()),
                 });
             return;
         }
@@ -94,12 +91,7 @@ namespace ccl::parser::lr
             .symbol = symbol_at_dot,
         };
 
-        insertIntoActionTable(
-            entry,
-            {
-                .parsingAction = SHIFT,
-                .shiftingState = transitions.at(entry),
-            });
+        insertIntoActionTable(entry, Action{transitions.at(entry)});
     }
 
     auto LrParserGenerator::fillGotoTableEntry(const CanonicalCollection &cc, Symbol symbol) -> void

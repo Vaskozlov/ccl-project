@@ -79,24 +79,24 @@ namespace ccl::parser
             }
 
             for (const Action &action : possible_actions_it->second) {
-                switch (action.parsingAction) {
+                switch (action.getActionType()) {
                 case SHIFT:
                     gss.add({
                         .stack = gss.pushTerminal(
                             descriptor.stack,
                             descriptor.inputPosition,
-                            action.shiftingState,
+                            action.getShiftingState(),
                             token),
                         .inputPosition = descriptor.inputPosition + 1,
-                        .parserState = action.shiftingState,
+                        .parserState = action.getShiftingState(),
                     });
                     break;
 
                 case REDUCE:
                     gss.reduce(
-                        action.numberOfElementsInProduction,
+                        action.getNumberOfElementsInProduction(),
                         std::addressof(gotoTable),
-                        action.productionType,
+                        action.getProductionType(),
                         descriptor);
                     break;
 

@@ -22,7 +22,7 @@ namespace ccl::lexer::rule
             {U']', U']'},
         };
 
-        auto begin_iterator_state = rule_iterator;
+        const auto begin_iterator_state = rule_iterator;
 
         checkSequenceArguments(rule_iterator);
         skipStringDefinition(rule_iterator);
@@ -130,6 +130,7 @@ namespace ccl::lexer::rule
     {
         rule_iterator.throwPanicError(
             AnalysisStage::LEXICAL_ANALYSIS, "sequence item begin cannot be empty");
+
         throw UnrecoverableError{"unrecoverable error in SequenceType"};
     }
 
@@ -137,6 +138,7 @@ namespace ccl::lexer::rule
     {
         rule_iterator.throwPanicError(
             AnalysisStage::LEXICAL_ANALYSIS, "sequence item end cannot be empty");
+
         throw UnrecoverableError{"unrecoverable error in SequenceType"};
     }
 
@@ -146,15 +148,17 @@ namespace ccl::lexer::rule
         const isl::string_view suggestion) -> void
     {
         rule_iterator.throwPanicError(AnalysisStage::LEXICAL_ANALYSIS, message, suggestion);
+
         throw UnrecoverableError{"unrecoverable error in SequenceType"};
     }
 
     CCL_INLINE auto
         Sequence::throwStringBeginException(const TextIterator &rule_iterator) const -> void
     {
-        const auto message = fmt::format("string literal must begin with {}", starter);
+        rule_iterator.throwPanicError(
+            AnalysisStage::LEXICAL_ANALYSIS,
+            fmt::format("string literal must begin with {}", starter));
 
-        rule_iterator.throwPanicError(AnalysisStage::LEXICAL_ANALYSIS, message);
         throw UnrecoverableError{"unrecoverable error in SequenceType"};
     }
 }// namespace ccl::lexer::rule

@@ -1,11 +1,8 @@
 #ifndef CCL_PROJECT_RULE_HPP
 #define CCL_PROJECT_RULE_HPP
 
-#include <ccl/parser/ast/allocator.hpp>
-#include <ccl/parser/ast/node.hpp>
 #include <ccl/parser/ast/non_terminal.hpp>
 #include <ccl/parser/types.hpp>
-#include <functional>
 
 namespace ccl::parser
 {

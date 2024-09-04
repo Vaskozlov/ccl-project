@@ -184,7 +184,7 @@ namespace ccl::text
 
     private:
         auto searchInExtraSymbols(char32_t chr) -> char32_t;
-        auto throwUnableToMatchEscapingSymbol() -> void;
+        auto throwUnableToMatchEscapingSymbol() const -> void;
     };
 
     class TextIterator::NotationEscapingSequenceToChar

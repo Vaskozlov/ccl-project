@@ -18,8 +18,8 @@ namespace astlang::interpreter
 
         auto operator<=>(const FunctionIdentification &other) const -> std::weak_ordering
         {
-            if (name == other.name) {
-                return parameters <=> other.parameters;
+            if (const auto cmp = name <=> other.name; cmp != 0) {
+                return cmp;
             }
 
             return name <=> other.name;

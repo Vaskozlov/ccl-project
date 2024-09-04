@@ -93,7 +93,7 @@ namespace ccl::parser::reader
         };
     }
 
-    auto ParserBuilder::finishGrammar(Mode mode) -> void
+    auto ParserBuilder::finishGrammar(const Mode mode) -> void
     {
         if (!rulesConstructorFinalized) {
             rulesConstructorMode = mode;
@@ -138,7 +138,7 @@ namespace ccl::parser::reader
     auto
         ParserBuilder::getIdToNameTranslationFunction() const -> std::function<std::string(SmallId)>
     {
-        return [this](SmallId rule_id) {
+        return [this](const SmallId rule_id) {
             return ruleIdToName.at(rule_id);
         };
     }

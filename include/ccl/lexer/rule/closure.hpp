@@ -11,8 +11,8 @@ namespace ccl::lexer::rule
         std::size_t from{};
         std::size_t to{};
 
-        [[nodiscard]] constexpr Closure(
-            std::size_t repetition_begin, std::size_t repetition_end) noexcept
+        CCL_DECL
+            Closure(const std::size_t repetition_begin, const std::size_t repetition_end) noexcept
           : from{repetition_begin}
           , to{repetition_end}
         {}
@@ -24,7 +24,7 @@ namespace ccl::lexer::rule
             return std::numeric_limits<std::size_t>::max();
         }
 
-        [[nodiscard]] auto isInClosure(std::size_t value) const noexcept -> bool
+        [[nodiscard]] auto isInClosure(const std::size_t value) const noexcept -> bool
         {
             return value >= from && value <= to;
         }
@@ -33,20 +33,20 @@ namespace ccl::lexer::rule
             operator<=>(const Closure &) const noexcept -> std::strong_ordering = default;
 
     private:
-        static auto checkRangeStart(text::TextIterator &text_iterator) -> void;
+        static auto checkRangeStart(const text::TextIterator &text_iterator) -> void;
 
         [[nodiscard]] static auto
             parseNumber(text::TextIterator &text_iterator, char32_t terminator) -> std::size_t;
 
-        auto checkCorrectnessOfValues(text::TextIterator &text_iterator) const -> void;
+        auto checkCorrectnessOfValues(const text::TextIterator &text_iterator) const -> void;
 
-        auto throwBadValues(text::TextIterator &text_iterator) const -> void;
-
-        [[noreturn]] static auto
-            throwRangeBeginException(text::TextIterator &text_iterator) -> void;
+        auto throwBadValues(const text::TextIterator &text_iterator) const -> void;
 
         [[noreturn]] static auto
-            throwUnexpectedCharacter(text::TextIterator &text_iterator, char32_t chr) -> void;
+            throwRangeBeginException(const text::TextIterator &text_iterator) -> void;
+
+        [[noreturn]] static auto
+            throwUnexpectedCharacter(const text::TextIterator &text_iterator, char32_t chr) -> void;
     };
 }// namespace ccl::lexer::rule
 

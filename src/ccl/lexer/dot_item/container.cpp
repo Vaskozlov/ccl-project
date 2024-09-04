@@ -101,7 +101,6 @@ namespace ccl::lexer::rule
 
     auto Container::parseRule(TextIterator &rule_iterator) -> void
     {
-        // TODO: use function instead
-        RuleParser{*this, rule_iterator};
+        std::ignore = RuleParser{*this, rule_iterator};
     }
 }// namespace ccl::lexer::rule

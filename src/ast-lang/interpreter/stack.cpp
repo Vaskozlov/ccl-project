@@ -30,7 +30,7 @@ namespace astlang::interpreter
         std::tie(std::ignore, has_inserted) = last_scope.try_emplace(name, std::move(value));
 
         if (!has_inserted) {
-            throw std::runtime_error("Variable already exists");
+            throw std::runtime_error{"Stack::createVariable: variable already exists"};
         }
     }
 
@@ -40,7 +40,7 @@ namespace astlang::interpreter
         std::tie(std::ignore, has_inserted) = globalScope.try_emplace(name, std::move(value));
 
         if (!has_inserted) {
-            throw std::runtime_error("Variable already exists");
+            throw std::runtime_error{"Stack::createGlobalVariable: variable already exists"};
         }
     }
 

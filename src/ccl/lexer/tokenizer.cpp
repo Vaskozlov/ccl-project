@@ -74,8 +74,8 @@ namespace ccl::lexer
     }
 
     auto Tokenizer::throwExceptionToHandler(
-        ExceptionCriticality criticality, isl::string_view message,
-        isl::string_view suggestion) const -> void
+        const ExceptionCriticality criticality, const isl::string_view message,
+        const isl::string_view suggestion) const -> void
     {
         textIterator.throwToHandle(
             textIterator, criticality, AnalysisStage::LEXICAL_ANALYSIS, message, suggestion);

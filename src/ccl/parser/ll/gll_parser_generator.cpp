@@ -13,9 +13,9 @@ namespace ccl::parser::ll
         }
     }
 
-    auto GllParserGenerator::generateUsingRule(Symbol production, const Rule &rule) -> void
+    auto GllParserGenerator::generateUsingRule(const Symbol production, const Rule &rule) -> void
     {
-        for (auto symbol : rule.getFirstSet()) {
+        for (const auto symbol : rule.getFirstSet()) {
             if (!storage.isTerminal(symbol) || symbol == storage.getEpsilon()) {
                 continue;
             }
@@ -29,7 +29,7 @@ namespace ccl::parser::ll
         }
     }
 
-    auto GllParserGenerator::insertIntoTable(TableEntry entry, const Rule *rule) -> void
+    auto GllParserGenerator::insertIntoTable(const TableEntry entry, const Rule *rule) -> void
     {
         auto [it, inserted] = table.try_emplace(entry);
 

@@ -48,17 +48,17 @@ namespace ccl::parser::lr
         Symbol endOfInput;
         Symbol epsilonSymbol;
 
-       mutable ankerl::unordered_dense::map<std::vector<LrItem>, std::vector<LrItem>>
+        mutable ankerl::unordered_dense::map<std::vector<LrItem>, std::vector<LrItem>>
             closureComputationOnItemsCache;
 
-       mutable ankerl::unordered_dense::map<LrItem, std::vector<LrItem>> closureComputationCache;
+        mutable ankerl::unordered_dense::map<LrItem, std::vector<LrItem>> closureComputationCache;
 
         runtime::Pipe<GotoResult, 256> pipe;
 
     public:
         explicit LrParserGenerator(
             const LrItem &start_item, Symbol epsilon_symbol, const GrammarStorage &parser_rules,
-            std::function<std::string(SmallId)> id_to_string_converter);
+            const std::function<std::string(SmallId)> &id_to_string_converter);
 
         [[nodiscard]] auto getGotoTable() -> auto &
         {
@@ -70,7 +70,7 @@ namespace ccl::parser::lr
         [[nodiscard]] auto getGlrActionTable() const -> const GlrActionTable &;
 
     private:
-        [[nodiscard]] auto isTerminal(Symbol symbol) const noexcept -> bool
+        [[nodiscard]] auto isTerminal(const Symbol symbol) const noexcept -> bool
         {
             return grammarRules.isTerminal(symbol);
         }

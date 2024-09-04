@@ -65,7 +65,7 @@ namespace ccl::text
 
     auto EscapingSequenceToChar::searchInExtraSymbols(char32_t chr) -> char32_t
     {
-        auto it = std::ranges::find_if(extraSymbols, [chr](auto elem) {
+        const auto it = std::ranges::find_if(extraSymbols, [chr](auto elem) {
             return elem.first == chr;
         });
 
@@ -77,7 +77,7 @@ namespace ccl::text
         return it->second;
     }
 
-    auto EscapingSequenceToChar::throwUnableToMatchEscapingSymbol() -> void
+    auto EscapingSequenceToChar::throwUnableToMatchEscapingSymbol() const -> void
     {
         textIterator.throwUncriticalError(
             AnalysisStage::LEXICAL_ANALYSIS, "unable to matchNextChar any escaping symbol");

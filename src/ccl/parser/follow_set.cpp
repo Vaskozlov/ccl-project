@@ -3,7 +3,7 @@
 namespace ccl::parser
 {
     FollowSetEvaluator::FollowSetEvaluator(
-        Symbol start_symbol, Symbol end_of_input, Symbol epsilon_symbol,
+        const Symbol start_symbol, const Symbol end_of_input, const Symbol epsilon_symbol,
         GrammarStorage &parser_rules,
         const ankerl::unordered_dense::map<Symbol, std::unordered_set<Symbol>> &first_set)
       : FirstAndFollowSetsCommon{parser_rules}
@@ -14,7 +14,8 @@ namespace ccl::parser
         computeFollowSet();
     }
 
-    auto FollowSetEvaluator::initializeFollowSet(Symbol start_symbol, Symbol end_of_input) -> void
+    auto FollowSetEvaluator::initializeFollowSet(
+        const Symbol start_symbol, const Symbol end_of_input) -> void
     {
         for (auto symbol : grammarRules.getGrammarSymbols()) {
             if (isNonTerminal(symbol)) {
@@ -27,12 +28,12 @@ namespace ccl::parser
 
     auto FollowSetEvaluator::computeFollowSet() -> void
     {
-        applyFixedPointAlgorithmOnAllRules([this](Symbol key, Rule &rule) {
+        applyFixedPointAlgorithmOnAllRules([this](const Symbol key, Rule &rule) {
             return followSetComputationIteration(key, rule);
         });
     }
 
-    auto FollowSetEvaluator::followSetComputationIteration(Symbol key, Rule &rule) -> bool
+    auto FollowSetEvaluator::followSetComputationIteration(const Symbol key, Rule &rule) -> bool
     {
         auto has_modifications = false;
         auto trailer = followSet.at(key);

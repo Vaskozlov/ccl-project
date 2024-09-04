@@ -25,7 +25,7 @@ namespace ccl::text
         for (; chars_count != maximumSymbols; ++chars_count) {
             auto chr = textIterator.futureChar();
 
-            if (isEoF(chr) || isOutOfNotation(chr)) [[unlikely]] {
+            if (isEoF(chr) || isOutOfNotation(chr)) {
                 break;
             }
 
@@ -62,28 +62,27 @@ namespace ccl::text
         ISL_ASSERT(notationPower > 0 && notationPower <= 4);
     }
 
-    auto NotationEscapingSequenceToChar::isOutOfNotation(char32_t chr) const -> bool
+    auto NotationEscapingSequenceToChar::isOutOfNotation(const char32_t chr) const -> bool
     {
         return !HexadecimalCharsToInt.contains(chr) ||
                HexadecimalCharsToInt.at(chr) >= (1U << notationPower);
     }
 
-    auto NotationEscapingSequenceToChar::checkAllCharsUsage(u32 chars_count) const -> void
+    auto NotationEscapingSequenceToChar::checkAllCharsUsage(const u32 chars_count) const -> void
     {
         if (areAllCharsRequired && chars_count != maximumSymbols) {
             throwNotEnoughCharsException(chars_count);
         }
     }
 
-    auto NotationEscapingSequenceToChar::throwNotEnoughCharsException(u32 chars_count) const -> void
+    auto NotationEscapingSequenceToChar::throwNotEnoughCharsException(const u32 chars_count) const
+        -> void
     {
-        const auto exception_message = fmt::format(
-            "expected {} characters, but only {} of them were provided", maximumSymbols,
-            chars_count);
-
-        const auto suggestion_message = createSuggestionNotEnoughChars(chars_count);
-
         textIterator.throwUncriticalError(
-            AnalysisStage::LEXICAL_ANALYSIS, exception_message, suggestion_message);
+            AnalysisStage::LEXICAL_ANALYSIS,
+            fmt::format(
+                "expected {} characters, but only {} of them were provided", maximumSymbols,
+                chars_count),
+            createSuggestionNotEnoughChars(chars_count));
     }
 }// namespace ccl::text

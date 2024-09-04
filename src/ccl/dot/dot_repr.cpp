@@ -49,10 +49,11 @@ namespace ccl::parser::dot
         }
 
         if (non_terminal_node != nullptr && inserted) {
-            auto nodes = non_terminal_node->getNodes();
+            const auto &nodes = non_terminal_node->getNodes();
+            const auto nodes_count = nodes.size();
             auto number_of_nodes = static_cast<isl::ssize_t>(nodes.size());
 
-            for (std::size_t i = 0; i != nodes.size(); ++i) {
+            for (auto i = u32{}; i != nodes_count; ++i) {
                 createDotRepresentation(
                     nodes.at(i).get(),
                     node_id,

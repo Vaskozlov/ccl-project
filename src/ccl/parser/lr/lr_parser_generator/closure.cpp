@@ -17,8 +17,9 @@ namespace ccl::parser::lr
                                      ? item.getLookAhead()
                                      : item.dottedRule.at(item.dottedRule.dotPosition + 1);
 
-        for (const auto &first_set = grammarRules.getFirstSet();
-             const auto first_symbol : first_set.at(next_symbol)) {
+        const auto &first_set = grammarRules.getFirstSet();
+
+        for (const auto first_symbol : first_set.at(next_symbol)) {
             for (const auto &rule : grammarRules.at(symbol)) {
                 result.emplace_back(
                     RuleWithDot{
@@ -43,6 +44,10 @@ namespace ccl::parser::lr
 
         auto has_modifications = true;
 
+        const auto is_not_in_set = [&s](const LrItem &slot) {
+            return std::ranges::find(s, slot) == s.end();
+        };
+
         while (has_modifications) {
             has_modifications = false;
 
@@ -54,9 +59,6 @@ namespace ccl::parser::lr
                 }
 
                 const auto &generated_closure = computeClosure(item);
-                const auto is_not_in_set = [&s](const LrItem &slot) {
-                    return std::ranges::find(s, slot) == s.end();
-                };
 
                 for (const auto &generated_item :
                      generated_closure | std::views::filter(is_not_in_set)) {

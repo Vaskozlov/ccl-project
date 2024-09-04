@@ -130,7 +130,7 @@ namespace ccl::lexer::gen
     {
         auto generated_rules = std::set<isl::string_view>{};
 
-        auto output_rule = [this](isl::string_view value) {
+        auto output_rule = [this](const isl::string_view value) {
             codeGenerator << endl << '{' << enumName << "::" << value;
             codeGenerator << ", " << '\"' << value << "\"},";
         };

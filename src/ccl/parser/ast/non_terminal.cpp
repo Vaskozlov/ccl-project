@@ -5,8 +5,9 @@ namespace ccl::parser::ast
 {
     auto NonTerminal::joinWithNode(SharedNode<> node) -> void
     {
-        if (auto *casted = dynamic_cast<NonTerminal *>(node.get()); casted != nullptr) {
-            for (auto &elem : casted->nodes) {
+        if (auto *as_non_terminal = dynamic_cast<NonTerminal *>(node.get());
+            as_non_terminal != nullptr) {
+            for (const auto &elem : as_non_terminal->nodes) {
                 addNode(elem);
             }
 
