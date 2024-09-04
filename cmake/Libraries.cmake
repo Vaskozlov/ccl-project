@@ -45,7 +45,7 @@ if (CCL_INCLUDE_BENCHMARK)
     CPMAddPackage(
             NAME benchmark
             GITHUB_REPOSITORY google/benchmark
-            VERSION 1.5.0
+            GIT_TAG main
             OPTIONS
             "BENCHMARK_ENABLE_TESTING Off"
             "BENCHMARK_USE_LIBCXX ${ISL_LIBCPP}"
