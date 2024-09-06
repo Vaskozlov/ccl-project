@@ -18,8 +18,8 @@ namespace ccl::parser
 
     struct TableEntryPrintHelper
     {
-        const TableEntry &entry;
         std::function<std::string(SmallId)> idToStringConverter;
+        TableEntry entry;
     };
 }// namespace ccl::parser
 

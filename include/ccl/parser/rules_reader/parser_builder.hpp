@@ -69,20 +69,11 @@ namespace ccl::parser::reader
         }
 
         auto addLexerRule(
-            const std::string &name, std::unique_ptr<lexer::rule::Container> container) -> void
-        {
-            auto rule_id = addRule(name);
-            container->setId(rule_id);
-            lexicalAnalyzer.addContainer(name, std::move(container));
-        }
+            const std::string &name, std::unique_ptr<lexer::rule::Container> container) -> void;
 
-        auto addParserRule(const std::string &name, std::vector<Symbol> rule) -> void
-        {
-            const auto rule_id = addRule(name);
-            addParserRule(rule_id, std::move(rule));
-        }
+        auto addParserRule(const std::string &name, std::vector<Symbol> rule) -> void;
 
-        auto addParserRule(SmallId rule_id, std::vector<Symbol> rule) -> void
+        auto addParserRule(const SmallId rule_id, std::vector<Symbol> rule) -> void
         {
             grammarRulesStorage.tryEmplace(rule_id, Rule{std::move(rule)});
         }

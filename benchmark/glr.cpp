@@ -27,7 +27,7 @@ static void glrParserWithConstruction(benchmark::State &state)
             id_to_str,
         };
 
-        const auto [roots, algorithm] = glr_parser.parse(tokenizer);
+        auto [roots, algorithm] = glr_parser.parse(tokenizer);
 
         benchmark::DoNotOptimize(roots);
     }
@@ -58,7 +58,7 @@ static void glrParserWithoutConstruction(benchmark::State &state)
     for (auto _ : state) {
         auto tokenizer = ccl::parser::reader::RulesLexer.getTokenizer(astlang::AstLangGrammar);
 
-        const auto [roots, algorithm] = glr_parser.parse(tokenizer);
+        auto [roots, algorithm] = glr_parser.parse(tokenizer);
 
         benchmark::DoNotOptimize(roots);
     }

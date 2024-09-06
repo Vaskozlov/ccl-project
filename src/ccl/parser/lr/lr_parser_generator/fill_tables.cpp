@@ -16,8 +16,8 @@ namespace ccl::parser::lr
                     fmt::println(
                         "Action: {}",
                         ActionPrintWrapper{
-                            .action = action,
                             .idToStringConverter = idToStringConverter,
+                            .action = action,
                         });
                 }
 

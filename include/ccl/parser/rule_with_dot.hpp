@@ -46,8 +46,8 @@ namespace ccl::parser
 
     struct RuleWithDotPrintWrapper
     {
-        const RuleWithDot &ruleWithDot;
         std::function<std::string(SmallId)> idToStringConverter;
+        RuleWithDot ruleWithDot;
     };
 }// namespace ccl::parser
 

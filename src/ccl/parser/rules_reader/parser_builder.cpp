@@ -106,6 +106,20 @@ namespace ccl::parser::reader
         }
     }
 
+    auto ParserBuilder::addLexerRule(
+        const std::string &name, std::unique_ptr<lexer::rule::Container> container) -> void
+    {
+        const auto rule_id = addRule(name);
+        container->setId(rule_id);
+        lexicalAnalyzer.addContainer(name, std::move(container));
+    }
+
+    auto ParserBuilder::addParserRule(const std::string &name, std::vector<Symbol> rule) -> void
+    {
+        const auto rule_id = addRule(name);
+        addParserRule(rule_id, std::move(rule));
+    }
+
     auto ParserBuilder::addRule(const std::string &rule_name) -> SmallId
     {
         if (const auto it = ruleNameToId.find(rule_name); it != ruleNameToId.end()) {

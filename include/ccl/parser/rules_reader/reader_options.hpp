@@ -3,7 +3,7 @@
 
 namespace ccl::parser::reader
 {
-    enum class ReaderOption : std::size_t
+    enum class ReaderOption : u8
     {
         WARNINGS_ENABLE,
         SUGGESTIONS_ENABLE,

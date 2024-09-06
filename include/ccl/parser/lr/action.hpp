@@ -9,10 +9,10 @@ namespace ccl::parser
     class Action
     {
     private:
-        ParsingAction parsingAction;
         State shiftingState{};
         Symbol productionType{};
         SmallId numberOfElementsInProduction{};
+        ParsingAction parsingAction;
 
     public:
         Action()
@@ -20,16 +20,16 @@ namespace ccl::parser
         {}
 
         explicit Action(const State shifting_state) noexcept
-          : parsingAction{ParsingAction::SHIFT}
-          , shiftingState{shifting_state}
+          : shiftingState{shifting_state}
+          , parsingAction{ParsingAction::SHIFT}
         {}
 
         explicit Action(
             const Symbol production_type,
             const SmallId number_of_elements_in_production) noexcept
-          : parsingAction{ParsingAction::REDUCE}
-          , productionType{production_type}
+          : productionType{production_type}
           , numberOfElementsInProduction{number_of_elements_in_production}
+          , parsingAction{ParsingAction::REDUCE}
         {}
 
         CCL_DECL auto
@@ -86,8 +86,8 @@ namespace ccl::parser
 
     struct ActionPrintWrapper
     {
-        const Action &action;
         std::function<std::string(SmallId)> idToStringConverter;
+        Action action;
     };
 }// namespace ccl::parser
 
