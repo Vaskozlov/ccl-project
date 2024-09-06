@@ -14,7 +14,7 @@ namespace ccl::text
         constexpr auto next(const char32_t chr) noexcept -> void
         {
             const auto is_new_line = chr == U'\n';
-            const auto next_column = chr == column + 1;
+            const auto next_column = column + 1;
             column = is_new_line ? 0 : next_column;
             line += static_cast<u32>(is_new_line);
         }
