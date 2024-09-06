@@ -80,7 +80,7 @@ namespace ccl::text
         [[nodiscard]] auto getCurrentLine() const -> isl::string_view
         {
             const auto *current_it = getCarriage();
-            return linesOfFragment(inputInfo.wholeText, {current_it, std::next(current_it)});
+            return linesOfFragment(inputInfo.wholeText, {current_it, current_it});
         }
 
         [[nodiscard]] auto getHandler() const noexcept -> const ExceptionHandler &
