@@ -137,7 +137,7 @@ namespace ccl::text
 
         CCL_DECL auto getRemainingText() const noexcept -> isl::string_view
         {
-            if (isInitialized()) {
+            if (isInitialized()) [[unlikely]] {
                 return {carriage + isl::utf8::size(getNextCarriageValue()), end};
             }
 

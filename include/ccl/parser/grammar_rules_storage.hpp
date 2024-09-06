@@ -15,9 +15,9 @@ namespace ccl::parser
         using AlternativesConstRuleIterator = std::vector<Rule>::const_iterator;
 
         std::unordered_map<Symbol, std::vector<Rule>> rules;
-        std::unordered_set<Symbol> nonTerminals;
-        std::unordered_set<Symbol> grammarSymbols;
-        std::unordered_set<Symbol> possiblyEmptyRules;
+        ankerl::unordered_dense::set<Symbol> nonTerminals;
+        ankerl::unordered_dense::set<Symbol> grammarSymbols;
+        ankerl::unordered_dense::set<Symbol> possiblyEmptyRules;
         ankerl::unordered_dense::map<Symbol, std::unordered_set<Symbol>> firstSet;
         ankerl::unordered_dense::map<Symbol, std::unordered_set<Symbol>> followSet;
         Symbol epsilonSymbol;

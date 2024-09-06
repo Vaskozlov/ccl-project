@@ -22,7 +22,7 @@ namespace astlang::interpreter
                 return cmp;
             }
 
-            return name <=> other.name;
+            return parameters <=> other.parameters;
         }
     };
 
