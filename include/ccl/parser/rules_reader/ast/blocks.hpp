@@ -5,7 +5,7 @@
 
 namespace ccl::parser::reader::ast
 {
-    class Blocks : public RulesReaderNode
+    class Blocks final : public RulesReaderNode
     {
     public:
         using RulesReaderNode::RulesReaderNode;
