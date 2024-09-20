@@ -42,7 +42,7 @@ namespace ccl::codegen
         BasicCodeGenerator()
         {
             generatedCode.try_emplace(streamId);
-        };
+        }
 
         [[nodiscard]] auto getCode() const noexcept -> std::string;
 
@@ -91,12 +91,12 @@ namespace ccl::codegen
         auto addScope(std::size_t scopes_count) -> void;
     };
 
-    constexpr auto setScopeSize(std::size_t size) noexcept -> BasicCodeGenerator::ScopeSize
+    constexpr auto setScopeSize(const std::size_t size) noexcept -> BasicCodeGenerator::ScopeSize
     {
         return {.size = size};
     }
 
-    constexpr auto setStream(SmallId stream_id) noexcept -> BasicCodeGenerator::StreamId
+    constexpr auto setStream(const SmallId stream_id) noexcept -> BasicCodeGenerator::StreamId
     {
         return {.streamId = stream_id};
     }

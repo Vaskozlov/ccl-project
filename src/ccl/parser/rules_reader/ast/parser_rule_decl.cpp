@@ -37,9 +37,9 @@ namespace ccl::parser::reader::ast
         }
 
         auto not_casted_rules = alternatives->construct(parser_builder);
-        auto rules = isl::get<std::vector<std::vector<SmallId>>>(not_casted_rules);
+        const auto rules = not_casted_rules.release<std::vector<std::vector<SmallId>>>();
 
-        for (auto &alternative : rules) {
+        for (auto &alternative : *rules) {
             parser_builder.addParserRule(production_id, std::move(alternative));
         }
 

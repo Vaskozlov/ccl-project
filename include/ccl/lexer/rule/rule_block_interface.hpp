@@ -1,7 +1,7 @@
 #ifndef CCL_PROJECT_RULE_INTERFACE_HPP
 #define CCL_PROJECT_RULE_INTERFACE_HPP
 
-#include <ccl/lexer/rule/closure.hpp>
+#include <ccl/lexer/rule/repetition.hpp>
 #include <ccl/lexer/scan_result.hpp>
 #include <ccl/text/text_iterator.hpp>
 
@@ -27,7 +27,7 @@ namespace ccl::lexer::rule
         };
 
     private:
-        Closure closure{1, 1};
+        Repetition repetition{1, 1};
         SmallId id{};
         Flags flags;
 
@@ -46,9 +46,9 @@ namespace ccl::lexer::rule
         auto operator=(const RuleBlockInterface &) -> void = delete;
         auto operator=(RuleBlockInterface &&) noexcept -> void = delete;
 
-        [[nodiscard]] auto getClosure() const noexcept -> Closure
+        [[nodiscard]] auto getRepetition() const noexcept -> Repetition
         {
-            return closure;
+            return repetition;
         }
 
         [[nodiscard]] auto getFlags() const noexcept -> Flags
@@ -86,14 +86,14 @@ namespace ccl::lexer::rule
             flags.reversed = !flags.reversed;
         }
 
-        auto setClosure(Closure new_repetition) noexcept -> void
+        auto setRepetition(const Repetition new_repetition) noexcept -> void
         {
-            closure = new_repetition;
+            repetition = new_repetition;
         }
 
         [[nodiscard]] auto canBeOptimized() const noexcept -> bool
         {
-            const auto fromZeroAccuracies = closure.from == 0;
+            const auto fromZeroAccuracies = repetition.from == 0;
             return !isReversed() && fromZeroAccuracies && empty();
         }
 

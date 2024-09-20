@@ -27,7 +27,7 @@ namespace ccl
 
 namespace ccl::text
 {
-    class TextIteratorException : public BasicTextIteratorException
+    class TextIteratorException final : public BasicTextIteratorException
     {
     private:
         std::string message;

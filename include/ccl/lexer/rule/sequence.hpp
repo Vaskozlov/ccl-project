@@ -63,15 +63,6 @@ namespace ccl::lexer::rule
 
         [[noreturn]] auto
             throwStringBeginException(const TextIterator &rule_iterator) const -> void;
-
-        [[noreturn]] static auto throwEmptyStringEnd(const TextIterator &rule_iterator) -> void;
-
-        [[noreturn]] static auto throwEmptyStringBegin(const TextIterator &rule_iterator) -> void;
-
-        [[noreturn]] static auto throwUnterminatedString(
-            const TextIterator &rule_iterator,
-            isl::string_view message,
-            isl::string_view suggestion = {}) -> void;
     };
 }// namespace ccl::lexer::rule
 

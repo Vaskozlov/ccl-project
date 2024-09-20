@@ -1,6 +1,6 @@
 #include "ll_parser_for_math.hpp"
 #include <ccl/parser/dot/dot_repr.hpp>
-#include <ccl/parser/ll/gll.hpp>
+#include <ccl/parser/ll/gll_parser.hpp>
 #include <ccl/parser/ll/ll_1_parser.hpp>
 #include <isl/io.hpp>
 #include <ccl/lexer/tokenizer.hpp>

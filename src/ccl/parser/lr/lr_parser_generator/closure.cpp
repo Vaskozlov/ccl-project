@@ -58,10 +58,8 @@ namespace ccl::parser::lr
                     continue;
                 }
 
-                const auto &generated_closure = computeClosure(item);
-
                 for (const auto &generated_item :
-                     generated_closure | std::views::filter(is_not_in_set)) {
+                     computeClosure(item) | std::views::filter(is_not_in_set)) {
                     s.emplace_back(generated_item);
                 }
             }

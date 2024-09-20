@@ -18,10 +18,10 @@ namespace ccl::lexer::rule
     class CrtpScanner
     {
     public:
-        using ForkedGenerator = typename text::TextIterator::ForkedTextIterator;
+        using ForkedGenerator = text::TextIterator::ForkedTextIterator;
 
     protected:
-        Closure closure;
+        Repetition repetition;
         // NOLINTNEXTLINE reference
         const RuleBlockInterface &item;
         // NOLINTNEXTLINE reference
@@ -29,9 +29,9 @@ namespace ccl::lexer::rule
 
     public:
         CrtpScanner(
-            Closure item_closure, const RuleBlockInterface &item_concept,
+            const Repetition item_repetition, const RuleBlockInterface &item_concept,
             ForkedGenerator &text_iterator)
-          : closure{item_closure}
+          : repetition{item_repetition}
           , item{item_concept}
           , textIterator{text_iterator}
         {}
@@ -41,7 +41,7 @@ namespace ccl::lexer::rule
             auto times = isl::as<std::size_t>(0);
             auto totally_skipped = isl::as<std::size_t>(0);
 
-            while (!textIterator.isEOI() && times < closure.to) {
+            while (!textIterator.isEOI() && times < repetition.to) {
                 auto &&scan_result = callScanIteration();
 
                 if (scan_result.isFailure()) {
@@ -56,7 +56,7 @@ namespace ccl::lexer::rule
                 ++times;
             }
 
-            if (closure.isInClosure(times)) {
+            if (repetition.isInRepetition(times)) {
                 return callConstructResult(totally_skipped);
             }
 

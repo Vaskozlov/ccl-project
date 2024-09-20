@@ -15,7 +15,7 @@ namespace ccl::lexer::rule
         isl::UtfSet storedSymbols;
 
     public:
-        using typename RuleBlockInterface::TextIterator;
+        using RuleBlockInterface::TextIterator;
 
         [[nodiscard]] explicit Union(TextIterator &rule_iterator);
 
@@ -36,27 +36,7 @@ namespace ccl::lexer::rule
         [[nodiscard]] auto
             scanIteration(const ForkedGenerator &text_iterator) const -> ScanResult override;
 
-        [[nodiscard]] static auto isRange(bool is_escaping, char32_t chr) noexcept -> bool;
-
-        [[nodiscard]] static auto isUnionEnd(bool is_escaping, char32_t chr) noexcept -> bool;
-
         auto addCharactersToTheBitset(bool &is_range, char32_t previous_chr, char32_t chr) -> void;
-
-        static auto checkForUnexpectedEnd(
-            const TextIterator &rule_iterator, bool is_escaping, char32_t chr) -> void;
-
-        static auto checkUnionBegin(const TextIterator &rule_iterator) -> void;
-
-        static auto
-            checkForClosedRange(const TextIterator &rule_iterator, bool is_ranged_opened) -> void;
-
-        [[noreturn]] static auto throwUnterminatedUnion(const TextIterator &rule_iterator) -> void;
-
-        [[noreturn]] static auto
-            throwUnionBeginException(const TextIterator &rule_iterator) -> void;
-
-        [[noreturn]] static auto
-            throwUnterminatedRangeException(const TextIterator &rule_iterator) -> void;
     };
 }// namespace ccl::lexer::rule
 

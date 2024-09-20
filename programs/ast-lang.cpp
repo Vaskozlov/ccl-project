@@ -2,7 +2,7 @@
 #include <ast-lang/interpreter/interpreter.hpp>
 #include <ccl/lexer/tokenizer.hpp>
 #include <ccl/parser/dot/dot_repr.hpp>
-#include <ccl/parser/ll/gll.hpp>
+#include <ccl/parser/ll/gll_parser.hpp>
 #include <ccl/parser/lr/glr_parser.hpp>
 #include <ccl/parser/lr/lr_parser.hpp>
 #include <ccl/parser/rules_reader/rules_reader.hpp>

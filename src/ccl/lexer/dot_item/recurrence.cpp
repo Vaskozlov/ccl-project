@@ -1,8 +1,8 @@
-#include <ccl/lexer/rule/closure.hpp>
+#include <ccl/lexer/rule/repetition.hpp>
 
 namespace ccl::lexer::rule
 {
-    Closure::Closure(text::TextIterator &text_iterator)
+    Repetition::Repetition(text::TextIterator &text_iterator)
     {
         checkRangeStart(text_iterator);
         const auto iterator_copy = text_iterator;
@@ -13,7 +13,7 @@ namespace ccl::lexer::rule
         checkCorrectnessOfValues(iterator_copy);
     }
 
-    auto Closure::parseNumber(text::TextIterator &text_iterator, const char32_t terminator)
+    auto Repetition::parseNumber(text::TextIterator &text_iterator, const char32_t terminator)
         -> std::size_t
     {
         constexpr auto decimal_base = std::size_t{10};
@@ -35,21 +35,21 @@ namespace ccl::lexer::rule
         return result;
     }
 
-    auto Closure::checkRangeStart(const text::TextIterator &text_iterator) -> void
+    auto Repetition::checkRangeStart(const text::TextIterator &text_iterator) -> void
     {
         if (text_iterator.getCurrentChar() != '{') {
             throwRangeBeginException(text_iterator);
         }
     }
 
-    auto Closure::checkCorrectnessOfValues(const text::TextIterator &text_iterator) const -> void
+    auto Repetition::checkCorrectnessOfValues(const text::TextIterator &text_iterator) const -> void
     {
         if (from > to) {
             throwBadValues(text_iterator);
         }
     }
 
-    auto Closure::throwBadValues(const text::TextIterator &text_iterator) const -> void
+    auto Repetition::throwBadValues(const text::TextIterator &text_iterator) const -> void
     {
         text_iterator.throwCriticalError(
             AnalysisStage::LEXICAL_ANALYSIS,
@@ -59,7 +59,7 @@ namespace ccl::lexer::rule
                 from, to));
     }
 
-    auto Closure::throwUnexpectedCharacter(
+    auto Repetition::throwUnexpectedCharacter(
         const text::TextIterator &text_iterator, const char32_t chr) -> void
     {
         auto buffer = std::string{};
@@ -72,7 +72,7 @@ namespace ccl::lexer::rule
         throw UnrecoverableError{"unrecoverable error in Repetition"};
     }
 
-    auto Closure::throwRangeBeginException(const text::TextIterator &text_iterator) -> void
+    auto Repetition::throwRangeBeginException(const text::TextIterator &text_iterator) -> void
     {
         text_iterator.throwPanicError(
             AnalysisStage::LEXICAL_ANALYSIS, "expected '{' at the beginning of repetition range");

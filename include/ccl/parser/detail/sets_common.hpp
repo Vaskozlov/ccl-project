@@ -37,7 +37,7 @@ namespace ccl::parser::detail
             return grammarRules.isTerminal(symbol);
         }
 
-        [[nodiscard]] auto isNonTerminal(Symbol symbol) const -> bool
+        [[nodiscard]] auto isNonTerminal(const Symbol symbol) const -> bool
         {
             return !isTerminal(symbol);
         }

@@ -17,7 +17,7 @@ namespace ccl::lexer
             return ScanResult{std::numeric_limits<std::size_t>::max()};
         }
 
-        CCL_DECL explicit ScanResult(std::size_t bytesPassed) noexcept
+        CCL_DECL explicit ScanResult(const std::size_t bytesPassed) noexcept
           : value{bytesPassed}
         {}
 

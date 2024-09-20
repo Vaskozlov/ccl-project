@@ -21,7 +21,7 @@ namespace astlang::ast::function::decl
 
         const auto back_node = ConstNodePtr{back().get()};
         auto next_arguments = back_node.astlangNode->compute(interpreter);
-        auto *resulted_list = isl::observe<std::vector<EvaluationResult>>(next_arguments.value);
+        auto resulted_list = next_arguments.value.release<std::vector<EvaluationResult>>();
 
         for (auto &argument : *resulted_list) {
             result.emplace_back(std::move(argument));

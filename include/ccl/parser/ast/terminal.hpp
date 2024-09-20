@@ -6,7 +6,7 @@
 
 namespace ccl::parser::ast
 {
-    class Terminal : public Node
+    class Terminal final : public Node
     {
     private:
         lexer::Token token;

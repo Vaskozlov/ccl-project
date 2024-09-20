@@ -22,10 +22,8 @@ namespace astlang::ast::function::call
         const auto back_node = ConstNodePtr{back().get()};
         auto next_arguments = back_node.astlangNode->compute(interpreter);
 
-        auto *casted_next_arguments = isl::observe<EvaluationResult>(next_arguments.value);
-
-        auto *resulted_list =
-            isl::observe<std::vector<EvaluationResult>>(casted_next_arguments->value);
+        auto casted_next_arguments = next_arguments.value.release<EvaluationResult>();
+        auto resulted_list = casted_next_arguments->value.release<std::vector<EvaluationResult>>();
 
         for (auto &argument : *resulted_list) {
             result.emplace_back(std::move(argument));

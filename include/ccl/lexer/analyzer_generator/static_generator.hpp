@@ -13,7 +13,7 @@ namespace ccl::lexer::gen
     class StaticGenerator
     {
     public:
-        using Tokenizer = typename LexicalAnalyzer::Tokenizer;
+        using Tokenizer = LexicalAnalyzer::Tokenizer;
 
     private:
         // NOLINTNEXTLINE reference

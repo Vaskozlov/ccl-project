@@ -21,7 +21,7 @@ namespace astlang
     auto observe(interpreter::EvaluationResult &result) -> T *
     {
         if (result.storesReference) {
-            auto *casted_value = *isl::observe<interpreter::EvaluationResult *>(result.value);
+            auto *casted_value = isl::get<interpreter::EvaluationResult *>(result.value);
 
             if (casted_value->storesReference) {
                 return observe<T>(*casted_value);

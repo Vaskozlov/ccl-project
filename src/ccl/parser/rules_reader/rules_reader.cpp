@@ -1,5 +1,5 @@
 #include <ccl/parser/dot/dot_repr.hpp>
-#include <ccl/parser/ll/gll.hpp>
+#include <ccl/parser/ll/gll_parser.hpp>
 #include <ccl/parser/rules_reader/ast/blocks.hpp>
 #include <ccl/parser/rules_reader/ast/lexer_block.hpp>
 #include <ccl/parser/rules_reader/ast/lexer_rule.hpp>

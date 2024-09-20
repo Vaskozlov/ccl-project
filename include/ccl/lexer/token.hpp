@@ -104,7 +104,7 @@ namespace ccl::lexer
     private:
         auto clear(SmallId new_id) noexcept -> void;
 
-        auto setReprLength(std::size_t length) noexcept -> void
+        auto setReprLength(const std::size_t length) noexcept -> void
         {
             repr = repr.setLength(length);
         }
@@ -123,7 +123,7 @@ namespace ccl::lexer
             -> void;
     };
 
-    CCL_DECL auto isUserDefinedTokenOrEoF(SmallId token_id) -> bool
+    CCL_DECL auto isUserDefinedTokenOrEoF(const SmallId token_id) -> bool
     {
         return token_id == std::to_underlying(ReservedTokenType::EOI)
                    ? true

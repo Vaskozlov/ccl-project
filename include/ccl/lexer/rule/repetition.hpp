@@ -5,32 +5,32 @@
 
 namespace ccl::lexer::rule
 {
-    class CCL_TRIVIAL_ABI Closure
+    class CCL_TRIVIAL_ABI Repetition
     {
     public:
         std::size_t from{};
         std::size_t to{};
 
         CCL_DECL
-            Closure(const std::size_t repetition_begin, const std::size_t repetition_end) noexcept
+            Repetition(const std::size_t repetition_begin, const std::size_t repetition_end) noexcept
           : from{repetition_begin}
           , to{repetition_end}
         {}
 
-        [[nodiscard]] explicit Closure(text::TextIterator &text_iterator);
+        [[nodiscard]] explicit Repetition(text::TextIterator &text_iterator);
 
         [[nodiscard]] constexpr static auto max() noexcept -> std::size_t
         {
             return std::numeric_limits<std::size_t>::max();
         }
 
-        [[nodiscard]] auto isInClosure(const std::size_t value) const noexcept -> bool
+        [[nodiscard]] auto isInRepetition(const std::size_t value) const noexcept -> bool
         {
             return value >= from && value <= to;
         }
 
         [[nodiscard]] auto
-            operator<=>(const Closure &) const noexcept -> std::strong_ordering = default;
+            operator<=>(const Repetition &) const noexcept -> std::strong_ordering = default;
 
     private:
         static auto checkRangeStart(const text::TextIterator &text_iterator) -> void;

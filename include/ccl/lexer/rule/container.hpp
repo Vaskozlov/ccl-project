@@ -2,7 +2,7 @@
 #define CCL_PROJECT_CONTAINER_HPP
 
 #include <ccl/lexer/rule/binary_expression/binary_expression_base.hpp>
-#include <ccl/lexer/rule/closure.hpp>
+#include <ccl/lexer/rule/repetition.hpp>
 #include <ccl/lexer/rule/rule_block_interface.hpp>
 #include <ccl/lexer/token.hpp>
 #include <isl/small_vector.hpp>
@@ -158,7 +158,7 @@ namespace ccl::lexer::rule
 
         auto makeLastItemExtractable() -> void;
 
-        auto setClosure(Closure new_repetition) const -> void;
+        auto setRepetition(Repetition new_repetition) const -> void;
 
         auto makeSpecial() const -> void;
 

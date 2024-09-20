@@ -6,6 +6,30 @@
 
 namespace ccl::parser::reader::ast
 {
+    static auto addStringToLexicalAnalyzer(
+        const std::string &str,
+        ParserBuilder &parser_builder,
+        bool is_any_place_string) -> void
+    {
+        if (parser_builder.hasRule(str)) {
+            return;
+        }
+
+        const auto rule_id = parser_builder.addRule(str);
+
+        auto container = std::make_unique<lexer::rule::Container>(
+            parser_builder.getLexicalAnalyzer(), false, is_any_place_string);
+
+        container->setId(rule_id);
+
+        const auto str_without_quotes = str.substr(1, str.size() - 2);
+
+        container->addItem(
+            std::make_unique<lexer::rule::Sequence>(text::removeEscaping(str_without_quotes, {})));
+
+        parser_builder.addLexerRule(str, std::move(container));
+    }
+
     auto ParserRule::construct(ParserBuilder &parser_builder) const -> isl::UniqueAny
     {
         auto result = std::vector<SmallId>{};
@@ -30,28 +54,5 @@ namespace ccl::parser::reader::ast
         }
 
         return isl::UniqueAny{std::move(result)};
-    }
-
-    auto ParserRule::addStringToLexicalAnalyzer(
-        const std::string &str,
-        ParserBuilder &parser_builder,
-        bool is_any_place_string) const -> void
-    {
-        if (parser_builder.hasRule(str)) {
-            return;
-        }
-
-        auto rule_id = parser_builder.addRule(str);
-
-        auto container = std::make_unique<lexer::rule::Container>(
-            parser_builder.getLexicalAnalyzer(), false, is_any_place_string);
-
-        container->setId(rule_id);
-
-        auto str_without_quotes = str.substr(1, str.size() - 2);
-        container->addItem(
-            std::make_unique<lexer::rule::Sequence>(text::removeEscaping(str_without_quotes, {})));
-
-        parser_builder.addLexerRule(static_cast<std::string>(str), std::move(container));
     }
 }// namespace ccl::parser::reader::ast

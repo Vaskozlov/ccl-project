@@ -3,35 +3,52 @@
 
 #include <ccl/parser/lr/lr_item.hpp>
 
-namespace ccl::parser {
-    struct CanonicalCollection {
+namespace ccl::parser
+{
+    struct CanonicalCollection
+    {
         std::vector<LrItem> items;
         State id{};
 
-        [[nodiscard]] auto operator==(const CanonicalCollection&other) const noexcept -> bool {
+        [[nodiscard]] auto operator==(const CanonicalCollection &other) const noexcept -> bool
+        {
             return items == other.items;
         }
     };
 
-    struct CanonicalCollectionPrintWrapper {
-        const CanonicalCollection&canonicalCollection;
+    struct CanonicalCollectionPrintWrapper
+    {
+        const CanonicalCollection &canonicalCollection;
         std::function<std::string(SmallId)> idToStringConversionFunction;
     };
-} // namespace ccl::parser
+}// namespace ccl::parser
 
 template<>
-struct std::hash<ccl::parser::CanonicalCollection> {
-    auto
-    operator()(const ccl::parser::CanonicalCollection&collection) const noexcept -> std::size_t {
+struct ankerl::unordered_dense::hash<ccl::parser::CanonicalCollection>
+{
+    using is_avalanching = void;
+
+    [[nodiscard]] auto operator()(const ccl::parser::CanonicalCollection &collection) const noexcept -> auto {
+        return ankerl::unordered_dense::hash<std::vector<ccl::parser::LrItem>>{}(collection.items);
+    }
+};
+
+template<>
+struct std::hash<ccl::parser::CanonicalCollection>
+{
+    [[nodiscard]] auto
+        operator()(const ccl::parser::CanonicalCollection &collection) const noexcept -> std::size_t
+    {
         return std::hash<std::vector<ccl::parser::LrItem>>{}(collection.items);
     }
 };
 
 template<>
-struct fmt::formatter<ccl::parser::CanonicalCollectionPrintWrapper> : formatter<std::string_view> {
+struct fmt::formatter<ccl::parser::CanonicalCollectionPrintWrapper> : formatter<std::string_view>
+{
     static auto format(
-        const ccl::parser::CanonicalCollectionPrintWrapper&collection_print_wrapper,
-        format_context&ctx) -> format_context::iterator;
+        const ccl::parser::CanonicalCollectionPrintWrapper &collection_print_wrapper,
+        format_context &ctx) -> format_context::iterator;
 };
 
 #endif /* CCL_PROJECT_CANONICAL_COLLECTION_HPP */

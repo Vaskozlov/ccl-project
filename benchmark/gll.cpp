@@ -1,6 +1,6 @@
 #include <ast-lang/ast-lang.hpp>
 #include <benchmark/benchmark.h>
-#include <ccl/parser/ll/gll.hpp>
+#include <ccl/parser/ll/gll_parser.hpp>
 #include <ccl/parser/rules_reader/rules_lexer.hpp>
 #include <ccl/parser/rules_reader/rules_reader.hpp>
 

@@ -17,9 +17,9 @@ namespace astlang::ast::expression
         if (size() > 1) {
             const auto back_node = ConstNodePtr{back().get()};
             auto other_elements = back_node.astlangNode->compute(interpreter);
-            auto unpacked_elements = isl::get<std::vector<EvaluationResult>>(other_elements.value);
+            auto unpacked_elements = other_elements.value.release<std::vector<EvaluationResult>>();
 
-            for (auto &element : unpacked_elements) {
+            for (auto &element : *unpacked_elements) {
                 if (element.type != first_element_type) {
                     first_element_type = Type::ANY;
                 }

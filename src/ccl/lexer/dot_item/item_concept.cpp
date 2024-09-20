@@ -44,6 +44,6 @@ namespace ccl::lexer::rule
 
     auto RuleBlockInterface::scan(ForkedGenerator text_iterator) const -> ScanResult
     {
-        return LexerScanner(closure, *this, text_iterator).scan();
+        return LexerScanner(repetition, *this, text_iterator).scan();
     }
 }// namespace ccl::lexer::rule

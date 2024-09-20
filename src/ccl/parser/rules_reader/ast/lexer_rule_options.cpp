@@ -36,10 +36,10 @@ namespace ccl::parser::reader::ast
         if (size() > 1) {
             const auto *other_options_node = static_cast<const LexerRuleOptions *>(back().get());
 
-            auto other_options = isl::get<isl::SmallVector<SmallId, 4>>(
-                other_options_node->construct(parser_builder));
+            auto other_options = other_options_node->construct(parser_builder)
+                                     .release<isl::SmallVector<SmallId, 4>>();
 
-            for (auto option : other_options) {
+            for (auto option : *other_options) {
                 options.emplace_back(option);
             }
         }

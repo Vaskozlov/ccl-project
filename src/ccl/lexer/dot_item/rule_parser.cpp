@@ -53,19 +53,19 @@ namespace ccl::lexer::rule
             break;
 
         case U'*':
-            setClosure(Closure{0, Closure::max()});
+            setRepetition(Repetition{0, Repetition::max()});
             break;
 
         case U'+':
-            setClosure(Closure{1, Closure::max()});
+            setRepetition(Repetition{1, Repetition::max()});
             break;
 
         case U'?':
-            setClosure(Closure{0, 1});
+            setRepetition(Repetition{0, 1});
             break;
 
         case U'{':
-            setClosure(Closure{ruleIterator});
+            setRepetition(Repetition{ruleIterator});
             break;
 
         case U'^':
@@ -193,7 +193,7 @@ namespace ccl::lexer::rule
         }
 
         const RuleBlock &item = items.back();
-        auto item_repetition = item->getClosure();
+        auto item_repetition = item->getRepetition();
 
         neverRecognizedSuggestion(
             ruleIterator, item_repetition.to == 0 || (item->empty() && !item->isReversed()));
@@ -216,7 +216,7 @@ namespace ccl::lexer::rule
         last_item->makeExtractable();
     }
 
-    auto Container::RuleParser::setClosure(const Closure new_repetition) const -> void
+    auto Container::RuleParser::setRepetition(const Repetition new_repetition) const -> void
     {
         if (items.empty()) {
             throwUnableToApply("no items found to set repetition");
@@ -224,11 +224,11 @@ namespace ccl::lexer::rule
 
         const auto &last_item = items.back();
 
-        if (last_item->getClosure() != Closure{1, 1}) {
+        if (last_item->getRepetition() != Repetition{1, 1}) {
             throwUnableToApply("item already has repetition");
         }
 
-        last_item->setClosure(new_repetition);
+        last_item->setRepetition(new_repetition);
     }
 
     auto Container::RuleParser::makeSpecial() const -> void

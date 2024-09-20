@@ -98,18 +98,18 @@ namespace ccl::parser::reader::ast
 
         const auto *rule_option = static_cast<const LexerRuleOptions *>(back().get());
         auto rule_options = rule_option->construct(parser_builder);
-        const auto *options = isl::observe<isl::SmallVector<SmallId, 4>>(rule_options);
+        const auto options = rule_options.release<isl::SmallVector<SmallId, 4>>();
 
         // TODO: add support for custom repetition
 
         for (const auto option : *options) {
             switch (option) {
             case STAR:
-                rule_block->setClosure(lexer::rule::Closure{0, lexer::rule::Closure::max()});
+                rule_block->setRepetition(lexer::rule::Repetition{0, lexer::rule::Repetition::max()});
                 break;
 
             case PLUS:
-                rule_block->setClosure(lexer::rule::Closure{1, lexer::rule::Closure::max()});
+                rule_block->setRepetition(lexer::rule::Repetition{1, lexer::rule::Repetition::max()});
                 break;
 
             case EXTRACTABLE_MODIFIER:

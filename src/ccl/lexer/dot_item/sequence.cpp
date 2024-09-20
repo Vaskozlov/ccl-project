@@ -2,6 +2,32 @@
 
 namespace ccl::lexer::rule
 {
+    static auto throwEmptyStringBegin(const text::TextIterator &rule_iterator) -> void
+    {
+        rule_iterator.throwPanicError(
+            AnalysisStage::LEXICAL_ANALYSIS, "sequence item begin cannot be empty");
+
+        throw UnrecoverableError{"unrecoverable error in SequenceType"};
+    }
+
+    static auto throwEmptyStringEnd(const text::TextIterator &rule_iterator) -> void
+    {
+        rule_iterator.throwPanicError(
+            AnalysisStage::LEXICAL_ANALYSIS, "sequence item end cannot be empty");
+
+        throw UnrecoverableError{"unrecoverable error in SequenceType"};
+    }
+
+    static auto throwUnterminatedString(
+        const text::TextIterator &rule_iterator,
+        const isl::string_view message,
+        const isl::string_view suggestion = {}) -> void
+    {
+        rule_iterator.throwPanicError(AnalysisStage::LEXICAL_ANALYSIS, message, suggestion);
+
+        throw UnrecoverableError{"unrecoverable error in SequenceType"};
+    }
+
     Sequence::Sequence(
         const SequenceFlags sequence_flags, const isl::string_view sequence_begin_and_end,
         TextIterator &rule_iterator)
@@ -124,32 +150,6 @@ namespace ccl::lexer::rule
         if (!text.startsWith(starter)) [[unlikely]] {
             throwStringBeginException(rule_iterator);
         }
-    }
-
-    CCL_INLINE auto Sequence::throwEmptyStringBegin(const TextIterator &rule_iterator) -> void
-    {
-        rule_iterator.throwPanicError(
-            AnalysisStage::LEXICAL_ANALYSIS, "sequence item begin cannot be empty");
-
-        throw UnrecoverableError{"unrecoverable error in SequenceType"};
-    }
-
-    CCL_INLINE auto Sequence::throwEmptyStringEnd(const TextIterator &rule_iterator) -> void
-    {
-        rule_iterator.throwPanicError(
-            AnalysisStage::LEXICAL_ANALYSIS, "sequence item end cannot be empty");
-
-        throw UnrecoverableError{"unrecoverable error in SequenceType"};
-    }
-
-    CCL_INLINE auto Sequence::throwUnterminatedString(
-        const TextIterator &rule_iterator,
-        const isl::string_view message,
-        const isl::string_view suggestion) -> void
-    {
-        rule_iterator.throwPanicError(AnalysisStage::LEXICAL_ANALYSIS, message, suggestion);
-
-        throw UnrecoverableError{"unrecoverable error in SequenceType"};
     }
 
     CCL_INLINE auto
