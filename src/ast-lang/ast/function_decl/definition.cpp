@@ -22,7 +22,7 @@ namespace astlang::ast::function::decl
         const auto function_name = function_name_token.getRepr();
 
         auto function_arguments = function_arguments_node.astlangNode->compute(interpreter);
-        auto arguments_list = isl::get<std::vector<EvaluationResult>>(function_arguments.value);
+        auto arguments_list = function_arguments.value.release<std::vector<EvaluationResult>>();
         auto function_definition_arguments_type = FunctionArguments{};
         auto function_definition_arguments_names = std::vector<std::string>{};
         auto function_body = ConstNodePtr{nullptr};
@@ -43,7 +43,7 @@ namespace astlang::ast::function::decl
             return_type = std::move(return_type_evaluation.type);
         }
 
-        for (auto &[value, type, need_to_return, stores_reference] : arguments_list) {
+        for (auto &[value, type, need_to_return, stores_reference] : *arguments_list) {
             const auto &argument_type = type;
             auto argument_name = isl::get<isl::string_view>(value);
 

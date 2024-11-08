@@ -12,18 +12,18 @@ using namespace ccl::lexer;
 using namespace astlang::interpreter;
 
 constexpr static auto Input = isl::string_view{R"(
-def f(int a)
+def f(int a, int b)
 {
     if a > 10 {
-        return 0;
+        return 0 + b;
     }
 
     else {
-        return 2;
+        return 2 + b;
     }
 }
 
-var tmp = f(2) * 10;
+var tmp = f(12, 3) * 10;
 var print_result = println(tmp);
 )"};
 

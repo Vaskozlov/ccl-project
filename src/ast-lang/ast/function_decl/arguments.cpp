@@ -9,10 +9,9 @@ namespace astlang::ast::function::decl
     {
         auto result = std::vector<EvaluationResult>{};
         const auto front_node = ConstNodePtr{front().get()};
+        result.emplace_back(front_node.astlangNode->compute(interpreter));
 
         if (size() == 1) {
-            result.emplace_back(front_node.astlangNode->compute(interpreter));
-
             return EvaluationResult{
                 isl::UniqueAny(std::move(result)),
                 Type{Type::LIST, {Type::ANY}},
