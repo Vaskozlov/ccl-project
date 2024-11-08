@@ -12,6 +12,7 @@ namespace astlang::interpreter
     private:
         Functions functions;
         Stack variables;
+        std::back_insert_iterator<std::string> inserter;
         ccl::parser::reader::ParserBuilder &constructor;
 
     public:
@@ -56,15 +57,18 @@ namespace astlang::interpreter
         const SmallId BITWISE_OR = constructor.getRuleId("\'|\'");
         const SmallId BITWISE_XOR = constructor.getRuleId("\'^\'");
 
-        explicit Interpreter(ccl::parser::reader::ParserBuilder &parser_builder);
+        explicit Interpreter(
+            ccl::parser::reader::ParserBuilder &parser_builder,
+            std::back_insert_iterator<std::string>
+                buffer_inserter);
 
         auto addFunction(
             FunctionIdentification identification,
             std::unique_ptr<FunctionInterface>
                 function) -> void;
 
-        [[nodiscard]] auto
-            call(const std::string &name, FunctionCallArguments arguments) -> EvaluationResult;
+        [[nodiscard]] auto call(const std::string &name, FunctionCallArguments arguments)
+            -> EvaluationResult;
 
         [[nodiscard]] auto read(const std::string &name) -> EvaluationResult &
         {
@@ -79,6 +83,11 @@ namespace astlang::interpreter
         [[nodiscard]] auto getRuleId(const std::string &rule_name) const -> SmallId
         {
             return constructor.getRuleId(rule_name);
+        }
+
+        [[nodiscard]] auto getInserter() const noexcept -> std::back_insert_iterator<std::string>
+        {
+            return inserter;
         }
 
         auto createsHardScope() -> decltype(auto)

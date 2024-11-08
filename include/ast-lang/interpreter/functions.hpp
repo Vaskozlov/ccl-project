@@ -49,7 +49,7 @@ namespace astlang::interpreter
 
         auto getFunction(const FunctionIdentification &identification) -> FunctionInterface *
         {
-            auto it = functions.find(identification);
+            const auto it = functions.find(identification);
 
             if (it == functions.end()) {
                 throw std::runtime_error("Function not found");

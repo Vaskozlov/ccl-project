@@ -12,28 +12,19 @@ using namespace ccl::lexer;
 using namespace astlang::interpreter;
 
 constexpr static auto Input = isl::string_view{R"(
-def main(int a)
+def f(int a)
 {
-    if a > 10
-    {
+    if a > 10 {
         return 0;
-    }
-
-    elif a == 2
-    {
-        return 1;
     }
 
     else {
         return 2;
     }
-
-    return a + 10 + 3;
 }
 
-var test = main(2) * 10;
-var t = print(test);
-var e = print(true);
+var tmp = f(2) * 10;
+var print_result = println(tmp);
 )"};
 
 auto main() -> int
@@ -55,25 +46,27 @@ auto main() -> int
         return node.get();
     });
 
-    auto dot_repr = dot::createDotRepresentation(
-        std::vector<ast::Node *>{converter.begin(), converter.end()}, to_str);
-
-    isl::io::write(
-        std::filesystem::current_path().append(fmt::format("{}.dot", algorithm)), dot_repr);
-
     auto *row_root = nodes.front().get();
     const auto conversion_table = astlang::ast::Node::buildConversionTable(constructor);
     row_root->cast(conversion_table);
 
     auto *astlang_root = dynamic_cast<astlang::ast::Node *>(row_root);
-    auto interpreter = Interpreter{constructor};
+    auto output_buffer = std::string{};
+
+    auto interpreter = Interpreter{constructor, std::back_inserter(output_buffer)};
 
     astlang_root->print("", false, to_str);
     astlang_root->runRecursiveOptimization();
 
+    auto dot_repr = dot::createDotRepresentation(std::vector<ast::Node *>{astlang_root}, to_str);
+
+    isl::io::write(
+        std::filesystem::current_path().append(fmt::format("{}.dot", algorithm)), dot_repr);
+
     astlang_root->print("", false, to_str);
     astlang_root->compute(interpreter);
 
-    fmt::println("{} {}", sizeof(ast::Terminal), sizeof(ast::NonTerminal));
+    fmt::print("{}\n", output_buffer);
+
     return 0;
 }

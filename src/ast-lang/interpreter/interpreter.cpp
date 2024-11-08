@@ -23,15 +23,15 @@ namespace astlang::interpreter
 
     template<typename T>
     static auto createPrintFunction(
-        Interpreter &interpreter, const std::string &name, std::string_view fmt,
-        const Type &type) -> void
+        Interpreter &interpreter, const std::string &name, std::string_view fmt, const Type &type)
+        -> void
     {
         interpreter.addFunction(
             {.name = name, .returnType = Type::VOID, .parameters = {type}},
             std::make_unique<BuiltinFunction>(
                 std::vector<std::string>{"value"}, [fmt](Interpreter &interpreter) {
                     auto *value_ptr = astlang::observe<T>(interpreter.read("value"));
-                    fmt::print(fmt::runtime(fmt), *value_ptr);
+                    fmt::format_to(interpreter.getInserter(), fmt::runtime(fmt), *value_ptr);
 
                     return EvaluationResult{
                         .value = std::nullopt,
@@ -53,12 +53,19 @@ namespace astlang::interpreter
                 [function, return_type](Interpreter &interpreter) {
                     auto *value_ptr = astlang::observe<FROM>(interpreter.read("value"));
 
-                    return EvaluationResult{isl::UniqueAny{function(*value_ptr)}, return_type};
+                    return EvaluationResult{
+                        .value = isl::UniqueAny{function(*value_ptr)},
+                        .type = return_type,
+                    };
                 }));
     }
 
-    Interpreter::Interpreter(ccl::parser::reader::ParserBuilder &parser_builder)
-      : constructor(parser_builder)
+    Interpreter::Interpreter(
+        ccl::parser::reader::ParserBuilder &parser_builder,
+        const std::back_insert_iterator<std::string>
+            buffer_inserter)
+      : inserter{buffer_inserter}
+      , constructor(parser_builder)
     {
         createBinaryFunction<isl::ssize_t, isl::ssize_t>(
             *this, "__addition__", Type::INT, Type::INT, Type::INT, std::plus{});
@@ -176,7 +183,8 @@ namespace astlang::interpreter
                     auto *value_ptr =
                         astlang::observe<std::vector<EvaluationResult>>(interpreter.read("value"));
 
-                    fmt::print("[");
+                    auto output_iterator = interpreter.getInserter();
+                    fmt::format_to(output_iterator, "[");
 
                     for (auto &element : *value_ptr) {
                         auto arguments = FunctionCallArguments{};
@@ -188,10 +196,10 @@ namespace astlang::interpreter
                             });
 
                         std::ignore = interpreter.call("print", std::move(arguments));
-                        fmt::print(", ");
+                        fmt::format_to(output_iterator, ", ");
                     }
 
-                    fmt::print("]");
+                    fmt::format_to(output_iterator, "]");
 
                     return EvaluationResult{
                         .value = std::nullopt,
@@ -215,13 +223,13 @@ namespace astlang::interpreter
             return argument.type;
         });
 
-        auto function_identification = FunctionIdentification{
+        const auto function_identification = FunctionIdentification{
             .name = name,
             .returnType = Type::ERROR,
             .parameters = std::vector<Type>{conversion_range.begin(), conversion_range.end()},
         };
 
-        auto *function = functions.getFunction(function_identification);
+        const auto *function = functions.getFunction(function_identification);
         return function->call(*this, std::move(arguments));
     }
 }// namespace astlang::interpreter
