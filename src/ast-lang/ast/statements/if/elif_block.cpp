@@ -10,15 +10,18 @@ namespace astlang::ast::statement::if_statement
 
         auto conditionResult = condition.astlangNode->compute(interpreter);
 
-        if (isl::get<bool>(conditionResult.value)) {
-            return block.astlangNode->compute(interpreter);
-        }
+        // if (isl::get<bool>(conditionResult.value)) {
+        // return block.astlangNode->compute(interpreter);
+        // }
 
         if (size() == 6) {
             const auto elif_block = ConstNodePtr{nodes.at(5).get()};
             return elif_block.astlangNode->compute(interpreter);
         }
 
-        return EvaluationResult{.value = std::nullopt, .type = interpreter::Type::ERROR};
+        return EvaluationResult{
+            // .value = std::nullopt,
+            // .type = interpreter::Type::ERROR,
+        };
     }
 }// namespace astlang::ast::statement::if_statement

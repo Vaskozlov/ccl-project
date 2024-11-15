@@ -14,21 +14,17 @@ namespace astlang::ast::statement
         const auto &name_token = name_node.terminalNode->getToken();
         const auto variable_name = name_token.getRepr();
         auto value = expression_node.astlangNode->compute(interpreter);
-        auto expected_type = interpreter::Type::fromNode(type_node.cclNode);
+        auto expected_type = interpreter.typeSystem.getType(type_node.cclNode);
 
-        if (expected_type != value.type) {
-            throw std::runtime_error{
-                fmt::format(
-                    "Expected type is {}, but expression resulted into {}", expected_type,
-                    value.type),
-            };
-        }
+        // if (expected_type != value.type) {
+            // throw std::runtime_error{
+                // fmt::format(
+                    // "Expected type is {}, but expression resulted into {}", expected_type,
+                    // value.type),
+            // };
+        // }
 
-        interpreter.createVariable(std::string{variable_name}, std::move(value));
-
-        return EvaluationResult{
-            .value = std::nullopt,
-            .type = interpreter::Type::VOID,
-        };
+        // interpreter.createVariable(std::string{variable_name}, std::move(value));
+        return EvaluationResult{};
     }
 }// namespace astlang::ast::statement

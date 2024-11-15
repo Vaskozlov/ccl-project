@@ -1,0 +1,6 @@
+#ifndef AST_LANG_2_METHOD_CALL_HPP
+#define AST_LANG_2_METHOD_CALL_HPP
+
+
+
+#endif /* AST_LANG_2_METHOD_CALL_HPP */

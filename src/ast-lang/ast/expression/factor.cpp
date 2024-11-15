@@ -6,7 +6,8 @@ namespace astlang::ast::expression
 {
     using namespace interpreter;
 
-    static auto constructNumber(const ConstNodePtr node) -> EvaluationResult
+    static auto constructNumber(Interpreter &interpreter, const ConstNodePtr node)
+        -> EvaluationResult
     {
         const auto &token = node.terminalNode->getToken();
         const auto repr = token.getRepr();
@@ -14,27 +15,36 @@ namespace astlang::ast::expression
         auto value = isl::ssize_t{};
         std::from_chars(repr.data(), repr.data() + repr.size(), value);
 
+        auto instance = Instance{.type = interpreter.typeSystem.getType("int")};
+        instance.fields.emplace("value", isl::makeAny<isl::ssize_t>(value));
+
         return EvaluationResult{
-            .value = isl::makeAny<isl::ssize_t>(value),
-            .type = Type::INT,
+            .instance = std::move(instance),
+            .needToReturn = false,
+            .storesReference = false,
         };
     }
 
-    static auto constructString(const ConstNodePtr node) -> EvaluationResult
+    static auto constructString(Interpreter &interpreter, const ConstNodePtr node)
+        -> EvaluationResult
     {
         const auto &token = node.terminalNode->getToken();
         const auto repr = token.getRepr();
         const auto repr_without_quotes = repr.substr(1, repr.size() - 2);
         auto repr_with_escaping = ccl::text::removeEscaping(repr_without_quotes, {});
 
+        auto instance = Instance{.type = interpreter.typeSystem.getType("string")};
+        instance.fields.emplace("value", isl::makeAny<std::string>(repr_with_escaping));
+
         return EvaluationResult{
-            isl::makeAny<std::string>(repr_with_escaping),
-            Type::STRING,
+            .instance = std::move(instance),
+            .needToReturn = false,
+            .storesReference = false,
         };
     }
 
-    static auto
-        readVariable(Interpreter &interpreter, const ConstNodePtr node) -> EvaluationResult &
+    static auto readVariable(Interpreter &interpreter, const ConstNodePtr node)
+        -> EvaluationResult &
     {
         const auto &token = node.terminalNode->getToken();
         return interpreter.read(std::string{token.getRepr()});
@@ -45,9 +55,13 @@ namespace astlang::ast::expression
     {
         const auto &token = node.terminalNode->getToken();
 
+        auto instance = Instance{.type = interpreter.typeSystem.getType("bool")};
+        instance.fields.emplace("value", isl::makeAny<bool>(token.getId() == interpreter.TRUE));
+
         return EvaluationResult{
-            .value = isl::makeAny<bool>(token.getId() == interpreter.TRUE),
-            .type = Type::BOOL,
+            .instance = std::move(instance),
+            .needToReturn = false,
+            .storesReference = false,
         };
     }
 
@@ -61,7 +75,7 @@ namespace astlang::ast::expression
         const auto node_type = node.cclNode->getType();
 
         if (node_type == interpreter.NUMBER) {
-            return constructNumber(node);
+            // return constructNumber(node);
         }
 
         if (node_type == interpreter.TRUE || node_type == interpreter.FALSE) {
@@ -69,16 +83,16 @@ namespace astlang::ast::expression
         }
 
         if (node_type == interpreter.STRING) {
-            return constructString(ConstNodePtr{node});
+            // return constructString(ConstNodePtr{node});
         }
 
         if (node_type == interpreter.IDENTIFIER) {
             auto &read_result = readVariable(interpreter, ConstNodePtr{node});
 
             return EvaluationResult{
-                .value = isl::makeAny<EvaluationResult *>(&read_result),
-                .type = read_result.type,
-                .storesReference = true,
+                // .value = isl::makeAny<EvaluationResult *>(&read_result),
+                // .type = read_result.type,
+                // .storesReference = true,
             };
         }
 

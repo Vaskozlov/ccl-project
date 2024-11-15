@@ -10,9 +10,10 @@ namespace astlang::ast
         const auto front_node_ptr = ConstNodePtr{front().get()};
         front_node_ptr.astlangNode->compute(interpreter);
 
-        return EvaluationResult{
-            .value = std::nullopt,
-            .type = Type::ANY,
+        return interpreter::EvaluationResult{
+            .instance = Instance{},
+            .needToReturn = false,
+            .storesReference = false,
         };
     }
 }// namespace astlang::ast

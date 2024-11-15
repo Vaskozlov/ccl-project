@@ -12,7 +12,7 @@ namespace astlang::ast
 
         auto compute(Interpreter &interpreter) const -> EvaluationResult override
         {
-            return EvaluationResult{.value = std::nullopt, .type = interpreter::Type::VOID};
+            return EvaluationResult{};
         }
     };
 }// namespace astlang::ast

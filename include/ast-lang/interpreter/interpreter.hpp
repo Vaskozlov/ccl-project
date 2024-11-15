@@ -4,6 +4,8 @@
 #include <ast-lang/interpreter/functions.hpp>
 #include <ast-lang/interpreter/stack.hpp>
 #include <ccl/parser/rules_reader/parser_builder.hpp>
+#include <ast-lang/type_system/type_system.hpp>
+#include <ast-lang/type_system/instance.hpp>
 
 namespace astlang::interpreter
 {
@@ -16,6 +18,8 @@ namespace astlang::interpreter
         ccl::parser::reader::ParserBuilder &constructor;
 
     public:
+        type_system::TypeSystem typeSystem;
+
         const SmallId TRUE = constructor.getRuleId("\"true\"");
         const SmallId FALSE = constructor.getRuleId("\"false\"");
         const SmallId NUMBER = constructor.getRuleId("NUMBER");

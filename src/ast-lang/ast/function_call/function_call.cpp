@@ -13,8 +13,8 @@ namespace astlang::ast::function::call
 
         const auto call_arguments = ConstNodePtr{at(2).get()};
         auto arguments = call_arguments.astlangNode->compute(interpreter);
-        auto casted_arguments = isl::get<std::vector<EvaluationResult>>(arguments.value);
+        // auto casted_arguments = isl::get<std::vector<EvaluationResult>>(arguments.value);
 
-        return interpreter.call(std::string{function_name}, std::move(casted_arguments));
+        // return interpreter.call(std::string{function_name}, std::move(casted_arguments));
     }
 }// namespace astlang::ast::function::call

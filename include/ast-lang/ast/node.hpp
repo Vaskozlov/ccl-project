@@ -2,6 +2,7 @@
 #define CCL_PROJECT_ASTLANG_NODE_HPP
 
 #include <ast-lang/ast-lang.hpp>
+#include <ast-lang/type_system/type_system.hpp>
 #include <ccl/parser/ast/non_terminal.hpp>
 #include <ccl/parser/ast/terminal.hpp>
 #include <ccl/parser/rules_reader/parser_builder.hpp>

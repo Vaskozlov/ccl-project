@@ -3,7 +3,6 @@
 
 #include <ast-lang/ast/node.hpp>
 #include <ast-lang/interpreter/evaluation_result.hpp>
-#include <ast-lang/interpreter/type.hpp>
 
 namespace astlang::ast::function::call
 {
@@ -15,7 +14,10 @@ namespace astlang::ast::function::call
         auto compute(Interpreter &interpreter) const -> EvaluationResult override
         {
             return interpreter::EvaluationResult{
-                .value = std::nullopt, .type = interpreter::Type::VOID};
+                .instance = Instance{},
+                .needToReturn = false,
+                .storesReference = false,
+            };
         }
     };
 }// namespace astlang::ast::function::call

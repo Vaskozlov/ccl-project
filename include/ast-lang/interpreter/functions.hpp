@@ -8,8 +8,8 @@ namespace astlang::interpreter
     struct FunctionIdentification
     {
         std::string name;
-        Type returnType;
-        std::vector<Type> parameters;
+        type_system::Type *returnType;
+        std::vector<type_system::Type *> parameters;
 
         auto operator==(const FunctionIdentification &other) const -> bool
         {

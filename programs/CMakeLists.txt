@@ -58,7 +58,7 @@ endif ()
 target_link_libraries(
         ast-lang
         ccl
-        astlang
+        astlang2
         isl
         fmt::fmt-header-only
         cxxopts::cxxopts

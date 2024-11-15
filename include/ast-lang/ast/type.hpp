@@ -5,7 +5,7 @@
 
 namespace astlang::ast
 {
-    class Type : public Node
+    class Type final : public Node
     {
     public:
         using Node::Node;
@@ -13,7 +13,10 @@ namespace astlang::ast
         auto compute(Interpreter &interpreter) const -> EvaluationResult override
         {
             return interpreter::EvaluationResult{
-                .value = std::nullopt, .type = interpreter::Type::VOID};
+                // .instance = Instance{.type = interpreter.typeSystem.getType("void")},
+                // .needToReturn = false,
+                // .storesReference = false,
+            };
         }
     };
 }// namespace astlang::ast

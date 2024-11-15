@@ -14,6 +14,9 @@ namespace astlang::ast::statement
             }
         }
 
-        return EvaluationResult{.value = std::nullopt, .type = interpreter::Type::VOID};
+        return EvaluationResult{
+            // .value = std::nullopt,
+            // .type = interpreter::Type::VOID,
+        };
     }
 }// namespace astlang::ast::statement

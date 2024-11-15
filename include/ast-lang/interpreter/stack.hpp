@@ -3,6 +3,7 @@
 
 #include <ankerl/unordered_dense.h>
 #include <ast-lang/interpreter/evaluation_result.hpp>
+#include <ast-lang/type_system/instance.hpp>
 #include <isl/raii.hpp>
 
 namespace astlang::interpreter

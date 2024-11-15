@@ -8,11 +8,11 @@ namespace astlang::ast::function::decl
     auto ReturnType::compute(Interpreter & /* unused */) const -> EvaluationResult
     {
         const auto return_type_node = ConstNodePtr{back().get()};
-        auto type = Type::fromNode(return_type_node.cclNode);
+        // auto type = Type::fromNode(return_type_node.cclNode);
 
         return EvaluationResult{
-            .value = isl::UniqueAny{std::move(type)},
-            .type = type,
+            // .value = isl::UniqueAny{std::move(type)},
+            // .type = type,
         };
     }
 }// namespace astlang::ast::function::decl

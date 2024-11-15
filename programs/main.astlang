@@ -1,0 +1,16 @@
+lexer IDENTIFIER
+{
+    UNION("a-zA-Z_")
+}
+
+parser EXPRESSION
+{
+    EXPRESSION,
+    "+",
+    TERM;
+
+    def construct(inout list[node] children)
+    {
+
+    }
+}

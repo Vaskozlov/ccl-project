@@ -8,8 +8,7 @@ namespace ccl::parser::ast
         const std::function<std::string(SmallId)> &id_converter) const -> void
     {
         std::cout << fmt::format(
-                         "{}-{}: {}", getPrintingPrefix(prefix, is_left), id_converter(getType()),
-                         token.getRepr())
+                         "{}-{}:", getPrintingPrefix(prefix, is_left), id_converter(getType()))
                   << std::endl;
     }
 }// namespace ccl::parser::ast

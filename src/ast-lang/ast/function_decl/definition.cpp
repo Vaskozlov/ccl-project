@@ -22,49 +22,49 @@ namespace astlang::ast::function::decl
         const auto function_name = function_name_token.getRepr();
 
         auto function_arguments = function_arguments_node.astlangNode->compute(interpreter);
-        auto arguments_list = function_arguments.value.release<std::vector<EvaluationResult>>();
-        auto function_definition_arguments_type = FunctionArguments{};
-        auto function_definition_arguments_names = std::vector<std::string>{};
-        auto function_body = ConstNodePtr{nullptr};
-        auto return_type = Type{Type::ANY};
+        // auto arguments_list = function_arguments.value.release<std::vector<EvaluationResult>>();
+        // auto function_definition_arguments_type = FunctionArguments{};
+        // auto function_definition_arguments_names = std::vector<std::string>{};
+        // auto function_body = ConstNodePtr{nullptr};
+        // auto return_type = Type{Type::ANY};
 
-        if (size() == SIZE_IN_CASE_IMPLICIT_RETURN_TYPE) {
-            function_body = ConstNodePtr{
-                at(FUNCTION_BODY_INDEX_IN_CASE_OF_IMPLICIT_RETURN_TYPE).get(),
-            };
-        } else {
-            function_body = ConstNodePtr{
-                at(FUNCTION_BODY_INDEX_IN_CASE_OF_EXPLICIT_RETURN_TYPE).get(),
-            };
-
-            const auto return_type_node = ConstNodePtr{at(FUNCTION_RETURN_TYPE_INDEX).get()};
-            auto return_type_evaluation = return_type_node.astlangNode->compute(interpreter);
-
-            return_type = std::move(return_type_evaluation.type);
-        }
-
-        for (auto &[value, type, need_to_return, stores_reference] : *arguments_list) {
-            const auto &argument_type = type;
-            auto argument_name = isl::get<isl::string_view>(value);
-
-            function_definition_arguments_type.emplace_back(argument_type);
-            function_definition_arguments_names.emplace_back(argument_name);
-        }
-
-        auto function_identification = FunctionIdentification{
-            .name = std::string{function_name},
-            .returnType = return_type,
-            .parameters = std::move(function_definition_arguments_type),
-        };
-
-        auto function_ptr = std::make_unique<AstlangFunction>(
-            std::move(function_definition_arguments_names), function_body.astlangNode);
-
-        interpreter.addFunction(std::move(function_identification), std::move(function_ptr));
+        // if (size() == SIZE_IN_CASE_IMPLICIT_RETURN_TYPE) {
+        //     function_body = ConstNodePtr{
+        //         at(FUNCTION_BODY_INDEX_IN_CASE_OF_IMPLICIT_RETURN_TYPE).get(),
+        //     };
+        // } else {
+        //     function_body = ConstNodePtr{
+        //         at(FUNCTION_BODY_INDEX_IN_CASE_OF_EXPLICIT_RETURN_TYPE).get(),
+        //     };
+        //
+        //     const auto return_type_node = ConstNodePtr{at(FUNCTION_RETURN_TYPE_INDEX).get()};
+        //     auto return_type_evaluation = return_type_node.astlangNode->compute(interpreter);
+        //
+        //     return_type = std::move(return_type_evaluation.type);
+        // }
+        //
+        // for (auto &[value, type, need_to_return, stores_reference] : *arguments_list) {
+        //     const auto &argument_type = type;
+        //     auto argument_name = isl::get<isl::string_view>(value);
+        //
+        //     function_definition_arguments_type.emplace_back(argument_type);
+        //     function_definition_arguments_names.emplace_back(argument_name);
+        // }
+        //
+        // auto function_identification = FunctionIdentification{
+        //     .name = std::string{function_name},
+        //     .returnType = return_type,
+        //     .parameters = std::move(function_definition_arguments_type),
+        // };
+        //
+        // auto function_ptr = std::make_unique<AstlangFunction>(
+        //     std::move(function_definition_arguments_names), function_body.astlangNode);
+        //
+        // interpreter.addFunction(std::move(function_identification), std::move(function_ptr));
 
         return EvaluationResult{
-            .value = std::nullopt,
-            .type = Type::ANY,
+            // .value = std::nullopt,
+            // .type = Type::ANY,
         };
     }
 }// namespace astlang::ast::function::decl

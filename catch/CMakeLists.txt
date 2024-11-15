@@ -29,6 +29,7 @@ target_link_libraries(
         astlang
         fmt::fmt-header-only
         Catch2::Catch2WithMain
+        astlang2
 )
 
 if (CCL_PRECOMPILED_HEADERS)

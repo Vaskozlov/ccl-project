@@ -16,9 +16,10 @@ namespace astlang::ast::statement
 
         interpreter.createVariable(std::string{variable_name}, std::move(value));
 
-        return EvaluationResult{
-            .value = std::nullopt,
-            .type = interpreter::Type::VOID,
+        return interpreter::EvaluationResult{
+            .instance = Instance{.type = interpreter.typeSystem.getType("void")},
+            .needToReturn = false,
+            .storesReference = false,
         };
     }
 }// namespace astlang::ast::statement

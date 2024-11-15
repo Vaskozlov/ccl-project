@@ -13,22 +13,22 @@ namespace astlang::ast::function::decl
 
         if (size() == 1) {
             return EvaluationResult{
-                isl::UniqueAny(std::move(result)),
-                Type{Type::LIST, {Type::ANY}},
+                // isl::UniqueAny(std::move(result)),
+                // Type{Type::LIST, {Type::ANY}},
             };
         }
 
         const auto back_node = ConstNodePtr{back().get()};
         auto next_arguments = back_node.astlangNode->compute(interpreter);
-        auto resulted_list = next_arguments.value.release<std::vector<EvaluationResult>>();
+        // auto resulted_list = next_arguments.value.release<std::vector<EvaluationResult>>();
 
-        for (auto &argument : *resulted_list) {
-            result.emplace_back(std::move(argument));
-        }
+        // for (auto &argument : *resulted_list) {
+            // result.emplace_back(std::move(argument));
+        // }
 
         return EvaluationResult{
-            isl::UniqueAny(std::move(result)),
-            Type{Type::LIST, {Type::ANY}},
+            // isl::UniqueAny(std::move(result)),
+            // Type{Type::LIST, {Type::ANY}},
         };
     }
 }// namespace astlang::ast::function::decl

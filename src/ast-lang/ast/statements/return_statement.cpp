@@ -8,8 +8,8 @@ namespace astlang::ast::statement
     auto ReturnStatement::compute(Interpreter &interpreter) const -> EvaluationResult
     {
         if (size() == 1) {
-            return EvaluationResult{
-                .value = std::nullopt, .type = interpreter::Type::VOID, .needToReturn = true};
+            // return EvaluationResult{
+                // .value = std::nullopt, .type = interpreter::Type::VOID, .needToReturn = true};
         }
 
         auto return_value = ConstNodePtr{at(1).get()}.astlangNode->compute(interpreter);

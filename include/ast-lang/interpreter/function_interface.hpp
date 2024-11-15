@@ -7,7 +7,7 @@ namespace astlang::interpreter
 {
     class Interpreter;
 
-    using FunctionArguments = std::vector<Type>;
+    using FunctionArguments = std::vector<type_system::Type>;
     using FunctionCallArguments = std::vector<EvaluationResult>;
 
     class FunctionInterface
