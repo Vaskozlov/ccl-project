@@ -118,8 +118,16 @@ namespace astlang2::ast::core
                 getReconstructPtr<statement::ForLoop>(),
             },
             {
+                constructor.getRuleId("WHILE_LOOP"),
+                getReconstructPtr<statement::WhileLoop>(),
+            },
+            {
                 constructor.getRuleId("RETURN_STATEMENT"),
                 getReconstructPtr<statement::ReturnStatement>(),
+            },
+            {
+                constructor.getRuleId("ASSIGNMENT_EXPRESSION"),
+                getReconstructPtr<expression::BinaryExpression>(),
             },
             {
                 constructor.getRuleId("LOGICAL_OR_EXPRESSION"),
@@ -175,7 +183,7 @@ namespace astlang2::ast::core
             },
             {
                 constructor.getRuleId("METHOD_CALL"),
-                getReconstructPtr<AstlangNode>(),
+                getReconstructPtr<function::call::MethodCall>(),
             },
             {
                 constructor.getRuleId("TYPE"),

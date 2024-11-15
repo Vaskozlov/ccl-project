@@ -22,7 +22,7 @@ TEST_CASE("SimpleFunctionCall", "[TypeSystem]")
         std::make_unique<function::BuiltinFunction>(
             std::vector<std::string>{"a"}, [](interpreter::Interpreter &interpreter) {
                 fmt::println(
-                    "Inside function: {}", *static_cast<int *>(interpreter.read("a").value.get()));
+                    "Inside function: {}", *static_cast<int *>(interpreter.read("a").object.get()));
                 return Value{nullptr, nullptr};
             }));
 
@@ -30,7 +30,7 @@ TEST_CASE("SimpleFunctionCall", "[TypeSystem]")
     const std::shared_ptr<void> test_value = std::make_shared<int>(42);
 
     interpreter.write("foo", Value{test_value, interpreter.getInt()});
-    fmt::println("foo value {}", *static_cast<int *>(interpreter.read("foo").value.get()));
+    fmt::println("foo value {}", *static_cast<int *>(interpreter.read("foo").object.get()));
 
     interpreter.getFunction({.name = "simple_print", .arguments = {interpreter.getInt()}})
         ->call(interpreter, {Value{test_value, interpreter.getInt()}});

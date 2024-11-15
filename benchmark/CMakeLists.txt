@@ -33,7 +33,7 @@ add_dependencies(
         ccl-bench
         ccl
         benchmark
-        astlang
+        astlang2
         fmt::fmt-header-only
 )
 

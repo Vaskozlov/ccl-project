@@ -17,7 +17,7 @@ if (CCL_INCLUDE_BENCHMARK)
     include(benchmark/CMakeLists.txt)
 endif ()
 
-install(TARGETS ccl ccl-lexer unordered_dense astlang
+install(TARGETS ccl ccl-lexer unordered_dense astlang2
         EXPORT cclTargets
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}

@@ -1,7 +1,12 @@
 #ifndef AST_LANG_2_FUNCTION_HPP
 #define AST_LANG_2_FUNCTION_HPP
 
-#include <ast-lang-2/ts/type.hpp>
+#include <ast-lang-2/ts/value.hpp>
+
+namespace astlang2::ts
+{
+    class Type;
+}
 
 namespace astlang2::interpreter
 {

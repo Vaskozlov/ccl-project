@@ -3,6 +3,8 @@
 
 #include <ankerl/unordered_dense.h>
 #include <ast-lang-2/ast-lang.hpp>
+#include <ast-lang-2/function/function.hpp>
+#include <ast-lang-2/function/functions_holder.hpp>
 #include <ast-lang-2/ts/field.hpp>
 
 namespace astlang2::function
@@ -17,7 +19,7 @@ namespace astlang2::ts
     private:
         std::string name;
         ankerl::unordered_dense::map<std::string, Field> fields;
-        ankerl::unordered_dense::map<std::string, std::vector<function::Function *>> methods;
+        function::FunctionsHolder methods;
         std::vector<Type *> templateParameters;
         ccl::Id id{};
         Type *prototype{};
@@ -39,6 +41,18 @@ namespace astlang2::ts
         }
 
         auto addField(Field field) -> Field *;
+
+        auto addMethod(
+            function::FunctionIdentification identification,
+            std::shared_ptr<function::Function>
+                function) -> void
+        {
+            methods.addFunction(std::move(identification), std::move(function));
+        }
+
+        auto callMethod(
+            interpreter::Interpreter &interpreter, const std::string &method_name,
+            const Value &self, std::vector<Value> arguments) -> Value;
 
         [[nodiscard]] auto getField(Field field) const -> const Field *;
 
@@ -79,23 +93,5 @@ namespace astlang2::ts
     };
 
 }// namespace astlang2::ts
-
-namespace astlang2
-{
-    using Instance = ankerl::unordered_dense::map<std::string, std::shared_ptr<void>>;
-
-    enum class ValueType
-    {
-        R_VALUE,
-        L_VALUE,
-    };
-
-    struct Value
-    {
-        std::shared_ptr<void> object;
-        ts::Type *type{};
-        ValueType valueType = ValueType::R_VALUE;
-    };
-}// namespace astlang2
 
 #endif /* ASTLANG_2_TYPE_HPP */

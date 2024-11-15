@@ -100,7 +100,7 @@ namespace ccl::lexer::rule
 
             if (is_range) {
                 is_range = false;
-                result.second.emplace_back(previous_chr, chr);
+                result.second.emplace_back(previous_chr, chr + 1);
             } else {
                 if (chr < isl::UtfSet::asciiStorageSize) {
                     result.first[chr] = true;
@@ -166,7 +166,7 @@ namespace ccl::lexer::rule
         bool &is_range, char32_t previous_chr, const char32_t chr) -> void
     {
         if (is_range) {
-            storedSymbols.set({previous_chr, chr + 1}, true);
+            storedSymbols.set({previous_chr, static_cast<char32_t>(chr + 1)}, true);
             is_range = false;
         } else {
             storedSymbols.set(chr, true);

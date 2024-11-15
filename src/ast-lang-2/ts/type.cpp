@@ -3,7 +3,10 @@
 namespace astlang2::ts
 {
     Type::Type(
-        std::string type_name, const ccl::Id type_id, Type *parent_type, const bool is_builtin)
+        std::string type_name,
+        const ccl::Id type_id,
+        Type *parent_type,
+        const bool is_builtin)
       : name{std::move(type_name)}
       , id{type_id}
       , prototype{parent_type}
@@ -19,6 +22,25 @@ namespace astlang2::ts
         }
 
         return &it->second;
+    }
+
+    auto Type::callMethod(
+        interpreter::Interpreter &interpreter,
+        const std::string &method_name,
+        const Value &self,
+        std::vector<Value>
+            arguments) -> Value
+    {
+        arguments.insert(arguments.begin(), self);
+
+        function::FunctionIdentification function_identification{.name = method_name};
+
+        for (const auto &arg : arguments) {
+            function_identification.arguments.emplace_back(arg.type);
+        }
+
+        const auto *function = methods.getFunction(function_identification);
+        return function->call(interpreter, arguments);
     }
 
     auto Type::getField(Field field) const -> const Field *

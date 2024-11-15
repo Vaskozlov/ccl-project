@@ -38,6 +38,7 @@ namespace astlang2::interpreter
         const SmallId BITWISE_OR_EXPRESSION = constructor.getRuleId("BITWISE_OR_EXPRESSION");
         const SmallId LOGICAL_AND_EXPRESSION = constructor.getRuleId("LOGICAL_AND_EXPRESSION");
         const SmallId LOGICAL_OR_EXPRESSION = constructor.getRuleId("LOGICAL_OR_EXPRESSION");
+        const SmallId ASSIGNMENT_EXPRESSION = constructor.getRuleId("ASSIGNMENT_EXPRESSION");
 
         const SmallId PLUS = constructor.getRuleId("\'+\'");
         const SmallId MINUS = constructor.getRuleId("\'-\'");
@@ -59,6 +60,8 @@ namespace astlang2::interpreter
         const SmallId BITWISE_AND = constructor.getRuleId("\'&\'");
         const SmallId BITWISE_OR = constructor.getRuleId("\'|\'");
         const SmallId BITWISE_XOR = constructor.getRuleId("\'^\'");
+
+        const SmallId ASSIGN = constructor.getRuleId("\'=\'");
 
         const astlang2::Value BOOL_TRUE =
             astlang2::Value{.object = std::make_shared<bool>(true), .type = getBool()};

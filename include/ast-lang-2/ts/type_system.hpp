@@ -15,7 +15,10 @@ namespace astlang2
     {
     private:
         ankerl::unordered_dense::map<std::string, std::unique_ptr<ts::Type>> types;
+        ankerl::unordered_dense::map<std::string, std::unique_ptr<ts::TemplateType>> templateTypes;
+
         isl::IdGenerator<ccl::Id> typeIdGenerator{0U};
+
         ts::Type *notValidType{nullptr};
         ts::Type *voidType{nullptr};
         ts::Type *builtinType{nullptr};
@@ -27,6 +30,7 @@ namespace astlang2
         ts::Type *floatType{nullptr};
         ts::Type *doubleType{nullptr};
         ts::Type *stringType{nullptr};
+        ts::TemplateType *listTemplate{nullptr};
 
         auto createTypeAndGetPointer(const std::string &name, std::unique_ptr<ts::Type> type)
             -> ts::Type *;

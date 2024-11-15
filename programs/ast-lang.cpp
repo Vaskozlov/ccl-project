@@ -12,6 +12,18 @@ using namespace ccl::lexer;
 using namespace astlang2::interpreter;
 
 constexpr static auto Input = isl::string_view{R"(
+def f(int a) {
+    while a < 10 {
+        println(a * a);
+        a = a + 1;
+    }
+
+    return a * a;
+}
+
+println(-double(f(0)) + 0.25);
+println("Hello, world!".length());
+
 )"};
 
 auto main() -> int
@@ -37,7 +49,7 @@ auto main() -> int
     const auto conversion_table =
         astlang2::ast::core::AstlangNode::buildConversionTable(constructor);
     row_root->cast(conversion_table);
-    //
+
     auto *astlang_root = dynamic_cast<astlang2::ast::core::AstlangNode *>(row_root);
     auto output_buffer = std::string{};
 
@@ -47,9 +59,9 @@ auto main() -> int
     astlang_root->print("", false, to_str);
     //
     // auto dot_repr = dot::createDotRepresentation(std::vector<ast::Node *>{astlang_root}, to_str);
-    //
+
     // isl::io::write(
-    //     std::filesystem::current_path().append(fmt::format("{}.dot", algorithm)), dot_repr);
+        // std::filesystem::current_path().append(fmt::format("{}.dot", algorithm)), dot_repr);
     //
     // astlang_root->print("", false, to_str);
     astlang_root->compute(interpreter);

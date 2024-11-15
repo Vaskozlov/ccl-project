@@ -1,12 +1,8 @@
 #ifndef AST_LANG_2_TEMPLATE_TYPE_HPP
 #define AST_LANG_2_TEMPLATE_TYPE_HPP
 
+#include <ast-lang-2/function/function.hpp>
 #include <ast-lang-2/ts/type.hpp>
-
-namespace astlang2::function
-{
-    class Function;
-}
 
 namespace astlang2::ts
 {
@@ -17,6 +13,9 @@ namespace astlang2::ts
     class TemplateType
     {
     private:
+        using FunctionCreationData =
+            std::pair<function::FunctionIdentification, std::shared_ptr<function::Function>>;
+
         template<typename... Ts>
         class Visitor : public Ts...
         {
@@ -26,11 +25,10 @@ namespace astlang2::ts
 
         std::string name;
 
-        ankerl::unordered_dense::map<std::string, std::function<Field()>> fieldsCreator;
+        std::map<std::string, std::function<Field(std::string, Type *)>> fieldsCreator;
 
-        ankerl::unordered_dense::
-            map<std::string, std::vector<std::function<function::Function *()>>>
-                methodsCreator;
+        std::map<std::string, std::vector<std::function<FunctionCreationData(std::string, Type *)>>>
+            methodsCreator;
 
         std::vector<AnyType> templateParameters;
         std::vector<std::size_t> prototypeTemplateParameterIndices;
@@ -55,7 +53,10 @@ namespace astlang2::ts
             return id <=> other.id;
         }
 
-        auto addField(const std::string &field_name, std::function<Field()> field_creator) -> void
+        auto addField(
+            const std::string &field_name,
+            std::function<Field(std::string, Type *)>
+                field_creator) -> void
         {
             auto inserted = false;
             std::tie(std::ignore, inserted) = fieldsCreator.try_emplace(field_name, field_creator);
@@ -63,6 +64,24 @@ namespace astlang2::ts
             if (!inserted) {
                 throw std::runtime_error(fmt::format("Field '{}' already exists", field_name));
             }
+        }
+
+        auto addMethod(
+            const std::string &method_name,
+            std::function<FunctionCreationData(std::string, Type *)>
+                function_creator) -> void
+        {
+            methodsCreator[method_name].emplace_back(std::move(function_creator));
+        }
+
+        [[nodiscard]] auto getFieldsCreator() const noexcept -> const auto &
+        {
+            return fieldsCreator;
+        }
+
+        [[nodiscard]] auto getMethodsCreator() const noexcept -> const auto &
+        {
+            return methodsCreator;
         }
 
         [[nodiscard]] auto getTemplateTypes() const -> const std::vector<AnyType> &

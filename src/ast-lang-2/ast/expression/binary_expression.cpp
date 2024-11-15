@@ -98,6 +98,8 @@ namespace astlang2::ast::expression
             return logicalOr(front_node, back_node, interpreter);
         } else if (operation == interpreter.LOGICAL_AND) {
             return logicalAnd(front_node, back_node, interpreter);
+        } else if (operation == interpreter.ASSIGN) {
+            function_name = "__assign__";
         } else {
             throw std::runtime_error{"Unsupported binary expression"};
         }

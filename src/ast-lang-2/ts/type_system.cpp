@@ -14,7 +14,12 @@ namespace astlang2
     auto TypeSystem::createCoreType(const std::string &name) -> ts::Type *
     {
         auto new_type = std::make_unique<ts::Type>(name, typeIdGenerator.next(), nullptr, true);
-        new_type->addField(ts::Field{"_value", builtinType});
+
+        new_type->addField(
+            ts::Field{
+                .name = "_value",
+                .type = builtinType,
+            });
 
         return types.emplace(name, std::move(new_type)).first->second.get();
     }
@@ -40,6 +45,9 @@ namespace astlang2
         floatType = createCoreType("float");
         doubleType = createCoreType("double");
         stringType = createCoreType("string");
+
+        auto list_type = std::make_unique<ts::TemplateType>("list", typeIdGenerator.next());
+        templateTypes.emplace(list_type->getName(), std::move(list_type));
     }
 
     auto TypeSystem::getType(const std::string &name) const -> ts::Type *
@@ -71,12 +79,37 @@ namespace astlang2
             static_cast<const ccl::parser::ast::Terminal *>(node->front().get());
 
         const ccl::lexer::Token &main_type_token = main_type_node->getToken();
-        const auto main_type_repr = main_type_token.getRepr();
+        const auto main_type_repr = static_cast<std::string>(main_type_token.getRepr());
 
         if (node->size() == 1) {
-            return getType(static_cast<std::string>(main_type_repr));
+            return getType(main_type_repr);
         }
 
-        throw std::runtime_error{"Templates are not supported yet"};
+        const auto *template_argument_node =
+            static_cast<const ast::core::AstlangNode *>(node->at(2).get());
+
+        const auto *template_type = getTypeFromNode(template_argument_node);
+        const auto full_type_name = fmt::format("{}<{}>", main_type_repr, template_type->getName());
+
+        if (types.contains(full_type_name)) {
+            return types.at(full_type_name).get();
+        }
+
+        const auto *type_to_instance = templateTypes.at(main_type_repr).get();
+        auto new_type = std::make_unique<ts::Type>(full_type_name, typeIdGenerator.next());
+
+        for (const auto &[field_name, field_creator] : type_to_instance->getFieldsCreator()) {
+            new_type->addField(field_creator(field_name, new_type.get()));
+        }
+
+        for (const auto &[method_name, method_creators] : type_to_instance->getMethodsCreator()) {
+            for (const auto &method_creator : method_creators) {
+                const auto [function_identification, method] =
+                    method_creator(method_name, new_type.get());
+                new_type->addMethod(function_identification, method);
+            }
+        }
+
+        types.emplace(full_type_name, std::move(new_type));
     }
 }// namespace astlang2
