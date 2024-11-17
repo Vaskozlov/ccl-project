@@ -10,7 +10,7 @@ namespace ccl::parser::ast
     {
     private:
         lexer::Token token;
-        std::array<char, 512> padding;
+        char padding[128];
 
     public:
         explicit Terminal(const SmallId node_type_id)

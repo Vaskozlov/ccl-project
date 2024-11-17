@@ -8,7 +8,7 @@
 
 namespace ccl::parser::ast
 {
-    using SmallVectorOfNodes = isl::SmallVector<SharedNode<>, 6>;
+    using SmallVectorOfNodes = isl::SmallVector<SharedNode<>, 8>;
 
     class NonTerminal : public Node
     {

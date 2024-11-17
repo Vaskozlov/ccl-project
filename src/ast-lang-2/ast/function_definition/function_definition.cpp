@@ -54,11 +54,13 @@ namespace astlang2::ast::function::def {
             return;
         }
 
-        auto [name, argument] = getFunctionArgument(
-            static_cast<const ccl::parser::ast::NonTerminal *>(arguments_nodes->front().get()));
+        {
+            auto [name, argument] = getFunctionArgument(
+                static_cast<const ccl::parser::ast::NonTerminal *>(arguments_nodes->front().get()));
 
-        argumentsNames.emplace_back(std::move(name));
-        functionArguments.emplace_back(std::move(argument));
+            argumentsNames.emplace_back(std::move(name));
+            functionArguments.emplace_back(std::move(argument));
+        }
 
         while (true) {
             if (arguments_nodes->size() < 3) {

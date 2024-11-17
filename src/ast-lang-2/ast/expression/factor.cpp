@@ -52,7 +52,7 @@ namespace astlang2::ast::expression
         return std::make_shared<std::string>(repr);
     }
 
-    Factor::Factor(const SmallId id, ccl::parser::ast::SmallVectorOfNodes initial_nodes)
+    Factor::Factor(const SmallId id, const ccl::parser::ast::SmallVectorOfNodes &initial_nodes)
       : AstlangNode{id}
     {
         if (initial_nodes.size() != 1) {

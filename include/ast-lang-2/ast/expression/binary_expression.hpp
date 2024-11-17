@@ -13,7 +13,7 @@ namespace astlang2::ast::expression
         std::string functionName;
 
     public:
-        BinaryExpression(SmallId id, ccl::parser::ast::SmallVectorOfNodes initial_nodes);
+        BinaryExpression(SmallId id, const ccl::parser::ast::SmallVectorOfNodes &initial_nodes);
 
         auto compute(interpreter::Interpreter &interpreter) const
             -> core::ComputationResult override;

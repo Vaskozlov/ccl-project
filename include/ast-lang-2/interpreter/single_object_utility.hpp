@@ -97,10 +97,6 @@ namespace astlang2::interpreter
     {
         using OnObjectOperation::OnObjectOperation;
     };
-
-    auto defaultInitializeFunctionsHolderWithSingleArgumentFunctions(
-        const TypeSystem &type_system,
-        function::FunctionsHolder &functions_holder) -> void;
 }// namespace astlang2::interpreter
 
 #endif /* AST_LANG_2_SINGLE_OBJECT_UTILITY_HPP */

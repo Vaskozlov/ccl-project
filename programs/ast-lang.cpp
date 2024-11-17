@@ -31,7 +31,7 @@ auto main(int /* argc */, char** argv) -> int {
     });
 
     auto* row_root = nodes.front().get();
-    row_root->print("", false, to_str);
+    // row_root->print("", false, to_str);
 
     // auto dot_repr = dot::createDotRepresentation(std::vector<ast::Node *>{astlang_root}, to_str);
 

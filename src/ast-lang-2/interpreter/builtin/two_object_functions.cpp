@@ -21,7 +21,7 @@ namespace astlang2::interpreter
         };
 
         auto builtin_function = std::make_shared<function::BuiltinFunction>(
-            std::vector<std::string>{"lhs", "rhs"},
+            isl::SmallVector<std::string, 2>{"lhs", "rhs"},
             [function = std::forward<decltype(function)>(function),
              return_type](Interpreter &interpreter) {
                 auto lhs = interpreter.read("lhs").object;

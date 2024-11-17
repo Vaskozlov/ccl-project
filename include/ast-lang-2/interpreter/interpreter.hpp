@@ -74,7 +74,8 @@ namespace astlang2::interpreter
             std::back_insert_iterator<std::string>
                 buffer_inserter);
 
-        auto callFunction(const std::string &name, const std::vector<Value> &arguments) -> Value;
+        auto callFunction(const std::string &name, const isl::SmallVector<Value, 4> &arguments)
+            -> Value;
 
         [[nodiscard]] auto getOutputBuffer() const -> std::back_insert_iterator<std::string>
         {

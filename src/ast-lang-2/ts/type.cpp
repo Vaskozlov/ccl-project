@@ -27,12 +27,8 @@ namespace astlang2::ts
     auto Type::callMethod(
         interpreter::Interpreter &interpreter,
         const std::string &method_name,
-        const Value &self,
-        std::vector<Value>
-            arguments) -> Value
+        const isl::SmallVector<Value, 4> &arguments) -> Value
     {
-        arguments.insert(arguments.begin(), self);
-
         function::FunctionIdentification function_identification{.name = method_name};
 
         for (const auto &arg : arguments) {

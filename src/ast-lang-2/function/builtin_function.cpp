@@ -3,11 +3,11 @@
 namespace astlang2::function
 {
     BuiltinFunction::BuiltinFunction(
-        std::vector<std::string>
+        const isl::SmallVector<std::string, 2>&
             arguments_names,
         std::function<Value(interpreter::Interpreter &)>
             builtin_function)
-      : Function{std::move(arguments_names)}
+      : Function{arguments_names}
       , builtinFunction{std::move(builtin_function)}
     {}
 

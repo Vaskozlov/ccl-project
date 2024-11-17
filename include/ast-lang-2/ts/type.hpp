@@ -52,7 +52,7 @@ namespace astlang2::ts
 
         auto callMethod(
             interpreter::Interpreter &interpreter, const std::string &method_name,
-            const Value &self, std::vector<Value> arguments) -> Value;
+            const isl::SmallVector<Value, 4> &arguments) -> Value;
 
         [[nodiscard]] auto getField(Field field) const -> const Field *;
 

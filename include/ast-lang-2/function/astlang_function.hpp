@@ -13,13 +13,15 @@ namespace astlang2::function
 
     public:
         explicit AstlangFunction(
-            std::vector<std::string> arguments_names, ast::core::SharedNode<ast::core::AstlangNode> function_body)
-          : Function{std::move(arguments_names)}
+            const isl::SmallVector<std::string, 2> &arguments_names,
+            ast::core::SharedNode<ast::core::AstlangNode> function_body)
+          : Function{arguments_names}
           , functionBody{std::move(function_body)}
         {}
 
     protected:
-        auto doCall(interpreter::Interpreter &interpreter) const -> Value override {
+        auto doCall(interpreter::Interpreter &interpreter) const -> Value override
+        {
             return functionBody->compute(interpreter).value;
         }
     };

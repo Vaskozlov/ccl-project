@@ -1,5 +1,7 @@
-def f(int a) {
-    while a < 10 {
+def f(int a)
+{
+    while a < 10
+    {
         println(a * a);
         a = a + 1;
     }
@@ -7,20 +9,38 @@ def f(int a) {
     return a * a;
 }
 
-var s = "Hello, world!";
+var b = timeNs();
+var i = 0;
 
-println(-double(f(0)) + -1.25 * 150.5);
-println(s.length());
-println(s);
+while i < 10{
+    var s = "Hello, world!";
 
-var a = 10;
+    println(-double(f(0)) + -1.25 * 150.5);
+    println(s.length());
+    println(s);
 
-if a > 20 {
-    println("Greater");
-} elif a < 5 {
-    println("Less than 5");
-} elif a == 10 {
-    println("Equal to 10");
-} else {
-    println("Something else");
+    var a = 10;
+
+    if a > 20
+    {
+        println("Greater");
+    }
+    elif a < 5
+    {
+        println("Less than 5");
+    }
+    elif a == 10
+    {
+        println("Equal to 10");
+    }
+    else
+    {
+        println("Something else");
+    }
+
+    i = i + 1;
 }
+
+var e = timeNs();
+print((e - b) / 1000);
+println("us");

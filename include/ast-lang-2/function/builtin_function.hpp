@@ -13,8 +13,7 @@ namespace astlang2::function
 
     public:
         BuiltinFunction(
-            std::vector<std::string>
-                arguments_names,
+            const isl::SmallVector<std::string, 2> &arguments_names,
             std::function<Value(interpreter::Interpreter &)>
                 builtin_function);
 

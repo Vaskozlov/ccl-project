@@ -39,15 +39,14 @@ namespace astlang2::ast::function::call
         const ccl::lexer::Token &method_name_token = methodNameNode->getToken();
         const auto function_name_repr = method_name_token.getRepr();
 
-        std::vector<Value> function_arguments;
+        isl::SmallVector<Value, 4> function_arguments{std::move(object_value.value)};
 
         for (const auto &argument_node : functionArgumentsNode) {
             function_arguments.emplace_back(argument_node->compute(interpreter).value);
         }
 
         auto method_call_result = object_value.value.type->callMethod(
-            interpreter, static_cast<std::string>(function_name_repr), object_value.value,
-            std::move(function_arguments));
+            interpreter, static_cast<std::string>(function_name_repr), function_arguments);
 
         return core::ComputationResult{.value = std::move(method_call_result)};
     }
@@ -63,7 +62,8 @@ namespace astlang2::ast::function::call
         objectNode->cast(conversion_table);
     }
 
-    auto MethodCall::optimize() -> core::SharedNode<> {
+    auto MethodCall::optimize() -> core::SharedNode<>
+    {
         return nullptr;
     }
 }// namespace astlang2::ast::function::call

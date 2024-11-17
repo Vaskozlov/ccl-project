@@ -3,6 +3,8 @@
 
 #include <ast-lang-2/ts/value.hpp>
 
+#include "../../../../../../../Volumes/ramdisk/ccl-project/clang-brew/rel-with-deb-info/_deps/isl-src/include/isl/small_vector.hpp"
+
 namespace astlang2::ts
 {
     class Type;
@@ -18,7 +20,7 @@ namespace astlang2::function
     struct FunctionIdentification
     {
         std::string name;
-        std::vector<ts::Type *> arguments;
+        isl::SmallVector<ts::Type *, 4> arguments;
         ts::Type *returnType{};
 
         [[nodiscard]] auto operator==(const FunctionIdentification &other) const noexcept -> bool
@@ -39,10 +41,12 @@ namespace astlang2::function
     class Function
     {
     private:
-        std::vector<std::string> argumentsNames;
+        isl::SmallVector<std::string, 2> argumentsNames;
 
     public:
-        explicit Function(std::vector<std::string> arguments_names);
+        explicit Function(const isl::SmallVector<std::string, 2>&arguments_names)
+          : argumentsNames{arguments_names}
+        {}
 
         virtual ~Function() = default;
 
@@ -52,7 +56,7 @@ namespace astlang2::function
         auto operator=(Function &&other) -> Function & = delete;
         auto operator=(const Function &other) -> Function & = delete;
 
-        auto call(interpreter::Interpreter &interpreter, const std::vector<Value> &arguments) const
+        auto call(interpreter::Interpreter &interpreter, const isl::SmallVector<Value, 4> &arguments) const
             -> Value;
 
     protected:

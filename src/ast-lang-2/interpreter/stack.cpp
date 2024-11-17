@@ -6,7 +6,7 @@ namespace astlang2::interpreter
         writeVariable(Scope &scope, const std::string &name, Value value, const bool check_type)
             -> void
     {
-        auto it = scope.variables.find(name);
+        const auto it = scope.variables.find(name);
         value.valueType = ValueType::L_VALUE;
 
         if (it != scope.variables.end()) {

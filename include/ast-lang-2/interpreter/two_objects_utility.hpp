@@ -10,8 +10,8 @@ namespace astlang2::interpreter
     {
     public:
         template<typename LHS, typename RHS>
-        auto operator()(ts::Type *return_type, std::shared_ptr<LHS> lhs, std::shared_ptr<RHS> rhs)
-            const -> auto
+        auto operator()(
+            ts::Type *return_type, std::shared_ptr<LHS> lhs, std::shared_ptr<RHS> rhs) const -> auto
         {
             return Value{
                 .object = std::make_shared<decltype(T{}(*lhs, *rhs))>(T{}(*lhs, *rhs)),
@@ -26,8 +26,8 @@ namespace astlang2::interpreter
     {
     public:
         template<typename LHS, typename RHS>
-        auto operator()(ts::Type *return_type, std::shared_ptr<LHS> lhs, std::shared_ptr<RHS> rhs)
-            const -> auto
+        auto operator()(
+            ts::Type *return_type, std::shared_ptr<LHS> lhs, std::shared_ptr<RHS> rhs) const -> auto
         {
             T{}(*lhs, *rhs);
 
@@ -234,10 +234,6 @@ namespace astlang2::interpreter
     {
         using ReturningLeftBinaryOperation::ReturningLeftBinaryOperation;
     };
-
-    auto defaultInitializeFunctionsHolderWithTwoArgumentsFunctions(
-        const TypeSystem &type_system,
-        function::FunctionsHolder &functions_holder) -> void;
 }// namespace astlang2::interpreter
 
 #endif /* AST_LANG_2_TWO_OBJECTS_UTILITY_HPP */

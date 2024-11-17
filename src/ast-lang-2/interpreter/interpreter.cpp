@@ -1,17 +1,28 @@
 #include <ast-lang-2/function/builtin_function.hpp>
 #include <ast-lang-2/interpreter/interpreter.hpp>
-#include <ast-lang-2/interpreter/single_object_utility.hpp>
-#include <ast-lang-2/interpreter/two_objects_utility.hpp>
 #include <mutex>
 
 namespace astlang2::interpreter
 {
+    auto defaultInitializeFunctionsHolderWithZeroArgumentFunctions(
+        const TypeSystem &type_system,
+        function::FunctionsHolder &functions_holder) -> void;
+
+    auto defaultInitializeFunctionsHolderWithSingleArgumentFunctions(
+        const TypeSystem &type_system,
+        function::FunctionsHolder &functions_holder) -> void;
+
+    auto defaultInitializeFunctionsHolderWithTwoArgumentsFunctions(
+        const TypeSystem &type_system,
+        function::FunctionsHolder &functions_holder) -> void;
+
     static auto defaultInitializeFunctionsHolder(
         const TypeSystem &type_system,
         function::FunctionsHolder &functions_holder) -> void
     {
-        defaultInitializeFunctionsHolderWithTwoArgumentsFunctions(type_system, functions_holder);
+        defaultInitializeFunctionsHolderWithZeroArgumentFunctions(type_system, functions_holder);
         defaultInitializeFunctionsHolderWithSingleArgumentFunctions(type_system, functions_holder);
+        defaultInitializeFunctionsHolderWithTwoArgumentsFunctions(type_system, functions_holder);
     }
 
     static auto getDefaultFunctionsHolder(const TypeSystem &type_system)
@@ -44,7 +55,7 @@ namespace astlang2::interpreter
       , outputBuffer{buffer_inserter}
     {}
 
-    auto Interpreter::callFunction(const std::string &name, const std::vector<Value> &arguments)
+    auto Interpreter::callFunction(const std::string &name, const isl::SmallVector<Value, 4> &arguments)
         -> Value
     {
         function::FunctionIdentification function_identification{.name = name};
