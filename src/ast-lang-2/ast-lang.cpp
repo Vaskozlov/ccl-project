@@ -1,7 +1,6 @@
 #include <ast-lang-2/ast-lang.hpp>
 
-namespace astlang2
-{
+namespace astlang2 {
     constexpr isl::string_view AstLangGrammar = R"(
 %PARSER%
 
@@ -375,4 +374,4 @@ STRING:     ! ["] ("\\\"" | ["]^)* ["]
             std::to_underlying(NodeTypes::ASSIGN),
         },
     };
-}// namespace astlang2
+} // namespace astlang2

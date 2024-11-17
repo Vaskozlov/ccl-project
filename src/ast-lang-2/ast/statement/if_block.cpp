@@ -1,16 +1,14 @@
 #include <ast-lang-2/ast/statement/if_block.hpp>
 #include <ast-lang-2/interpreter/interpreter.hpp>
 
-namespace astlang2::ast::statement
-{
-    IfBlock::IfBlock(const SmallId id, const ccl::parser::ast::SmallVectorOfNodes &initial_nodes)
-      : AstlangNode{id}
-      , conditionNode{isl::staticPointerCast<AstlangNode>(initial_nodes.at(1))}
-      , bodyNode{isl::staticPointerCast<AstlangNode>(initial_nodes.at(3))}
-    {}
+namespace astlang2::ast::statement {
+    IfBlock::IfBlock(const SmallId id, const ccl::parser::ast::SmallVectorOfNodes&initial_nodes)
+        : AstlangNode{id}
+          , conditionNode{isl::staticPointerCast<AstlangNode>(initial_nodes.at(1))}
+          , bodyNode{isl::staticPointerCast<AstlangNode>(initial_nodes.at(3))} {
+    }
 
-    auto IfBlock::compute(interpreter::Interpreter &interpreter) const -> core::ComputationResult
-    {
+    auto IfBlock::compute(interpreter::Interpreter&interpreter) const -> core::ComputationResult {
         core::ComputationResult condition_result = conditionNode->compute(interpreter);
         const Value condition_value = std::move(condition_result.value);
 
@@ -24,9 +22,9 @@ namespace astlang2::ast::statement
             core::ComputationResult statement_result = bodyNode->compute(interpreter);
 
             statement_result.controlflowStatus =
-                statement_result.controlflowStatus == core::ControlflowStatus::RETURN
-                    ? statement_result.controlflowStatus
-                    : core::ControlflowStatus::IF_BLOCK_FINISHES;
+                    statement_result.controlflowStatus == core::ControlflowStatus::RETURN
+                        ? statement_result.controlflowStatus
+                        : core::ControlflowStatus::IF_BLOCK_FINISHES;
 
             return statement_result;
         }
@@ -36,14 +34,12 @@ namespace astlang2::ast::statement
         };
     }
 
-    auto IfBlock::castChildren(const ConversionTable &conversion_table) -> void
-    {
+    auto IfBlock::castChildren(const ConversionTable&conversion_table) -> void {
         conditionNode->cast(conversion_table);
         bodyNode->cast(conversion_table);
     }
 
-    auto IfBlock::optimize() -> core::SharedNode<>
-    {
+    auto IfBlock::optimize() -> core::SharedNode<> {
         auto new_condition = conditionNode->optimize();
         auto new_body = bodyNode->optimize();
 
@@ -57,4 +53,4 @@ namespace astlang2::ast::statement
 
         return nullptr;
     }
-}// namespace astlang2::ast::statement
+} // namespace astlang2::ast::statement

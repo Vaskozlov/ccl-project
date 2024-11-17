@@ -1,10 +1,8 @@
 #include <ccl/parser/ast/node.hpp>
 #include <ccl/parser/ast/non_terminal.hpp>
 
-namespace ccl::parser::ast
-{
-    static auto repeatString(const std::string_view str, const std::size_t times) -> std::string
-    {
+namespace ccl::parser::ast {
+    static auto repeatString(const std::string_view str, const std::size_t times) -> std::string {
         auto result = std::string{};
         result.reserve(str.size() * times);
 
@@ -15,15 +13,13 @@ namespace ccl::parser::ast
         return result;
     }
 
-    auto Node::getPrintingPrefix(const std::string &prefix, const bool is_left) -> std::string
-    {
+    auto Node::getPrintingPrefix(const std::string&prefix, const bool is_left) -> std::string {
         return prefix + (is_left ? "├──" : "└──");
     }
 
     auto Node::expandPrefix(
-        const std::string &prefix, const bool is_left, const std::size_t extra_expansion)
-        -> std::string
-    {
+        const std::string&prefix, const bool is_left, const std::size_t extra_expansion)
+        -> std::string {
         static constexpr auto default_printing_shift = std::string_view{"   "};
 
         auto result = prefix + (is_left ? "│   " : "    ");
@@ -32,9 +28,8 @@ namespace ccl::parser::ast
         return result;
     }
 
-    auto Node::cast(const ConversionTable &conversion_table) -> void
-    {
-        auto *node_as_sequence = dynamic_cast<NonTerminal *>(this);
+    auto Node::cast(const ConversionTable&conversion_table) -> void {
+        auto* node_as_sequence = dynamic_cast<NonTerminal *>(this);
 
         if (node_as_sequence == nullptr) {
             return;
@@ -51,4 +46,4 @@ namespace ccl::parser::ast
 
         std::launder(this)->castChildren(conversion_table);
     }
-}// namespace ccl::parser::ast
+} // namespace ccl::parser::ast

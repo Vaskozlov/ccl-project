@@ -1,12 +1,10 @@
 #include <ast-lang-2/ast/expression/binary_expression.hpp>
 #include <ast-lang-2/interpreter/interpreter.hpp>
 
-namespace astlang2::ast::expression
-{
+namespace astlang2::ast::expression {
     static auto logicalAnd(
-        const core::AstlangNode *lhs_node, const core::AstlangNode *rhs_node,
-        interpreter::Interpreter &interpreter) -> core::ComputationResult
-    {
+        const core::AstlangNode* lhs_node, const core::AstlangNode* rhs_node,
+        interpreter::Interpreter&interpreter) -> core::ComputationResult {
         core::ComputationResult lhs_argument = lhs_node->compute(interpreter);
 
         if (lhs_argument.controlflowStatus == core::ControlflowStatus::RETURN) {
@@ -29,9 +27,8 @@ namespace astlang2::ast::expression
     }
 
     static auto logicalOr(
-        const core::AstlangNode *lhs_node, const core::AstlangNode *rhs_node,
-        interpreter::Interpreter &interpreter) -> core::ComputationResult
-    {
+        const core::AstlangNode* lhs_node, const core::AstlangNode* rhs_node,
+        interpreter::Interpreter&interpreter) -> core::ComputationResult {
         core::ComputationResult lhs_argument = lhs_node->compute(interpreter);
 
         if (lhs_argument.controlflowStatus == core::ControlflowStatus::RETURN) {
@@ -55,98 +52,98 @@ namespace astlang2::ast::expression
 
     BinaryExpression::BinaryExpression(
         const SmallId id, ccl::parser::ast::SmallVectorOfNodes initial_nodes)
-      : AstlangNode{id}
-      , lhsNode{isl::staticPointerCast<AstlangNode>(initial_nodes.front())}
-      , rhsNode{
-            initial_nodes.size() == 1 ? nullptr
-                                      : isl::staticPointerCast<AstlangNode>(initial_nodes.at(2))}
-    {
+        : AstlangNode{id}
+          , lhsNode{isl::staticPointerCast<AstlangNode>(initial_nodes.front())}
+          , rhsNode{
+              initial_nodes.size() == 1
+                  ? nullptr
+                  : isl::staticPointerCast<AstlangNode>(initial_nodes.at(2))
+          } {
         if (initial_nodes.size() == 1) {
             return;
         }
 
-        const auto *operator_node =
-            static_cast<ccl::parser::ast::Terminal *>(initial_nodes.at(1).get());
+        const auto* operator_node =
+                static_cast<ccl::parser::ast::Terminal *>(initial_nodes.at(1).get());
 
         switch (static_cast<NodeTypes>(operator_node->getType())) {
-            using enum NodeTypes;
+                using enum NodeTypes;
 
-        case PLUS:
-            functionName = "__add__";
-            break;
+            case PLUS:
+                functionName = "__add__";
+                break;
 
-        case MINUS:
-            functionName = "__sub__";
-            break;
+            case MINUS:
+                functionName = "__sub__";
+                break;
 
-        case MULTIPLY:
-            functionName = "__mul__";
-            break;
+            case MULTIPLY:
+                functionName = "__mul__";
+                break;
 
-        case DIVIDE:
-            functionName = "__div__";
-            break;
+            case DIVIDE:
+                functionName = "__div__";
+                break;
 
-        case MODULUS:
-            functionName = "__mod__";
-            break;
+            case MODULUS:
+                functionName = "__mod__";
+                break;
 
-        case LESS:
-            functionName = "__less__";
-            break;
+            case LESS:
+                functionName = "__less__";
+                break;
 
-        case LESS_EQUAL:
-            functionName = "__less_eq__";
-            break;
+            case LESS_EQUAL:
+                functionName = "__less_eq__";
+                break;
 
-        case GREATER:
-            functionName = "__greater__";
-            break;
+            case GREATER:
+                functionName = "__greater__";
+                break;
 
-        case GREATER_EQUAL:
-            functionName = "__greater_eq__";
-            break;
+            case GREATER_EQUAL:
+                functionName = "__greater_eq__";
+                break;
 
-        case EQUAL:
-            functionName = "__equal__";
-            break;
+            case EQUAL:
+                functionName = "__equal__";
+                break;
 
-        case NOT_EQUAL:
-            functionName = "__not_equal__";
-            break;
+            case NOT_EQUAL:
+                functionName = "__not_equal__";
+                break;
 
-        case BITWISE_AND:
-            functionName = "__bitwise_and__";
-            break;
+            case BITWISE_AND:
+                functionName = "__bitwise_and__";
+                break;
 
-        case BITWISE_OR:
-            functionName = "__bitwise_or__";
-            break;
+            case BITWISE_OR:
+                functionName = "__bitwise_or__";
+                break;
 
-        case BITWISE_XOR:
-            functionName = "__bitwise__xor__";
-            break;
+            case BITWISE_XOR:
+                functionName = "__bitwise__xor__";
+                break;
 
-        case LOGICAL_OR:
-            functionName = "__logical_or__";
-            break;
+            case LOGICAL_OR:
+                functionName = "__logical_or__";
+                break;
 
-        case LOGICAL_AND:
-            functionName = "__logical_and__";
-            break;
+            case LOGICAL_AND:
+                functionName = "__logical_and__";
+                break;
 
-        case ASSIGN:
-            functionName = "__assign__";
-            break;
+            case ASSIGN:
+                functionName = "__assign__";
+                break;
 
-        default:
-            throw std::runtime_error{"Unsupported binary expression"};
+            default:
+                throw std::runtime_error{"Unsupported binary expression"};
         }
     }
 
-    auto BinaryExpression::compute(interpreter::Interpreter &interpreter) const
-        -> core::ComputationResult
-    {
+    auto BinaryExpression::compute(interpreter::Interpreter&interpreter) const
+        -> core::ComputationResult {
         if (rhsNode == nullptr) {
             return lhsNode->compute(interpreter);
         }
@@ -182,8 +179,7 @@ namespace astlang2::ast::expression
         return core::ComputationResult{.value = std::move(expression_result)};
     }
 
-    auto BinaryExpression::castChildren(const ConversionTable &conversion_table) -> void
-    {
+    auto BinaryExpression::castChildren(const ConversionTable&conversion_table) -> void {
         lhsNode->cast(conversion_table);
 
         if (rhsNode != nullptr) {
@@ -191,8 +187,7 @@ namespace astlang2::ast::expression
         }
     }
 
-    auto BinaryExpression::optimize() -> core::SharedNode<>
-    {
+    auto BinaryExpression::optimize() -> core::SharedNode<> {
         auto new_lhs = lhsNode->optimize();
 
         if (new_lhs != nullptr) {
@@ -211,4 +206,4 @@ namespace astlang2::ast::expression
 
         return nullptr;
     }
-}// namespace astlang2::ast::expression
+} // namespace astlang2::ast::expression
