@@ -4,6 +4,11 @@
 #include <ast-lang-2/ts/template_type.hpp>
 #include <isl/id_generator.hpp>
 
+namespace ccl::parser::ast
+{
+    class NonTerminal;
+}
+
 namespace astlang2
 {
     namespace ast::core
@@ -40,7 +45,7 @@ namespace astlang2
     public:
         TypeSystem();
 
-        auto getTypeFromNode(const ast::core::AstlangNode *node) -> ts::Type *;
+        auto getTypeFromNode(const ccl::parser::ast::NonTerminal *node) -> ts::Type *;
 
         [[nodiscard]] auto getBuiltinType() const noexcept -> ts::Type *
         {

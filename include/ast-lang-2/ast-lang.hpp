@@ -14,6 +14,48 @@
 
 namespace astlang2
 {
+    enum class NodeTypes : ccl::SmallId
+    {
+        TRUE = 128,
+        FALSE,
+        NUMBER,
+        FLOAT,
+        STRING,
+        IDENTIFIER,
+        FUNCTION_CALL,
+        METHOD_CALL,
+        VALUE,
+        FACTOR,
+        TERM,
+        EXPRESSION,
+        COMPARISON,
+        EQUALITY,
+        BITWISE_AND_EXPRESSION,
+        BITWISE_XOR_EXPRESSION,
+        BITWISE_OR_EXPRESSION,
+        LOGICAL_AND_EXPRESSION,
+        LOGICAL_OR_EXPRESSION,
+        ASSIGNMENT_EXPRESSION,
+        PLUS,
+        MINUS,
+        MULTIPLY,
+        DIVIDE,
+        MODULUS,
+        LESS,
+        LESS_EQUAL,
+        GREATER,
+        GREATER_EQUAL,
+        EQUAL,
+        NOT_EQUAL,
+        LOGICAL_AND,
+        LOGICAL_OR,
+        BITWISE_AND,
+        BITWISE_OR,
+        BITWISE_XOR,
+        BITWISE_NOT,
+        ASSIGN,
+    };
+
     using i8 = ccl::i8;
     using i16 = ccl::i16;
     using i32 = ccl::i32;
@@ -32,6 +74,7 @@ namespace astlang2
     using f64 = ccl::f64;
 
     extern const isl::string_view AstLangGrammar;
+    extern const ankerl::unordered_dense::map<std::string, SmallId> NodeTypesMap;
 }// namespace astlang2
 
 #endif /* CCL_PROJECT_ASTLANG_AST_LANG_HPP */

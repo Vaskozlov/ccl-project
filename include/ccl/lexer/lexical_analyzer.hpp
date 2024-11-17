@@ -68,8 +68,8 @@ namespace ccl::lexer
             return ignoredIds;
         }
 
-        [[nodiscard]] auto
-            getByRuleName(const std::string &name) const CCL_LIFETIMEBOUND -> const Container *
+        [[nodiscard]] auto getByRuleName(const std::string &name) const CCL_LIFETIMEBOUND
+            -> const Container *
         {
             return allItemsMap.at(name);
         }
@@ -79,6 +79,11 @@ namespace ccl::lexer
             return allItemsMap.at(name);
         }
 
+        [[nodiscard]] auto hasRule(const std::string &name) const -> bool
+        {
+            return allItemsMap.contains(name);
+        }
+
         [[nodiscard]] auto getTokenizer(isl::string_view text, isl::string_view filename = {}) const
             CCL_LIFETIMEBOUND -> Tokenizer;
 
@@ -86,8 +91,8 @@ namespace ccl::lexer
             isl::string_view text, isl::string_view filename,
             ExceptionHandler &handler) const CCL_LIFETIMEBOUND -> Tokenizer;
 
-        [[nodiscard]] auto
-            getItems() const noexcept -> const std::vector<std::unique_ptr<Container>> &
+        [[nodiscard]] auto getItems() const noexcept
+            -> const std::vector<std::unique_ptr<Container>> &
         {
             return items;
         }

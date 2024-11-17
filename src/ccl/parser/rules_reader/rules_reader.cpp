@@ -251,8 +251,11 @@ namespace ccl::parser::reader
         },
     };
 
-    RulesReader::RulesReader(const isl::string_view input, const isl::string_view filename)
-      : readerOptions{
+    RulesReader::RulesReader(
+        const ankerl::unordered_dense::map<std::string, SmallId> &default_rules,
+        const isl::string_view input, const isl::string_view filename)
+      : rulesConstructor{default_rules}
+      , readerOptions{
             ReaderOption::WARNINGS_ENABLE,
             ReaderOption::SUGGESTIONS_ENABLE,
         }

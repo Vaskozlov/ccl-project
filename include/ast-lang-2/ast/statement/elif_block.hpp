@@ -5,13 +5,25 @@
 
 namespace astlang2::ast::statement
 {
-    class ElifBlock final : public IfBlock
+    class ElifBlock final : public core::AstlangNode
     {
+        struct ElifStatement
+        {
+            core::SharedNode<AstlangNode> conditionNode;
+            core::SharedNode<AstlangNode> bodyNode;
+        };
+
+        isl::SmallVector<ElifStatement, 2> elifStatements;
+
     public:
-        using IfBlock::IfBlock;
+        ElifBlock(SmallId id, const ccl::parser::ast::SmallVectorOfNodes &initial_nodes);
 
         auto compute(interpreter::Interpreter &interpreter) const
             -> core::ComputationResult override;
+
+        auto castChildren(const ConversionTable &conversion_table) -> void override;
+
+        auto optimize() -> core::SharedNode<> override;
     };
 }// namespace astlang2::ast::statement
 

@@ -2,11 +2,33 @@
 
 namespace astlang2::ast::statement
 {
-    auto ElseBlock::compute(interpreter::Interpreter &interpreter) const -> core::ComputationResult {
-        const auto *statements_node = static_cast<const AstlangNode *>(nodes.at(2).get());
-        core::ComputationResult statement_result = statements_node->compute(interpreter);
+    ElseBlock::ElseBlock(
+        const SmallId id, const ccl::parser::ast::SmallVectorOfNodes &initial_nodes)
+      : AstlangNode{id}
+      , bodyNode{isl::staticPointerCast<AstlangNode>(initial_nodes.at(2))}
+    {}
+
+    auto ElseBlock::compute(interpreter::Interpreter &interpreter) const -> core::ComputationResult
+    {
+        core::ComputationResult statement_result = bodyNode->compute(interpreter);
 
         statement_result.controlflowStatus = core::ControlflowStatus::IF_BLOCK_FINISHES;
         return statement_result;
+    }
+
+    auto ElseBlock::castChildren(const ConversionTable &conversion_table) -> void
+    {
+        bodyNode->cast(conversion_table);
+    }
+
+    auto ElseBlock::optimize() -> core::SharedNode<>
+    {
+        auto new_body = bodyNode->optimize();
+
+        if (new_body != nullptr) {
+            bodyNode = bodyNode;
+        }
+
+        return nullptr;
     }
 }// namespace astlang2::ast::statement

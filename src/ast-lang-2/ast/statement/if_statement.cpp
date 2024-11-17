@@ -3,12 +3,20 @@
 
 namespace astlang2::ast::statement
 {
+    IfStatement::IfStatement(
+        const SmallId id, const ccl::parser::ast::SmallVectorOfNodes &initial_nodes)
+      : AstlangNode{id}
+    {
+        for (const auto &node : initial_nodes) {
+            nodes.emplace_back(isl::staticPointerCast<AstlangNode>(node));
+        }
+    }
+
     auto IfStatement::compute(interpreter::Interpreter &interpreter) const
         -> core::ComputationResult
     {
         for (const auto &node : nodes) {
-            const auto *statement = static_cast<const AstlangNode *>(node.get());
-            core::ComputationResult result = statement->compute(interpreter);
+            core::ComputationResult result = node->compute(interpreter);
 
             if (result.controlflowStatus == core::ControlflowStatus::RETURN) {
                 return result;
@@ -26,5 +34,25 @@ namespace astlang2::ast::statement
                     .type = interpreter.getVoid(),
                 },
         };
+    }
+
+    auto IfStatement::castChildren(const ConversionTable &conversion_table) -> void
+    {
+        for (auto &node : nodes) {
+            node->cast(conversion_table);
+        }
+    }
+
+    auto IfStatement::optimize() -> core::SharedNode<>
+    {
+        for (auto &node : nodes) {
+            auto new_node = node->optimize();
+
+            if (new_node != nullptr) {
+                node = isl::staticPointerCast<AstlangNode>(std::move(new_node));
+            }
+        }
+
+        return nullptr;
     }
 }// namespace astlang2::ast::statement

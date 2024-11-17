@@ -102,7 +102,7 @@ namespace ccl::parser::ast
             new (node) T{node_type, std::move(nodes)};
         }
 
-        auto castChildren(const ConversionTable &conversion_table) -> void
+        auto castChildren(const ConversionTable &conversion_table) -> void override
         {
             for (auto &node : nodes) {
                 node->cast(conversion_table);

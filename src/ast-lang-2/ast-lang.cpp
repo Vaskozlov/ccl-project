@@ -111,10 +111,6 @@ ELSE_BLOCK:
     '}'
     | EPSILON
 
-ASSIGNMENT_EXPRESSION:
-    LOGICAL_OR_EXPRESSION '=' ASSIGNMENT_EXPRESSION
-    | LOGICAL_OR_EXPRESSION
-
 LOGICAL_OR_EXPRESSION:
     LOGICAL_OR_EXPRESSION '||' LOGICAL_AND_EXPRESSION
     | LOGICAL_AND_EXPRESSION
@@ -146,6 +142,10 @@ COMPARISON:
     | COMPARISON '<=' EXPRESSION
     | COMPARISON '>=' EXPRESSION
     | EXPRESSION
+
+ASSIGNMENT_EXPRESSION:
+    LOGICAL_OR_EXPRESSION '=' ASSIGNMENT_EXPRESSION
+    | LOGICAL_OR_EXPRESSION
 
 EXPRESSION:
     EXPRESSION '+' TERM
@@ -220,4 +220,159 @@ FLOAT:      [0-9]+[.][0-9]+
 NUMBER:     [0-9]+
 STRING:     ! ["] ("\\\"" | ["]^)* ["]
 )";
-}
+
+    extern const ankerl::unordered_dense::map<std::string, SmallId> NodeTypesMap{
+        {
+            "\"true\"",
+            std::to_underlying(NodeTypes::TRUE),
+        },
+        {
+            "\"false\"",
+            std::to_underlying(NodeTypes::FALSE),
+        },
+        {
+            "NUMBER",
+            std::to_underlying(NodeTypes::NUMBER),
+        },
+        {
+            "FLOAT",
+            std::to_underlying(NodeTypes::FLOAT),
+        },
+        {
+            "STRING",
+            std::to_underlying(NodeTypes::STRING),
+        },
+        {
+            "IDENTIFIER",
+            std::to_underlying(NodeTypes::IDENTIFIER),
+        },
+        {
+            "FUNCTION_CALL",
+            std::to_underlying(NodeTypes::FUNCTION_CALL),
+        },
+        {
+            "METHOD_CALL",
+            std::to_underlying(NodeTypes::METHOD_CALL),
+        },
+        {
+            "VALUE",
+            std::to_underlying(NodeTypes::FACTOR),
+        },
+        {
+            "FACTOR",
+            std::to_underlying(NodeTypes::VALUE),
+        },
+        {
+            "TERM",
+            std::to_underlying(NodeTypes::TERM),
+        },
+        {
+            "EXPRESSION",
+            std::to_underlying(NodeTypes::EXPRESSION),
+        },
+        {
+            "COMPARISON",
+            std::to_underlying(NodeTypes::COMPARISON),
+        },
+        {
+            "EQUALITY",
+            std::to_underlying(NodeTypes::EQUALITY),
+        },
+        {
+            "BITWISE_AND_EXPRESSION",
+            std::to_underlying(NodeTypes::BITWISE_AND_EXPRESSION),
+        },
+        {
+            "BITWISE_XOR_EXPRESSION",
+            std::to_underlying(NodeTypes::BITWISE_XOR_EXPRESSION),
+        },
+        {
+            "BITWISE_OR_EXPRESSION",
+            std::to_underlying(NodeTypes::BITWISE_OR_EXPRESSION),
+        },
+        {
+            "LOGICAL_AND_EXPRESSION",
+            std::to_underlying(NodeTypes::LOGICAL_AND_EXPRESSION),
+        },
+        {
+            "LOGICAL_OR_EXPRESSION",
+            std::to_underlying(NodeTypes::LOGICAL_OR_EXPRESSION),
+        },
+        {
+            "ASSIGNMENT_EXPRESSION",
+            std::to_underlying(NodeTypes::ASSIGNMENT_EXPRESSION),
+        },
+        {
+            "\'+\'",
+            std::to_underlying(NodeTypes::PLUS),
+        },
+        {
+            "\'-\'",
+            std::to_underlying(NodeTypes::MINUS),
+        },
+        {
+            "\'*\'",
+            std::to_underlying(NodeTypes::MULTIPLY),
+        },
+        {
+            "\'/\'",
+            std::to_underlying(NodeTypes::DIVIDE),
+        },
+        {
+            "\'%\'",
+            std::to_underlying(NodeTypes::MODULUS),
+        },
+        {
+            "\'<\'",
+            std::to_underlying(NodeTypes::LESS),
+        },
+        {
+            "\'<=\'",
+            std::to_underlying(NodeTypes::LESS_EQUAL),
+        },
+        {
+            "\'>\'",
+            std::to_underlying(NodeTypes::GREATER),
+        },
+        {
+            "\'>=\'",
+            std::to_underlying(NodeTypes::GREATER_EQUAL),
+        },
+        {
+            "\'==\'",
+            std::to_underlying(NodeTypes::EQUAL),
+        },
+        {
+            "\'!=\'",
+            std::to_underlying(NodeTypes::NOT_EQUAL),
+        },
+        {
+            "\'&&\'",
+            std::to_underlying(NodeTypes::LOGICAL_AND),
+        },
+        {
+            "\'||\'",
+            std::to_underlying(NodeTypes::LOGICAL_OR),
+        },
+        {
+            "\'&\'",
+            std::to_underlying(NodeTypes::BITWISE_AND),
+        },
+        {
+            "\'|\'",
+            std::to_underlying(NodeTypes::BITWISE_OR),
+        },
+        {
+            "\'^\'",
+            std::to_underlying(NodeTypes::BITWISE_XOR),
+        },
+        {
+            "\'~\''",
+            std::to_underlying(NodeTypes::BITWISE_NOT),
+        },
+        {
+            "\'=\'",
+            std::to_underlying(NodeTypes::ASSIGN),
+        },
+    };
+}// namespace astlang2

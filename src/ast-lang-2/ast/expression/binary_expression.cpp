@@ -53,67 +53,122 @@ namespace astlang2::ast::expression
                    : core::ComputationResult{.value = interpreter.BOOL_FALSE};
     }
 
+    BinaryExpression::BinaryExpression(
+        const SmallId id, ccl::parser::ast::SmallVectorOfNodes initial_nodes)
+      : AstlangNode{id}
+      , lhsNode{isl::staticPointerCast<AstlangNode>(initial_nodes.front())}
+      , rhsNode{
+            initial_nodes.size() == 1 ? nullptr
+                                      : isl::staticPointerCast<AstlangNode>(initial_nodes.at(2))}
+    {
+        if (initial_nodes.size() == 1) {
+            return;
+        }
+
+        const auto *operator_node =
+            static_cast<ccl::parser::ast::Terminal *>(initial_nodes.at(1).get());
+
+        switch (static_cast<NodeTypes>(operator_node->getType())) {
+            using enum NodeTypes;
+
+        case PLUS:
+            functionName = "__add__";
+            break;
+
+        case MINUS:
+            functionName = "__sub__";
+            break;
+
+        case MULTIPLY:
+            functionName = "__mul__";
+            break;
+
+        case DIVIDE:
+            functionName = "__div__";
+            break;
+
+        case MODULUS:
+            functionName = "__mod__";
+            break;
+
+        case LESS:
+            functionName = "__less__";
+            break;
+
+        case LESS_EQUAL:
+            functionName = "__less_eq__";
+            break;
+
+        case GREATER:
+            functionName = "__greater__";
+            break;
+
+        case GREATER_EQUAL:
+            functionName = "__greater_eq__";
+            break;
+
+        case EQUAL:
+            functionName = "__equal__";
+            break;
+
+        case NOT_EQUAL:
+            functionName = "__not_equal__";
+            break;
+
+        case BITWISE_AND:
+            functionName = "__bitwise_and__";
+            break;
+
+        case BITWISE_OR:
+            functionName = "__bitwise_or__";
+            break;
+
+        case BITWISE_XOR:
+            functionName = "__bitwise__xor__";
+            break;
+
+        case LOGICAL_OR:
+            functionName = "__logical_or__";
+            break;
+
+        case LOGICAL_AND:
+            functionName = "__logical_and__";
+            break;
+
+        case ASSIGN:
+            functionName = "__assign__";
+            break;
+
+        default:
+            throw std::runtime_error{"Unsupported binary expression"};
+        }
+    }
+
     auto BinaryExpression::compute(interpreter::Interpreter &interpreter) const
         -> core::ComputationResult
     {
-        const auto *front_node = static_cast<AstlangNode *>(front().get());
-
-        if (size() == 1) {
-            return front_node->compute(interpreter);
+        if (rhsNode == nullptr) {
+            return lhsNode->compute(interpreter);
         }
 
-        const auto *operator_node = static_cast<ccl::parser::ast::Terminal *>(at(1).get());
-        const auto operation = operator_node->getType();
-        std::string function_name;
+        if (functionName == "__logical_and__") {
+            return logicalAnd(lhsNode.get(), rhsNode.get(), interpreter);
+        }
 
-        const auto *back_node = static_cast<const AstlangNode *>(back().get());
-
-        if (operation == interpreter.PLUS) {
-            function_name = "__add__";
-        } else if (operation == interpreter.MINUS) {
-            function_name = "__sub__";
-        } else if (operation == interpreter.MULTIPLY) {
-            function_name = "__mul__";
-        } else if (operation == interpreter.DIVIDE) {
-            function_name = "__div__";
-        } else if (operation == interpreter.LESS) {
-            function_name = "__less__";
-        } else if (operation == interpreter.GREATER) {
-            function_name = "__greater__";
-        } else if (operation == interpreter.LESS_EQUAL) {
-            function_name = "__less_eq__";
-        } else if (operation == interpreter.GREATER_EQUAL) {
-            function_name = "__greater_eq__";
-        } else if (operation == interpreter.EQUAL) {
-            function_name = "__equal__";
-        } else if (operation == interpreter.NOT_EQUAL) {
-            function_name = "__not_equal__";
-        } else if (operation == interpreter.BITWISE_AND) {
-            function_name = "__bitwise_and__";
-        } else if (operation == interpreter.BITWISE_OR) {
-            function_name = "__bitwise_or__";
-        } else if (operation == interpreter.BITWISE_XOR) {
-            function_name = "__bitwise_xor__";
-        } else if (operation == interpreter.LOGICAL_OR) {
-            return logicalOr(front_node, back_node, interpreter);
-        } else if (operation == interpreter.LOGICAL_AND) {
-            return logicalAnd(front_node, back_node, interpreter);
-        } else if (operation == interpreter.ASSIGN) {
-            function_name = "__assign__";
-        } else {
-            throw std::runtime_error{"Unsupported binary expression"};
+        if (functionName == "__logical_or__") {
+            return logicalOr(lhsNode.get(), rhsNode.get(), interpreter);
         }
 
         std::vector<astlang2::Value> function_arguments;
         function_arguments.reserve(2);
 
-        core::ComputationResult lhs_argument = front_node->compute(interpreter);
+        core::ComputationResult lhs_argument = lhsNode->compute(interpreter);
 
         if (lhs_argument.controlflowStatus == core::ControlflowStatus::RETURN) {
             return lhs_argument;
         }
 
-        core::ComputationResult rhs_argument = back_node->compute(interpreter);
+        core::ComputationResult rhs_argument = rhsNode->compute(interpreter);
 
         if (rhs_argument.controlflowStatus == core::ControlflowStatus::RETURN) {
             return rhs_argument;
@@ -122,8 +177,38 @@ namespace astlang2::ast::expression
         function_arguments.emplace_back(std::move(lhs_argument.value));
         function_arguments.emplace_back(std::move(rhs_argument.value));
 
-        auto expression_result = interpreter.callFunction(function_name, function_arguments);
+        auto expression_result = interpreter.callFunction(functionName, function_arguments);
 
         return core::ComputationResult{.value = std::move(expression_result)};
+    }
+
+    auto BinaryExpression::castChildren(const ConversionTable &conversion_table) -> void
+    {
+        lhsNode->cast(conversion_table);
+
+        if (rhsNode != nullptr) {
+            rhsNode->cast(conversion_table);
+        }
+    }
+
+    auto BinaryExpression::optimize() -> core::SharedNode<>
+    {
+        auto new_lhs = lhsNode->optimize();
+
+        if (new_lhs != nullptr) {
+            lhsNode = isl::staticPointerCast<AstlangNode>(std::move(new_lhs));
+        }
+
+        if (rhsNode == nullptr) {
+            return lhsNode;
+        }
+
+        auto new_rhs = rhsNode->optimize();
+
+        if (new_rhs != nullptr) {
+            rhsNode = isl::staticPointerCast<AstlangNode>(std::move(new_rhs));
+        }
+
+        return nullptr;
     }
 }// namespace astlang2::ast::expression

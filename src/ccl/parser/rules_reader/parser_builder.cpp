@@ -6,7 +6,7 @@
 
 namespace ccl::parser::reader
 {
-    ParserBuilder::ParserBuilder()
+    ParserBuilder::ParserBuilder(const ankerl::unordered_dense::map<std::string, SmallId> &default_rules)
       : ruleIdToName{
             {
                 std::to_underlying(lexer::ReservedTokenType::EOI),
@@ -44,8 +44,13 @@ namespace ccl::parser::reader
           },
       },
       grammarRulesStorage{getRuleId("EPSILON")},
-      ruleIdGenerator{lexer::ReservedTokenMaxValue + 2}
-    {}
+      ruleIdGenerator{std::ranges::max_element(default_rules, {}, &std::pair<std::string, SmallId>::second)->second + 1}
+    {
+        for (const auto &[rule_name, rule_id] : default_rules) {
+            ruleIdToName.try_emplace(rule_id, rule_name);
+            ruleNameToId.try_emplace(rule_name, rule_id);
+        }
+    }
 
     auto ParserBuilder::buildLr1() -> LrParser
     {
@@ -149,8 +154,8 @@ namespace ccl::parser::reader
         };
     }
 
-    auto
-        ParserBuilder::getIdToNameTranslationFunction() const -> std::function<std::string(SmallId)>
+    auto ParserBuilder::getIdToNameTranslationFunction() const
+        -> std::function<std::string(SmallId)>
     {
         return [this](const SmallId rule_id) {
             return ruleIdToName.at(rule_id);

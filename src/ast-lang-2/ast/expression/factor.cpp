@@ -5,9 +5,7 @@
 
 namespace astlang2::ast::expression
 {
-    static auto constructNumberNode(
-        const interpreter::Interpreter &interpreter, const ccl::parser::ast::Node *node)
-        -> astlang2::Value
+    static auto constructNumberNode(const ccl::parser::ast::Node *node) -> std::shared_ptr<void>
     {
         const auto *token_node = static_cast<const ccl::parser::ast::Terminal *>(node);
         const auto &token = token_node->getToken();
@@ -16,31 +14,20 @@ namespace astlang2::ast::expression
         auto parsed_number = isl::ssize_t{};
         std::from_chars(repr.begin(), repr.end(), parsed_number);
 
-        return astlang2::Value{
-            .object = std::make_shared<isl::ssize_t>(parsed_number),
-            .type = interpreter.getInt(),
-        };
+        return std::make_shared<isl::ssize_t>(parsed_number);
     }
 
-    static auto constructFloatNode(
-        const interpreter::Interpreter &interpreter, const ccl::parser::ast::Node *node)
-        -> astlang2::Value
+    static auto constructFloatNode(const ccl::parser::ast::Node *node) -> std::shared_ptr<void>
     {
         const auto *token_node = static_cast<const ccl::parser::ast::Terminal *>(node);
         const auto &token = token_node->getToken();
         const auto repr = token.getRepr();
-
         auto parsed_number = std::stod(static_cast<std::string>(repr));
 
-        return astlang2::Value{
-            .object = std::make_shared<double>(parsed_number),
-            .type = interpreter.getDouble(),
-        };
+        return std::make_shared<double>(parsed_number);
     }
 
-    static auto constructStringNode(
-        const interpreter::Interpreter &interpreter, const ccl::parser::ast::Node *node)
-        -> astlang2::Value
+    static auto constructStringNode(const ccl::parser::ast::Node *node) -> std::shared_ptr<void>
     {
         const auto *token_node = static_cast<const ccl::parser::ast::Terminal *>(node);
         const auto &token = token_node->getToken();
@@ -48,68 +35,139 @@ namespace astlang2::ast::expression
         const auto repr_without_quotes = repr.substr(1).withoutLastSymbol();
         const auto repr_with_processed_escapes = ccl::text::removeEscaping(repr_without_quotes, {});
 
-        return astlang2::Value{
-            .object = std::make_shared<std::string>(repr_with_processed_escapes),
-            .type = interpreter.getString(),
-        };
+        return std::make_shared<std::string>(repr_with_processed_escapes);
     }
 
-    static auto constructBooleanNode(
-        const interpreter::Interpreter &interpreter, const ccl::parser::ast::Node *node)
-        -> astlang2::Value
+    static auto constructBooleanNode(bool value) -> std::shared_ptr<void>
     {
-        return astlang2::Value{
-            .object = std::make_shared<bool>(node->getType() == interpreter.TRUE),
-            .type = interpreter.getBool(),
-        };
+        return std::make_shared<bool>(value);
     }
 
-    static auto
-        readVariable(interpreter::Interpreter &interpreter, const ccl::parser::ast::Node *node)
-            -> astlang2::Value
+    static auto getVariableName(const ccl::parser::ast::Node *node) -> std::shared_ptr<void>
     {
         const auto *token_node = static_cast<const ccl::parser::ast::Terminal *>(node);
         const auto &token = token_node->getToken();
         const auto repr = token.getRepr();
 
-        return interpreter.read(static_cast<std::string>(repr));
+        return std::make_shared<std::string>(repr);
+    }
+
+    Factor::Factor(const SmallId id, ccl::parser::ast::SmallVectorOfNodes initial_nodes)
+      : AstlangNode{id}
+    {
+        if (initial_nodes.size() != 1) {
+            node = initial_nodes.at(1);
+            nodeType = NodeTypes::ASSIGNMENT_EXPRESSION;
+            return;
+        }
+
+        node = initial_nodes.front();
+        nodeType = static_cast<NodeTypes>(node->getType());
+
+        switch (nodeType) {
+            using enum NodeTypes;
+
+        case NUMBER:
+            precomputedValue = constructNumberNode(node.get());
+            break;
+
+        case FLOAT:
+            precomputedValue = constructFloatNode(node.get());
+            break;
+
+        case TRUE:
+            precomputedValue = constructBooleanNode(true);
+            break;
+
+        case FALSE:
+            precomputedValue = constructBooleanNode(false);
+            break;
+
+        case STRING:
+            precomputedValue = constructStringNode(node.get());
+            break;
+
+        case IDENTIFIER:
+            precomputedValue = getVariableName(node.get());
+            break;
+
+        default:
+            break;
+        }
     }
 
     auto Factor::compute(interpreter::Interpreter &interpreter) const -> core::ComputationResult
     {
         using namespace core;
 
-        if (size() != 1) {
-            return static_cast<AstlangNode *>(at(1).get())->compute(interpreter);
+        switch (nodeType) {
+            using enum NodeTypes;
+
+        case NUMBER:
+            return ComputationResult{
+                .value =
+                    astlang2::Value{
+                        .object = precomputedValue,
+                        .type = interpreter.getInt(),
+                    },
+            };
+
+        case FLOAT:
+            return ComputationResult{
+                .value =
+                    astlang2::Value{
+                        .object = precomputedValue,
+                        .type = interpreter.getDouble(),
+                    },
+            };
+
+        case TRUE:
+        case FALSE:
+            return ComputationResult{
+                .value =
+                    astlang2::Value{
+                        .object = precomputedValue,
+                        .type = interpreter.getBool(),
+                    },
+            };
+
+        case STRING:
+            return ComputationResult{
+                .value =
+                    astlang2::Value{
+                        .object = precomputedValue,
+                        .type = interpreter.getString(),
+                    },
+            };
+
+        case IDENTIFIER:
+            return ComputationResult{
+                .value = interpreter.read(*static_cast<std::string *>(precomputedValue.get())),
+            };
+
+        default:
+            return static_cast<AstlangNode *>(node.get())->compute(interpreter);
+        }
+    }
+
+    auto Factor::castChildren(const ConversionTable &conversion_table) -> void
+    {
+        node->cast(conversion_table);
+    }
+
+    auto Factor::optimize() -> core::SharedNode<>
+    {
+        if (nodeType != NodeTypes::ASSIGNMENT_EXPRESSION) {
+            return nullptr;
         }
 
-        const auto *front_node = static_cast<const Node *>(front().get());
-        const auto node_type = front_node->getType();
+        auto *node_ptr = static_cast<AstlangNode *>(node.get());
+        auto new_node = node_ptr->optimize();
 
-        if (node_type == interpreter.NUMBER) {
-            return ComputationResult{.value = constructNumberNode(interpreter, front_node)};
+        if (new_node != nullptr) {
+            node = isl::staticPointerCast<Node>(new_node);
         }
 
-        if (node_type == interpreter.FLOAT) {
-            return ComputationResult{.value = constructFloatNode(interpreter, front_node)};
-        }
-
-        if (node_type == interpreter.TRUE || node_type == interpreter.FALSE) {
-            return ComputationResult{.value = constructBooleanNode(interpreter, front_node)};
-        }
-
-        if (node_type == interpreter.STRING) {
-            return ComputationResult{.value = constructStringNode(interpreter, front_node)};
-        }
-
-        if (node_type == interpreter.IDENTIFIER) {
-            return ComputationResult{.value = readVariable(interpreter, front_node)};
-        }
-
-        if (node_type == interpreter.FUNCTION_CALL || node_type == interpreter.METHOD_CALL) {
-            return static_cast<const AstlangNode *>(front_node)->compute(interpreter);
-        }
-
-        throw std::runtime_error{"Unknown factor type"};
+        return node;
     }
 }// namespace astlang2::ast::expression

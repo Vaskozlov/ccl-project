@@ -16,9 +16,9 @@ namespace ccl::parser::ast
     protected:
         static auto getPrintingPrefix(const std::string &prefix, bool is_left) -> std::string;
 
-        static auto expandPrefix(
-            const std::string &prefix, bool is_left,
-            std::size_t extra_expansion = 1) -> std::string;
+        static auto
+            expandPrefix(const std::string &prefix, bool is_left, std::size_t extra_expansion = 1)
+                -> std::string;
 
     public:
         using ConversionTable = ankerl::unordered_dense::map<SmallId, void (*)(NonTerminal *)>;
@@ -46,6 +46,8 @@ namespace ccl::parser::ast
             const std::string &prefix = "", bool is_left = false,
             const std::function<std::string(SmallId)> &id_converter = fmt::to_string<SmallId>) const
             -> void = 0;
+
+        virtual auto castChildren(const ConversionTable &conversion_table) -> void = 0;
 
         auto cast(const ConversionTable &conversion_table) -> void;
     };

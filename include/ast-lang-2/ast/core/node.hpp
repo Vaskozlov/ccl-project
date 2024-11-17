@@ -32,22 +32,25 @@ namespace astlang2::ast::core
         ControlflowStatus controlflowStatus{ControlflowStatus::NONE};
     };
 
-    class AstlangNode : public ccl::parser::ast::NonTerminal
+    class AstlangNode : public ccl::parser::ast::Node
     {
     public:
-        using NonTerminal::NonTerminal;
+        using Node::Node;
 
-        auto runRecursiveOptimization() -> void;
+        virtual auto optimize() -> SharedNode<> = 0;
 
-        virtual auto optimize() -> SharedNode<>;
-
-        virtual auto compute(interpreter::Interpreter &interpreter) const -> ComputationResult
+        virtual auto compute(interpreter::Interpreter & /*unused*/) const -> ComputationResult
         {
             return ComputationResult{.value = Value{}};
         }
 
         static auto buildConversionTable(const ccl::parser::reader::ParserBuilder &constructor)
             -> ConversionTable;
+
+        auto print(
+            const std::string &prefix, bool is_left,
+            const std::function<std::string(ccl::SmallId)> &id_converter) const -> void override
+        {}
     };
 }// namespace astlang2::ast::core
 

@@ -9,13 +9,13 @@ namespace astlang2::function
     class AstlangFunction final : public Function
     {
     private:
-        const ast::core::AstlangNode *functionBody{};
+        ast::core::SharedNode<ast::core::AstlangNode> functionBody;
 
     public:
         explicit AstlangFunction(
-            std::vector<std::string> arguments_names, const ast::core::AstlangNode *function_body)
+            std::vector<std::string> arguments_names, ast::core::SharedNode<ast::core::AstlangNode> function_body)
           : Function{std::move(arguments_names)}
-          , functionBody{function_body}
+          , functionBody{std::move(function_body)}
         {}
 
     protected:

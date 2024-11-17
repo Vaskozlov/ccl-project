@@ -7,11 +7,18 @@ namespace astlang2::ast::statement
 {
     class Statements final : public core::AstlangNode
     {
+    private:
+        isl::SmallVector<core::SharedNode<AstlangNode>, 6> nodes;
+
     public:
-        using AstlangNode::AstlangNode;
+        Statements(SmallId id, const ccl::parser::ast::SmallVectorOfNodes &initial_nodes);
 
         auto compute(interpreter::Interpreter &interpreter) const
             -> core::ComputationResult override;
+
+        auto castChildren(const ConversionTable& conversion_table) -> void override;
+
+        auto optimize() -> core::SharedNode<> override;
     };
 }// namespace astlang2::ast::statement
 

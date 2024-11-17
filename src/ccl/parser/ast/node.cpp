@@ -20,7 +20,8 @@ namespace ccl::parser::ast
         return prefix + (is_left ? "├──" : "└──");
     }
 
-    auto Node::expandPrefix(const std::string &prefix, const bool is_left, const std::size_t extra_expansion)
+    auto Node::expandPrefix(
+        const std::string &prefix, const bool is_left, const std::size_t extra_expansion)
         -> std::string
     {
         static constexpr auto default_printing_shift = std::string_view{"   "};
@@ -39,9 +40,15 @@ namespace ccl::parser::ast
             return;
         }
 
-        const auto conversion_function = conversion_table.at(node_as_sequence->getType());
+        const auto conversion_function_it = conversion_table.find(this->getType());
+
+        if (conversion_function_it == conversion_table.end()) {
+            return;
+        }
+
+        const auto conversion_function = conversion_function_it->second;
         conversion_function(node_as_sequence);
 
-        std::launder(node_as_sequence)->castChildren(conversion_table);
+        std::launder(this)->castChildren(conversion_table);
     }
 }// namespace ccl::parser::ast

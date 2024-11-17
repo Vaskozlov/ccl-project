@@ -10,6 +10,7 @@ namespace ccl::parser::ast
     {
     private:
         lexer::Token token;
+        std::array<char, 512> padding;
 
     public:
         explicit Terminal(const SmallId node_type_id)
@@ -39,6 +40,9 @@ namespace ccl::parser::ast
         auto print(
             const std::string &prefix, bool is_left,
             const std::function<std::string(SmallId)> &id_converter) const -> void override;
+
+        auto castChildren(const ConversionTable &) -> void override
+        {}
     };
 }// namespace ccl::parser::ast
 

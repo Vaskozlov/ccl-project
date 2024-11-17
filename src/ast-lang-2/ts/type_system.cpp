@@ -73,7 +73,7 @@ namespace astlang2
         return it->second.get();
     }
 
-    auto TypeSystem::getTypeFromNode(const ast::core::AstlangNode *node) -> ts::Type *
+    auto TypeSystem::getTypeFromNode(const ccl::parser::ast::NonTerminal *node) -> ts::Type *
     {
         const auto *main_type_node =
             static_cast<const ccl::parser::ast::Terminal *>(node->front().get());
@@ -86,7 +86,7 @@ namespace astlang2
         }
 
         const auto *template_argument_node =
-            static_cast<const ast::core::AstlangNode *>(node->at(2).get());
+            static_cast<const ccl::parser::ast::NonTerminal *>(node->at(2).get());
 
         const auto *template_type = getTypeFromNode(template_argument_node);
         const auto full_type_name = fmt::format("{}<{}>", main_type_repr, template_type->getName());

@@ -11,7 +11,7 @@ namespace ccl::parser::reader::ast
         ParserBuilder &parser_builder,
         bool is_any_place_string) -> void
     {
-        if (parser_builder.hasRule(str)) {
+        if (parser_builder.getLexicalAnalyzer().hasRule(str)) {
             return;
         }
 
