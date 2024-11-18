@@ -21,7 +21,8 @@ namespace astlang2::interpreter
         };
 
         auto builtin_function = std::make_shared<function::BuiltinFunction>(
-            isl::SmallVector<std::string, 2>{"value"}, [function, return_type](Interpreter &interpreter) {
+            isl::SmallVector<std::string, 2>{"value"},
+            [function, return_type](Interpreter &interpreter) {
                 auto value_ptr = interpreter.read("value").object;
                 return function(return_type, std::static_pointer_cast<ARG>(std::move(value_ptr)));
             });
@@ -41,7 +42,8 @@ namespace astlang2::interpreter
         };
 
         auto builtin_function = std::make_shared<function::BuiltinFunction>(
-            isl::SmallVector<std::string, 2>{"self"}, [function, return_type](Interpreter &interpreter) {
+            isl::SmallVector<std::string, 2>{"self"},
+            [function, return_type](Interpreter &interpreter) {
                 auto value_ptr = interpreter.read("self").object;
                 return function(return_type, std::static_pointer_cast<T>(std::move(value_ptr)));
             });

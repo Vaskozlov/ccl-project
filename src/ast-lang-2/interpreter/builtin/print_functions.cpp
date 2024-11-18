@@ -18,7 +18,8 @@ namespace astlang2::interpreter
         };
 
         auto builtin_function = std::make_shared<function::BuiltinFunction>(
-            isl::SmallVector<std::string, 2>{"value"}, [void_type, format](Interpreter &interpreter) {
+            isl::SmallVector<std::string, 2>{"value"},
+            [void_type, format](Interpreter &interpreter) {
                 const auto value_ptr = interpreter.read("value").object;
                 auto &value = *static_cast<std::remove_cvref_t<T> *>(value_ptr.get());
 

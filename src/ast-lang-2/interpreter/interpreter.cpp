@@ -55,8 +55,9 @@ namespace astlang2::interpreter
       , outputBuffer{buffer_inserter}
     {}
 
-    auto Interpreter::callFunction(const std::string &name, const isl::SmallVector<Value, 4> &arguments)
-        -> Value
+    auto Interpreter::callFunction(
+        const std::string &name,
+        const isl::SmallVector<Value, 4> &arguments) -> Value
     {
         function::FunctionIdentification function_identification{.name = name};
 

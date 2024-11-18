@@ -44,7 +44,7 @@ namespace astlang2::function
         isl::SmallVector<std::string, 2> argumentsNames;
 
     public:
-        explicit Function(const isl::SmallVector<std::string, 2>&arguments_names)
+        explicit Function(const isl::SmallVector<std::string, 2> &arguments_names)
           : argumentsNames{arguments_names}
         {}
 
@@ -56,8 +56,9 @@ namespace astlang2::function
         auto operator=(Function &&other) -> Function & = delete;
         auto operator=(const Function &other) -> Function & = delete;
 
-        auto call(interpreter::Interpreter &interpreter, const isl::SmallVector<Value, 4> &arguments) const
-            -> Value;
+        auto call(
+            interpreter::Interpreter &interpreter,
+            const isl::SmallVector<Value, 4> &arguments) const -> Value;
 
     protected:
         virtual auto doCall(interpreter::Interpreter &interpreter) const -> Value = 0;

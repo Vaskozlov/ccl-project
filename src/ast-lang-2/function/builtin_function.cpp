@@ -3,8 +3,7 @@
 namespace astlang2::function
 {
     BuiltinFunction::BuiltinFunction(
-        const isl::SmallVector<std::string, 2>&
-            arguments_names,
+        const isl::SmallVector<std::string, 2> &arguments_names,
         std::function<Value(interpreter::Interpreter &)>
             builtin_function)
       : Function{arguments_names}

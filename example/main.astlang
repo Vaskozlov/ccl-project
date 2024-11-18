@@ -12,7 +12,7 @@ def f(int a)
 var b = timeNs();
 var i = 0;
 
-while i < 10{
+while i < 1{
     var s = "Hello, world!";
 
     println(-double(f(0)) + -1.25 * 150.5);

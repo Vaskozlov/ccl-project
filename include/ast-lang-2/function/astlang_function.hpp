@@ -14,7 +14,8 @@ namespace astlang2::function
     public:
         explicit AstlangFunction(
             const isl::SmallVector<std::string, 2> &arguments_names,
-            ast::core::SharedNode<ast::core::AstlangNode> function_body)
+            ast::core::SharedNode<ast::core::AstlangNode>
+                function_body)
           : Function{arguments_names}
           , functionBody{std::move(function_body)}
         {}
