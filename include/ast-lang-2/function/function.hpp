@@ -3,7 +3,7 @@
 
 #include <ast-lang-2/ts/value.hpp>
 
-#include "../../../../../../../Volumes/ramdisk/ccl-project/clang-brew/rel-with-deb-info/_deps/isl-src/include/isl/small_vector.hpp"
+#include <isl/small_vector.hpp>
 
 namespace astlang2::ts
 {
