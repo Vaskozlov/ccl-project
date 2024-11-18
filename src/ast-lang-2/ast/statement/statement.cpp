@@ -20,12 +20,7 @@ namespace astlang2::ast::statement
 
     auto Statement::optimize() -> core::SharedNode<>
     {
-        auto new_node = node->optimize();
-
-        if (new_node != nullptr) {
-            node = isl::staticPointerCast<AstlangNode>(std::move(new_node));
-        }
-
+        exchangeIfNotNull(node, node->optimize());
         return node;
     }
 }// namespace astlang2::ast::statement

@@ -161,12 +161,7 @@ namespace astlang2::ast::expression
             return nullptr;
         }
 
-        auto *node_ptr = static_cast<AstlangNode *>(node.get());
-        auto new_node = node_ptr->optimize();
-
-        if (new_node != nullptr) {
-            node = isl::staticPointerCast<Node>(new_node);
-        }
+        exchangeIfNotNull<Node>(node, static_cast<AstlangNode *>(node.get())->optimize());
 
         return node;
     }

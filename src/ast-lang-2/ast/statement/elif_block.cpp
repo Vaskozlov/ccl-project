@@ -37,8 +37,8 @@ namespace astlang2::ast::statement
 
     auto ElifBlock::compute(interpreter::Interpreter &interpreter) const -> core::ComputationResult
     {
-        for (const auto &elif_statement : elifStatements) {
-            auto condition_result = elif_statement.conditionNode->compute(interpreter);
+        for (const auto &[condition_node, body_node] : elifStatements) {
+            auto condition_result = condition_node->compute(interpreter);
 
             if (condition_result.controlflowStatus == core::ControlflowStatus::RETURN) {
                 return condition_result;
@@ -48,8 +48,7 @@ namespace astlang2::ast::statement
                 interpreter.callFunction("bool", {std::move(condition_result.value)});
 
             if (*static_cast<bool *>(condition_to_bool.object.get())) {
-                core::ComputationResult statement_result =
-                    elif_statement.bodyNode->compute(interpreter);
+                core::ComputationResult statement_result = body_node->compute(interpreter);
 
                 statement_result.controlflowStatus =
                     statement_result.controlflowStatus == core::ControlflowStatus::RETURN
@@ -76,16 +75,8 @@ namespace astlang2::ast::statement
     auto ElifBlock::optimize() -> core::SharedNode<>
     {
         for (auto &[condition, body] : elifStatements) {
-            auto new_condition = condition->optimize();
-            auto new_body = body->optimize();
-
-            if (new_condition != nullptr) {
-                condition = isl::staticPointerCast<AstlangNode>(std::move(new_condition));
-            }
-
-            if (new_body != nullptr) {
-                body = isl::staticPointerCast<AstlangNode>(std::move(new_body));
-            }
+            exchangeIfNotNull(condition, condition->optimize());
+            exchangeIfNotNull(body, body->optimize());
         }
 
         return nullptr;

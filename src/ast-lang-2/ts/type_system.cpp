@@ -45,6 +45,15 @@ namespace astlang2
         floatType = createCoreType("float");
         doubleType = createCoreType("double");
         stringType = createCoreType("string");
+        vec2Type = createCoreType("vec2");
+        vec3Type = createCoreType("vec3");
+
+        vec2Type->addField(ts::Field{.name = "x", .type = doubleType});
+        vec2Type->addField(ts::Field{.name = "y", .type = doubleType});
+
+        vec3Type->addField(ts::Field{.name = "x", .type = doubleType});
+        vec3Type->addField(ts::Field{.name = "y", .type = doubleType});
+        vec3Type->addField(ts::Field{.name = "z", .type = doubleType});
 
         auto list_type = std::make_unique<ts::TemplateType>("list", typeIdGenerator.next());
         templateTypes.emplace(list_type->getName(), std::move(list_type));

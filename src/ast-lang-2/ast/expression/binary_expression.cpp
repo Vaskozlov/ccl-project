@@ -191,21 +191,13 @@ namespace astlang2::ast::expression
 
     auto BinaryExpression::optimize() -> core::SharedNode<>
     {
-        auto new_lhs = lhsNode->optimize();
-
-        if (new_lhs != nullptr) {
-            lhsNode = isl::staticPointerCast<AstlangNode>(std::move(new_lhs));
-        }
+        exchangeIfNotNull(lhsNode, lhsNode->optimize());
 
         if (rhsNode == nullptr) {
             return lhsNode;
         }
 
-        auto new_rhs = rhsNode->optimize();
-
-        if (new_rhs != nullptr) {
-            rhsNode = isl::staticPointerCast<AstlangNode>(std::move(new_rhs));
-        }
+        exchangeIfNotNull(rhsNode, rhsNode->optimize());
 
         return nullptr;
     }

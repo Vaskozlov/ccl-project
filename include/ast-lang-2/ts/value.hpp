@@ -10,8 +10,6 @@ namespace astlang2
         class Type;
     }
 
-    using Instance = ankerl::unordered_dense::map<std::string, std::shared_ptr<void>>;
-
     enum class ValueType
     {
         R_VALUE,
@@ -24,6 +22,8 @@ namespace astlang2
         ts::Type *type{};
         ValueType valueType = ValueType::R_VALUE;
     };
+
+    using Instance = ankerl::unordered_dense::map<std::string, Value>;
 }// namespace astlang2
 
 #endif /* AST_LANG_2_TS_VALUE_HPP */

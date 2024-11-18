@@ -64,11 +64,7 @@ namespace astlang2::ast::function::def
             functionArguments.emplace_back(std::move(argument));
         }
 
-        while (true) {
-            if (arguments_nodes->size() < 3) {
-                break;
-            }
-
+        while (arguments_nodes->size() == 3) {
             arguments_nodes =
                 static_cast<const ccl::parser::ast::NonTerminal *>(arguments_nodes->back().get());
 

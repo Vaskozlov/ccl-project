@@ -1,6 +1,7 @@
 #include <ast-lang-2/ast/core/node.hpp>
 #include <ast-lang-2/ast/expression/binary_expression.hpp>
 #include <ast-lang-2/ast/expression/factor.hpp>
+#include <ast-lang-2/ast/expression/field_access.hpp>
 #include <ast-lang-2/ast/expression/value.hpp>
 #include <ast-lang-2/ast/function_call/function_call.hpp>
 #include <ast-lang-2/ast/function_call/method_call.hpp>
@@ -142,6 +143,10 @@ namespace astlang2::ast::core
             {
                 constructor.getRuleId("METHOD_CALL"),
                 ReconstructorPtr<function::call::MethodCall>,
+            },
+            {
+                constructor.getRuleId("FIELD_ACCESS"),
+                ReconstructorPtr<expression::FieldAccess>,
             },
         };
     }

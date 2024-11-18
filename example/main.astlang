@@ -1,46 +1,7 @@
-def f(int a)
-{
-    while a < 10
-    {
-        println(a * a);
-        a = a + 1;
-    }
+var a = vec2(0.0, 0.0);
 
-    return a * a;
-}
+a.x = 1.0;
+a.y = a.y + 8.0;
 
-var b = timeNs();
-var i = 0;
-
-while i < 1{
-    var s = "Hello, world!";
-
-    println(-double(f(0)) + -1.25 * 150.5);
-    println(s.length());
-    println(s);
-
-    var a = 10;
-
-    if a > 20
-    {
-        println("Greater");
-    }
-    elif a < 5
-    {
-        println("Less than 5");
-    }
-    elif a == 10
-    {
-        println("Equal to 10");
-    }
-    else
-    {
-        println("Something else");
-    }
-
-    i = i + 1;
-}
-
-var e = timeNs();
-print((e - b) / 1000);
-println("us");
+println(a.x);
+println(a.y);

@@ -52,11 +52,7 @@ namespace astlang2::ast::expression
 
     auto Value::optimize() -> core::SharedNode<>
     {
-        auto new_node = node->optimize();
-
-        if (new_node != nullptr) {
-            node = isl::staticPointerCast<AstlangNode>(std::move(new_node));
-        }
+        exchangeIfNotNull(node, node->optimize());
 
         if (functionName.empty()) {
             return node;

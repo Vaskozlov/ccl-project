@@ -1,14 +1,16 @@
 #include <ast-lang-2/ast/statement/while_loop.hpp>
 
-namespace astlang2::ast::statement {
+namespace astlang2::ast::statement
+{
     WhileLoop::WhileLoop(
-        const SmallId id, const ccl::parser::ast::SmallVectorOfNodes&initial_nodes)
-        : AstlangNode{id}
-          , conditionNode{isl::staticPointerCast<AstlangNode>(initial_nodes.at(1))}
-          , bodyNode{isl::staticPointerCast<AstlangNode>(initial_nodes.at(3))} {
-    }
+        const SmallId id, const ccl::parser::ast::SmallVectorOfNodes &initial_nodes)
+      : AstlangNode{id}
+      , conditionNode{isl::staticPointerCast<AstlangNode>(initial_nodes.at(1))}
+      , bodyNode{isl::staticPointerCast<AstlangNode>(initial_nodes.at(3))}
+    {}
 
-    auto WhileLoop::compute(interpreter::Interpreter&interpreter) const -> core::ComputationResult {
+    auto WhileLoop::compute(interpreter::Interpreter &interpreter) const -> core::ComputationResult
+    {
         while (true) {
             core::ComputationResult condition_result = conditionNode->compute(interpreter);
 
@@ -17,15 +19,15 @@ namespace astlang2::ast::statement {
             }
 
             const auto condition_to_bool =
-                    interpreter.callFunction("bool", {std::move(condition_result.value)});
+                interpreter.callFunction("bool", {std::move(condition_result.value)});
 
             if (!*static_cast<bool *>(condition_to_bool.object.get())) {
                 return core::ComputationResult{
                     .value =
-                    Value{
-                        .object = nullptr,
-                        .type = interpreter.getVoid(),
-                    },
+                        Value{
+                            .object = nullptr,
+                            .type = interpreter.getVoid(),
+                        },
                 };
             }
 
@@ -37,23 +39,17 @@ namespace astlang2::ast::statement {
         }
     }
 
-    auto WhileLoop::castChildren(const ConversionTable&conversion_table) -> void {
+    auto WhileLoop::castChildren(const ConversionTable &conversion_table) -> void
+    {
         conditionNode->cast(conversion_table);
         bodyNode->cast(conversion_table);
     }
 
-    auto WhileLoop::optimize() -> core::SharedNode<> {
-        auto new_condition = conditionNode->optimize();
-        auto new_body = bodyNode->optimize();
-
-        if (new_condition != nullptr) {
-            conditionNode = isl::staticPointerCast<AstlangNode>(std::move(new_condition));
-        }
-
-        if (new_body != nullptr) {
-            bodyNode = isl::staticPointerCast<AstlangNode>(std::move(new_body));
-        }
+    auto WhileLoop::optimize() -> core::SharedNode<>
+    {
+        exchangeIfNotNull(conditionNode, conditionNode->optimize());
+        exchangeIfNotNull(bodyNode, bodyNode->optimize());
 
         return nullptr;
     }
-} // namespace astlang2::ast::statement
+}// namespace astlang2::ast::statement

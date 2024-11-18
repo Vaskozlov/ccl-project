@@ -23,11 +23,7 @@ namespace astlang2::ast::statement
 
     auto ElseBlock::optimize() -> core::SharedNode<>
     {
-        auto new_body = bodyNode->optimize();
-
-        if (new_body != nullptr) {
-            bodyNode = bodyNode;
-        }
+        exchangeIfNotNull(bodyNode, bodyNode->optimize());
 
         return nullptr;
     }

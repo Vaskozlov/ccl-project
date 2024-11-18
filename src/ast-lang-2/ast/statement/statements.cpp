@@ -1,9 +1,12 @@
 #include <ast-lang-2/ast/statement/statements.hpp>
+#include <ast-lang-2/interpreter/interpreter.hpp>
 
-namespace astlang2::ast::statement {
+namespace astlang2::ast::statement
+{
     Statements::Statements(
-        const SmallId id, const ccl::parser::ast::SmallVectorOfNodes&initial_nodes)
-        : AstlangNode{id} {
+        const SmallId id, const ccl::parser::ast::SmallVectorOfNodes &initial_nodes)
+      : AstlangNode{id}
+    {
         if (initial_nodes.size() == 0) {
             return;
         }
@@ -14,8 +17,8 @@ namespace astlang2::ast::statement {
             return;
         }
 
-        const auto* statements =
-                static_cast<ccl::parser::ast::NonTerminal *>(initial_nodes.back().get());
+        const auto *statements =
+            static_cast<ccl::parser::ast::NonTerminal *>(initial_nodes.back().get());
 
         while (true) {
             nodes.emplace_back(isl::staticPointerCast<AstlangNode>(statements->front()));
@@ -28,16 +31,17 @@ namespace astlang2::ast::statement {
         }
     }
 
-    auto Statements::compute(interpreter::Interpreter&interpreter) const -> core::ComputationResult {
+    auto Statements::compute(interpreter::Interpreter &interpreter) const -> core::ComputationResult
+    {
         core::ComputationResult result{
             .value =
-            Value{
-                .object = nullptr,
-                .type = interpreter.getVoid(),
-            },
+                Value{
+                    .object = nullptr,
+                    .type = interpreter.getVoid(),
+                },
         };
 
-        for (const auto&statement: nodes) {
+        for (const auto &statement : nodes) {
             result = statement->compute(interpreter);
 
             if (result.controlflowStatus == core::ControlflowStatus::RETURN) {
@@ -48,19 +52,17 @@ namespace astlang2::ast::statement {
         return result;
     }
 
-    auto Statements::castChildren(const ConversionTable&conversion_table) -> void {
-        for (auto&node: nodes) {
+    auto Statements::castChildren(const ConversionTable &conversion_table) -> void
+    {
+        for (auto &node : nodes) {
             node->cast(conversion_table);
         }
     }
 
-    auto Statements::optimize() -> core::SharedNode<> {
-        for (auto&node: nodes) {
-            auto new_node = node->optimize();
-
-            if (new_node != nullptr) {
-                node = isl::staticPointerCast<AstlangNode>(std::move(new_node));
-            }
+    auto Statements::optimize() -> core::SharedNode<>
+    {
+        for (auto &node : nodes) {
+            exchangeIfNotNull(node, node->optimize());
         }
 
         if (nodes.size() == 1) {
@@ -69,4 +71,4 @@ namespace astlang2::ast::statement {
 
         return nullptr;
     }
-} // namespace astlang2::ast::statement
+}// namespace astlang2::ast::statement

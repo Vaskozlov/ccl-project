@@ -44,16 +44,8 @@ namespace astlang2::ast::statement
 
     auto IfBlock::optimize() -> core::SharedNode<>
     {
-        auto new_condition = conditionNode->optimize();
-        auto new_body = bodyNode->optimize();
-
-        if (new_condition != nullptr) {
-            conditionNode = isl::staticPointerCast<AstlangNode>(std::move(new_condition));
-        }
-
-        if (new_body != nullptr) {
-            bodyNode = isl::staticPointerCast<AstlangNode>(std::move(new_body));
-        }
+        exchangeIfNotNull(conditionNode, conditionNode->optimize());
+        exchangeIfNotNull(bodyNode, bodyNode->optimize());
 
         return nullptr;
     }

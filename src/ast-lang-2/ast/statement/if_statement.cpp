@@ -46,11 +46,7 @@ namespace astlang2::ast::statement
     auto IfStatement::optimize() -> core::SharedNode<>
     {
         for (auto &node : nodes) {
-            auto new_node = node->optimize();
-
-            if (new_node != nullptr) {
-                node = isl::staticPointerCast<AstlangNode>(std::move(new_node));
-            }
+            exchangeIfNotNull(node, node->optimize());
         }
 
         return nullptr;

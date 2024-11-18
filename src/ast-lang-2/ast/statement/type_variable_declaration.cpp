@@ -45,11 +45,7 @@ namespace astlang2::ast::statement
 
     auto TypeVariableDeclaration::optimize() -> core::SharedNode<>
     {
-        auto new_initial_value = initialValueNode->optimize();
-
-        if (new_initial_value != nullptr) {
-            initialValueNode = isl::staticPointerCast<AstlangNode>(std::move(new_initial_value));
-        }
+        exchangeIfNotNull(initialValueNode, initialValueNode->optimize());
 
         return nullptr;
     }

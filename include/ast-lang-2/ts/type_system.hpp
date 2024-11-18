@@ -35,6 +35,8 @@ namespace astlang2
         ts::Type *floatType{nullptr};
         ts::Type *doubleType{nullptr};
         ts::Type *stringType{nullptr};
+        ts::Type *vec2Type{nullptr};
+        ts::Type *vec3Type{nullptr};
         ts::TemplateType *listTemplate{nullptr};
 
         auto createTypeAndGetPointer(const std::string &name, std::unique_ptr<ts::Type> type)
@@ -95,6 +97,16 @@ namespace astlang2
         [[nodiscard]] auto getVoid() const noexcept -> ts::Type *
         {
             return voidType;
+        }
+
+        [[nodiscard]] auto getVec2() const noexcept -> ts::Type *
+        {
+            return vec2Type;
+        }
+
+        [[nodiscard]] auto getVec3() const noexcept -> ts::Type *
+        {
+            return vec3Type;
         }
 
         [[nodiscard]] auto getType(const std::string &name) const -> ts::Type *;

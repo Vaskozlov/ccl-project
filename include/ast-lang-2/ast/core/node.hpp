@@ -6,15 +6,18 @@
 #include <ccl/parser/ast/terminal.hpp>
 #include <ccl/parser/rules_reader/parser_builder.hpp>
 
-namespace astlang2::interpreter {
+namespace astlang2::interpreter
+{
     class Interpreter;
 }
 
-namespace astlang2::ast::core {
+namespace astlang2::ast::core
+{
     template<std::derived_from<ccl::parser::ast::Node> T = ccl::parser::ast::Node>
     using SharedNode = ccl::parser::ast::SharedNode<T>;
 
-    enum class ControlflowStatus : u32 {
+    enum class ControlflowStatus : u32
+    {
         NONE,
         RETURN,
         BREAK,
@@ -23,29 +26,40 @@ namespace astlang2::ast::core {
         IF_CONDITION_FAILED,
     };
 
-    struct ComputationResult {
+    struct ComputationResult
+    {
         Value value;
         ControlflowStatus controlflowStatus{ControlflowStatus::NONE};
     };
 
-    class AstlangNode : public ccl::parser::ast::Node {
+    class AstlangNode : public ccl::parser::ast::Node
+    {
     public:
         using Node::Node;
 
         virtual auto optimize() -> SharedNode<> = 0;
 
-        virtual auto compute(interpreter::Interpreter& /*unused*/) const -> ComputationResult {
+        virtual auto compute(interpreter::Interpreter & /*unused*/) const -> ComputationResult
+        {
             return ComputationResult{.value = Value{}};
         }
 
-        static auto buildConversionTable(const ccl::parser::reader::ParserBuilder&constructor)
+        auto print(
+            const std::string &prefix, bool is_left,
+            const std::function<std::string(ccl::SmallId)> &id_converter) const -> void override
+        {}
+
+        static auto buildConversionTable(const ccl::parser::reader::ParserBuilder &constructor)
             -> ConversionTable;
 
-        auto print(
-            const std::string&prefix, bool is_left,
-            const std::function<std::string(ccl::SmallId)>&id_converter) const -> void override {
+        template<std::derived_from<Node> T = AstlangNode>
+        static auto exchangeIfNotNull(SharedNode<T> &node, SharedNode<> new_node) -> void
+        {
+            if (new_node != nullptr) {
+                node = isl::staticPointerCast<T>(std::move(new_node));
+            }
         }
     };
-} // namespace astlang2::ast::core
+}// namespace astlang2::ast::core
 
 #endif /* ASTLANG_2_NODE_HPP */
