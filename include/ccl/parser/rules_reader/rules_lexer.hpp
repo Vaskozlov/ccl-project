@@ -52,45 +52,49 @@ namespace ccl::parser::reader
         LEXER_RULE_OPTIONS = 35U,
     };
     
-    // NOLINTNEXTLINE
-    inline auto const RulesLexer = ccl::lexer::LexicalAnalyzer{    
-        ccl::handler::Cmd::instance(),
-        {    
-            {RulesLexerToken::LEXER_START, R"( "%LEXER%" )"},
-            {RulesLexerToken::PARSER_START, R"( "%PARSER%" )"},
-            {RulesLexerToken::OR, R"( ! [|] )"},
-            {RulesLexerToken::STAR, R"( ! [*] )"},
-            {RulesLexerToken::PLUS, R"( ! [+] )"},
-            {RulesLexerToken::EXCLAMATION_POINT, R"( ! [!] )"},
-            {RulesLexerToken::CURLY_OPEN, R"( ! [{] )"},
-            {RulesLexerToken::CURLY_CLOSE, R"( ! [}] )"},
-            {RulesLexerToken::COMMA, R"( ! [,] )"},
-            {RulesLexerToken::NUMBER, R"( [0-9]+ )"},
-            {RulesLexerToken::RULE_IDENTIFIER, R"( 'IDENTIFIER'e [ \t]* [:] )"},
-            {RulesLexerToken::IDENTIFIER, R"( [a-zA-Z_][a-zA-Z0-9_]* )"},
-            {RulesLexerToken::RULE_REFERENCE, R"( ! [<] [>]^* [>] )"},
-            {RulesLexerToken::STRING, R"( ! ["] ("\\\"" | ["]^)* ["] )"},
-            {RulesLexerToken::ANY_PLACE_STRING, R"( ! ['] ([']^ | "\"")* ['] )"},
-            {RulesLexerToken::UNION, R"( ! [\[] ("\\\]" | [\]]^)* [\]] )"},
-            {RulesLexerToken::EXTRACTABLE_MODIFIER, R"( ! [e] )"},
-            {RulesLexerToken::HIDE_OPERATOR, R"( ! [h] )"},
-            {RulesLexerToken::NOT_OPERATOR, R"( ! [^] )"},
-            {RulesLexerToken::COLUMN, R"( ! [:] )"},
-            {RulesLexerToken::ANGLE_OPEN, R"( ! [(] )"},
-            {RulesLexerToken::ANGLE_CLOSE, R"( ! [)] )"},
-            {RulesLexerToken::GOAL, R"( [#] )"},
-            {RulesLexerToken::EPSILON, R"( [#] )"},
-            {RulesLexerToken::BLOCKS, R"( [#] )"},
-            {RulesLexerToken::LEXER_BLOCK, R"( [#] )"},
-            {RulesLexerToken::PARSER_BLOCK, R"( [#] )"},
-            {RulesLexerToken::LEXER_RULE, R"( [#] )"},
-            {RulesLexerToken::PARSER_RULE, R"( [#] )"},
-            {RulesLexerToken::PARSER_RULE_ALTERNATIVE, R"( [#] )"},
-            {RulesLexerToken::LEXER_RULE_BLOCK, R"( [#] )"},
-            {RulesLexerToken::LEXER_RULE_ALTERNATIVE, R"( [#] )"},
-            {RulesLexerToken::LEXER_RULE_OPTIONS, R"( [#] )"},
-        }
-    };
+    inline auto getRulesLexer() -> const ccl::lexer::LexicalAnalyzer & {    
+        // NOLINTNEXTLINE
+        const static auto RulesLexer = ccl::lexer::LexicalAnalyzer{    
+            ccl::handler::Cmd::instance(),
+            {    
+                {RulesLexerToken::LEXER_START, R"( "%LEXER%" )"},
+                {RulesLexerToken::PARSER_START, R"( "%PARSER%" )"},
+                {RulesLexerToken::OR, R"( ! [|] )"},
+                {RulesLexerToken::STAR, R"( ! [*] )"},
+                {RulesLexerToken::PLUS, R"( ! [+] )"},
+                {RulesLexerToken::EXCLAMATION_POINT, R"( ! [!] )"},
+                {RulesLexerToken::CURLY_OPEN, R"( ! [{] )"},
+                {RulesLexerToken::CURLY_CLOSE, R"( ! [}] )"},
+                {RulesLexerToken::COMMA, R"( ! [,] )"},
+                {RulesLexerToken::NUMBER, R"( [0-9]+ )"},
+                {RulesLexerToken::RULE_IDENTIFIER, R"( 'IDENTIFIER'e [ \t]* [:] )"},
+                {RulesLexerToken::IDENTIFIER, R"( [a-zA-Z_][a-zA-Z0-9_]* )"},
+                {RulesLexerToken::RULE_REFERENCE, R"( ! [<] [>]^* [>] )"},
+                {RulesLexerToken::STRING, R"( ! ["] ("\\\"" | ["]^)* ["] )"},
+                {RulesLexerToken::ANY_PLACE_STRING, R"( ! ['] ([']^ | "\"")* ['] )"},
+                {RulesLexerToken::UNION, R"( ! [\[] ("\\\]" | [\]]^)* [\]] )"},
+                {RulesLexerToken::EXTRACTABLE_MODIFIER, R"( ! [e] )"},
+                {RulesLexerToken::HIDE_OPERATOR, R"( ! [h] )"},
+                {RulesLexerToken::NOT_OPERATOR, R"( ! [^] )"},
+                {RulesLexerToken::COLUMN, R"( ! [:] )"},
+                {RulesLexerToken::ANGLE_OPEN, R"( ! [(] )"},
+                {RulesLexerToken::ANGLE_CLOSE, R"( ! [)] )"},
+                {RulesLexerToken::GOAL, R"( [#] )"},
+                {RulesLexerToken::EPSILON, R"( [#] )"},
+                {RulesLexerToken::BLOCKS, R"( [#] )"},
+                {RulesLexerToken::LEXER_BLOCK, R"( [#] )"},
+                {RulesLexerToken::PARSER_BLOCK, R"( [#] )"},
+                {RulesLexerToken::LEXER_RULE, R"( [#] )"},
+                {RulesLexerToken::PARSER_RULE, R"( [#] )"},
+                {RulesLexerToken::PARSER_RULE_ALTERNATIVE, R"( [#] )"},
+                {RulesLexerToken::LEXER_RULE_BLOCK, R"( [#] )"},
+                {RulesLexerToken::LEXER_RULE_ALTERNATIVE, R"( [#] )"},
+                {RulesLexerToken::LEXER_RULE_OPTIONS, R"( [#] )"},
+            }
+        };
+        
+        return RulesLexer;
+    }
     
     inline constexpr isl::StaticFlatmap<ccl::SmallId, isl::string_view, 36> ToStringRulesLexerToken
     {    

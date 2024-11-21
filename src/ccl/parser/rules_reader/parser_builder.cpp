@@ -6,7 +6,7 @@
 
 namespace ccl::parser::reader
 {
-    ParserBuilder::ParserBuilder(const ankerl::unordered_dense::map<std::string, SmallId> &default_rules)
+    ParserBuilder::ParserBuilder(const std::map<std::string, SmallId> &default_rules)
       : ruleIdToName{
             {
                 std::to_underlying(lexer::ReservedTokenType::EOI),
@@ -44,7 +44,7 @@ namespace ccl::parser::reader
           },
       },
       grammarRulesStorage{getRuleId("EPSILON")},
-      ruleIdGenerator{std::ranges::max_element(default_rules, {}, &std::pair<std::string, SmallId>::second)->second + 1}
+      ruleIdGenerator{std::ranges::max_element(default_rules, {}, [](auto &elem){return elem.second;})->second + 1}
     {
         for (const auto &[rule_name, rule_id] : default_rules) {
             ruleIdToName.try_emplace(rule_id, rule_name);

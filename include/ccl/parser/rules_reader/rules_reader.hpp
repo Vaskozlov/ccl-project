@@ -16,8 +16,8 @@ namespace ccl::parser::reader
 
     public:
         explicit RulesReader(
-            const ankerl::unordered_dense::map<std::string, SmallId> &default_rules,
-            isl::string_view input, isl::string_view filename = {});
+            const std::map<std::string, SmallId> &default_rules, isl::string_view input,
+            isl::string_view filename = {});
 
         [[nodiscard]] auto getParserBuilder() -> ParserBuilder &;
     };

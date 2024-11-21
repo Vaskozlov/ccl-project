@@ -229,9 +229,9 @@ STRING:     ! ["] ("\\\"" | ["]^)* ["]
         return ast_lang_grammar;
     }
 
-    auto getNodeTypesMap() -> const ankerl::unordered_dense::map<std::string, SmallId> &
+    auto getNodeTypesMap() -> const std::map<std::string, SmallId> &
     {
-        const static ankerl::unordered_dense::map<std::string, SmallId> node_types_map{ // NOSONAR
+        const static std::map<std::string, SmallId> node_types_map{ // NOSONAR
             {
                 "\"true\"",
                 std::to_underlying(NodeTypes::TRUE),

@@ -41,7 +41,7 @@ target_link_libraries(
         ccl-bench
         benchmark
         ccl
-        astlang
+        astlang2
         fmt::fmt-header-only
 )
 

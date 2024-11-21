@@ -211,10 +211,18 @@ namespace ccl::lexer::gen
         generateRuleNames();
     }
 
-    auto StaticGenerator::generateLexicalAnalyzer() -> void
+    auto StaticGenerator::generateFunctionDefinition() -> void
+    {
+        codeGenerator << "inline auto get" << variableName
+                      << "() -> const ccl::lexer::LexicalAnalyzer & {";
+
+        codeGenerator << push_scope << endl;
+    }
+
+    auto StaticGenerator::generateLexicalAnalyzerVariable() -> void
     {
         codeGenerator << "// NOLINTNEXTLINE" << endl;
-        codeGenerator << "inline auto const " << variableName << " = ccl::lexer::LexicalAnalyzer{";
+        codeGenerator << "const static auto " << variableName << " = ccl::lexer::LexicalAnalyzer{";
         codeGenerator << push_scope << endl;
         codeGenerator << handler << ',' << endl;
         codeGenerator << '{' << push_scope;
@@ -227,6 +235,21 @@ namespace ccl::lexer::gen
         }};
 
         generateRules();
+    }
+
+
+    auto StaticGenerator::generateLexicalAnalyzer() -> void
+    {
+        generateFunctionDefinition();
+
+        const auto function_definition = isl::Raii{[this]() {
+            codeGenerator << pop_scope << endl;
+            codeGenerator << '}' << endl << endl;
+        }};
+
+        generateLexicalAnalyzerVariable();
+
+        codeGenerator << "return " << variableName << ';';
     }
 
     auto StaticGenerator::generateRules() -> void

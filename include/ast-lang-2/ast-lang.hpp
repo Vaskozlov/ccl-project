@@ -74,7 +74,7 @@ namespace astlang2
     using f64 = ccl::f64;
 
     auto getAstlangGrammar() -> isl::string_view;
-    auto getNodeTypesMap() -> const ankerl::unordered_dense::map<std::string, SmallId> &;
+    auto getNodeTypesMap() -> const std::map<std::string, SmallId> &;
 }// namespace astlang2
 
 #endif /* CCL_PROJECT_ASTLANG_AST_LANG_HPP */

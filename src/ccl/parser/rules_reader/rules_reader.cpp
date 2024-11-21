@@ -252,7 +252,7 @@ namespace ccl::parser::reader
     };
 
     RulesReader::RulesReader(
-        const ankerl::unordered_dense::map<std::string, SmallId> &default_rules,
+        const std::map<std::string, SmallId> &default_rules,
         const isl::string_view input, const isl::string_view filename)
       : rulesConstructor{default_rules}
       , readerOptions{
@@ -261,7 +261,7 @@ namespace ccl::parser::reader
         }
     {
         using namespace std::chrono_literals;
-        auto tokenizer = RulesLexer.getTokenizer(input, filename);
+        auto tokenizer = getRulesLexer().getTokenizer(input, filename);
 
         const auto id_to_str = ccl::lexer::lexerEnumToString<RulesLexerToken>;
 

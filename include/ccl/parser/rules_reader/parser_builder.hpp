@@ -36,7 +36,7 @@ namespace ccl::parser::reader
         bool rulesConstructorFinalized{};
 
     public:
-        ParserBuilder(const ankerl::unordered_dense::map<std::string, SmallId> &default_rules);
+        ParserBuilder(const std::map<std::string, SmallId> &default_rules);
 
         auto buildLr1() -> LrParser;
 
@@ -68,8 +68,9 @@ namespace ccl::parser::reader
             return ruleNameToId.contains(rule_name);
         }
 
-        auto addLexerRule(
-            const std::string &name, std::unique_ptr<lexer::rule::Container> container) -> void;
+        auto
+            addLexerRule(const std::string &name, std::unique_ptr<lexer::rule::Container> container)
+                -> void;
 
         auto addParserRule(const std::string &name, std::vector<Symbol> rule) -> void;
 
