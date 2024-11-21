@@ -8,7 +8,9 @@ namespace astlang2::ast::statement
 
 
     auto ForLoop::compute(interpreter::Interpreter &interpreter) const -> core::ComputationResult
-    {}
+    {
+        return {};
+    }
 
     auto ForLoop::castChildren(const ConversionTable &conversion_table) -> void
     {}
