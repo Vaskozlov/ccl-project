@@ -11,7 +11,7 @@ TEST_CASE("LLParser", "[LLParser]")
     using namespace ccl::debug;
     using namespace ccl::parser;
 
-    reader::RulesReader math_rules_reader{SimpleLlGrammarDefinition, __FILE__};
+    reader::RulesReader math_rules_reader{{}, SimpleLlGrammarDefinition, __FILE__};
     auto &math_rules_constructor = math_rules_reader.getParserBuilder();
     const auto &lexer = math_rules_constructor.getLexicalAnalyzer();
     auto parser = math_rules_constructor.buildGLL();

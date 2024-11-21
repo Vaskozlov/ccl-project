@@ -8,7 +8,7 @@ TEST_CASE("TreeStructureTest", "[TreeParsing]")
     using namespace ccl::debug;
     using namespace ccl::parser;
 
-    reader::RulesReader math_rules_reader{MathGrammarDefinition, __FILE__};
+    reader::RulesReader math_rules_reader{{}, MathGrammarDefinition, __FILE__};
     auto &math_rules_constructor = math_rules_reader.getParserBuilder();
     const auto &lexer = math_rules_constructor.getLexicalAnalyzer();
     auto math_token_to_string = math_rules_constructor.getIdToNameTranslationFunction();

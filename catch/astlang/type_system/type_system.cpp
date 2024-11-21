@@ -7,7 +7,7 @@ TEST_CASE("SimpleFunctionCall", "[TypeSystem]")
 {
     using namespace astlang2;
 
-    ccl::parser::reader::RulesReader reader(astlang2::AstLangGrammar);
+    ccl::parser::reader::RulesReader reader(astlang2::getNodeTypesMap(), astlang2::getAstlangGrammar());
 
     auto &constructor = reader.getParserBuilder();
     const auto &lexer = constructor.getLexicalAnalyzer();
@@ -20,7 +20,7 @@ TEST_CASE("SimpleFunctionCall", "[TypeSystem]")
         function::FunctionIdentification{
             "simple_print", {interpreter.getInt()}, interpreter.getInt()},
         std::make_unique<function::BuiltinFunction>(
-            std::vector<std::string>{"a"}, [](interpreter::Interpreter &interpreter) {
+            isl::SmallVector<std::string, 2>{"a"}, [](interpreter::Interpreter &interpreter) {
                 fmt::println(
                     "Inside function: {}", *static_cast<int *>(interpreter.read("a").object.get()));
                 return Value{nullptr, nullptr};

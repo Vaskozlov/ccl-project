@@ -10,7 +10,7 @@ TEST_CASE("GlrParser", "[GLR]")
     using namespace ccl::debug;
     using namespace ccl::parser;
 
-    reader::RulesReader math_rules_reader{SimpleGlrMathGrammarDefinition, __FILE__};
+    reader::RulesReader math_rules_reader{{}, SimpleGlrMathGrammarDefinition, __FILE__};
     auto &math_rules_constructor = math_rules_reader.getParserBuilder();
     const auto &lexer = math_rules_constructor.getLexicalAnalyzer();
     const auto math_token_to_string = math_rules_constructor.getIdToNameTranslationFunction();

@@ -26,10 +26,10 @@ namespace ccl::lexer
         {
             std::string name;
             isl::string_view repr;
-            u32 id{};
+            SmallId id{};
 
             template<typename T>
-            constexpr Rule(T rule_id, isl::string_view rule_repr)
+            constexpr Rule(T rule_id, const isl::string_view rule_repr)
               : name{lexerEnumToString<T>(rule_id)}
               , repr{rule_repr}
               , id{static_cast<SmallId>(rule_id)}

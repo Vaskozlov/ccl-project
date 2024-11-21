@@ -1,4 +1,5 @@
 #include <ast-lang-2/ast/statement/while_loop.hpp>
+#include <ast-lang-2/interpreter/interpreter.hpp>
 
 namespace astlang2::ast::statement
 {
