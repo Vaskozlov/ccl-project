@@ -11,14 +11,15 @@
 using namespace ccl::lexer;
 using namespace astlang2::interpreter;
 
-auto main(int /* argc */, char** argv) -> int {
+auto main(int /* argc */, char **argv) -> int
+{
     using namespace ccl;
     using namespace ccl::parser;
 
-    reader::RulesReader reader(astlang2::NodeTypesMap, astlang2::AstLangGrammar);
+    reader::RulesReader reader(astlang2::getNodeTypesMap(), astlang2::getAstlangGrammar());
 
-    auto&constructor = reader.getParserBuilder();
-    const auto&lexer = constructor.getLexicalAnalyzer();
+    auto &constructor = reader.getParserBuilder();
+    const auto &lexer = constructor.getLexicalAnalyzer();
     auto to_str = constructor.getIdToNameTranslationFunction();
     auto input = isl::io::read(argv[1]);
 
@@ -26,11 +27,11 @@ auto main(int /* argc */, char** argv) -> int {
 
     auto parser = constructor.buildGLL();
     auto [nodes, algorithm] = parser.parse(tokenizer);
-    auto converter = std::views::transform(nodes, [](auto&node) {
+    auto converter = std::views::transform(nodes, [](auto &node) {
         return node.get();
     });
 
-    auto* row_root = nodes.front().get();
+    auto *row_root = nodes.front().get();
     // row_root->print("", false, to_str);
 
     // auto dot_repr = dot::createDotRepresentation(std::vector<ast::Node *>{astlang_root}, to_str);
@@ -39,11 +40,11 @@ auto main(int /* argc */, char** argv) -> int {
     // std::filesystem::current_path().append(fmt::format("{}.dot", algorithm)), dot_repr);
 
     const auto conversion_table =
-            astlang2::ast::core::AstlangNode::buildConversionTable(constructor);
+        astlang2::ast::core::AstlangNode::buildConversionTable(constructor);
 
     row_root->cast(conversion_table);
 
-    auto* astlang_root = dynamic_cast<astlang2::ast::core::AstlangNode *>(row_root);
+    auto *astlang_root = dynamic_cast<astlang2::ast::core::AstlangNode *>(row_root);
     auto output_buffer = std::string{};
 
     astlang_root->optimize();

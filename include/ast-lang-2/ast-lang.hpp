@@ -73,23 +73,8 @@ namespace astlang2
     using f32 = ccl::f32;
     using f64 = ccl::f64;
 
-    extern const isl::string_view AstLangGrammar;
-    extern const ankerl::unordered_dense::map<std::string, SmallId> NodeTypesMap;
-
-    template<typename T>
-    struct Vec2
-    {
-        T x;
-        T y;
-    };
-
-    template<typename T>
-    struct Vec3
-    {
-        T x;
-        T y;
-        T z;
-    };
+    auto getAstlangGrammar() -> isl::string_view;
+    auto getNodeTypesMap() -> const ankerl::unordered_dense::map<std::string, SmallId> &;
 }// namespace astlang2
 
 #endif /* CCL_PROJECT_ASTLANG_AST_LANG_HPP */

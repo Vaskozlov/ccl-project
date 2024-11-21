@@ -6,7 +6,7 @@
 
 namespace ccl::runtime
 {
-    extern isl::thread::Pool GlobalThreadPool;
+    inline isl::thread::Pool GlobalThreadPool{std::thread::hardware_concurrency() / 2};
 
     template<typename T>
     auto async(isl::Task<T> task, isl::thread::Pool *pool = std::addressof(GlobalThreadPool))
