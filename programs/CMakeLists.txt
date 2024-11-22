@@ -26,7 +26,7 @@ endif ()
 target_link_libraries(
         ccl-lexer
         PRIVATE
-        fmt::fmt
+        fmt::fmt-header-only
 )
 
 target_link_libraries(
@@ -64,7 +64,7 @@ endif ()
 target_link_libraries(
         ast-lang
         PRIVATE
-        fmt::fmt
+        fmt::fmt-header-only
 )
 
 target_link_libraries(

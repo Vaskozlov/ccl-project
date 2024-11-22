@@ -33,7 +33,7 @@ endif ()
 target_link_libraries(
         ccl
         PRIVATE
-        fmt::fmt
+        fmt::fmt-header-only
 )
 
 target_link_libraries(

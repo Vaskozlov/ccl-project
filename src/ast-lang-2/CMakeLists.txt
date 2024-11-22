@@ -33,7 +33,7 @@ endif ()
 target_link_libraries(
         astlang2
         PRIVATE
-        fmt::fmt
+        fmt::fmt-header-only
 )
 
 target_link_libraries(
