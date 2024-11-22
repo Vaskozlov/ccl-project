@@ -57,6 +57,10 @@ namespace ccl::lexer::gen
         auto generateRules() -> void;
 
         auto generateToStringFunction() -> void;
+
+        auto generateFunctionDefinition() -> void;
+
+        auto generateLexicalAnalyzerVariable() -> void;
     };
 }// namespace ccl::lexer::gen
 
