@@ -58,7 +58,8 @@ namespace ccl::text
 
         CrtpBasicTextIterator() noexcept = default;
 
-        [[nodiscard]] constexpr explicit CrtpBasicTextIterator(const isl::string_view input) noexcept
+        [[nodiscard]] constexpr explicit CrtpBasicTextIterator(
+            const isl::string_view input) noexcept
           : carriage{input.begin()}
           , end{input.end()}
         {}
@@ -217,8 +218,8 @@ namespace ccl::text
             toParent().onMove(chr);
         }
 
-        constexpr auto onNextCharacter(char32_t chr)
-            CCL_NOEXCEPT_IF(toParent().onCharacter(chr)) -> void
+        constexpr auto onNextCharacter(char32_t chr) CCL_NOEXCEPT_IF(toParent().onCharacter(chr))
+            -> void
         {
             toParent().onCharacter(chr);
         }
@@ -270,9 +271,10 @@ namespace ccl::text
                 onUtfError(chr);
             }
 
-            currentChar <<= isl::utf8::constants::TrailingSize;
-            currentChar |= isl::as<char32_t>(
-                isl::as<std::byte>(chr) & ~isl::utf8::constants::ContinuationMask);
+            currentChar <<= isl::utf8::detail::TrailingSize;
+
+            currentChar |=
+                isl::as<char32_t>(isl::as<std::byte>(chr) & ~isl::utf8::detail::ContinuationMask);
 
             if (remainingBytesToFinishSymbol > 0) {
                 --remainingBytesToFinishSymbol;

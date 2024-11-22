@@ -119,6 +119,9 @@ namespace astlang2
             }
         }
 
+        auto *new_type_ptr = new_type.get();
         types.emplace(full_type_name, std::move(new_type));
+
+        return new_type_ptr;
     }
 }// namespace astlang2

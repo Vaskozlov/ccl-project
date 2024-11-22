@@ -63,7 +63,7 @@ namespace ccl::lexer::rule
         const text::TextIterator &text_iterator, const char32_t chr) -> void
     {
         auto buffer = std::string{};
-        isl::utf8::appendUtf32ToUtf8Container(buffer, chr);
+        isl::utf8::appendUtf32ToUtf8Container(std::back_inserter(buffer), chr);
 
         text_iterator.throwPanicError(
             AnalysisStage::LEXICAL_ANALYSIS,

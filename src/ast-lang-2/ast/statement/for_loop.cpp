@@ -2,17 +2,19 @@
 
 namespace astlang2::ast::statement
 {
-    ForLoop::ForLoop(const SmallId id, const ccl::parser::ast::SmallVectorOfNodes &initial_nodes)
+    ForLoop::ForLoop(
+        const SmallId id, const ccl::parser::ast::SmallVectorOfNodes & /*initial_nodes */)
       : AstlangNode{id}
     {}
 
 
-    auto ForLoop::compute(interpreter::Interpreter &interpreter) const -> core::ComputationResult
+    auto ForLoop::compute(interpreter::Interpreter & /*interpreter*/) const
+        -> core::ComputationResult
     {
         return {};
     }
 
-    auto ForLoop::castChildren(const ConversionTable &conversion_table) -> void
+    auto ForLoop::castChildren(const ConversionTable & /* conversion_table */) -> void
     {}
 
     auto ForLoop::optimize() -> core::SharedNode<>

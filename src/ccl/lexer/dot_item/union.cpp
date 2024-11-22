@@ -31,8 +31,9 @@ namespace ccl::lexer::rule
     }
 
 
-    static auto checkForClosedRange(
-        const text::TextIterator &rule_iterator, const bool is_ranged_opened) -> void
+    static auto
+        checkForClosedRange(const text::TextIterator &rule_iterator, const bool is_ranged_opened)
+            -> void
     {
         if (is_ranged_opened) {
             throwUnterminatedRangeException(rule_iterator);
@@ -50,7 +51,9 @@ namespace ccl::lexer::rule
     static auto throwUnionBeginException(const text::TextIterator &rule_iterator) -> void
     {
         auto buffer = std::string{};
-        isl::utf8::appendUtf32ToUtf8Container(buffer, rule_iterator.getCurrentChar());
+
+        isl::utf8::appendUtf32ToUtf8Container(
+            std::back_inserter(buffer), rule_iterator.getCurrentChar());
 
         const auto message =
             fmt::format("expected `[` at the beginning of union item declaration, got {}", buffer);
@@ -162,8 +165,9 @@ namespace ccl::lexer::rule
                    : ScanResult::failure();
     }
 
-    CCL_INLINE auto Union::addCharactersToTheBitset(
-        bool &is_range, char32_t previous_chr, const char32_t chr) -> void
+    CCL_INLINE auto
+        Union::addCharactersToTheBitset(bool &is_range, char32_t previous_chr, const char32_t chr)
+            -> void
     {
         if (is_range) {
             storedSymbols.set({previous_chr, static_cast<char32_t>(chr + 1)}, true);

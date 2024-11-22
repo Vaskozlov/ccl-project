@@ -20,7 +20,7 @@ namespace ccl::text
                 break;
             }
 
-            isl::utf8::appendUtf32ToUtf8Container(result, character);
+            isl::utf8::appendUtf32ToUtf8Container(std::back_inserter(result), character);
         }
 
         return result;

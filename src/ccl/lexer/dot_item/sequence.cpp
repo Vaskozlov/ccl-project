@@ -74,7 +74,7 @@ namespace ccl::lexer::rule
                 break;
             }
 
-            isl::utf8::appendUtf32ToUtf8Container(sequenceValue, chr);
+            isl::utf8::appendUtf32ToUtf8Container(std::back_inserter(sequenceValue), chr);
         }
     }
 
@@ -94,8 +94,9 @@ namespace ccl::lexer::rule
         return ScanResult::failure();
     }
 
-    CCL_INLINE auto Sequence::isStringEnd(
-        const TextIterator &rule_iterator, const bool is_escaping) const -> bool
+    CCL_INLINE auto
+        Sequence::isStringEnd(const TextIterator &rule_iterator, const bool is_escaping) const
+        -> bool
     {
         if (is_escaping) {
             return false;
@@ -134,8 +135,8 @@ namespace ccl::lexer::rule
         rule_iterator.skip(starter.size() - 1);
     }
 
-    CCL_INLINE auto
-        Sequence::checkSequenceArguments(const TextIterator &rule_iterator) const -> void
+    CCL_INLINE auto Sequence::checkSequenceArguments(const TextIterator &rule_iterator) const
+        -> void
     {
         const auto text = rule_iterator.getRemainingWithCurrent();
 
@@ -152,8 +153,8 @@ namespace ccl::lexer::rule
         }
     }
 
-    CCL_INLINE auto
-        Sequence::throwStringBeginException(const TextIterator &rule_iterator) const -> void
+    CCL_INLINE auto Sequence::throwStringBeginException(const TextIterator &rule_iterator) const
+        -> void
     {
         rule_iterator.throwPanicError(
             AnalysisStage::LEXICAL_ANALYSIS,

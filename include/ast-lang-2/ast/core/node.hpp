@@ -45,9 +45,12 @@ namespace astlang2::ast::core
         }
 
         auto print(
-            const std::string &prefix, bool is_left,
-            const std::function<std::string(ccl::SmallId)> &id_converter) const -> void override
-        {}
+            const std::string & /* prefix */, const bool /*is_left*/,
+            const std::function<std::string(ccl::SmallId)> & /* id_converter */) const
+            -> void override
+        {
+            throw std::runtime_error{"Not supported"};
+        }
 
         static auto buildConversionTable(const ccl::parser::reader::ParserBuilder &constructor)
             -> ConversionTable;

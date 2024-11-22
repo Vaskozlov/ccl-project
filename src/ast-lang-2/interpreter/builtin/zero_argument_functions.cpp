@@ -14,7 +14,7 @@ namespace astlang2::interpreter
         };
 
         auto builtin_function = std::make_shared<function::BuiltinFunction>(
-            isl::SmallVector<std::string, 2>{}, [function](Interpreter &interpreter) {
+            isl::SmallVector<std::string, 2>{}, [function](Interpreter & /*interpreter*/) {
                 return function();
             });
 
