@@ -7,7 +7,7 @@
 namespace ccl::parser::reader {
     static auto getMaxRuleId(const std::unordered_map<std::string, SmallId> &default_rules) -> SmallId {
         const auto it = std::ranges::max_element(default_rules, {}, [](auto &elem) { return elem.second; });
-        return std::max<SmallId>(lexer::ReservedTokenMaxValue + 4, it == default_rules.end() ? 0 : it->second);
+        return std::max<SmallId>(lexer::ReservedTokenMaxValue + 2, it == default_rules.end() ? 0 : it->second);
     }
 
     ParserBuilder::ParserBuilder(const std::unordered_map<std::string, SmallId> &default_rules)
@@ -48,7 +48,7 @@ namespace ccl::parser::reader {
               },
           },
           grammarRulesStorage{getRuleId("EPSILON")},
-          ruleIdGenerator{getMaxRuleId(default_rules)} {
+          ruleIdGenerator{getMaxRuleId(default_rules) + 1} {
         for (const auto &[rule_name, rule_id]: default_rules) {
             ruleIdToName.try_emplace(rule_id, rule_name);
             ruleNameToId.try_emplace(rule_name, rule_id);
