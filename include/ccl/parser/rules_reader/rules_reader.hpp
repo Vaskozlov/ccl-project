@@ -6,7 +6,7 @@
 
 namespace ccl::parser::reader
 {
-    extern const GrammarStorage RulesGrammar;
+    auto getRulesGrammar() -> const GrammarStorage &;
 
     class RulesReader
     {

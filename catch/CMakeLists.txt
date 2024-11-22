@@ -24,9 +24,9 @@ isl_set_target_flags(
 )
 
 target_link_libraries(
-    ccl-catch
-    PRIVATE
-    fmt::fmt
+        ccl-catch
+        PRIVATE
+        fmt::fmt
 )
 
 target_link_libraries(

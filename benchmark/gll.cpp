@@ -13,7 +13,7 @@ static void gllParserWithConstruction(benchmark::State &state)
 
         const auto gll_parser = ccl::parser::GllParser{
             ccl::parser::reader::GOAL,
-            ccl::parser::reader::RulesGrammar,
+            ccl::parser::reader::getRulesGrammar(),
             id_to_str,
         };
 
@@ -31,7 +31,7 @@ static void gllParserWithoutConstruction(benchmark::State &state)
 
     const auto gll_parser = ccl::parser::GllParser{
         ccl::parser::reader::GOAL,
-        ccl::parser::reader::RulesGrammar,
+        ccl::parser::reader::getRulesGrammar(),
         id_to_str,
     };
 
