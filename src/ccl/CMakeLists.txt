@@ -30,18 +30,16 @@ if (CCL_PRECOMPILED_HEADERS)
     )
 endif ()
 
-add_dependencies(
+target_link_libraries(
         ccl
-        isl
-        fmt::fmt-header-only
-        unordered_dense::unordered_dense
+        PRIVATE
+        fmt::fmt
 )
 
 target_link_libraries(
         ccl
+        PUBLIC
         isl
-        fmt::fmt-header-only
-        unordered_dense::unordered_dense
 )
 
 if (CCL_PRECOMPILED_HEADERS)

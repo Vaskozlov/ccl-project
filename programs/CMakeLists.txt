@@ -25,8 +25,14 @@ endif ()
 
 target_link_libraries(
         ccl-lexer
+        PRIVATE
+        fmt::fmt
+)
+
+target_link_libraries(
+        ccl-lexer
+        PUBLIC
         ccl
-        fmt::fmt-header-only
         cxxopts::cxxopts
 )
 
@@ -57,9 +63,13 @@ endif ()
 
 target_link_libraries(
         ast-lang
-        ccl
+        PRIVATE
+        fmt::fmt
+)
+
+target_link_libraries(
+        ast-lang
+        PUBLIC
         astlang2
-        isl
-        fmt::fmt-header-only
         cxxopts::cxxopts
 )

@@ -36,7 +36,7 @@ namespace ccl::parser::reader
         bool rulesConstructorFinalized{};
 
     public:
-        ParserBuilder(const ankerl::unordered_dense::map<std::string, SmallId> &default_rules);
+        ParserBuilder(const std::unordered_map<std::string, SmallId> &default_rules);
 
         auto buildLr1() -> LrParser;
 

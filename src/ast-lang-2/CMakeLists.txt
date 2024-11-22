@@ -30,21 +30,16 @@ if (CCL_PRECOMPILED_HEADERS)
     )
 endif ()
 
-add_dependencies(
+target_link_libraries(
         astlang2
-        ccl
-        isl
-        fmt::fmt-header-only
-        unordered_dense::unordered_dense
+        PRIVATE
+        fmt::fmt
 )
 
 target_link_libraries(
         astlang2
-        PRIVATE
+        PUBLIC
         ccl
-        isl
-        fmt::fmt-header-only
-        unordered_dense::unordered_dense
 )
 
 target_include_directories(astlang2

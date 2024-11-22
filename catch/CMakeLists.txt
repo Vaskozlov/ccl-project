@@ -24,12 +24,16 @@ isl_set_target_flags(
 )
 
 target_link_libraries(
+    ccl-catch
+    PRIVATE
+    fmt::fmt
+)
+
+target_link_libraries(
         ccl-catch
-        ccl
+        PUBLIC
         astlang2
-        fmt::fmt-header-only
         Catch2::Catch2WithMain
-        astlang2
 )
 
 if (CCL_PRECOMPILED_HEADERS)

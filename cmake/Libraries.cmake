@@ -14,7 +14,7 @@ CPMFindPackage(
         GIT_TAG devel
 )
 
-CPMAddPackage(
+CPMFindPackage(
         NAME unordered_dense
         GITHUB_REPOSITORY martinus/unordered_dense
         GIT_TAG main

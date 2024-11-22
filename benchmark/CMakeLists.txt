@@ -29,20 +29,17 @@ if (CCL_PRECOMPILED_HEADERS)
     )
 endif ()
 
-add_dependencies(
+target_link_libraries(
         ccl-bench
-        ccl
-        benchmark
-        astlang2
-        fmt::fmt-header-only
+        PRIVATE
+        fmt::fmt
 )
 
 target_link_libraries(
         ccl-bench
+        PUBLIC
         benchmark
-        ccl
-        astlang
-        fmt::fmt-header-only
+        astlang2
 )
 
 target_include_directories(ccl-bench

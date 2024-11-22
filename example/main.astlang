@@ -1,7 +1,11 @@
-var a = vec2(0.0, 0.0);
+def f(int a) {
+	if a < 10 {
+		return a * 10;
+	}
 
-a.x = 1.0;
-a.y = a.y + 8.0;
+	return a * a;
+}
 
-println(a.x);
-println(a.y);
+
+var a = 5;
+println(f(a) + f(a + 10));
