@@ -16,7 +16,7 @@ static void glrParserWithConstruction(benchmark::State &state)
     };
 
     for (auto _ : state) {
-        auto tokenizer = ccl::parser::reader::RulesLexer.getTokenizer(astlang2::getAstlangGrammar());
+        auto tokenizer = ccl::parser::reader::getRulesLexer().getTokenizer(astlang2::getAstlangGrammar());
 
         const auto id_to_str = ccl::lexer::lexerEnumToString<ccl::parser::reader::RulesLexerToken>;
 
@@ -56,7 +56,7 @@ static void glrParserWithoutConstruction(benchmark::State &state)
     };
 
     for (auto _ : state) {
-        auto tokenizer = ccl::parser::reader::RulesLexer.getTokenizer(astlang2::getAstlangGrammar());
+        auto tokenizer = ccl::parser::reader::getRulesLexer().getTokenizer(astlang2::getAstlangGrammar());
 
         auto [roots, algorithm] = glr_parser.parse(tokenizer);
 
