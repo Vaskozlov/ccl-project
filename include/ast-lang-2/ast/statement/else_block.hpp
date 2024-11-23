@@ -1,22 +1,22 @@
 #ifndef AST_LANG_2_ELSE_BLOCK_HPP
 #define AST_LANG_2_ELSE_BLOCK_HPP
 
-#include <ast-lang-2/ast/core/node.hpp>
+#include <ast-lang-2/ast/node.hpp>
 
 namespace astlang2::ast::statement {
-    class ElseBlock final : public core::AstlangNode {
+    class ElseBlock final : public AstlangNode {
     private:
-        core::SharedNode<AstlangNode> bodyNode;
+        SharedNode<AstlangNode> bodyNode;
 
     public:
         ElseBlock(SmallId id, const ccl::parser::ast::SmallVectorOfNodes&initial_nodes);
 
         auto compute(interpreter::Interpreter&interpreter) const
-            -> core::ComputationResult override;
+            -> ComputationResult override;
 
-        auto castChildren(const ConversionTable&conversion_table) -> void override;
+        auto optimize() -> SharedNode<> override;
 
-        auto optimize() -> core::SharedNode<> override;
+        auto getChildrenNodes() const -> isl::SmallFunction<ccl::parser::ast::SharedNode<>()> override;
     };
 } // namespace astlang2::ast::statement
 

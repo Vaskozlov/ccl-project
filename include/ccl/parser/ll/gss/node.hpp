@@ -15,7 +15,7 @@ namespace ccl::parser::ll
 
         auto addParent(Node *parent) -> void
         {
-            for (auto *ptr : previous) {
+            for (const auto *ptr : previous) {
                 if (ptr == parent) {
                     return;
                 }

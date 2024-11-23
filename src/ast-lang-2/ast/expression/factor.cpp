@@ -96,7 +96,7 @@ namespace astlang2::ast::expression
         }
     }
 
-    auto Factor::compute(interpreter::Interpreter &interpreter) const -> core::ComputationResult
+    auto Factor::compute(interpreter::Interpreter &interpreter) const -> ComputationResult
     {
         using namespace core;
 
@@ -150,19 +150,41 @@ namespace astlang2::ast::expression
         }
     }
 
-    auto Factor::castChildren(const ConversionTable &conversion_table) -> void
+    auto Factor::optimize() -> SharedNode<>
     {
-        node->cast(conversion_table);
-    }
+        switch (nodeType) {
+            using enum NodeTypes;
 
-    auto Factor::optimize() -> core::SharedNode<>
-    {
-        if (nodeType != NodeTypes::ASSIGNMENT_EXPRESSION) {
+        case NUMBER:
+        case STRING:
+        case FLOAT:
+        case IDENTIFIER:
+        case TRUE:
+        case FALSE:
             return nullptr;
+
+        case ASSIGNMENT_EXPRESSION:
+        case FUNCTION_CALL:
+        case METHOD_CALL:
+            exchangeIfNotNull<Node>(node, static_cast<AstlangNode *>(node.get())->optimize());
+            return node;
+
+        default:
+            isl::unreachable();
         }
-
-        exchangeIfNotNull<Node>(node, static_cast<AstlangNode *>(node.get())->optimize());
-
-        return node;
     }
+
+    auto Factor::getChildrenNodes() const -> isl::SmallFunction<ccl::parser::ast::SharedNode<>()>
+    {
+        return isl::SmallFunction<ccl::parser::ast::SharedNode<>()>{
+            [index = 0, stored_node = node]() mutable -> ccl::parser::ast::SharedNode<> {
+                if (index > 0) {
+                    return nullptr;
+                }
+
+                ++index;
+                return stored_node;
+            }};
+    }
+
 }// namespace astlang2::ast::expression

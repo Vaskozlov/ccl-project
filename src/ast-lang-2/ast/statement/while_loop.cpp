@@ -10,12 +10,12 @@ namespace astlang2::ast::statement
       , bodyNode{isl::staticPointerCast<AstlangNode>(initial_nodes.at(3))}
     {}
 
-    auto WhileLoop::compute(interpreter::Interpreter &interpreter) const -> core::ComputationResult
+    auto WhileLoop::compute(interpreter::Interpreter &interpreter) const -> ComputationResult
     {
         while (true) {
-            core::ComputationResult condition_result = conditionNode->compute(interpreter);
+            ComputationResult condition_result = conditionNode->compute(interpreter);
 
-            if (condition_result.controlflowStatus == core::ControlflowStatus::RETURN) {
+            if (condition_result.controlflowStatus == ControlflowStatus::RETURN) {
                 return condition_result;
             }
 
@@ -23,7 +23,7 @@ namespace astlang2::ast::statement
                 interpreter.callFunction("bool", {std::move(condition_result.value)});
 
             if (!*static_cast<bool *>(condition_to_bool.object.get())) {
-                return core::ComputationResult{
+                return ComputationResult{
                     .value =
                         Value{
                             .object = nullptr,
@@ -32,25 +32,36 @@ namespace astlang2::ast::statement
                 };
             }
 
-            core::ComputationResult body_result = bodyNode->compute(interpreter);
+            ComputationResult body_result = bodyNode->compute(interpreter);
 
-            if (body_result.controlflowStatus == core::ControlflowStatus::RETURN) {
+            if (body_result.controlflowStatus == ControlflowStatus::RETURN) {
                 return body_result;
             }
         }
     }
 
-    auto WhileLoop::castChildren(const ConversionTable &conversion_table) -> void
-    {
-        conditionNode->cast(conversion_table);
-        bodyNode->cast(conversion_table);
-    }
-
-    auto WhileLoop::optimize() -> core::SharedNode<>
+    auto WhileLoop::optimize() -> SharedNode<>
     {
         exchangeIfNotNull(conditionNode, conditionNode->optimize());
         exchangeIfNotNull(bodyNode, bodyNode->optimize());
 
         return nullptr;
+    }
+
+    auto WhileLoop::getChildrenNodes() const -> isl::SmallFunction<ccl::parser::ast::SharedNode<>()>
+    {
+        return isl::SmallFunction<ccl::parser::ast::SharedNode<>()>{
+            [this, field_index = 0U]() mutable -> ccl::parser::ast::SharedNode<> {
+                switch (field_index++) {
+                case 0:
+                    return conditionNode;
+
+                case 1:
+                    return bodyNode;
+
+                default:
+                    return nullptr;
+                }
+            }};
     }
 }// namespace astlang2::ast::statement

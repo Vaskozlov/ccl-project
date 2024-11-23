@@ -4,10 +4,10 @@
 #include <ast-lang-2/ast/statement/if_block.hpp>
 
 namespace astlang2::ast::statement {
-    class ElifBlock final : public core::AstlangNode {
+    class ElifBlock final : public AstlangNode {
         struct ElifStatement {
-            core::SharedNode<AstlangNode> conditionNode;
-            core::SharedNode<AstlangNode> bodyNode;
+            SharedNode<AstlangNode> conditionNode;
+            SharedNode<AstlangNode> bodyNode;
         };
 
         isl::SmallVector<ElifStatement, 2> elifStatements;
@@ -16,11 +16,11 @@ namespace astlang2::ast::statement {
         ElifBlock(SmallId id, const ccl::parser::ast::SmallVectorOfNodes&initial_nodes);
 
         auto compute(interpreter::Interpreter&interpreter) const
-            -> core::ComputationResult override;
+            -> ComputationResult override;
 
-        auto castChildren(const ConversionTable&conversion_table) -> void override;
+        auto optimize() -> SharedNode<> override;
 
-        auto optimize() -> core::SharedNode<> override;
+        auto getChildrenNodes() const  -> isl::SmallFunction<ccl::parser::ast::SharedNode<>()> override;
     };
 } // namespace astlang2::ast::statement
 

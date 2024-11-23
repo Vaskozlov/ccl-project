@@ -11,7 +11,7 @@ namespace astlang2::interpreter
     class Interpreter;
 }
 
-namespace astlang2::ast::core
+namespace astlang2::ast
 {
     template<std::derived_from<ccl::parser::ast::Node> T = ccl::parser::ast::Node>
     using SharedNode = ccl::parser::ast::SharedNode<T>;
@@ -32,6 +32,12 @@ namespace astlang2::ast::core
         ControlflowStatus controlflowStatus{ControlflowStatus::NONE};
     };
 
+    struct ChildrenNodesGenerator
+    {
+        SharedNode<> node;
+        u32 state = 0;
+    };
+
     class AstlangNode : public ccl::parser::ast::Node
     {
     public:
@@ -45,15 +51,11 @@ namespace astlang2::ast::core
         }
 
         auto print(
-            const std::string & /* prefix */, const bool /*is_left*/,
-            const std::function<std::string(ccl::SmallId)> & /* id_converter */) const
-            -> void override
-        {
-            throw std::runtime_error{"Not supported"};
-        }
+            const std::string &prefix, const bool is_left,
+            const std::function<std::string(ccl::SmallId)> &id_converter) const -> void override;
 
-        static auto buildConversionTable(const ccl::parser::reader::ParserBuilder &constructor)
-            -> ConversionTable;
+            static auto buildConversionTable(const ccl::parser::reader::ParserBuilder &constructor)
+                -> ConversionTable;
 
         template<std::derived_from<Node> T = AstlangNode>
         static auto exchangeIfNotNull(SharedNode<T> &node, SharedNode<> new_node) -> void

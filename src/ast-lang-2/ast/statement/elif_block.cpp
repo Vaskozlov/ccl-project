@@ -10,7 +10,7 @@ namespace astlang2::ast::statement
         const ccl::parser::ast::SmallVectorOfNodes &initial_nodes)
       : AstlangNode{id}
     {
-        core::SharedNode<ccl::parser::ast::NonTerminal> next_block;
+        SharedNode<ccl::parser::ast::NonTerminal> next_block;
 
         elifStatements.emplace_back(
             isl::staticPointerCast<AstlangNode>(initial_nodes.at(1)),
@@ -35,12 +35,12 @@ namespace astlang2::ast::statement
         }
     }
 
-    auto ElifBlock::compute(interpreter::Interpreter &interpreter) const -> core::ComputationResult
+    auto ElifBlock::compute(interpreter::Interpreter &interpreter) const -> ComputationResult
     {
         for (const auto &[condition_node, body_node] : elifStatements) {
             auto condition_result = condition_node->compute(interpreter);
 
-            if (condition_result.controlflowStatus == core::ControlflowStatus::RETURN) {
+            if (condition_result.controlflowStatus == ControlflowStatus::RETURN) {
                 return condition_result;
             }
 
@@ -48,31 +48,23 @@ namespace astlang2::ast::statement
                 interpreter.callFunction("bool", {std::move(condition_result.value)});
 
             if (*static_cast<bool *>(condition_to_bool.object.get())) {
-                core::ComputationResult statement_result = body_node->compute(interpreter);
+                ComputationResult statement_result = body_node->compute(interpreter);
 
                 statement_result.controlflowStatus =
-                    statement_result.controlflowStatus == core::ControlflowStatus::RETURN
+                    statement_result.controlflowStatus == ControlflowStatus::RETURN
                         ? statement_result.controlflowStatus
-                        : core::ControlflowStatus::IF_BLOCK_FINISHES;
+                        : ControlflowStatus::IF_BLOCK_FINISHES;
 
                 return statement_result;
             }
         }
 
-        return core::ComputationResult{
-            .controlflowStatus = core::ControlflowStatus::IF_CONDITION_FAILED,
+        return ComputationResult{
+            .controlflowStatus = ControlflowStatus::IF_CONDITION_FAILED,
         };
     }
 
-    auto ElifBlock::castChildren(const ConversionTable &conversion_table) -> void
-    {
-        for (auto &[condition, body] : elifStatements) {
-            condition->cast(conversion_table);
-            body->cast(conversion_table);
-        }
-    }
-
-    auto ElifBlock::optimize() -> core::SharedNode<>
+    auto ElifBlock::optimize() -> SharedNode<>
     {
         for (auto &[condition, body] : elifStatements) {
             exchangeIfNotNull(condition, condition->optimize());
@@ -80,5 +72,27 @@ namespace astlang2::ast::statement
         }
 
         return nullptr;
+    }
+
+    auto ElifBlock::getChildrenNodes() const -> isl::SmallFunction<ccl::parser::ast::SharedNode<>()>
+    {
+        return isl::SmallFunction<ccl::parser::ast::SharedNode<>()>{
+            [this, field_index = 0U, index = 0U]() mutable -> ccl::parser::ast::SharedNode<> {
+                if (field_index == elifStatements.size()) {
+                    return nullptr;
+                }
+
+                auto &[condition, body] = elifStatements[field_index];
+
+                if (index == 0U) {
+                    ++index;
+                    return condition;
+                }
+
+                index = 0;
+                ++field_index;
+
+                return body;
+            }};
     }
 }// namespace astlang2::ast::statement

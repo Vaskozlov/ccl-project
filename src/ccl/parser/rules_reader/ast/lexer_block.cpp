@@ -1,3 +1,4 @@
+#include <ccl/parser/ast/terminal.hpp>
 #include <ccl/parser/rules_reader/ast/lexer_block.hpp>
 
 namespace ccl::parser::reader::ast

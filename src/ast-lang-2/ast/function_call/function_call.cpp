@@ -28,7 +28,7 @@ namespace astlang2::ast::function::call
     }
 
     auto FunctionCall::compute(interpreter::Interpreter &interpreter) const
-        -> core::ComputationResult
+        -> ComputationResult
     {
         const ccl::lexer::Token &function_name_token = functionNameNode->getToken();
         const auto function_name_repr = function_name_token.getRepr();
@@ -39,23 +39,41 @@ namespace astlang2::ast::function::call
             function_arguments.emplace_back(argument_node->compute(interpreter).value);
         }
 
-        return core::ComputationResult{
+        return ComputationResult{
             .value = interpreter.callFunction(
                 static_cast<std::string>(function_name_repr), function_arguments),
         };
     }
 
-    auto FunctionCall::castChildren(const ConversionTable &conversion_table) -> void
+    auto FunctionCall::optimize() -> SharedNode<>
     {
-        for (auto &node : functionArgumentsNode) {
-            node->cast(conversion_table);
+        for (auto &argument_node : functionArgumentsNode) {
+            exchangeIfNotNull(argument_node, argument_node->optimize());
         }
 
-        functionNameNode->cast(conversion_table);
+        return nullptr;
     }
 
-    auto FunctionCall::optimize() -> core::SharedNode<>
+    auto FunctionCall::getChildrenNodes() const -> isl::SmallFunction<ccl::parser::ast::SharedNode<>()>
     {
-        return nullptr;
+        return isl::SmallFunction<ccl::parser::ast::SharedNode<>()>{
+            [this, field_index = 0U, index = 0U]() mutable -> ccl::parser::ast::SharedNode<> {
+                switch (field_index) {
+                case 0:
+                    ++field_index;
+                    return functionNameNode;
+
+                case 1:
+                    if (index == functionArgumentsNode.size()) {
+                        ++field_index;
+                        return nullptr;
+                    }
+
+                    return functionArgumentsNode[index++];
+
+                default:
+                    return nullptr;
+                }
+            }};
     }
 }// namespace astlang2::ast::function::call

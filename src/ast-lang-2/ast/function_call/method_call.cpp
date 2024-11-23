@@ -28,11 +28,11 @@ namespace astlang2::ast::function::call
         }
     }
 
-    auto MethodCall::compute(interpreter::Interpreter &interpreter) const -> core::ComputationResult
+    auto MethodCall::compute(interpreter::Interpreter &interpreter) const -> ComputationResult
     {
-        core::ComputationResult object_value = objectNode->compute(interpreter);
+        ComputationResult object_value = objectNode->compute(interpreter);
 
-        if (object_value.controlflowStatus == core::ControlflowStatus::RETURN) {
+        if (object_value.controlflowStatus == ControlflowStatus::RETURN) {
             return object_value;
         }
 
@@ -48,22 +48,38 @@ namespace astlang2::ast::function::call
         auto method_call_result = object_value.value.type->callMethod(
             interpreter, static_cast<std::string>(function_name_repr), function_arguments);
 
-        return core::ComputationResult{.value = std::move(method_call_result)};
+        return ComputationResult{.value = std::move(method_call_result)};
     }
 
-    auto MethodCall::castChildren(const ConversionTable &conversion_table) -> void
-    {
-        methodNameNode->cast(conversion_table);
-
-        for (auto &node : functionArgumentsNode) {
-            node->cast(conversion_table);
-        }
-
-        objectNode->cast(conversion_table);
-    }
-
-    auto MethodCall::optimize() -> core::SharedNode<>
+    auto MethodCall::optimize() -> SharedNode<>
     {
         return nullptr;
+    }
+
+    auto MethodCall::getChildrenNodes() const -> isl::SmallFunction<ccl::parser::ast::SharedNode<>()>
+    {
+        return isl::SmallFunction<ccl::parser::ast::SharedNode<>()>{
+            [this, field_index = 0U, index = 0U]() mutable -> ccl::parser::ast::SharedNode<> {
+                switch (field_index) {
+                case 0:
+                    ++field_index;
+                    return objectNode;
+
+                case 1:
+                    ++field_index;
+                    return methodNameNode;
+
+                case 2:
+                    if (index == functionArgumentsNode.size()) {
+                        ++field_index;
+                        return nullptr;
+                    }
+
+                    return functionArgumentsNode[index++];
+
+                default:
+                    return nullptr;
+                }
+            }};
     }
 }// namespace astlang2::ast::function::call

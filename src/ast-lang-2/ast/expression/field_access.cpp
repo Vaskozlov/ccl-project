@@ -16,26 +16,34 @@ namespace astlang2::ast::expression
     }
 
     auto FieldAccess::compute(interpreter::Interpreter &interpreter) const
-        -> core::ComputationResult
+        -> ComputationResult
     {
-        core::ComputationResult object_value = objectNode->compute(interpreter);
+        ComputationResult object_value = objectNode->compute(interpreter);
 
-        if (object_value.controlflowStatus == core::ControlflowStatus::RETURN) {
+        if (object_value.controlflowStatus == ControlflowStatus::RETURN) {
             return object_value;
         }
 
         auto *object_map = static_cast<Instance *>(object_value.value.object.get());
-        return core::ComputationResult{.value = object_map->at(fieldName)};
+        return ComputationResult{.value = object_map->at(fieldName)};
     }
 
-    auto FieldAccess::castChildren(const ConversionTable &conversion_table) -> void
-    {
-        objectNode->cast(conversion_table);
-    }
-
-    auto FieldAccess::optimize() -> core::SharedNode<>
+    auto FieldAccess::optimize() -> SharedNode<>
     {
         exchangeIfNotNull(objectNode, objectNode->optimize());
         return nullptr;
+    }
+
+    auto FieldAccess::getChildrenNodes() const -> isl::SmallFunction<ccl::parser::ast::SharedNode<>()>
+    {
+        return isl::SmallFunction<ccl::parser::ast::SharedNode<>()>{
+            [index = 0, stored_node = objectNode]() mutable -> ccl::parser::ast::SharedNode<> {
+                if (index > 0) {
+                    return nullptr;
+                }
+
+                ++index;
+                return stored_node;
+            }};
     }
 }// namespace astlang2::ast::expression

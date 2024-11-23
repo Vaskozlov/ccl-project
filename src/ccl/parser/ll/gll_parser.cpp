@@ -12,9 +12,9 @@ namespace ccl::parser
         auto result = std::vector<ast::Node *>{};
 
         for (const auto &level : gss.getLevels()) {
-            for (const auto &node : level) {
-                for (const auto &n : node->sppfNode.nodes) {
-                    result.emplace_back(n.get());
+            for (const auto &gss_node : level) {
+                for (const auto &node : gss_node->sppfNode.nodes) {
+                    result.emplace_back(node.get());
                 }
             }
         }

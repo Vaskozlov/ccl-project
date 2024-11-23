@@ -1,7 +1,7 @@
 #ifndef CCL_PROJECT_LR_GSS_NODE_HPP
 #define CCL_PROJECT_LR_GSS_NODE_HPP
 
-#include <ccl/parser/ast/allocator.hpp>
+#include <ccl/parser/ast/node.hpp>
 
 namespace ccl::parser::lr
 {

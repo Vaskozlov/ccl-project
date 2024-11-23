@@ -9,16 +9,21 @@ namespace astlang2::ast::statement
 
 
     auto ForLoop::compute(interpreter::Interpreter & /*interpreter*/) const
-        -> core::ComputationResult
+        -> ComputationResult
     {
         return {};
     }
 
-    auto ForLoop::castChildren(const ConversionTable & /* conversion_table */) -> void
-    {}
-
-    auto ForLoop::optimize() -> core::SharedNode<>
+    auto ForLoop::optimize() -> SharedNode<>
     {
         return nullptr;
+    }
+
+    auto ForLoop::getChildrenNodes() const -> isl::SmallFunction<ccl::parser::ast::SharedNode<>()>
+    {
+        return isl::SmallFunction<ccl::parser::ast::SharedNode<>()>{
+            []() -> ccl::parser::ast::SharedNode<> {
+                return nullptr;
+            }};
     }
 }// namespace astlang2::ast::statement

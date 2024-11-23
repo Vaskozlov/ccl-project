@@ -13,21 +13,21 @@ namespace astlang2::ast::statement
     }
 
     auto IfStatement::compute(interpreter::Interpreter &interpreter) const
-        -> core::ComputationResult
+        -> ComputationResult
     {
         for (const auto &node : nodes) {
-            core::ComputationResult result = node->compute(interpreter);
+            ComputationResult result = node->compute(interpreter);
 
-            if (result.controlflowStatus == core::ControlflowStatus::RETURN) {
+            if (result.controlflowStatus == ControlflowStatus::RETURN) {
                 return result;
             }
 
-            if (result.controlflowStatus == core::ControlflowStatus::IF_BLOCK_FINISHES) {
-                return core::ComputationResult{.value = std::move(result.value)};
+            if (result.controlflowStatus == ControlflowStatus::IF_BLOCK_FINISHES) {
+                return ComputationResult{.value = std::move(result.value)};
             }
         }
 
-        return core::ComputationResult{
+        return ComputationResult{
             .value =
                 Value{
                     .object = nullptr,
@@ -36,19 +36,24 @@ namespace astlang2::ast::statement
         };
     }
 
-    auto IfStatement::castChildren(const ConversionTable &conversion_table) -> void
-    {
-        for (auto &node : nodes) {
-            node->cast(conversion_table);
-        }
-    }
-
-    auto IfStatement::optimize() -> core::SharedNode<>
+    auto IfStatement::optimize() -> SharedNode<>
     {
         for (auto &node : nodes) {
             exchangeIfNotNull(node, node->optimize());
         }
 
         return nullptr;
+    }
+
+    auto IfStatement::getChildrenNodes() const -> isl::SmallFunction<ccl::parser::ast::SharedNode<>()>
+    {
+        return isl::SmallFunction<ccl::parser::ast::SharedNode<>()>{
+            [this, field_index = 0U]() mutable -> ccl::parser::ast::SharedNode<> {
+                if (field_index == nodes.size()) {
+                    return nullptr;
+                }
+
+                return nodes[field_index++];
+            }};
     }
 }// namespace astlang2::ast::statement

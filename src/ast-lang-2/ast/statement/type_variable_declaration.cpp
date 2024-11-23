@@ -19,7 +19,7 @@ namespace astlang2::ast::statement
     }
 
     auto TypeVariableDeclaration::compute(interpreter::Interpreter &interpreter) const
-        -> core::ComputationResult
+        -> ComputationResult
     {
         const ts::Type *declaration_type = interpreter.getTypeFromNode(typeNode.get());
 
@@ -32,21 +32,34 @@ namespace astlang2::ast::statement
 
         interpreter.write(variableName, value);
 
-        return core::ComputationResult{
+        return ComputationResult{
             .value = std::move(value),
         };
     }
 
-    auto TypeVariableDeclaration::castChildren(const ConversionTable &conversion_table) -> void
-    {
-        typeNode->cast(conversion_table);
-        initialValueNode->cast(conversion_table);
-    }
-
-    auto TypeVariableDeclaration::optimize() -> core::SharedNode<>
+    auto TypeVariableDeclaration::optimize() -> SharedNode<>
     {
         exchangeIfNotNull(initialValueNode, initialValueNode->optimize());
 
         return nullptr;
     }
+
+    auto TypeVariableDeclaration::getChildrenNodes() const
+        -> isl::SmallFunction<ccl::parser::ast::SharedNode<>()>
+    {
+        return isl::SmallFunction<ccl::parser::ast::SharedNode<>()>{
+            [this, field_index = 0U]() mutable -> ccl::parser::ast::SharedNode<> {
+                switch (field_index++) {
+                case 0:
+                    return typeNode;
+
+                case 1:
+                    return initialValueNode;
+
+                default:
+                    return nullptr;
+                }
+            }};
+    }
+
 }// namespace astlang2::ast::statement

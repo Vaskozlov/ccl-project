@@ -41,8 +41,7 @@ namespace ccl::parser::ast
             const std::string &prefix, bool is_left,
             const std::function<std::string(SmallId)> &id_converter) const -> void override;
 
-        auto castChildren(const ConversionTable &) -> void override
-        {}
+        auto getChildrenNodes() const -> isl::SmallFunction<SharedNode<>()> override;
     };
 }// namespace ccl::parser::ast
 

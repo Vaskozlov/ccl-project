@@ -1,7 +1,6 @@
 #ifndef CCL_PROJECT_NODE_OF_NODES_HPP
 #define CCL_PROJECT_NODE_OF_NODES_HPP
 
-#include <ccl/parser/ast/allocator.hpp>
 #include <ccl/parser/ast/node.hpp>
 #include <isl/small_vector.hpp>
 #include <utility>
@@ -102,12 +101,7 @@ namespace ccl::parser::ast
             new (node) T{node_type, std::move(nodes)};
         }
 
-        auto castChildren(const ConversionTable &conversion_table) -> void override
-        {
-            for (auto &node : nodes) {
-                node->cast(conversion_table);
-            }
-        }
+        auto getChildrenNodes() const -> isl::SmallFunction<SharedNode<>()> override;
     };
 
     static_assert(SharedNode<>::canStore<NonTerminal>());

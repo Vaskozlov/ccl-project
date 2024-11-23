@@ -30,27 +30,22 @@ namespace astlang2::ast::expression
         }
     }
 
-    auto Value::compute(interpreter::Interpreter &interpreter) const -> core::ComputationResult
+    auto Value::compute(interpreter::Interpreter &interpreter) const -> ComputationResult
     {
         if (functionName.empty()) {
             return node->compute(interpreter);
         }
 
-        core::ComputationResult expression_argument = node->compute(interpreter);
+        ComputationResult expression_argument = node->compute(interpreter);
         const isl::SmallVector<astlang2::Value, 4> function_arguments{
             std::move(expression_argument.value)};
 
-        return core::ComputationResult{
+        return ComputationResult{
             .value = interpreter.callFunction(functionName, function_arguments),
         };
     }
 
-    auto Value::castChildren(const ConversionTable &conversion_table) -> void
-    {
-        node->cast(conversion_table);
-    }
-
-    auto Value::optimize() -> core::SharedNode<>
+    auto Value::optimize() -> SharedNode<>
     {
         exchangeIfNotNull(node, node->optimize());
 
@@ -60,4 +55,18 @@ namespace astlang2::ast::expression
 
         return nullptr;
     }
+
+    auto Value::getChildrenNodes() const -> isl::SmallFunction<ccl::parser::ast::SharedNode<>()>
+    {
+        return isl::SmallFunction<ccl::parser::ast::SharedNode<>()>{
+            [index = 0, stored_node = node]() mutable -> ccl::parser::ast::SharedNode<> {
+                if (index > 0) {
+                    return nullptr;
+                }
+
+                ++index;
+                return stored_node;
+            }};
+    }
+
 }// namespace astlang2::ast::expression

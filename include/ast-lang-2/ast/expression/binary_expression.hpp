@@ -1,26 +1,26 @@
 #ifndef AST_LANG_2_BINARY_EXPRESSION_HPP
 #define AST_LANG_2_BINARY_EXPRESSION_HPP
 
-#include <ast-lang-2/ast/core/node.hpp>
+#include <ast-lang-2/ast/node.hpp>
 
 namespace astlang2::ast::expression
 {
-    class BinaryExpression final : public core::AstlangNode
+    class BinaryExpression final : public AstlangNode
     {
     private:
-        core::SharedNode<AstlangNode> lhsNode;
-        core::SharedNode<AstlangNode> rhsNode;
+        SharedNode<AstlangNode> lhsNode;
+        SharedNode<AstlangNode> rhsNode;
         std::string functionName;
 
     public:
         BinaryExpression(SmallId id, const ccl::parser::ast::SmallVectorOfNodes &initial_nodes);
 
         auto compute(interpreter::Interpreter &interpreter) const
-            -> core::ComputationResult override;
+            -> ComputationResult override;
 
-        auto castChildren(const ConversionTable& conversion_table) -> void override;
+        auto optimize() -> SharedNode<> override;
 
-        auto optimize() -> core::SharedNode<> override;
+        auto getChildrenNodes() const -> isl::SmallFunction<ccl::parser::ast::SharedNode<>()> override;
     };
 }// namespace astlang2::ast::expression
 

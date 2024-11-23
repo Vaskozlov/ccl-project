@@ -31,9 +31,9 @@ namespace astlang2::ast::statement
         }
     }
 
-    auto Statements::compute(interpreter::Interpreter &interpreter) const -> core::ComputationResult
+    auto Statements::compute(interpreter::Interpreter &interpreter) const -> ComputationResult
     {
-        core::ComputationResult result{
+        ComputationResult result{
             .value =
                 Value{
                     .object = nullptr,
@@ -44,7 +44,7 @@ namespace astlang2::ast::statement
         for (const auto &statement : nodes) {
             result = statement->compute(interpreter);
 
-            if (result.controlflowStatus == core::ControlflowStatus::RETURN) {
+            if (result.controlflowStatus == ControlflowStatus::RETURN) {
                 return result;
             }
         }
@@ -52,14 +52,7 @@ namespace astlang2::ast::statement
         return result;
     }
 
-    auto Statements::castChildren(const ConversionTable &conversion_table) -> void
-    {
-        for (auto &node : nodes) {
-            node->cast(conversion_table);
-        }
-    }
-
-    auto Statements::optimize() -> core::SharedNode<>
+    auto Statements::optimize() -> SharedNode<>
     {
         for (auto &node : nodes) {
             exchangeIfNotNull(node, node->optimize());
@@ -70,5 +63,17 @@ namespace astlang2::ast::statement
         }
 
         return nullptr;
+    }
+
+    auto Statements::getChildrenNodes() const -> isl::SmallFunction<ccl::parser::ast::SharedNode<>()>
+    {
+        return isl::SmallFunction<ccl::parser::ast::SharedNode<>()>{
+            [index = 0, &nodes = nodes]() mutable -> ccl::parser::ast::SharedNode<> {
+                if (index == nodes.size()) {
+                    return nullptr;
+                }
+
+                return nodes[index++];
+            }};
     }
 }// namespace astlang2::ast::statement

@@ -1,7 +1,7 @@
 #ifndef CCL_PROJECT_SPPF_NODE_HPP
 #define CCL_PROJECT_SPPF_NODE_HPP
 
-#include <ccl/parser/ast/allocator.hpp>
+#include <ccl/parser/ast/node.hpp>
 #include <ccl/parser/rule_with_dot.hpp>
 
 namespace ccl::parser

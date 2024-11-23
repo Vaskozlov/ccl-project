@@ -5,7 +5,7 @@
 namespace astlang2::ast::function::def
 {
     static auto getFunctionArgument(const ccl::parser::ast::NonTerminal *function_argument)
-        -> std::pair<std::string, core::SharedNode<ccl::parser::ast::NonTerminal>>
+        -> std::pair<std::string, SharedNode<ccl::parser::ast::NonTerminal>>
     {
         const auto *argument_name_node =
             static_cast<const ccl::parser::ast::Terminal *>(function_argument->back().get());
@@ -77,7 +77,7 @@ namespace astlang2::ast::function::def
     }
 
     auto FunctionDefinition::compute(interpreter::Interpreter &interpreter) const
-        -> core::ComputationResult
+        -> ComputationResult
     {
         ts::Type *return_type = returnTypeNode == nullptr
                                     ? interpreter.getAny()
@@ -98,7 +98,7 @@ namespace astlang2::ast::function::def
             function_identification,
             std::make_unique<astlang2::function::AstlangFunction>(argumentsNames, bodyNode));
 
-        return core::ComputationResult{
+        return ComputationResult{
             .value =
                 Value{
                     .object = nullptr,
@@ -107,22 +107,44 @@ namespace astlang2::ast::function::def
         };
     }
 
-    auto FunctionDefinition::castChildren(const ConversionTable &conversion_table) -> void
-    {
-        for (auto &argument_type_node : functionArguments) {
-            argument_type_node->cast(conversion_table);
-        }
-
-        if (returnTypeNode != nullptr) {
-            returnTypeNode->cast(conversion_table);
-        }
-
-        bodyNode->cast(conversion_table);
-    }
-
-    auto FunctionDefinition::optimize() -> core::SharedNode<>
+    auto FunctionDefinition::optimize() -> SharedNode<>
     {
         bodyNode->optimize();
         return nullptr;
     }
+
+    auto FunctionDefinition::getChildrenNodes() const
+        -> isl::SmallFunction<ccl::parser::ast::SharedNode<>()>
+    {
+        return isl::SmallFunction<ccl::parser::ast::SharedNode<>()>{
+            [this, field_index = 0U, index = 0U]() mutable -> ccl::parser::ast::SharedNode<> {
+                switch (field_index) {
+                case 0:
+                    if (index < functionArguments.size()) {
+                        return functionArguments[index++];
+                    }
+
+                    ++field_index;
+                    index = 0;
+                    [[fallthrough]];
+
+                case 1:
+                    ++field_index;
+
+                    if (returnTypeNode != nullptr) {
+                        return returnTypeNode;
+                    }
+
+                    [[fallthrough]];
+
+                case 2:
+                    ++field_index;
+                    return bodyNode;
+
+                default:
+                    return nullptr;
+                }
+            }};
+    }
+
 }// namespace astlang2::ast::function::def

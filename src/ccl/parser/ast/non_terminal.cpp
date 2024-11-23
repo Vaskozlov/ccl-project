@@ -36,4 +36,16 @@ namespace ccl::parser::ast
             nodes.back()->print(expanded_prefix, false, id_converter);
         }
     }
+
+    auto NonTerminal::getChildrenNodes() const -> isl::SmallFunction<SharedNode<>()>
+    {
+        return isl::SmallFunction<SharedNode<>()>{
+            [index = 0U, &stored_nodes = nodes]() mutable -> SharedNode<> {
+                if (index == stored_nodes.size()) {
+                    return nullptr;
+                }
+
+                return stored_nodes[index++];
+            }};
+    }
 }// namespace ccl::parser::ast

@@ -1,26 +1,26 @@
 #ifndef AST_LANG_2_METHOD_CALL_HPP
 #define AST_LANG_2_METHOD_CALL_HPP
 
-#include <ast-lang-2/ast/core/node.hpp>
+#include <ast-lang-2/ast/node.hpp>
 
 namespace astlang2::ast::function::call
 {
-    class MethodCall final : public core::AstlangNode
+    class MethodCall final : public AstlangNode
     {
     private:
-        core::SharedNode<AstlangNode> objectNode;
-        core::SharedNode<ccl::parser::ast::Terminal> methodNameNode;
-        isl::SmallVector<core::SharedNode<AstlangNode>, 4> functionArgumentsNode;
+        SharedNode<AstlangNode> objectNode;
+        SharedNode<ccl::parser::ast::Terminal> methodNameNode;
+        isl::SmallVector<SharedNode<AstlangNode>, 4> functionArgumentsNode;
 
     public:
         MethodCall(SmallId id, const ccl::parser::ast::SmallVectorOfNodes &initial_nodes);
 
         auto compute(interpreter::Interpreter &interpreter) const
-            -> core::ComputationResult override;
+            -> ComputationResult override;
 
-        auto castChildren(const ConversionTable &conversion_table) -> void override;
+        auto optimize() -> SharedNode<> override;
 
-        auto optimize() -> core::SharedNode<> override;
+        auto getChildrenNodes() const -> isl::SmallFunction<ccl::parser::ast::SharedNode<>()> override;
     };
 }// namespace astlang2::ast::function::call
 

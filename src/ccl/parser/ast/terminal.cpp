@@ -8,7 +8,15 @@ namespace ccl::parser::ast
         const std::function<std::string(SmallId)> &id_converter) const -> void
     {
         std::cout << fmt::format(
-                         "{}-{}:", getPrintingPrefix(prefix, is_left), id_converter(getType()))
+                         "{}-{}: {}", getPrintingPrefix(prefix, is_left), id_converter(getType()),
+                         token.getRepr())
                   << std::endl;
+    }
+
+    auto Terminal::getChildrenNodes() const -> isl::SmallFunction<SharedNode<>()>
+    {
+        return isl::SmallFunction<SharedNode<>()>{[]() {
+            return nullptr;
+        }};
     }
 }// namespace ccl::parser::ast

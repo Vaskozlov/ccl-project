@@ -1,4 +1,4 @@
-#include <ast-lang-2/ast/core/node.hpp>
+#include <ast-lang-2/ast/node.hpp>
 #include <ast-lang-2/ts/type_system.hpp>
 
 namespace astlang2

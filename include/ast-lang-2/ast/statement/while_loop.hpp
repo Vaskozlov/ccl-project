@@ -1,24 +1,26 @@
 #ifndef AST_LANG_2_WHILE_LOOP_HPP
 #define AST_LANG_2_WHILE_LOOP_HPP
 
-#include <ast-lang-2/ast/core/node.hpp>
+#include <ast-lang-2/ast/node.hpp>
 
-namespace astlang2::ast::statement {
-    class WhileLoop final : public core::AstlangNode {
+namespace astlang2::ast::statement
+{
+    class WhileLoop final : public AstlangNode
+    {
     private:
-        core::SharedNode<AstlangNode> conditionNode;
-        core::SharedNode<AstlangNode> bodyNode;
+        SharedNode<AstlangNode> conditionNode;
+        SharedNode<AstlangNode> bodyNode;
 
     public:
-        WhileLoop(SmallId id, const ccl::parser::ast::SmallVectorOfNodes&initial_nodes);
+        WhileLoop(SmallId id, const ccl::parser::ast::SmallVectorOfNodes &initial_nodes);
 
-        auto compute(interpreter::Interpreter&interpreter) const
-            -> core::ComputationResult override;
+        auto compute(interpreter::Interpreter &interpreter) const
+            -> ComputationResult override;
 
-        auto castChildren(const ConversionTable&conversion_table) -> void override;
+        auto optimize() -> SharedNode<> override;
 
-        auto optimize() -> core::SharedNode<> override;
+        auto getChildrenNodes() const -> isl::SmallFunction<ccl::parser::ast::SharedNode<>()> override;
     };
-} // namespace astlang2::ast::statement
+}// namespace astlang2::ast::statement
 
 #endif /* AST_LANG_2_WHILE_LOOP_HPP */

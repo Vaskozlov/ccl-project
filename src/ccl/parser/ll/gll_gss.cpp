@@ -77,7 +77,7 @@ namespace ccl::parser::ll
         if (non_terminals_empty || terminals_empty) {
             auto &selectedList = non_terminals_empty ? terminalDescriptors : nonTerminalDescriptors;
 
-            auto descriptor = selectedList.front();
+            const auto descriptor = selectedList.front();
             selectedList.pop_front();
 
             return descriptor;

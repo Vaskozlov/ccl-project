@@ -1,25 +1,25 @@
 #ifndef AST_LANG_2_VALUE_HPP
 #define AST_LANG_2_VALUE_HPP
 
-#include <ast-lang-2/ast/core/node.hpp>
+#include <ast-lang-2/ast/node.hpp>
 
 namespace astlang2::ast::expression
 {
-    class Value final : public core::AstlangNode
+    class Value final : public AstlangNode
     {
     private:
-        core::SharedNode<AstlangNode> node;
+        SharedNode<AstlangNode> node;
         std::string functionName;
 
     public:
         Value(SmallId id, const ccl::parser::ast::SmallVectorOfNodes &nodes);
 
         auto compute(interpreter::Interpreter &interpreter) const
-            -> core::ComputationResult override;
+            -> ComputationResult override;
 
-        auto castChildren(const ConversionTable &conversion_table) -> void override;
+        auto optimize() -> SharedNode<> override;
 
-        auto optimize() -> core::SharedNode<> override;
+        auto getChildrenNodes() const -> isl::SmallFunction<ccl::parser::ast::SharedNode<>()> override;
     };
 }// namespace astlang2::ast::expression
 

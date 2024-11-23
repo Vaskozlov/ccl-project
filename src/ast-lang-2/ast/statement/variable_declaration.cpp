@@ -19,26 +19,36 @@ namespace astlang2::ast::statement
 
 
     auto VariableDeclaration::compute(interpreter::Interpreter &interpreter) const
-        -> core::ComputationResult
+        -> ComputationResult
     {
         Value value = initialValueNode->compute(interpreter).value;
         value.valueType = ValueType::L_VALUE;
 
         interpreter.write(variableName, value);
 
-        return core::ComputationResult{
+        return ComputationResult{
             .value = std::move(value),
         };
     }
 
-    auto VariableDeclaration::castChildren(const ConversionTable &conversion_table) -> void
-    {
-        initialValueNode->cast(conversion_table);
-    }
-
-    auto VariableDeclaration::optimize() -> core::SharedNode<>
+    auto VariableDeclaration::optimize() -> SharedNode<>
     {
         exchangeIfNotNull(initialValueNode, initialValueNode->optimize());
         return nullptr;
+    }
+
+    auto VariableDeclaration::getChildrenNodes() const
+        -> isl::SmallFunction<ccl::parser::ast::SharedNode<>()>
+    {
+        return isl::SmallFunction<ccl::parser::ast::SharedNode<>()>{
+            [index = 0,
+             stored_node = initialValueNode]() mutable -> ccl::parser::ast::SharedNode<> {
+                if (index > 0) {
+                    return nullptr;
+                }
+
+                ++index;
+                return stored_node;
+            }};
     }
 }// namespace astlang2::ast::statement

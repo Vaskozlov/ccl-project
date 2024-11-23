@@ -1,4 +1,4 @@
-#include <ast-lang-2/ast/core/node.hpp>
+#include <ast-lang-2/ast/node.hpp>
 #include <ast-lang-2/interpreter/interpreter.hpp>
 #include <ccl/lexer/tokenizer.hpp>
 #include <ccl/parser/dot/dot_repr.hpp>
@@ -40,14 +40,17 @@ auto main(int /* argc */, char **argv) -> int
     // std::filesystem::current_path().append(fmt::format("{}.dot", algorithm)), dot_repr);
 
     const auto conversion_table =
-        astlang2::ast::core::AstlangNode::buildConversionTable(constructor);
+        astlang2::ast::AstlangNode::buildConversionTable(constructor);
 
     row_root->cast(conversion_table);
+    nodes.front().updateDeleter<ast::Node>();
 
-    auto *astlang_root = dynamic_cast<astlang2::ast::core::AstlangNode *>(row_root);
+    auto astlang_root = isl::staticPointerCast<astlang2::ast::AstlangNode>(nodes.front());
+
     auto output_buffer = std::string{};
+    astlang2::ast::AstlangNode::exchangeIfNotNull(astlang_root, astlang_root->optimize());
 
-    astlang_root->optimize();
+    astlang_root->print("", false, to_str);
     auto interpreter = Interpreter{constructor, std::back_inserter(output_buffer)};
 
     astlang_root->compute(interpreter);

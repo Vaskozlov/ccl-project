@@ -4,53 +4,53 @@
 namespace astlang2::ast::expression
 {
     static auto logicalAnd(
-        const core::AstlangNode *lhs_node, const core::AstlangNode *rhs_node,
-        interpreter::Interpreter &interpreter) -> core::ComputationResult
+        const AstlangNode *lhs_node, const AstlangNode *rhs_node,
+        interpreter::Interpreter &interpreter) -> ComputationResult
     {
-        core::ComputationResult lhs_argument = lhs_node->compute(interpreter);
+        ComputationResult lhs_argument = lhs_node->compute(interpreter);
 
-        if (lhs_argument.controlflowStatus == core::ControlflowStatus::RETURN) {
+        if (lhs_argument.controlflowStatus == ControlflowStatus::RETURN) {
             return lhs_argument;
         }
 
         const auto lhs_to_bool = interpreter.callFunction("bool", {std::move(lhs_argument.value)});
 
         if (!*static_cast<bool *>(lhs_to_bool.object.get())) {
-            return core::ComputationResult{.value = interpreter.BOOL_FALSE};
+            return ComputationResult{.value = interpreter.BOOL_FALSE};
         }
 
-        core::ComputationResult rhs_argument = rhs_node->compute(interpreter);
+        ComputationResult rhs_argument = rhs_node->compute(interpreter);
 
         auto rhs_to_bool = interpreter.callFunction("bool", {std::move(rhs_argument.value)});
 
         return *static_cast<bool *>(lhs_to_bool.object.get())
-                   ? core::ComputationResult{.value = interpreter.BOOL_TRUE}
-                   : core::ComputationResult{.value = interpreter.BOOL_FALSE};
+                   ? ComputationResult{.value = interpreter.BOOL_TRUE}
+                   : ComputationResult{.value = interpreter.BOOL_FALSE};
     }
 
     static auto logicalOr(
-        const core::AstlangNode *lhs_node, const core::AstlangNode *rhs_node,
-        interpreter::Interpreter &interpreter) -> core::ComputationResult
+        const AstlangNode *lhs_node, const AstlangNode *rhs_node,
+        interpreter::Interpreter &interpreter) -> ComputationResult
     {
-        core::ComputationResult lhs_argument = lhs_node->compute(interpreter);
+        ComputationResult lhs_argument = lhs_node->compute(interpreter);
 
-        if (lhs_argument.controlflowStatus == core::ControlflowStatus::RETURN) {
+        if (lhs_argument.controlflowStatus == ControlflowStatus::RETURN) {
             return lhs_argument;
         }
 
         const auto lhs_to_bool = interpreter.callFunction("bool", {std::move(lhs_argument.value)});
 
         if (*static_cast<bool *>(lhs_to_bool.object.get())) {
-            return core::ComputationResult{.value = interpreter.BOOL_TRUE};
+            return ComputationResult{.value = interpreter.BOOL_TRUE};
         }
 
-        core::ComputationResult rhs_argument = rhs_node->compute(interpreter);
+        ComputationResult rhs_argument = rhs_node->compute(interpreter);
 
         auto rhs_to_bool = interpreter.callFunction("bool", {std::move(rhs_argument.value)});
 
         return *static_cast<bool *>(lhs_to_bool.object.get())
-                   ? core::ComputationResult{.value = interpreter.BOOL_TRUE}
-                   : core::ComputationResult{.value = interpreter.BOOL_FALSE};
+                   ? ComputationResult{.value = interpreter.BOOL_TRUE}
+                   : ComputationResult{.value = interpreter.BOOL_FALSE};
     }
 
     BinaryExpression::BinaryExpression(
@@ -145,7 +145,7 @@ namespace astlang2::ast::expression
     }
 
     auto BinaryExpression::compute(interpreter::Interpreter &interpreter) const
-        -> core::ComputationResult
+        -> ComputationResult
     {
         if (rhsNode == nullptr) {
             return lhsNode->compute(interpreter);
@@ -160,15 +160,15 @@ namespace astlang2::ast::expression
         }
 
         isl::SmallVector<astlang2::Value, 4> function_arguments;
-        core::ComputationResult lhs_argument = lhsNode->compute(interpreter);
+        ComputationResult lhs_argument = lhsNode->compute(interpreter);
 
-        if (lhs_argument.controlflowStatus == core::ControlflowStatus::RETURN) {
+        if (lhs_argument.controlflowStatus == ControlflowStatus::RETURN) {
             return lhs_argument;
         }
 
-        core::ComputationResult rhs_argument = rhsNode->compute(interpreter);
+        ComputationResult rhs_argument = rhsNode->compute(interpreter);
 
-        if (rhs_argument.controlflowStatus == core::ControlflowStatus::RETURN) {
+        if (rhs_argument.controlflowStatus == ControlflowStatus::RETURN) {
             return rhs_argument;
         }
 
@@ -177,19 +177,10 @@ namespace astlang2::ast::expression
 
         auto expression_result = interpreter.callFunction(functionName, function_arguments);
 
-        return core::ComputationResult{.value = std::move(expression_result)};
+        return ComputationResult{.value = std::move(expression_result)};
     }
 
-    auto BinaryExpression::castChildren(const ConversionTable &conversion_table) -> void
-    {
-        lhsNode->cast(conversion_table);
-
-        if (rhsNode != nullptr) {
-            rhsNode->cast(conversion_table);
-        }
-    }
-
-    auto BinaryExpression::optimize() -> core::SharedNode<>
+    auto BinaryExpression::optimize() -> SharedNode<>
     {
         exchangeIfNotNull(lhsNode, lhsNode->optimize());
 
@@ -201,4 +192,27 @@ namespace astlang2::ast::expression
 
         return nullptr;
     }
+
+    auto BinaryExpression::getChildrenNodes() const
+        -> isl::SmallFunction<ccl::parser::ast::SharedNode<>()>
+    {
+        return isl::SmallFunction<ccl::parser::ast::SharedNode<>()>{
+            [this, index = 0]() mutable -> ccl::parser::ast::SharedNode<> {
+                switch (index++) {
+                case 0:
+                    return lhsNode;
+
+                case 1:
+                    if (rhsNode == nullptr ) {
+                        return nullptr;
+                    }
+
+                    return rhsNode;
+
+                default:
+                    return nullptr;
+                }
+            }};
+    }
+
 }// namespace astlang2::ast::expression

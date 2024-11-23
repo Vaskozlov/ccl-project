@@ -9,9 +9,9 @@ namespace astlang2::ast::statement
       , bodyNode{isl::staticPointerCast<AstlangNode>(initial_nodes.at(3))}
     {}
 
-    auto IfBlock::compute(interpreter::Interpreter &interpreter) const -> core::ComputationResult
+    auto IfBlock::compute(interpreter::Interpreter &interpreter) const -> ComputationResult
     {
-        core::ComputationResult condition_result = conditionNode->compute(interpreter);
+        ComputationResult condition_result = conditionNode->compute(interpreter);
         const Value condition_value = std::move(condition_result.value);
 
         if (condition_value.type != interpreter.getBool()) {
@@ -21,32 +21,43 @@ namespace astlang2::ast::statement
         const bool condition = *static_cast<const bool *>(condition_value.object.get());
 
         if (condition) {
-            core::ComputationResult statement_result = bodyNode->compute(interpreter);
+            ComputationResult statement_result = bodyNode->compute(interpreter);
 
             statement_result.controlflowStatus =
-                statement_result.controlflowStatus == core::ControlflowStatus::RETURN
+                statement_result.controlflowStatus == ControlflowStatus::RETURN
                     ? statement_result.controlflowStatus
-                    : core::ControlflowStatus::IF_BLOCK_FINISHES;
+                    : ControlflowStatus::IF_BLOCK_FINISHES;
 
             return statement_result;
         }
 
-        return core::ComputationResult{
-            .controlflowStatus = core::ControlflowStatus::IF_CONDITION_FAILED,
+        return ComputationResult{
+            .controlflowStatus = ControlflowStatus::IF_CONDITION_FAILED,
         };
     }
 
-    auto IfBlock::castChildren(const ConversionTable &conversion_table) -> void
-    {
-        conditionNode->cast(conversion_table);
-        bodyNode->cast(conversion_table);
-    }
-
-    auto IfBlock::optimize() -> core::SharedNode<>
+    auto IfBlock::optimize() -> SharedNode<>
     {
         exchangeIfNotNull(conditionNode, conditionNode->optimize());
         exchangeIfNotNull(bodyNode, bodyNode->optimize());
 
         return nullptr;
+    }
+
+    auto IfBlock::getChildrenNodes() const -> isl::SmallFunction<ccl::parser::ast::SharedNode<>()>
+    {
+        return isl::SmallFunction<ccl::parser::ast::SharedNode<>()>{
+            [this, field_index = 0U]() mutable -> ccl::parser::ast::SharedNode<> {
+                switch (field_index++) {
+                case 0:
+                    return conditionNode;
+
+                case 1:
+                    return bodyNode;
+
+                default:
+                    return nullptr;
+                }
+            }};
     }
 }// namespace astlang2::ast::statement
