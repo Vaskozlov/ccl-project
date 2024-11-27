@@ -56,9 +56,9 @@ namespace astlang2::ast::function::call
         return nullptr;
     }
 
-    auto MethodCall::getChildrenNodes() const -> isl::SmallFunction<ccl::parser::ast::SharedNode<>()>
+    auto MethodCall::getChildrenNodes() const -> ChildrenNodesGenerator
     {
-        return isl::SmallFunction<ccl::parser::ast::SharedNode<>()>{
+        return ChildrenNodesGenerator{
             [this, field_index = 0U, index = 0U]() mutable -> ccl::parser::ast::SharedNode<> {
                 switch (field_index) {
                 case 0:

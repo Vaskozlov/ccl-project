@@ -19,9 +19,9 @@ namespace astlang2::ast::statement
         return node;
     }
 
-    auto Statement::getChildrenNodes() const -> isl::SmallFunction<ccl::parser::ast::SharedNode<>()>
+    auto Statement::getChildrenNodes() const -> ChildrenNodesGenerator
     {
-        return isl::SmallFunction<ccl::parser::ast::SharedNode<>()>{
+        return ChildrenNodesGenerator{
             [index = 0, stored_node = node]() mutable -> ccl::parser::ast::SharedNode<> {
                 if (index > 0) {
                     return nullptr;

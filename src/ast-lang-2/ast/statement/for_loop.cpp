@@ -19,9 +19,9 @@ namespace astlang2::ast::statement
         return nullptr;
     }
 
-    auto ForLoop::getChildrenNodes() const -> isl::SmallFunction<ccl::parser::ast::SharedNode<>()>
+    auto ForLoop::getChildrenNodes() const -> ChildrenNodesGenerator
     {
-        return isl::SmallFunction<ccl::parser::ast::SharedNode<>()>{
+        return ChildrenNodesGenerator{
             []() -> ccl::parser::ast::SharedNode<> {
                 return nullptr;
             }};

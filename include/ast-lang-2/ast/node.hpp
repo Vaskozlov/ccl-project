@@ -32,16 +32,12 @@ namespace astlang2::ast
         ControlflowStatus controlflowStatus{ControlflowStatus::NONE};
     };
 
-    struct ChildrenNodesGenerator
-    {
-        SharedNode<> node;
-        u32 state = 0;
-    };
-
     class AstlangNode : public ccl::parser::ast::Node
     {
     public:
         using Node::Node;
+
+        using ChildrenNodesGenerator = isl::SmallFunction<ccl::parser::ast::SharedNode<>()>;
 
         virtual auto optimize() -> SharedNode<> = 0;
 
@@ -51,11 +47,11 @@ namespace astlang2::ast
         }
 
         auto print(
-            const std::string &prefix, const bool is_left,
+            const std::string &prefix, bool is_left,
             const std::function<std::string(ccl::SmallId)> &id_converter) const -> void override;
 
-            static auto buildConversionTable(const ccl::parser::reader::ParserBuilder &constructor)
-                -> ConversionTable;
+        static auto buildConversionTable(const ccl::parser::reader::ParserBuilder &constructor)
+            -> ConversionTable;
 
         template<std::derived_from<Node> T = AstlangNode>
         static auto exchangeIfNotNull(SharedNode<T> &node, SharedNode<> new_node) -> void
@@ -65,6 +61,6 @@ namespace astlang2::ast
             }
         }
     };
-}// namespace astlang2::ast::core
+}// namespace astlang2::ast
 
 #endif /* ASTLANG_2_NODE_HPP */

@@ -27,20 +27,17 @@ auto main(int /* argc */, char **argv) -> int
 
     auto parser = constructor.buildGLL();
     auto [nodes, algorithm] = parser.parse(tokenizer);
-    auto converter = std::views::transform(nodes, [](auto &node) {
-        return node.get();
-    });
+    assert(nodes.size() < 2);
 
     auto *row_root = nodes.front().get();
     // row_root->print("", false, to_str);
 
-    // auto dot_repr = dot::createDotRepresentation(std::vector<ast::Node *>{astlang_root}, to_str);
+    auto dot_repr = dot::createDotRepresentation(std::vector<ast::Node *>{row_root}, to_str);
 
-    // isl::io::write(
-    // std::filesystem::current_path().append(fmt::format("{}.dot", algorithm)), dot_repr);
+    isl::io::write(
+        std::filesystem::current_path().append(fmt::format("{}.dot", algorithm)), dot_repr);
 
-    const auto conversion_table =
-        astlang2::ast::AstlangNode::buildConversionTable(constructor);
+    const auto conversion_table = astlang2::ast::AstlangNode::buildConversionTable(constructor);
 
     row_root->cast(conversion_table);
     nodes.front().updateDeleter<ast::Node>();

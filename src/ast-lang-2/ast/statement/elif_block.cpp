@@ -74,15 +74,15 @@ namespace astlang2::ast::statement
         return nullptr;
     }
 
-    auto ElifBlock::getChildrenNodes() const -> isl::SmallFunction<ccl::parser::ast::SharedNode<>()>
+    auto ElifBlock::getChildrenNodes() const -> ChildrenNodesGenerator
     {
-        return isl::SmallFunction<ccl::parser::ast::SharedNode<>()>{
+        return ChildrenNodesGenerator{
             [this, field_index = 0U, index = 0U]() mutable -> ccl::parser::ast::SharedNode<> {
                 if (field_index == elifStatements.size()) {
                     return nullptr;
                 }
 
-                auto &[condition, body] = elifStatements[field_index];
+                const auto &[condition, body] = elifStatements[field_index];
 
                 if (index == 0U) {
                     ++index;

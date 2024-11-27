@@ -65,15 +65,15 @@ namespace astlang2::ast::statement
         return nullptr;
     }
 
-    auto Statements::getChildrenNodes() const -> isl::SmallFunction<ccl::parser::ast::SharedNode<>()>
+    auto Statements::getChildrenNodes() const -> ChildrenNodesGenerator
     {
-        return isl::SmallFunction<ccl::parser::ast::SharedNode<>()>{
-            [index = 0, &nodes = nodes]() mutable -> ccl::parser::ast::SharedNode<> {
-                if (index == nodes.size()) {
+        return ChildrenNodesGenerator{
+            [index = 0U, &children_nodes = nodes]() mutable -> ccl::parser::ast::SharedNode<> {
+                if (index == children_nodes.size()) {
                     return nullptr;
                 }
 
-                return nodes[index++];
+                return children_nodes[index++];
             }};
     }
 }// namespace astlang2::ast::statement

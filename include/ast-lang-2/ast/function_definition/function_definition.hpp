@@ -22,7 +22,7 @@ namespace astlang2::ast::function::def
 
         auto optimize() -> SharedNode<> override;
 
-        auto getChildrenNodes() const -> isl::SmallFunction<ccl::parser::ast::SharedNode<>()> override;
+        auto getChildrenNodes() const -> ChildrenNodesGenerator override;
     };
 }// namespace astlang2::ast::function::def
 

@@ -15,7 +15,7 @@ namespace astlang2::ast::statement {
 
         auto optimize() -> SharedNode<> override;
 
-        auto getChildrenNodes() const -> isl::SmallFunction<ccl::parser::ast::SharedNode<>()> override;
+        [[nodiscard]] auto getChildrenNodes() const -> ChildrenNodesGenerator override;
     };
 } // namespace astlang2::ast::statement
 

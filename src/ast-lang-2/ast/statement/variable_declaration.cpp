@@ -38,9 +38,9 @@ namespace astlang2::ast::statement
     }
 
     auto VariableDeclaration::getChildrenNodes() const
-        -> isl::SmallFunction<ccl::parser::ast::SharedNode<>()>
+        -> ChildrenNodesGenerator
     {
-        return isl::SmallFunction<ccl::parser::ast::SharedNode<>()>{
+        return ChildrenNodesGenerator{
             [index = 0,
              stored_node = initialValueNode]() mutable -> ccl::parser::ast::SharedNode<> {
                 if (index > 0) {

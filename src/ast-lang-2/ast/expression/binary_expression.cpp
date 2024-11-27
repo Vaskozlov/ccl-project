@@ -194,9 +194,9 @@ namespace astlang2::ast::expression
     }
 
     auto BinaryExpression::getChildrenNodes() const
-        -> isl::SmallFunction<ccl::parser::ast::SharedNode<>()>
+        -> ChildrenNodesGenerator
     {
-        return isl::SmallFunction<ccl::parser::ast::SharedNode<>()>{
+        return ChildrenNodesGenerator{
             [this, index = 0]() mutable -> ccl::parser::ast::SharedNode<> {
                 switch (index++) {
                 case 0:

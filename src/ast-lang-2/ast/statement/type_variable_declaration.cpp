@@ -45,9 +45,9 @@ namespace astlang2::ast::statement
     }
 
     auto TypeVariableDeclaration::getChildrenNodes() const
-        -> isl::SmallFunction<ccl::parser::ast::SharedNode<>()>
+        -> ChildrenNodesGenerator
     {
-        return isl::SmallFunction<ccl::parser::ast::SharedNode<>()>{
+        return ChildrenNodesGenerator{
             [this, field_index = 0U]() mutable -> ccl::parser::ast::SharedNode<> {
                 switch (field_index++) {
                 case 0:

@@ -11,7 +11,7 @@ namespace ccl::parser::ast
 
     namespace detail
     {
-        using SharedPtrFrame = isl::SharedPtrFrame<256, 16>;
+        using SharedPtrFrame = isl::SharedPtrFrame<256, 8>;
 
         // NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
         extern isl::FixedSizeAllocator<sizeof(SharedPtrFrame), alignof(SharedPtrFrame)>
@@ -30,9 +30,10 @@ namespace ccl::parser::ast
         SmallId nodeType{};
 
     protected:
-        static auto getPrintingPrefix(const std::string &prefix, bool is_left) -> std::string;
+        [[nodiscard]] static auto getPrintingPrefix(const std::string &prefix, bool is_left)
+            -> std::string;
 
-        static auto
+        [[nodiscard]] static auto
             expandPrefix(const std::string &prefix, bool is_left, std::size_t extra_expansion = 1)
                 -> std::string;
 
@@ -65,7 +66,8 @@ namespace ccl::parser::ast
             const std::function<std::string(SmallId)> &id_converter = fmt::to_string<SmallId>) const
             -> void = 0;
 
-        virtual auto getChildrenNodes() const -> isl::SmallFunction<SharedNode<>()> = 0;
+        [[nodiscard]] virtual auto getChildrenNodes() const
+            -> isl::SmallFunction<SharedNode<>()> = 0;
 
         auto castChildren(const ConversionTable &conversion_table) -> void;
 
