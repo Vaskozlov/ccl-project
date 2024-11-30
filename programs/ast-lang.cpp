@@ -30,7 +30,6 @@ auto main(int /* argc */, char **argv) -> int
     assert(nodes.size() < 2);
 
     auto *row_root = nodes.front().get();
-    // row_root->print("", false, to_str);
 
     auto dot_repr = dot::createDotRepresentation(std::vector<ast::Node *>{row_root}, to_str);
 

@@ -19,7 +19,6 @@ namespace ccl::parser::dot
         const isl::ssize_t child_index,
         TreeInformation<ast::Node *, SmallId> &tree_data) -> void
     {
-        const auto *non_terminal_node = dynamic_cast<const ast::NonTerminal *>(root);
         const auto *terminal_node = dynamic_cast<const ast::Terminal *>(root);
         auto node_label_str = tree_data.nodeTypeToString(root->getType());
 
@@ -48,18 +47,27 @@ namespace ccl::parser::dot
                 });
         }
 
-        if (non_terminal_node != nullptr && inserted) {
-            const auto &nodes = non_terminal_node->getNodes();
-            const auto nodes_count = nodes.size();
-            auto number_of_nodes = static_cast<isl::ssize_t>(nodes.size());
+        if (!inserted) {
+            return;
+        }
 
-            for (auto i = u32{}; i != nodes_count; ++i) {
-                createDotRepresentation(
-                    nodes.at(i).get(),
-                    node_id,
-                    number_of_nodes == 1 ? -1 : static_cast<isl::ssize_t>(i),
-                    tree_data);
+        const auto nodes_generator = root->getChildrenNodes();
+        auto is_single_node = true;
+
+        ast::Node *current_node = nodes_generator().get();
+        isl::ssize_t index = 0;
+
+        while (current_node != nullptr) {
+            ast::Node *next_node = nodes_generator().get();
+
+            if (next_node != nullptr) {
+                is_single_node = false;
             }
+
+            createDotRepresentation(current_node, node_id, is_single_node ? -1 : index, tree_data);
+
+            ++index;
+            current_node = next_node;
         }
     }
 
