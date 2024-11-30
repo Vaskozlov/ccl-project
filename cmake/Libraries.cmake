@@ -45,10 +45,6 @@ CPMAddPackage(
         "ISL_INCLUDE_BENCHMARK OFF"
 )
 
-include(${isl_SOURCE_DIR}/cmake/CompilerOptions.cmake)
-include(${isl_SOURCE_DIR}/cmake/InterproceduralOptimization.cmake)
-include(${isl_SOURCE_DIR}/cmake/ProjectOptions.cmake)
-
 if (CCL_INCLUDE_BENCHMARK)
     CPMAddPackage(
             NAME benchmark
