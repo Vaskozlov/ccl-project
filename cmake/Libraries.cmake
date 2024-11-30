@@ -33,13 +33,21 @@ CPMAddPackage(
         NAME isl
         GITHUB_REPOSITORY Vaskozlov/ISL
         GIT_TAG main
+        OPTIONS
+        "ISL_PRECOMPILED_HEADERS ${CCL_PRECOMPILED_HEADERS}"
+        "ISL_ADDRESS_SANITIZER ${CCL_ADDRESS_SANITIZER}"
+        "ISL_THREAD_SANITIZER ${CCL_THREAD_SANITIZER}"
+        "ISL_UNITY_BUILD ${CCL_UNITY_BUILD}"
+        "ISL_HARDENING ${CCL_HARDENING}"
+        "ISL_STATIC_LIBRARY ON"
+        "ISL_LIBCPP ${ISL_LIBCPP}"
+        "ISL_INCLUDE_TESTS OFF"
+        "ISL_INCLUDE_BENCHMARK OFF"
 )
 
 include(${isl_SOURCE_DIR}/cmake/CompilerOptions.cmake)
 include(${isl_SOURCE_DIR}/cmake/InterproceduralOptimization.cmake)
 include(${isl_SOURCE_DIR}/cmake/ProjectOptions.cmake)
-
-include_directories(${isl_SOURCE_DIR}/include)
 
 if (CCL_INCLUDE_BENCHMARK)
     CPMAddPackage(
@@ -47,7 +55,7 @@ if (CCL_INCLUDE_BENCHMARK)
             GITHUB_REPOSITORY google/benchmark
             GIT_TAG main
             OPTIONS
-            "BENCHMARK_ENABLE_TESTING Off"
+            "BENCHMARK_ENABLE_TESTING OFF"
             "BENCHMARK_USE_LIBCXX ${ISL_LIBCPP}"
             "BENCHMARK_DOWNLOAD_DEPENDENCIES ON"
     )
