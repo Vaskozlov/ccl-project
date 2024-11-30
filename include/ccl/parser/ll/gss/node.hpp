@@ -28,7 +28,7 @@ namespace ccl::parser::ll
     namespace detail
     {
         // NOLINTNEXTLINE
-        extern isl::FixedSizeAllocator<sizeof(Node), alignof(Node)> NodeAllocator;
+        extern isl::PoolAllocator<sizeof(Node), alignof(Node)> NodeAllocator;
     }// namespace detail
 
     using UniqueGssNodePtr = isl::UniquePtr<Node, std::addressof(detail::NodeAllocator)>;

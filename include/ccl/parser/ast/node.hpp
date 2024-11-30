@@ -14,7 +14,7 @@ namespace ccl::parser::ast
         using SharedPtrFrame = isl::SharedPtrFrame<256, 8>;
 
         // NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
-        extern isl::FixedSizeAllocator<sizeof(SharedPtrFrame), alignof(SharedPtrFrame)>
+        extern isl::PoolAllocator<sizeof(SharedPtrFrame), alignof(SharedPtrFrame)>
             NodeAllocator;
     }// namespace detail
 

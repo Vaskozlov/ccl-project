@@ -5,7 +5,7 @@ namespace ccl::parser::ast
 {
     namespace detail
     {
-        isl::FixedSizeAllocator<sizeof(SharedPtrFrame), alignof(SharedPtrFrame)> NodeAllocator{};
+        isl::PoolAllocator<sizeof(SharedPtrFrame), alignof(SharedPtrFrame)> NodeAllocator{};
     }
 
     static auto repeatString(const std::string_view str, const std::size_t times) -> std::string
