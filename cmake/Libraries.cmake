@@ -33,21 +33,7 @@ CPMAddPackage(
         NAME isl
         GITHUB_REPOSITORY Vaskozlov/ISL
         GIT_TAG main
-        OPTIONS
-        "ISL_PRECOMPILED_HEADERS ${CCL_PRECOMPILED_HEADERS}"
-        "ISL_ADDRESS_SANITIZER ${CCL_ADDRESS_SANITIZER}"
-        "ISL_THREAD_SANITIZER ${CCL_THREAD_SANITIZER}"
-        "ISL_UNITY_BUILD ${CCL_UNITY_BUILD}"
-        "ISL_HARDENING ${CCL_HARDENING}"
-        "ISL_STATIC_LIBRARY ON"
-        "ISL_LIBCPP ${ISL_LIBCPP}"
-        "ISL_INCLUDE_TESTS OFF"
-        "ISL_INCLUDE_BENCHMARK OFF"
 )
-
-include(${isl_SOURCE_DIR}/cmake/CompilerOptions.cmake)
-include(${isl_SOURCE_DIR}/cmake/InterproceduralOptimization.cmake)
-include(${isl_SOURCE_DIR}/cmake/ProjectOptions.cmake)
 
 if (CCL_INCLUDE_BENCHMARK)
     CPMAddPackage(
