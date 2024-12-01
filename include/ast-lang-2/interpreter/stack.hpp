@@ -17,7 +17,7 @@ namespace astlang2::interpreter
     private:
         Scope globalScope{.isHardScope = true};
         std::vector<Scope> localScopes;
-        ssize_t currentStackTop = -1;
+        isl::ssize_t currentStackTop = -1;
 
     public:
         auto read(const std::string &name) -> Value;

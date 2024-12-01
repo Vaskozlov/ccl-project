@@ -23,10 +23,13 @@ namespace astlang2::interpreter
 
     auto Stack::read(const std::string &name) -> Value
     {
-        for (auto elements_to_drop =
-                 localScopes.size() - static_cast<std::size_t>(currentStackTop) - 1U;
-             auto &[variables, is_hard_scope] :
-             localScopes | std::views::reverse | std::views::drop(elements_to_drop)) {
+        if (currentStackTop == -1) {
+            return readGlobal(name);
+        }
+
+        for (isl::ssize_t i = currentStackTop; i >= 0; --i) {
+            auto &[variables, is_hard_scope] = localScopes.at(static_cast<std::size_t>(i));
+
             const auto it = variables.find(name);
 
             if (it != variables.end()) {
