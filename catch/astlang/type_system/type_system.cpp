@@ -7,7 +7,7 @@ TEST_CASE("SimpleFunctionCall", "[TypeSystem]")
 {
     using namespace astlang2;
 
-    ccl::parser::reader::RulesReader reader(astlang2::getNodeTypesMap(), astlang2::getAstlangGrammar());
+    ccl::parser::reader::RulesReader reader(getNodeTypesMap(), getAstlangGrammar());
 
     auto &constructor = reader.getParserBuilder();
     const auto &lexer = constructor.getLexicalAnalyzer();
@@ -27,7 +27,7 @@ TEST_CASE("SimpleFunctionCall", "[TypeSystem]")
             }));
 
     auto scope = interpreter.createsHardScope();
-    const std::shared_ptr<void> test_value = std::make_shared<int>(42);
+    const astlang2::AstlangObject<> test_value = astlang2::AstlangObject<int>(42);
 
     interpreter.write("foo", Value{test_value, interpreter.getInt()});
     fmt::println("foo value {}", *static_cast<int *>(interpreter.read("foo").object.get()));
