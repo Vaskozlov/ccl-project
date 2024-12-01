@@ -11,8 +11,7 @@ namespace astlang2::interpreter
         ts::Type *lhs_type,
         ts::Type *rhs_type,
         ts::Type *return_type,
-        std::invocable<ts::Type *, AstlangObject<LHS>, AstlangObject<RHS>> auto &&function)
-        -> void
+        auto &&function) -> void
     {
         function::FunctionIdentification identification{
             .name = std::move(function_name),

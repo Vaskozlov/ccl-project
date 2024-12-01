@@ -10,7 +10,6 @@ TEST_CASE("SimpleFunctionCall", "[TypeSystem]")
     ccl::parser::reader::RulesReader reader(getNodeTypesMap(), getAstlangGrammar());
 
     auto &constructor = reader.getParserBuilder();
-    const auto &lexer = constructor.getLexicalAnalyzer();
     auto to_str = constructor.getIdToNameTranslationFunction();
     auto output_buffer = std::string{};
 
@@ -23,7 +22,7 @@ TEST_CASE("SimpleFunctionCall", "[TypeSystem]")
             isl::SmallVector<std::string, 2>{"a"}, [](interpreter::Interpreter &interpreter) {
                 fmt::println(
                     "Inside function: {}", *static_cast<int *>(interpreter.read("a").object.get()));
-                return Value{nullptr, nullptr};
+                return Value{AstlangObject<>{}, nullptr};
             }));
 
     auto scope = interpreter.createsHardScope();

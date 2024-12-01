@@ -26,7 +26,7 @@ namespace astlang2::interpreter
                 fmt::format_to(interpreter.getOutputBuffer(), fmt::runtime(format), value);
 
                 return Value{
-                    .object = nullptr,
+                    .object = AstlangObject<>{},
                     .type = void_type,
                     .valueType = ValueType::R_VALUE,
                 };

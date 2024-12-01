@@ -11,8 +11,7 @@ namespace astlang2::interpreter
     template<typename ARG>
     static auto createSingleArgumentFunction(
         function::FunctionsHolder &functions_holder, std::string function_name,
-        ts::Type *value_type, ts::Type *return_type,
-        std::invocable<ts::Type *, AstlangObject<ARG>> auto &&function) -> void
+        ts::Type *value_type, ts::Type *return_type, auto &&function) -> void
     {
         function::FunctionIdentification identification{
             .name = std::move(function_name),
@@ -32,8 +31,8 @@ namespace astlang2::interpreter
 
     template<typename T>
     static auto noArgsMethod(
-        ts::Type *object_type, std::string method_name, ts::Type *return_type,
-        std::invocable<ts::Type *, AstlangObject<T>> auto &&function) -> void
+        ts::Type *object_type, std::string method_name, ts::Type *return_type, auto &&function)
+        -> void
     {
         function::FunctionIdentification identification{
             .name = std::move(method_name),
