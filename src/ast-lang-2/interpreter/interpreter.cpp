@@ -28,20 +28,8 @@ namespace astlang2::interpreter
     static auto getDefaultFunctionsHolder(const TypeSystem &type_system)
         -> function::FunctionsHolder
     {
-        static function::FunctionsHolder functions_holder;
-        static bool initialized = false;
-        static std::mutex mutex;
-
-        if (!initialized) {
-            const std::scoped_lock lock{mutex};
-
-            if (initialized) {
-                return functions_holder;
-            }
-
-            defaultInitializeFunctionsHolder(type_system, functions_holder);
-            initialized = true;
-        }
+        function::FunctionsHolder functions_holder;
+        defaultInitializeFunctionsHolder(type_system, functions_holder);
 
         return functions_holder;
     }
