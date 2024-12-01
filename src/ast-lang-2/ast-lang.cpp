@@ -231,7 +231,8 @@ STRING:     ! ["] ("\\\"" | ["]^)* ["]
 
     auto getNodeTypesMap() -> const std::unordered_map<std::string, SmallId> &
     {
-        const static std::unordered_map<std::string, SmallId> node_types_map{ // NOSONAR
+        const static std::unordered_map<std::string, SmallId> node_types_map{
+            // NOSONAR
             {
                 "\"true\"",
                 std::to_underlying(NodeTypes::TRUE),
@@ -383,6 +384,10 @@ STRING:     ! ["] ("\\\"" | ["]^)* ["]
             {
                 "\'=\'",
                 std::to_underlying(NodeTypes::ASSIGN),
+            },
+            {
+                "FIELD_ACCESS",
+                std::to_underlying(NodeTypes::FIELD_ACCESS),
             },
         };
 

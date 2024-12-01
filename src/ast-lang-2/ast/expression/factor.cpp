@@ -161,6 +161,7 @@ namespace astlang2::ast::expression
         case IDENTIFIER:
         case TRUE:
         case FALSE:
+        case FIELD_ACCESS:
             return nullptr;
 
         case ASSIGNMENT_EXPRESSION:
