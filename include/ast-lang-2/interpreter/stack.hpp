@@ -17,6 +17,7 @@ namespace astlang2::interpreter
     private:
         Scope globalScope{.isHardScope = true};
         std::vector<Scope> localScopes;
+        ssize_t currentStackTop = -1;
 
     public:
         auto read(const std::string &name) -> Value;
@@ -27,14 +28,26 @@ namespace astlang2::interpreter
 
         auto writeGlobal(const std::string &name, Value value, bool check_type = true) -> void;
 
+        [[nodiscard]] auto getCurrentStackTop() const noexcept -> std::size_t
+        {
+            return static_cast<std::size_t>(currentStackTop);
+        }
+
         auto createsHardScope() -> auto
         {
             return isl::Raii{
                 [this]() {
-                    localScopes.push_back(Scope{.isHardScope = true});
+                    ++currentStackTop;
+
+                    if (getCurrentStackTop() < localScopes.size()) {
+                        localScopes.at(getCurrentStackTop()).isHardScope = true;
+                    } else {
+                        localScopes.emplace_back().isHardScope = true;
+                    }
                 },
                 [this]() {
-                    localScopes.pop_back();
+                    localScopes.at(getCurrentStackTop()).variables.clear();
+                    --currentStackTop;
                 },
             };
         }
@@ -43,10 +56,17 @@ namespace astlang2::interpreter
         {
             return isl::Raii{
                 [this]() {
-                    localScopes.push_back(Scope{.isHardScope = false});
+                    ++currentStackTop;
+
+                    if (getCurrentStackTop() < localScopes.size()) {
+                        localScopes.at(getCurrentStackTop()).isHardScope = false;
+                    } else {
+                        localScopes.emplace_back().isHardScope = false;
+                    }
                 },
                 [this]() {
-                    localScopes.pop_back();
+                    localScopes.at(getCurrentStackTop()).variables.clear();
+                    --currentStackTop;
                 },
             };
         }

@@ -47,7 +47,7 @@ namespace astlang2::interpreter
             Op{}(*value);
 
             return Value{
-                .object = nullptr,
+                .object = AstlangObject<>{},
                 .type = return_type,
                 .valueType = ValueType::R_VALUE,
             };

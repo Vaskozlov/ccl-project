@@ -23,7 +23,10 @@ namespace astlang2::interpreter
 
     auto Stack::read(const std::string &name) -> Value
     {
-        for (auto &[variables, is_hard_scope] : localScopes | std::views::reverse) {
+        for (auto elements_to_drop =
+                 localScopes.size() - static_cast<std::size_t>(currentStackTop) - 1U;
+             auto &[variables, is_hard_scope] :
+             localScopes | std::views::reverse | std::views::drop(elements_to_drop)) {
             const auto it = variables.find(name);
 
             if (it != variables.end()) {
@@ -51,12 +54,12 @@ namespace astlang2::interpreter
 
     auto Stack::write(const std::string &name, Value value, const bool check_type) -> void
     {
-        if (localScopes.empty()) {
+        if (currentStackTop == -1) {
             writeGlobal(name, std::move(value));
             return;
         }
 
-        auto &last_scope = localScopes.back();
+        auto &last_scope = localScopes.at(getCurrentStackTop());
         writeVariable(last_scope, name, std::move(value), check_type);
     }
 
