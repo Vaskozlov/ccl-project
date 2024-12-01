@@ -27,7 +27,7 @@ namespace astlang2::interpreter
             {
                 "x",
                 Value{
-                    .object = std::make_shared<double>(x),
+                    .object = AstlangObject<double>(x),
                     .type = interpreter.getDouble(),
                     .valueType = ValueType::L_VALUE,
                 },
@@ -35,7 +35,7 @@ namespace astlang2::interpreter
             {
                 "y",
                 Value{
-                    .object = std::make_shared<double>(y),
+                    .object = AstlangObject<double>(y),
                     .type = interpreter.getDouble(),
                     .valueType = ValueType::L_VALUE,
                 },
@@ -43,7 +43,7 @@ namespace astlang2::interpreter
         };
 
         return Value{
-            .object = std::make_shared<Instance>(std::move(vec2)),
+            .object = AstlangObject<Instance>(std::move(vec2)),
             .type = interpreter.getVec2(),
         };
     }
@@ -54,7 +54,7 @@ namespace astlang2::interpreter
             {
                 "x",
                 Value{
-                    .object = std::make_shared<double>(x),
+                    .object = AstlangObject<double>(x),
                     .type = interpreter.getDouble(),
                     .valueType = ValueType::L_VALUE,
                 },
@@ -62,7 +62,7 @@ namespace astlang2::interpreter
             {
                 "y",
                 Value{
-                    .object = std::make_shared<double>(y),
+                    .object = AstlangObject<double>(y),
                     .type = interpreter.getDouble(),
                     .valueType = ValueType::L_VALUE,
                 },
@@ -70,7 +70,7 @@ namespace astlang2::interpreter
             {
                 "z",
                 Value{
-                    .object = std::make_shared<double>(z),
+                    .object = AstlangObject<double>(z),
                     .type = interpreter.getDouble(),
                     .valueType = ValueType::L_VALUE,
                 },
@@ -78,7 +78,7 @@ namespace astlang2::interpreter
         };
 
         return Value{
-            .object = std::make_shared<Instance>(std::move(vec3)),
+            .object = AstlangObject<Instance>(std::move(vec3)),
             .type = interpreter.getVec3(),
         };
     }
@@ -95,7 +95,7 @@ namespace astlang2::interpreter
                         .count();
 
                 return Value{
-                    .object = std::make_shared<isl::ssize_t>(time_since_epoch),
+                    .object = AstlangObject<isl::ssize_t>(time_since_epoch),
                     .type = type_system.getInt(),
                 };
             });

@@ -64,10 +64,10 @@ namespace astlang2::interpreter
         const SmallId ASSIGN = constructor.getRuleId("\'=\'");
 
         const astlang2::Value BOOL_TRUE =
-            astlang2::Value{.object = std::make_shared<bool>(true), .type = getBool()};
+            astlang2::Value{.object = toAstlangObject(true), .type = getBool()};
 
         const astlang2::Value BOOL_FALSE =
-            astlang2::Value{.object = std::make_shared<bool>(false), .type = getBool()};
+            astlang2::Value{.object = toAstlangObject(false), .type = getBool()};
 
         explicit Interpreter(
             ccl::parser::reader::ParserBuilder &parser_builder,

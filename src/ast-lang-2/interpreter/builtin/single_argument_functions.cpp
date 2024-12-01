@@ -12,7 +12,7 @@ namespace astlang2::interpreter
     static auto createSingleArgumentFunction(
         function::FunctionsHolder &functions_holder, std::string function_name,
         ts::Type *value_type, ts::Type *return_type,
-        std::invocable<ts::Type *, std::shared_ptr<ARG>> auto &&function) -> void
+        std::invocable<ts::Type *, AstlangObject<ARG>> auto &&function) -> void
     {
         function::FunctionIdentification identification{
             .name = std::move(function_name),
@@ -24,7 +24,7 @@ namespace astlang2::interpreter
             isl::SmallVector<std::string, 2>{"value"},
             [function, return_type](Interpreter &interpreter) {
                 auto value_ptr = interpreter.read("value").object;
-                return function(return_type, std::static_pointer_cast<ARG>(std::move(value_ptr)));
+                return function(return_type, isl::staticPointerCast<ARG>(std::move(value_ptr)));
             });
 
         functions_holder.addFunction(std::move(identification), std::move(builtin_function));
@@ -33,7 +33,7 @@ namespace astlang2::interpreter
     template<typename T>
     static auto noArgsMethod(
         ts::Type *object_type, std::string method_name, ts::Type *return_type,
-        std::invocable<ts::Type *, std::shared_ptr<T>> auto &&function) -> void
+        std::invocable<ts::Type *, AstlangObject<T>> auto &&function) -> void
     {
         function::FunctionIdentification identification{
             .name = std::move(method_name),
@@ -45,7 +45,7 @@ namespace astlang2::interpreter
             isl::SmallVector<std::string, 2>{"self"},
             [function, return_type](Interpreter &interpreter) {
                 auto value_ptr = interpreter.read("self").object;
-                return function(return_type, std::static_pointer_cast<T>(std::move(value_ptr)));
+                return function(return_type, isl::staticPointerCast<T>(std::move(value_ptr)));
             });
 
         object_type->addMethod(std::move(identification), std::move(builtin_function));

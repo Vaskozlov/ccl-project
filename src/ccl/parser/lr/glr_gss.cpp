@@ -3,7 +3,7 @@
 namespace ccl::parser::lr
 {
     // NOLINTNEXTLINE
-    isl::PoolAllocator<sizeof(Node), alignof(Node)> detail::NodeAllocator{};
+    constinit isl::PoolAllocator<sizeof(Node), alignof(Node)> detail::NodeAllocator;
 
     auto Reducer::reduce(SmallId pop_count, Node *node, ast::SmallVectorOfNodes arguments) -> void
     {

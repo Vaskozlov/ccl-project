@@ -42,7 +42,7 @@ namespace astlang2::interpreter
     {
     public:
         template<typename U>
-        auto operator()(ts::Type *return_type, std::shared_ptr<U> value) const -> auto
+        auto operator()(ts::Type *return_type, AstlangObject<U> value) const -> auto
         {
             Op{}(*value);
 
@@ -59,10 +59,10 @@ namespace astlang2::interpreter
     {
     public:
         template<typename U>
-        auto operator()(ts::Type *return_type, std::shared_ptr<U> value) const -> auto
+        auto operator()(ts::Type *return_type, AstlangObject<U> value) const -> auto
         {
             return Value{
-                .object = std::make_shared<T>(Op{}(*value)),
+                .object = AstlangObject<T>(Op{}(*value)),
                 .type = return_type,
                 .valueType = ValueType::R_VALUE,
             };

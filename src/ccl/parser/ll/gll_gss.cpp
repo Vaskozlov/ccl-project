@@ -2,7 +2,7 @@
 
 namespace ccl::parser::ll
 {
-    isl::PoolAllocator<sizeof(Node), alignof(Node)> detail::NodeAllocator;
+    constinit isl::PoolAllocator<sizeof(Node), alignof(Node)> detail::NodeAllocator;
 
     auto Level::findNode(const SPPFNode &sppf_node) const -> Node *
     {

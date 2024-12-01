@@ -9,14 +9,13 @@ namespace astlang2::ast::expression
     {
     private:
         SharedNode<> node;
-        std::shared_ptr<void> precomputedValue;
+        AstlangObject<> precomputedValue;
         NodeTypes nodeType;
 
     public:
         Factor(SmallId id, const ccl::parser::ast::SmallVectorOfNodes &initial_nodes);
 
-        auto compute(interpreter::Interpreter &interpreter) const
-            -> ComputationResult override;
+        auto compute(interpreter::Interpreter &interpreter) const -> ComputationResult override;
 
         auto optimize() -> SharedNode<> override;
 

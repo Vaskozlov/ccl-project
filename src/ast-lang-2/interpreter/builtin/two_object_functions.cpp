@@ -11,7 +11,7 @@ namespace astlang2::interpreter
         ts::Type *lhs_type,
         ts::Type *rhs_type,
         ts::Type *return_type,
-        std::invocable<ts::Type *, std::shared_ptr<LHS>, std::shared_ptr<RHS>> auto &&function)
+        std::invocable<ts::Type *, AstlangObject<LHS>, AstlangObject<RHS>> auto &&function)
         -> void
     {
         function::FunctionIdentification identification{
@@ -29,8 +29,8 @@ namespace astlang2::interpreter
 
                 return function(
                     return_type,
-                    std::static_pointer_cast<LHS>(std::move(lhs)),
-                    std::static_pointer_cast<RHS>(std::move(rhs)));
+                    isl::staticPointerCast<LHS>(std::move(lhs)),
+                    isl::staticPointerCast<RHS>(std::move(rhs)));
             });
 
         functions_holder.addFunction(std::move(identification), std::move(builtin_function));

@@ -5,7 +5,7 @@
 
 namespace astlang2::ast::expression
 {
-    static auto constructNumberNode(const ccl::parser::ast::Node *node) -> std::shared_ptr<void>
+    static auto constructNumberNode(const ccl::parser::ast::Node *node) -> AstlangObject<>
     {
         const auto *token_node = static_cast<const ccl::parser::ast::Terminal *>(node);
         const auto &token = token_node->getToken();
@@ -14,20 +14,20 @@ namespace astlang2::ast::expression
         auto parsed_number = isl::ssize_t{};
         std::from_chars(repr.begin(), repr.end(), parsed_number);
 
-        return std::make_shared<isl::ssize_t>(parsed_number);
+        return AstlangObject<isl::ssize_t>(parsed_number);
     }
 
-    static auto constructFloatNode(const ccl::parser::ast::Node *node) -> std::shared_ptr<void>
+    static auto constructFloatNode(const ccl::parser::ast::Node *node) -> AstlangObject<>
     {
         const auto *token_node = static_cast<const ccl::parser::ast::Terminal *>(node);
         const auto &token = token_node->getToken();
         const auto repr = token.getRepr();
         auto parsed_number = std::stod(static_cast<std::string>(repr));
 
-        return std::make_shared<double>(parsed_number);
+        return AstlangObject<double>(parsed_number);
     }
 
-    static auto constructStringNode(const ccl::parser::ast::Node *node) -> std::shared_ptr<void>
+    static auto constructStringNode(const ccl::parser::ast::Node *node) -> AstlangObject<>
     {
         const auto *token_node = static_cast<const ccl::parser::ast::Terminal *>(node);
         const auto &token = token_node->getToken();
@@ -35,21 +35,21 @@ namespace astlang2::ast::expression
         const auto repr_without_quotes = repr.substr(1).withoutLastSymbol();
         const auto repr_with_processed_escapes = ccl::text::removeEscaping(repr_without_quotes, {});
 
-        return std::make_shared<std::string>(repr_with_processed_escapes);
+        return AstlangObject<std::string>(repr_with_processed_escapes);
     }
 
-    static auto constructBooleanNode(bool value) -> std::shared_ptr<void>
+    static auto constructBooleanNode(bool value) -> AstlangObject<>
     {
-        return std::make_shared<bool>(value);
+        return AstlangObject<bool>(value);
     }
 
-    static auto getVariableName(const ccl::parser::ast::Node *node) -> std::shared_ptr<void>
+    static auto getVariableName(const ccl::parser::ast::Node *node) -> AstlangObject<>
     {
         const auto *token_node = static_cast<const ccl::parser::ast::Terminal *>(node);
         const auto &token = token_node->getToken();
         const auto repr = token.getRepr();
 
-        return std::make_shared<std::string>(repr);
+        return AstlangObject<std::string>(repr);
     }
 
     Factor::Factor(const SmallId id, const ccl::parser::ast::SmallVectorOfNodes &initial_nodes)

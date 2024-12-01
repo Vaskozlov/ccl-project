@@ -11,10 +11,10 @@ namespace astlang2::interpreter
     public:
         template<typename LHS, typename RHS>
         auto operator()(
-            ts::Type *return_type, std::shared_ptr<LHS> lhs, std::shared_ptr<RHS> rhs) const -> auto
+            ts::Type *return_type, AstlangObject<LHS> lhs, AstlangObject<RHS> rhs) const -> auto
         {
             return Value{
-                .object = std::make_shared<decltype(T{}(*lhs, *rhs))>(T{}(*lhs, *rhs)),
+                .object = toAstlangObject<decltype(T{}(*lhs, *rhs))>(T{}(*lhs, *rhs)),
                 .type = return_type,
                 .valueType = ValueType::R_VALUE,
             };
@@ -26,8 +26,8 @@ namespace astlang2::interpreter
     {
     public:
         template<typename LHS, typename RHS>
-        auto operator()(
-            ts::Type *return_type, std::shared_ptr<LHS> lhs, std::shared_ptr<RHS> rhs) const -> auto
+        auto operator()(ts::Type *return_type, AstlangObject<LHS> lhs, AstlangObject<RHS> rhs) const
+            -> auto
         {
             T{}(*lhs, *rhs);
 

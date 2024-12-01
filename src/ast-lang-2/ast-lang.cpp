@@ -1,4 +1,5 @@
 #include <ast-lang-2/ast-lang.hpp>
+#include <ast-lang-2/ts/value.hpp>
 
 namespace astlang2
 {
@@ -393,4 +394,7 @@ STRING:     ! ["] ("\\\"" | ["]^)* ["]
 
         return node_types_map;
     }
+
+    constinit isl::PoolAllocator<sizeof(detail::ObjectSharedPtrFrame), alignof(detail::ObjectSharedPtrFrame)>
+        detail::ObjectAllocator;
 }// namespace astlang2
