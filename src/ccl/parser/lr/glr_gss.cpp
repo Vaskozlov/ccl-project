@@ -22,7 +22,7 @@ namespace ccl::parser::lr
 
                 auto *gss_node = gss->pushNonTerminal(prev, inputLevel, new_state, new_node);
 
-                gss->add({
+                gss->addDescriptor({
                     .stack = gss_node,
                     .inputPosition = inputLevel,
                     .parserState = new_state,
@@ -55,8 +55,7 @@ namespace ccl::parser::lr
         Node *parent,
         SmallId input_position,
         SmallId parser_state,
-        ast::SharedNode<ast::Terminal>
-            token) -> Node *
+        ast::SharedNode<ast::Terminal> token) -> Node *
     {
         if (input_position >= levels.size()) {
             levels.resize(input_position + 1);
@@ -86,8 +85,7 @@ namespace ccl::parser::lr
         Node *parent,
         SmallId input_position,
         SmallId parser_state,
-        ast::SharedNode<ast::NonTerminal>
-            non_terminal) -> Node *
+        ast::SharedNode<ast::NonTerminal> non_terminal) -> Node *
     {
         if (input_position >= levels.size()) {
             levels.resize(input_position + 1);
@@ -108,7 +106,7 @@ namespace ccl::parser::lr
         return node;
     }
 
-    auto GSS::add(Descriptor descriptor) -> void
+    auto GSS::addDescriptor(Descriptor descriptor) -> void
     {
         auto inserted = false;
         std::tie(std::ignore, inserted) =
@@ -140,4 +138,4 @@ namespace ccl::parser::lr
         }
             .reduce(pop_count, descriptor.stack, {});
     }
-}// namespace ccl::parser::lr
+} // namespace ccl::parser::lr

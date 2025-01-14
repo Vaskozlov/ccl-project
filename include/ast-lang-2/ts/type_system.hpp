@@ -7,14 +7,14 @@
 namespace ccl::parser::ast
 {
     class NonTerminal;
-}
+} // namespace ccl::parser::ast
 
 namespace astlang2
 {
     namespace ast::core
     {
         class AstlangNode;
-    }
+    } // namespace ast::core
 
     class TypeSystem
     {
@@ -113,6 +113,6 @@ namespace astlang2
 
         auto createType(const std::string &name) -> ts::Type *;
     };
-}// namespace astlang2
+} // namespace astlang2
 
 #endif /* AST_LANG_2_TYPE_SYSTEM_HPP */

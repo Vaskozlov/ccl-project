@@ -25,15 +25,14 @@ namespace ccl::parser
         {}
 
         explicit Action(
-            const Symbol production_type,
-            const SmallId number_of_elements_in_production) noexcept
+            const Symbol production_type, const SmallId number_of_elements_in_production) noexcept
           : productionType{production_type}
           , numberOfElementsInProduction{number_of_elements_in_production}
           , parsingAction{ParsingAction::REDUCE}
         {}
 
-        CCL_DECL auto
-            operator<=>(const Action &other) const noexcept -> std::weak_ordering = default;
+        CCL_DECL auto operator<=>(const Action &other) const noexcept
+            -> std::weak_ordering = default;
 
         CCL_DECL auto getActionType() const noexcept -> ParsingAction
         {
@@ -54,7 +53,6 @@ namespace ccl::parser
         {
             return parsingAction == ParsingAction::ACCEPT;
         }
-
 
         CCL_DECL auto getShiftingState() const -> State
         {
@@ -89,14 +87,14 @@ namespace ccl::parser
         std::function<std::string(SmallId)> idToStringConverter;
         Action action;
     };
-}// namespace ccl::parser
+} // namespace ccl::parser
 
-template<>
+template <>
 struct fmt::formatter<ccl::parser::ActionPrintWrapper> : formatter<std::string_view>
 {
-    static auto format(
-        const ccl::parser::ActionPrintWrapper &action_print_wrapper,
-        format_context &ctx) -> format_context::iterator;
+    static auto
+        format(const ccl::parser::ActionPrintWrapper &action_print_wrapper, format_context &ctx)
+            -> format_context::iterator;
 };
 
 #endif /* CCL_PROJECT_ACTION_HPP */

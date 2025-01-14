@@ -1,7 +1,6 @@
 #ifndef CCL_PROJECT_GLL_PARSER_GENERATOR_HPP
 #define CCL_PROJECT_GLL_PARSER_GENERATOR_HPP
 
-#include <ccl/parser/first_set.hpp>
 #include <ccl/parser/grammar_rules_storage.hpp>
 #include <ccl/parser/table_entry.hpp>
 
@@ -31,6 +30,6 @@ namespace ccl::parser::ll
 
         auto generateUsingRule(Symbol production, const Rule &rule) -> void;
     };
-}// namespace ccl::parser::ll
+} // namespace ccl::parser::ll
 
 #endif /* CCL_PROJECT_GLL_PARSER_GENERATOR_HPP */

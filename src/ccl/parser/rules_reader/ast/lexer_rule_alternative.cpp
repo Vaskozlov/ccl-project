@@ -28,4 +28,4 @@ namespace ccl::parser::reader::ast
 
         return result;
     }
-}// namespace ccl::parser::reader::ast
+} // namespace ccl::parser::reader::ast

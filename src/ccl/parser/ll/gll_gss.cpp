@@ -26,14 +26,14 @@ namespace ccl::parser::ll
 
             auto *new_node = pushNode(prev->previous, std::move(new_sppf), input_position);
 
-            add({
+            addDescriptor({
                 .stack = new_node,
                 .inputPosition = input_position,
             });
         }
     }
 
-    auto GSS::add(Descriptor descriptor) -> void
+    auto GSS::addDescriptor(Descriptor descriptor) -> void
     {
         auto inserted = false;
         const auto *node = descriptor.stack;
@@ -84,7 +84,7 @@ namespace ccl::parser::ll
         }
 
         const auto &non_terminal_front = nonTerminalDescriptors.front();
-        const auto &[stack, inputPosition] = terminalDescriptors.front();
+        const auto &[_, inputPosition] = terminalDescriptors.front();
 
         auto &selectedList = (non_terminal_front.inputPosition <= inputPosition)
                                  ? nonTerminalDescriptors
@@ -140,7 +140,6 @@ namespace ccl::parser::ll
         return node;
     }
 
-
     auto GSS::getLevel(const SmallId input_position) -> Level &
     {
         if (input_position >= levels.size()) {
@@ -150,4 +149,4 @@ namespace ccl::parser::ll
 
         return levels.at(input_position);
     }
-}// namespace ccl::parser::ll
+} // namespace ccl::parser::ll

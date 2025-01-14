@@ -30,7 +30,8 @@ namespace ccl::parser::ll
     public:
         explicit GSS(const GrammarStorage *grammar_storage)
           : storage{grammar_storage}
-        {}
+        {
+        }
 
         [[nodiscard]] auto getGlobalInputPosition() const noexcept -> SmallId
         {
@@ -55,19 +56,18 @@ namespace ccl::parser::ll
 
         auto pop(const Descriptor &descriptor) -> void;
 
-        auto add(Descriptor descriptor) -> void;
+        auto addDescriptor(Descriptor descriptor) -> void;
 
         auto getDescriptor() -> Descriptor;
 
-        auto pushNode(Node *parent, SPPFNode sppf_node, SmallId input_position)
-            CCL_LIFETIMEBOUND -> Node *;
+        auto pushNode(Node *parent, SPPFNode sppf_node, SmallId input_position) CCL_LIFETIMEBOUND
+            -> Node *;
 
         auto pushNode(Node *parent, RuleWithDot rule, Symbol production, SmallId input_position)
             CCL_LIFETIMEBOUND -> Node *;
 
-        auto pushNode(
-            const Node::Vector &parents, SPPFNode sppf_node,
-            SmallId input_position) CCL_LIFETIMEBOUND -> Node *;
+        auto pushNode(const Node::Vector &parents, SPPFNode sppf_node, SmallId input_position)
+            CCL_LIFETIMEBOUND -> Node *;
 
     private:
         auto getLevel(SmallId input_position) -> Level &;

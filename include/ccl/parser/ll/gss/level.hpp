@@ -7,7 +7,7 @@ namespace ccl::parser::ll
 {
     struct Level : std::vector<UniqueGssNodePtr>
     {
-        using vector::vector;
+        using std::vector<UniqueGssNodePtr>::vector;
 
         [[nodiscard]] auto findNode(const SPPFNode &sppf_node) const CCL_LIFETIMEBOUND -> Node *;
 

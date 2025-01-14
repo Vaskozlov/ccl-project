@@ -42,9 +42,9 @@ namespace ccl::parser
             return nodes <=> other.nodes;
         }
     };
-}// namespace ccl::parser
+} // namespace ccl::parser
 
-template<>
+template <>
 struct ankerl::unordered_dense::hash<ccl::parser::SPPFNode>
 {
     using is_avalanching = void;
@@ -58,6 +58,5 @@ struct ankerl::unordered_dense::hash<ccl::parser::SPPFNode>
                 sppf_node.nodes.size() * sizeof(ccl::parser::ast::SharedNode<>)));
     }
 };
-
 
 #endif /* CCL_PROJECT_SPPF_NODE_HPP */

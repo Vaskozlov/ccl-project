@@ -8,7 +8,7 @@ namespace astlang2
     namespace ts
     {
         class Type;
-    }
+    } // namespace ts
 
     enum class ValueType
     {
@@ -19,16 +19,17 @@ namespace astlang2
     namespace detail
     {
         using ObjectSharedPtrFrame = isl::SharedPtrFrame<
-            isl::ObjectsMaxSize<
-                std::string, ankerl::unordered_dense::map<std::string, std::string>>,
+            isl::
+                ObjectsMaxSize<std::string, ankerl::unordered_dense::map<std::string, std::string>>,
             isl::ObjectsMaxAlignment<
-                std::string, ankerl::unordered_dense::map<std::string, std::string>>>;
+                std::string,
+                ankerl::unordered_dense::map<std::string, std::string>>>;
 
         extern isl::PoolAllocator<sizeof(ObjectSharedPtrFrame), alignof(ObjectSharedPtrFrame)>
             ObjectAllocator;
-    }// namespace detail
+    } // namespace detail
 
-    template<typename T = void>
+    template <typename T = void>
     using AstlangObject =
         isl::SharedPtr<T, detail::ObjectSharedPtrFrame, std::addressof(detail::ObjectAllocator)>;
 
@@ -41,11 +42,11 @@ namespace astlang2
 
     using Instance = ankerl::unordered_dense::map<std::string, Value>;
 
-    template<typename T>
+    template <typename T>
     auto toAstlangObject(T &&value) -> AstlangObject<>
     {
         return AstlangObject<std::remove_cvref_t<T>>{std::forward<T>(value)};
     }
-}// namespace astlang2
+} // namespace astlang2
 
 #endif /* AST_LANG_2_TS_VALUE_HPP */

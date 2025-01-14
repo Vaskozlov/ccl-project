@@ -1,17 +1,18 @@
-def f(int a)
-{
-    while a < 10
-    {
-        println(a * a);
-        a = a + 1;
-    }
+var i = 0;
 
-    return a * a;
+while i < 10 {
+    println(i);
+    i = i + 1;
 }
 
-var b = timeNs();
-println(f(0));
-var e = timeNs();
+println("Done!");
 
-print((e - b) / 1000);
-println("us");
+var a = 5;
+
+if a > 3 {
+    println("a is greater than 3");
+} elif a == 3 {
+    println("a is equal to 3");
+} else {
+    println("a is less than 3");
+}

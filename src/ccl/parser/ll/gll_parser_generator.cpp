@@ -37,4 +37,4 @@ namespace ccl::parser::ll
             vec.emplace_back(rule);
         }
     }
-}// namespace ccl::parser::ll
+} // namespace ccl::parser::ll

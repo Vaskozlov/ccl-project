@@ -14,7 +14,7 @@ namespace ccl::parser
     class GlrParser;
     class Ll1Parser;
     class GllParser;
-}// namespace ccl::parser
+} // namespace ccl::parser
 
 namespace ccl::parser::reader
 {
@@ -68,8 +68,9 @@ namespace ccl::parser::reader
             return ruleNameToId.contains(rule_name);
         }
 
-        auto addLexerRule(
-            const std::string &name, std::unique_ptr<lexer::rule::Container> container) -> void;
+        auto
+            addLexerRule(const std::string &name, std::unique_ptr<lexer::rule::Container> container)
+                -> void;
 
         auto addParserRule(const std::string &name, std::vector<Symbol> rule) -> void;
 
@@ -98,6 +99,6 @@ namespace ccl::parser::reader
 
         [[nodiscard]] auto getStartItem() const -> LrItem;
     };
-}// namespace ccl::parser::reader
+} // namespace ccl::parser::reader
 
 #endif /* CCL_PROJECT_PARSER_BUILDER_HPP */

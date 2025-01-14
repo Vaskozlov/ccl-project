@@ -1,5 +1,6 @@
 #include <ast-lang-2/ast/node.hpp>
 #include <ast-lang-2/interpreter/interpreter.hpp>
+#include <cassert>
 #include <ccl/lexer/tokenizer.hpp>
 #include <ccl/parser/dot/dot_repr.hpp>
 #include <ccl/parser/ll/gll_parser.hpp>

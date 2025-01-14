@@ -11,16 +11,17 @@ namespace ccl::parser::reader
     class RulesReader
     {
     private:
-        ParserBuilder rulesConstructor;
+        ParserBuilder parserBuilder;
         std::vector<ReaderOption> readerOptions;
 
     public:
         explicit RulesReader(
             const std::unordered_map<std::string, SmallId> &default_rules,
-            isl::string_view input, isl::string_view filename = {});
+            isl::string_view input,
+            isl::string_view filename = {});
 
         [[nodiscard]] auto getParserBuilder() -> ParserBuilder &;
     };
-}// namespace ccl::parser::reader
+} // namespace ccl::parser::reader
 
 #endif /* CCL_PROJECT_RULES_READER_HPP */

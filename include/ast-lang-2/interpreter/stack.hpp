@@ -37,18 +37,18 @@ namespace astlang2::interpreter
         {
             return isl::Raii{
                 [this]() {
-                    ++currentStackTop;
+                ++currentStackTop;
 
-                    if (getCurrentStackTop() < localScopes.size()) {
-                        localScopes.at(getCurrentStackTop()).isHardScope = true;
-                    } else {
-                        localScopes.emplace_back().isHardScope = true;
-                    }
-                },
+                if (getCurrentStackTop() < localScopes.size()) {
+                    localScopes.at(getCurrentStackTop()).isHardScope = true;
+                } else {
+                    localScopes.emplace_back().isHardScope = true;
+                }
+            },
                 [this]() {
-                    localScopes.at(getCurrentStackTop()).variables.clear();
-                    --currentStackTop;
-                },
+                localScopes.at(getCurrentStackTop()).variables.clear();
+                --currentStackTop;
+            },
             };
         }
 
@@ -56,21 +56,21 @@ namespace astlang2::interpreter
         {
             return isl::Raii{
                 [this]() {
-                    ++currentStackTop;
+                ++currentStackTop;
 
-                    if (getCurrentStackTop() < localScopes.size()) {
-                        localScopes.at(getCurrentStackTop()).isHardScope = false;
-                    } else {
-                        localScopes.emplace_back().isHardScope = false;
-                    }
-                },
+                if (getCurrentStackTop() < localScopes.size()) {
+                    localScopes.at(getCurrentStackTop()).isHardScope = false;
+                } else {
+                    localScopes.emplace_back().isHardScope = false;
+                }
+            },
                 [this]() {
-                    localScopes.at(getCurrentStackTop()).variables.clear();
-                    --currentStackTop;
-                },
+                localScopes.at(getCurrentStackTop()).variables.clear();
+                --currentStackTop;
+            },
             };
         }
     };
-}// namespace astlang2::interpreter
+} // namespace astlang2::interpreter
 
 #endif /* AST_LANG2_STACK_HPP */

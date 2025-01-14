@@ -1,9 +1,11 @@
 #include "ccl/parser/lr/glr_parser.hpp"
+
 #include "ccl/lexer/tokenizer.hpp"
 #include "ccl/parser/ast/terminal.hpp"
 #include "ccl/parser/dot/dot_repr.hpp"
 #include "ccl/parser/lr/detail/lr_parser_generator.hpp"
 #include "ccl/parser/lr/gss/gss.hpp"
+
 #include <isl/dot_repr.hpp>
 #include <isl/io.hpp>
 
@@ -11,20 +13,29 @@ namespace ccl::parser
 {
     using enum ParsingAction;
 
-    static auto debugGlr(const lr::GSS &gss, const auto &function) -> void
+    static constexpr bool DebugGLR = false;
+
+    static auto saveGlrState(const lr::GSS &gss, const auto &function) -> void
     {
         auto result = std::vector<ast::Node *>{};
 
-        for (const auto &level : gss.getLevels()) {
-            result.emplace_back(level.terminal->value.get());
+        for (const auto &[nonTerminals, terminal] : gss.getLevels()) {
+            result.emplace_back(terminal->value.get());
 
-            for (const auto &node : level.nonTerminals) {
+            for (const auto &node : nonTerminals) {
                 result.emplace_back(node->value.get());
             }
         }
 
         auto tree_repr = dot::createDotRepresentation(result, function);
         isl::io::write(std::filesystem::current_path().append("glr.dot"), tree_repr);
+    }
+
+    static auto debugGlr(const lr::GSS &gss, const auto &function) -> void
+    {
+        if constexpr (DebugGLR) {
+            saveGlrState(gss, function);
+        }
     }
 
     GlrParser::GlrParser(
@@ -54,7 +65,7 @@ namespace ccl::parser
 
         auto *start_node = gss.pushTerminal(nullptr, 0, 0, token);
 
-        gss.add({
+        gss.addDescriptor({
             .stack = start_node,
             .inputPosition = 0,
             .parserState = 0,
@@ -81,15 +92,16 @@ namespace ccl::parser
             for (const Action &action : possible_actions_it->second) {
                 switch (action.getActionType()) {
                 case SHIFT:
-                    gss.add({
-                        .stack = gss.pushTerminal(
-                            descriptor.stack,
-                            descriptor.inputPosition,
-                            action.getShiftingState(),
-                            token),
-                        .inputPosition = descriptor.inputPosition + 1,
-                        .parserState = action.getShiftingState(),
-                    });
+                    gss.addDescriptor(
+                        lr::Descriptor{
+                            .stack = gss.pushTerminal(
+                                descriptor.stack,
+                                descriptor.inputPosition,
+                                action.getShiftingState(),
+                                token),
+                            .inputPosition = descriptor.inputPosition + 1,
+                            .parserState = action.getShiftingState(),
+                        });
                     break;
 
                 case REDUCE:
@@ -112,4 +124,4 @@ namespace ccl::parser
 
         return parsing_result;
     }
-}// namespace ccl::parser
+} // namespace ccl::parser

@@ -32,6 +32,6 @@ namespace ccl::parser::ll
 
         auto generateUsingRule(Symbol production, const Rule &rule) -> void;
     };
-}// namespace ccl::parser::ll
+} // namespace ccl::parser::ll
 
 #endif /* CCL_PROJECT_LL_1_PARSER_GENERATOR_HPP */

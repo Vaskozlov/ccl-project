@@ -16,11 +16,12 @@ namespace ccl::parser
 
     public:
         Ll1Parser(
-            SmallId start_symbol, const GrammarStorage &grammar_storage,
+            SmallId start_symbol,
+            const GrammarStorage &grammar_storage,
             const std::function<std::string(SmallId)> &id_to_string_converter);
 
         auto parse(lexer::LexicalAnalyzer::Tokenizer &tokenizer) -> UnambiguousParsingResult;
     };
-}// namespace ccl::parser
+} // namespace ccl::parser
 
 #endif /* CCL_PROJECT_LL_1_PARSER_HPP */

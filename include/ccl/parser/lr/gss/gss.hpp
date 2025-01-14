@@ -53,7 +53,7 @@ namespace ccl::parser::lr
             Node *parent, SmallId input_position, SmallId parser_state,
             ast::SharedNode<ast::NonTerminal> non_terminal) -> Node *;
 
-        auto add(Descriptor descriptor) -> void;
+        auto addDescriptor(Descriptor descriptor) -> void;
 
         auto getDescriptor() -> Descriptor
         {

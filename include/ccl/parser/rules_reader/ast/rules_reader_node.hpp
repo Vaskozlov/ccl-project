@@ -14,6 +14,6 @@ namespace ccl::parser::reader::ast
 
         virtual auto construct(ParserBuilder &parser_builder) const -> isl::UniqueAny = 0;
     };
-}// namespace ccl::parser::reader::ast
+} // namespace ccl::parser::reader::ast
 
 #endif /* CCL_PROJECT_RULES_READER_NODE_HPP */

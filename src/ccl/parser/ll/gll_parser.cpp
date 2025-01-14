@@ -7,7 +7,9 @@
 
 namespace ccl::parser
 {
-    static auto debugGll(const ll::GSS &gss, const auto &function) -> void
+    static constexpr bool DebugGLL = false;
+
+    static auto saveGLLState(const ll::GSS &gss, const auto &function) -> void
     {
         auto result = std::vector<ast::Node *>{};
 
@@ -21,6 +23,13 @@ namespace ccl::parser
 
         auto tree_repr = dot::createDotRepresentation(result, function);
         isl::io::write(std::filesystem::current_path().append("gll.dot"), tree_repr);
+    }
+
+    static auto debugGll(const ll::GSS &gss, const auto &function) -> void
+    {
+        if constexpr (DebugGLL) {
+            saveGLLState(gss, function);
+        }
     }
 
     GllParser::GllParser(
@@ -56,10 +65,11 @@ namespace ccl::parser
             },
             0);
 
-        gss.add({
-            .stack = start_node,
-            .inputPosition = 0,
-        });
+        gss.addDescriptor(
+            ll::Descriptor{
+                .stack = start_node,
+                .inputPosition = 0,
+            });
 
         while (gss.hasDescriptors()) {
             auto descriptor = gss.getDescriptor();
@@ -80,13 +90,9 @@ namespace ccl::parser
             const auto focus = sppf.atDot();
             const auto token_type = token->getType();
 
-            // fmt::println(
-            // "Focus {}, token: {} = {}", idToStringConverter(focus),
-            // idToStringConverter(token_type), token->getToken().getRepr());
-
             if (focus == 0 && token_type == 0) {
                 parsing_result.roots.emplace_back(sppf.nodes.front());
-                // debugGll(gss, idToStringConverter);
+                debugGll(gss, idToStringConverter);
                 continue;
             }
 
@@ -97,15 +103,16 @@ namespace ccl::parser
 
                 sppf.next(token);
                 descriptor.inputPosition += 1;
-                gss.add(descriptor);
+                gss.addDescriptor(descriptor);
 
                 continue;
             }
 
-            auto rules_it = table.find({
-                .state = focus,
-                .symbol = token_type,
-            });
+            auto rules_it = table.find(
+                TableEntry{
+                    .state = focus,
+                    .symbol = token_type,
+                });
 
             if (rules_it == table.end()) {
                 continue;
@@ -116,18 +123,23 @@ namespace ccl::parser
                     descriptor.stack,
                     SPPFNode{
                         .nodes = {},
-                        .rule = {.rule = rule, .dotPosition = 0},
+                        .rule =
+                            {
+                                .rule = rule,
+                                .dotPosition = 0,
+                            },
                         .production = focus,
                     },
                     input_position);
 
-                gss.add({
-                    .stack = new_node,
-                    .inputPosition = input_position,
-                });
+                gss.addDescriptor(
+                    ll::Descriptor{
+                        .stack = new_node,
+                        .inputPosition = input_position,
+                    });
             }
 
-            // debugGll(gss, idToStringConverter);
+            debugGll(gss, idToStringConverter);
         }
 
         return parsing_result;

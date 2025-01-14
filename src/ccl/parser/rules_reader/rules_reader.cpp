@@ -16,7 +16,7 @@
 
 namespace ccl::parser::reader
 {
-    template<typename T>
+    template <typename T>
     static void (*ReconstructorPtr)(ccl::parser::ast::NonTerminal *) =
         ccl::parser::ast::NonTerminal::reconstructNode<T>;
 
@@ -24,41 +24,32 @@ namespace ccl::parser::reader
     {
         const static parser::ast::Node::ConversionTable conversion_table{
             {
-                BLOCKS,
-                ReconstructorPtr<ast::Blocks>,
-            },
+             BLOCKS,                 ReconstructorPtr<ast::Blocks>,
+             },
             {
-                LEXER_BLOCK,
-                ReconstructorPtr<ast::LexerBlock>,
-            },
+             LEXER_BLOCK,                      ReconstructorPtr<ast::LexerBlock>,
+             },
             {
-                LEXER_RULE_ALTERNATIVE,
-                ReconstructorPtr<ast::LexerRuleAlternative>,
-            },
+             LEXER_RULE_ALTERNATIVE,            ReconstructorPtr<ast::LexerRuleAlternative>,
+             },
             {
-                LEXER_RULE,
-                ReconstructorPtr<ast::LexerRule>,
-            },
+             LEXER_RULE,                      ReconstructorPtr<ast::LexerRule>,
+             },
             {
-                LEXER_RULE_BLOCK,
-                ReconstructorPtr<ast::LexerRuleBlock>,
-            },
+             LEXER_RULE_BLOCK, ReconstructorPtr<ast::LexerRuleBlock>,
+             },
             {
-                LEXER_RULE_OPTIONS,
-                ReconstructorPtr<ast::LexerRuleOptions>,
-            },
+             LEXER_RULE_OPTIONS,                      ReconstructorPtr<ast::LexerRuleOptions>,
+             },
             {
-                PARSER_BLOCK,
-                ReconstructorPtr<ast::ParserBlock>,
-            },
+             PARSER_BLOCK,             ReconstructorPtr<ast::ParserBlock>,
+             },
             {
-                PARSER_RULE_ALTERNATIVE,
-                ReconstructorPtr<ast::ParserRuleAlternatives>,
-            },
+             PARSER_RULE_ALTERNATIVE,                      ReconstructorPtr<ast::ParserRuleAlternatives>,
+             },
             {
-                PARSER_RULE,
-                ReconstructorPtr<ast::ParserRule>,
-            },
+             PARSER_RULE,       ReconstructorPtr<ast::ParserRule>,
+             },
         };
 
         return conversion_table;
@@ -72,15 +63,14 @@ namespace ccl::parser::reader
             EPSILON,
             GOAL,
             {
-                {
+              {
                     GOAL,
                     {
                         Rule{
                             BLOCKS,
                         },
                     },
-                },
-                {
+                }, {
                     BLOCKS,
                     {
                         Rule{
@@ -97,8 +87,7 @@ namespace ccl::parser::reader
                             BLOCKS,
                         },
                     },
-                },
-                {
+                }, {
                     LEXER_BLOCK,
                     {
                         Rule{
@@ -116,8 +105,7 @@ namespace ccl::parser::reader
                             LEXER_BLOCK,
                         },
                     },
-                },
-                {
+                }, {
                     LEXER_RULE_ALTERNATIVE,
                     {
                         Rule{
@@ -129,8 +117,7 @@ namespace ccl::parser::reader
                             LEXER_RULE,
                         },
                     },
-                },
-                {
+                }, {
                     LEXER_RULE,
                     {
                         Rule{
@@ -141,8 +128,7 @@ namespace ccl::parser::reader
                             EPSILON,
                         },
                     },
-                },
-                {
+                }, {
                     LEXER_RULE_BLOCK,
                     {
                         Rule{
@@ -164,8 +150,7 @@ namespace ccl::parser::reader
                             LEXER_RULE_OPTIONS,
                         },
                     },
-                },
-                {
+                }, {
                     LEXER_RULE_OPTIONS,
                     {
                         Rule{
@@ -206,8 +191,7 @@ namespace ccl::parser::reader
                             LEXER_RULE_OPTIONS,
                         },
                     },
-                },
-                {
+                }, {
                     PARSER_BLOCK,
                     {
                         Rule{
@@ -219,8 +203,7 @@ namespace ccl::parser::reader
                             PARSER_BLOCK,
                         },
                     },
-                },
-                {
+                }, {
                     PARSER_RULE_ALTERNATIVE,
                     {
                         Rule{
@@ -232,8 +215,7 @@ namespace ccl::parser::reader
                             PARSER_RULE,
                         },
                     },
-                },
-                {
+                }, {
                     PARSER_RULE,
                     {
                         Rule{
@@ -258,17 +240,17 @@ namespace ccl::parser::reader
                             PARSER_RULE,
                         },
                     },
-                },
-            },
+                }, },
         };
 
         return rules_grammar;
     }
 
     RulesReader::RulesReader(
-        const std::unordered_map<std::string, SmallId> &default_rules, const isl::string_view input,
+        const std::unordered_map<std::string, SmallId> &default_rules,
+        const isl::string_view input,
         const isl::string_view filename)
-      : rulesConstructor{default_rules}
+      : parserBuilder{default_rules}
       , readerOptions{
             ReaderOption::WARNINGS_ENABLE,
             ReaderOption::SUGGESTIONS_ENABLE,
@@ -289,11 +271,11 @@ namespace ccl::parser::reader
         auto root = isl::staticPointerCast<parser::ast::NonTerminal>(std::move(roots.front()));
         root->cast(getConversionTable());
 
-        static_cast<ast::RulesReaderNode *>(root.get())->construct(rulesConstructor);
+        static_cast<ast::RulesReaderNode *>(root.get())->construct(parserBuilder);
     }
 
     auto RulesReader::getParserBuilder() -> ParserBuilder &
     {
-        return rulesConstructor;
+        return parserBuilder;
     }
-}// namespace ccl::parser::reader
+} // namespace ccl::parser::reader

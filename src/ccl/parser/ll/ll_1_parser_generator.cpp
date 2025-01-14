@@ -48,4 +48,4 @@ namespace ccl::parser::ll
             throw std::runtime_error{"Grammar is not LL(1) backtrack free."};
         }
     }
-}// namespace ccl::parser::ll
+} // namespace ccl::parser::ll

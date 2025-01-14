@@ -76,6 +76,6 @@ namespace astlang2
 
     auto getAstlangGrammar() -> isl::string_view;
     auto getNodeTypesMap() -> const std::unordered_map<std::string, SmallId> &;
-}// namespace astlang2
+} // namespace astlang2
 
 #endif /* CCL_PROJECT_ASTLANG_AST_LANG_HPP */

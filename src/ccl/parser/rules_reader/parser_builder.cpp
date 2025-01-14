@@ -4,10 +4,15 @@
 #include <ccl/parser/lr/lr_parser.hpp>
 #include <ccl/parser/rules_reader/parser_builder.hpp>
 
-namespace ccl::parser::reader {
-    static auto getMaxRuleId(const std::unordered_map<std::string, SmallId> &default_rules) -> SmallId {
-        const auto it = std::ranges::max_element(default_rules, {}, [](auto &elem) { return elem.second; });
-        return std::max<SmallId>(lexer::ReservedTokenMaxValue + 2, it == default_rules.end() ? 0 : it->second);
+namespace ccl::parser::reader
+{
+    static auto getMaxRuleId(const std::unordered_map<std::string, SmallId> &default_rules)
+        -> SmallId
+    {
+        const auto it =
+            std::ranges::max_element(default_rules, {}, [](auto &elem) { return elem.second; });
+        return std::max<SmallId>(
+            lexer::ReservedTokenMaxValue + 2, it == default_rules.end() ? 0 : it->second);
     }
 
     ParserBuilder::ParserBuilder(const std::unordered_map<std::string, SmallId> &default_rules)
@@ -48,14 +53,16 @@ namespace ccl::parser::reader {
               },
           },
           grammarRulesStorage{getRuleId("EPSILON")},
-          ruleIdGenerator{getMaxRuleId(default_rules) + 1} {
-        for (const auto &[rule_name, rule_id]: default_rules) {
+          ruleIdGenerator{getMaxRuleId(default_rules) + 1}
+    {
+        for (const auto &[rule_name, rule_id] : default_rules) {
             ruleIdToName.try_emplace(rule_id, rule_name);
             ruleNameToId.try_emplace(rule_name, rule_id);
         }
     }
 
-    auto ParserBuilder::buildLr1() -> LrParser {
+    auto ParserBuilder::buildLr1() -> LrParser
+    {
         finishGrammar(Mode::LR);
 
         return LrParser{
@@ -66,7 +73,8 @@ namespace ccl::parser::reader {
         };
     }
 
-    auto ParserBuilder::buildGlr() -> GlrParser {
+    auto ParserBuilder::buildGlr() -> GlrParser
+    {
         finishGrammar(Mode::LR);
 
         return GlrParser{
@@ -77,7 +85,8 @@ namespace ccl::parser::reader {
         };
     }
 
-    auto ParserBuilder::buildLl1() -> Ll1Parser {
+    auto ParserBuilder::buildLl1() -> Ll1Parser
+    {
         finishGrammar(Mode::LL);
 
         return Ll1Parser{
@@ -87,7 +96,8 @@ namespace ccl::parser::reader {
         };
     }
 
-    auto ParserBuilder::buildGLL() -> GllParser {
+    auto ParserBuilder::buildGLL() -> GllParser
+    {
         finishGrammar(Mode::LR);
 
         return GllParser{
@@ -97,7 +107,8 @@ namespace ccl::parser::reader {
         };
     }
 
-    auto ParserBuilder::finishGrammar(const Mode mode) -> void {
+    auto ParserBuilder::finishGrammar(const Mode mode) -> void
+    {
         if (!rulesConstructorFinalized) {
             rulesConstructorMode = mode;
             rulesConstructorFinalized = true;
@@ -110,18 +121,21 @@ namespace ccl::parser::reader {
     }
 
     auto ParserBuilder::addLexerRule(
-        const std::string &name, std::unique_ptr<lexer::rule::Container> container) -> void {
+        const std::string &name, std::unique_ptr<lexer::rule::Container> container) -> void
+    {
         const auto rule_id = addRule(name);
         container->setId(rule_id);
         lexicalAnalyzer.addContainer(name, std::move(container));
     }
 
-    auto ParserBuilder::addParserRule(const std::string &name, std::vector<Symbol> rule) -> void {
+    auto ParserBuilder::addParserRule(const std::string &name, std::vector<Symbol> rule) -> void
+    {
         const auto rule_id = addRule(name);
         addParserRule(rule_id, std::move(rule));
     }
 
-    auto ParserBuilder::addRule(const std::string &rule_name) -> SmallId {
+    auto ParserBuilder::addRule(const std::string &rule_name) -> SmallId
+    {
         if (const auto it = ruleNameToId.find(rule_name); it != ruleNameToId.end()) {
             return it->second;
         }
@@ -134,24 +148,24 @@ namespace ccl::parser::reader {
         return rule_id;
     }
 
-    auto ParserBuilder::getStartItem() const -> LrItem {
+    auto ParserBuilder::getStartItem() const -> LrItem
+    {
         const auto goal_id = getRuleId("GOAL");
 
         return LrItem{
             .dottedRule =
-            {
-                .rule = grammarRulesStorage.getStartRule(goal_id),
-                .dotPosition = 0,
-            },
+                {
+                             .rule = grammarRulesStorage.getStartRule(goal_id),
+                             .dotPosition = 0,
+                             },
             .production = goal_id,
             .lookAhead = 0,
         };
     }
 
     auto ParserBuilder::getIdToNameTranslationFunction() const
-        -> std::function<std::string(SmallId)> {
-        return [this](const SmallId rule_id) {
-            return ruleIdToName.at(rule_id);
-        };
+        -> std::function<std::string(SmallId)>
+    {
+        return [this](const SmallId rule_id) { return ruleIdToName.at(rule_id); };
     }
 } // namespace ccl::parser::reader

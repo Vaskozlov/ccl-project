@@ -12,8 +12,8 @@ namespace ccl::parser::lr
     }
 
     auto LrParserGenerator::moveCollectionItemsOverSymbol(
-        const CanonicalCollection &canonical_collection,
-        const Symbol symbol) const -> std::vector<LrItem>
+        const CanonicalCollection &canonical_collection, const Symbol symbol) const
+        -> std::vector<LrItem>
     {
         auto moved = std::vector<LrItem>{};
         moved.reserve(canonical_collection.items.size());
@@ -143,7 +143,7 @@ namespace ccl::parser::lr
         lastPolledCanonicalCollection = canonicalCollection.begin();
         CCL_REPEAT_WHILE(fillCanonicalCollection(closure_id))
     }
-}// namespace ccl::parser::lr
+} // namespace ccl::parser::lr
 
 auto fmt::formatter<ccl::parser::CanonicalCollectionPrintWrapper>::format(
     const ccl::parser::CanonicalCollectionPrintWrapper &collection_print_wrapper,
@@ -152,9 +152,11 @@ auto fmt::formatter<ccl::parser::CanonicalCollectionPrintWrapper>::format(
     const auto &[items, id] = collection_print_wrapper.canonicalCollection;
 
     return fmt::format_to(
-        ctx.out(), "{}: {}", id,
+        ctx.out(),
+        "{}: {}",
+        id,
         std::views::transform(items, [&collection_print_wrapper](const ccl::parser::LrItem &item) {
-            return ccl::parser::LrItemPrintWrapper(
-                item, collection_print_wrapper.idToStringConversionFunction);
-        }));
+        return ccl::parser::LrItemPrintWrapper(
+            item, collection_print_wrapper.idToStringConversionFunction);
+    }));
 }

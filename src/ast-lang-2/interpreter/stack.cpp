@@ -70,4 +70,4 @@ namespace astlang2::interpreter
     {
         writeVariable(globalScope, name, std::move(value), check_type);
     }
-}// namespace astlang2::interpreter
+} // namespace astlang2::interpreter
