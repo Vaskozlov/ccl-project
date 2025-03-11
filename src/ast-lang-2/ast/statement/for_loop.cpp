@@ -7,9 +7,7 @@ namespace astlang2::ast::statement
       : AstlangNode{id}
     {}
 
-
-    auto ForLoop::compute(interpreter::Interpreter & /*interpreter*/) const
-        -> ComputationResult
+    auto ForLoop::compute(interpreter::Interpreter & /*interpreter*/) const -> ComputationResult
     {
         return {};
     }
@@ -21,9 +19,6 @@ namespace astlang2::ast::statement
 
     auto ForLoop::getChildrenNodes() const -> ChildrenNodesGenerator
     {
-        return ChildrenNodesGenerator{
-            []() -> ccl::parser::ast::SharedNode<> {
-                return nullptr;
-            }};
+        return []() -> ccl::parser::ast::SharedNode<> { return nullptr; };
     }
-}// namespace astlang2::ast::statement
+} // namespace astlang2::ast::statement

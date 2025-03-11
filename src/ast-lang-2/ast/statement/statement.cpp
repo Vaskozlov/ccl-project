@@ -21,14 +21,13 @@ namespace astlang2::ast::statement
 
     auto Statement::getChildrenNodes() const -> ChildrenNodesGenerator
     {
-        return ChildrenNodesGenerator{
-            [index = 0, stored_node = node]() mutable -> ccl::parser::ast::SharedNode<> {
-                if (index > 0) {
-                    return nullptr;
-                }
+        return [index = 0, stored_node = node]() mutable -> ccl::parser::ast::SharedNode<> {
+            if (index > 0) {
+                return nullptr;
+            }
 
-                ++index;
-                return stored_node;
-            }};
+            ++index;
+            return stored_node;
+        };
     }
-}// namespace astlang2::ast::statement
+} // namespace astlang2::ast::statement

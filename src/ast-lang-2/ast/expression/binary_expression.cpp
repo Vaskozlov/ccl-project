@@ -4,7 +4,8 @@
 namespace astlang2::ast::expression
 {
     static auto logicalAnd(
-        const AstlangNode *lhs_node, const AstlangNode *rhs_node,
+        const AstlangNode *lhs_node,
+        const AstlangNode *rhs_node,
         interpreter::Interpreter &interpreter) -> ComputationResult
     {
         ComputationResult lhs_argument = lhs_node->compute(interpreter);
@@ -29,7 +30,8 @@ namespace astlang2::ast::expression
     }
 
     static auto logicalOr(
-        const AstlangNode *lhs_node, const AstlangNode *rhs_node,
+        const AstlangNode *lhs_node,
+        const AstlangNode *rhs_node,
         interpreter::Interpreter &interpreter) -> ComputationResult
     {
         ComputationResult lhs_argument = lhs_node->compute(interpreter);
@@ -144,8 +146,7 @@ namespace astlang2::ast::expression
         }
     }
 
-    auto BinaryExpression::compute(interpreter::Interpreter &interpreter) const
-        -> ComputationResult
+    auto BinaryExpression::compute(interpreter::Interpreter &interpreter) const -> ComputationResult
     {
         if (rhsNode == nullptr) {
             return lhsNode->compute(interpreter);
@@ -193,26 +194,24 @@ namespace astlang2::ast::expression
         return nullptr;
     }
 
-    auto BinaryExpression::getChildrenNodes() const
-        -> ChildrenNodesGenerator
+    auto BinaryExpression::getChildrenNodes() const -> ChildrenNodesGenerator
     {
-        return ChildrenNodesGenerator{
-            [this, index = 0]() mutable -> ccl::parser::ast::SharedNode<> {
-                switch (index++) {
-                case 0:
-                    return lhsNode;
+        return [this, index = 0]() mutable -> ccl::parser::ast::SharedNode<> {
+            switch (index++) {
+            case 0:
+                return lhsNode;
 
-                case 1:
-                    if (rhsNode == nullptr ) {
-                        return nullptr;
-                    }
-
-                    return rhsNode;
-
-                default:
+            case 1:
+                if (rhsNode == nullptr) {
                     return nullptr;
                 }
-            }};
+
+                return rhsNode;
+
+            default:
+                return nullptr;
+            }
+        };
     }
 
-}// namespace astlang2::ast::expression
+} // namespace astlang2::ast::expression

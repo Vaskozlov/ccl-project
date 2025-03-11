@@ -12,6 +12,33 @@
 using namespace ccl::lexer;
 using namespace astlang2::interpreter;
 
+std::map<std::string, int, std::less<>> map;
+
+template<typename T = int>
+T getObjectOrConstructDefault(std::string_view key)
+{
+    auto it = map.find(key);
+
+    if (it == map.end()) {
+        return T();
+    }
+
+    return it->second;
+}
+
+bool stringEqual(const std::string &key) {
+    return key == "Something";
+}
+
+void f()
+{
+    std::map<std::string, int, std::less<>> map;
+
+    std::string s = "Hello, World!";
+    getObjectOrConstructDefault<int>(s); // копирование!
+}
+
+
 auto main(int /* argc */, char **argv) -> int
 {
     using namespace ccl;

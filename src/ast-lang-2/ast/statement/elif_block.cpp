@@ -6,8 +6,7 @@ namespace astlang2::ast::statement
     static constexpr std::size_t ELIF_BLOCK_SIZE_WITHOUT_NEXT_ELIF = 5;
 
     ElifBlock::ElifBlock(
-        const SmallId id,
-        const ccl::parser::ast::SmallVectorOfNodes &initial_nodes)
+        const SmallId id, const ccl::parser::ast::SmallVectorOfNodes &initial_nodes)
       : AstlangNode{id}
     {
         SharedNode<ccl::parser::ast::NonTerminal> next_block;
@@ -76,23 +75,22 @@ namespace astlang2::ast::statement
 
     auto ElifBlock::getChildrenNodes() const -> ChildrenNodesGenerator
     {
-        return ChildrenNodesGenerator{
-            [this, field_index = 0U, index = 0U]() mutable -> ccl::parser::ast::SharedNode<> {
-                if (field_index == elifStatements.size()) {
-                    return nullptr;
-                }
+        return [this, field_index = 0U, index = 0U]() mutable -> ccl::parser::ast::SharedNode<> {
+            if (field_index == elifStatements.size()) {
+                return nullptr;
+            }
 
-                const auto &[condition, body] = elifStatements[field_index];
+            const auto &[condition, body] = elifStatements[field_index];
 
-                if (index == 0U) {
-                    ++index;
-                    return condition;
-                }
+            if (index == 0U) {
+                ++index;
+                return condition;
+            }
 
-                index = 0;
-                ++field_index;
+            index = 0;
+            ++field_index;
 
-                return body;
-            }};
+            return body;
+        };
     }
-}// namespace astlang2::ast::statement
+} // namespace astlang2::ast::statement
