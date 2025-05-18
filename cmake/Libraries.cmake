@@ -32,7 +32,7 @@ CPMFindPackage(
 CPMAddPackage(
         NAME isl
         GITHUB_REPOSITORY Vaskozlov/ISL
-        GIT_TAG 3e24c0527350b8735107566e73e314adfa332372
+        GIT_TAG 1f2159ebaec8b75bd5dc5bde5176944372d4ad1c
 )
 
 if (CCL_INCLUDE_BENCHMARK)
