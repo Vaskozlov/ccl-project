@@ -5,25 +5,25 @@ find_package(Threads REQUIRED)
 CPMFindPackage(
         NAME fmt
         GITHUB_REPOSITORY fmtlib/fmt
-        GIT_TAG 577fd3be883accf8629423ed77fcca8a24bccee2
+        GIT_TAG 11.2.0
 )
 
 CPMFindPackage(
         NAME Catch2
         GITHUB_REPOSITORY catchorg/Catch2
-        GIT_TAG 914aeecfe23b1e16af6ea675a4fb5dbd5a5b8d0a
+        GIT_TAG v3.8.1
 )
 
 CPMAddPackage(
         NAME unordered_dense
         GITHUB_REPOSITORY martinus/unordered_dense
-        GIT_TAG 73f3cbb237e84d483afafc743f1f14ec53e12314
+        GIT_TAG v4.5.0
 )
 
 CPMFindPackage(
         NAME cxxopts
         GITHUB_REPOSITORY jarro2783/cxxopts
-        GIT_TAG 573ec27d7224a8a0866c1889737d355b8e4155d7
+        GIT_TAG v3.3.1
         OPTIONS
         "CXXOPTS_BUILD_EXAMPLES Off"
         "CXXOPTS_BUILD_TESTS Off"
@@ -32,14 +32,20 @@ CPMFindPackage(
 CPMAddPackage(
         NAME isl
         GITHUB_REPOSITORY Vaskozlov/ISL
-        GIT_TAG e492dfeecde3dd8bcf7842899e772a77b64443a2
+        GIT_TAG 0.1.1
+)
+
+CPMAddPackage(
+        NAME tracy
+        GITHUB_REPOSITORY wolfpld/tracy
+        GIT_TAG v0.12.2
 )
 
 if (CCL_INCLUDE_BENCHMARK)
     CPMAddPackage(
             NAME benchmark
             GITHUB_REPOSITORY google/benchmark
-            GIT_TAG ff5c94d860dcffd4f4159edf79d805bcfaca3cb8
+            GIT_TAG v1.9.0
             OPTIONS
             "BENCHMARK_ENABLE_TESTING OFF"
             "BENCHMARK_USE_LIBCXX ${CCL_LIBCPP}"
