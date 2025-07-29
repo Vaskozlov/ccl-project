@@ -15,8 +15,7 @@ namespace astlang2
     {
         auto new_type = std::make_unique<ts::Type>(name, typeIdGenerator.next(), nullptr, true);
 
-        new_type->addField(
-            ts::Field{
+        new_type->addField(ts::Field{
                 .name = "_value",
                 .type = builtinType,
             });
@@ -124,4 +123,4 @@ namespace astlang2
 
         return new_type_ptr;
     }
-}// namespace astlang2
+} // namespace astlang2

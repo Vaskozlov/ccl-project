@@ -1,5 +1,6 @@
 #include <ast-lang-2/ast-lang.hpp>
 #include <ast-lang-2/ts/value.hpp>
+#include <utility>
 
 namespace astlang2
 {
@@ -235,166 +236,128 @@ STRING:     ! ["] ("\\\"" | ["]^)* ["]
         const static std::unordered_map<std::string, SmallId> node_types_map{
             // NOSONAR
             {
-                "\"true\"",
-                std::to_underlying(NodeTypes::TRUE),
-            },
+             "\"true\"",               std::to_underlying(NodeTypes::TRUE_VALUE),
+             },
             {
-                "\"false\"",
-                std::to_underlying(NodeTypes::FALSE),
-            },
+             "\"false\"",                        std::to_underlying(NodeTypes::FALSE_VALUE),
+             },
             {
-                "NUMBER",
-                std::to_underlying(NodeTypes::NUMBER),
-            },
+             "NUMBER",              std::to_underlying(NodeTypes::NUMBER),
+             },
             {
-                "FLOAT",
-                std::to_underlying(NodeTypes::FLOAT),
-            },
+             "FLOAT",                        std::to_underlying(NodeTypes::FLOAT),
+             },
             {
-                "STRING",
-                std::to_underlying(NodeTypes::STRING),
-            },
+             "STRING",                 std::to_underlying(NodeTypes::STRING),
+             },
             {
-                "IDENTIFIER",
-                std::to_underlying(NodeTypes::IDENTIFIER),
-            },
+             "IDENTIFIER",                        std::to_underlying(NodeTypes::IDENTIFIER),
+             },
             {
-                "FUNCTION_CALL",
-                std::to_underlying(NodeTypes::FUNCTION_CALL),
-            },
+             "FUNCTION_CALL",                  std::to_underlying(NodeTypes::FUNCTION_CALL),
+             },
             {
-                "METHOD_CALL",
-                std::to_underlying(NodeTypes::METHOD_CALL),
-            },
+             "METHOD_CALL",                        std::to_underlying(NodeTypes::METHOD_CALL),
+             },
             {
-                "VALUE",
-                std::to_underlying(NodeTypes::FACTOR),
-            },
+             "VALUE",                 std::to_underlying(NodeTypes::FACTOR),
+             },
             {
-                "FACTOR",
-                std::to_underlying(NodeTypes::VALUE),
-            },
+             "FACTOR",                        std::to_underlying(NodeTypes::VALUE),
+             },
             {
-                "TERM",
-                std::to_underlying(NodeTypes::TERM),
-            },
+             "TERM",             std::to_underlying(NodeTypes::TERM),
+             },
             {
-                "EXPRESSION",
-                std::to_underlying(NodeTypes::EXPRESSION),
-            },
+             "EXPRESSION",                        std::to_underlying(NodeTypes::EXPRESSION),
+             },
             {
-                "COMPARISON",
-                std::to_underlying(NodeTypes::COMPARISON),
-            },
+             "COMPARISON",          std::to_underlying(NodeTypes::COMPARISON),
+             },
             {
-                "EQUALITY",
-                std::to_underlying(NodeTypes::EQUALITY),
-            },
+             "EQUALITY",                        std::to_underlying(NodeTypes::EQUALITY),
+             },
             {
-                "BITWISE_AND_EXPRESSION",
-                std::to_underlying(NodeTypes::BITWISE_AND_EXPRESSION),
-            },
+             "BITWISE_AND_EXPRESSION",            std::to_underlying(NodeTypes::BITWISE_AND_EXPRESSION),
+             },
             {
-                "BITWISE_XOR_EXPRESSION",
-                std::to_underlying(NodeTypes::BITWISE_XOR_EXPRESSION),
-            },
+             "BITWISE_XOR_EXPRESSION",                        std::to_underlying(NodeTypes::BITWISE_XOR_EXPRESSION),
+             },
             {
-                "BITWISE_OR_EXPRESSION",
-                std::to_underlying(NodeTypes::BITWISE_OR_EXPRESSION),
-            },
+             "BITWISE_OR_EXPRESSION",                  std::to_underlying(NodeTypes::BITWISE_OR_EXPRESSION),
+             },
             {
-                "LOGICAL_AND_EXPRESSION",
-                std::to_underlying(NodeTypes::LOGICAL_AND_EXPRESSION),
-            },
+             "LOGICAL_AND_EXPRESSION",                        std::to_underlying(NodeTypes::LOGICAL_AND_EXPRESSION),
+             },
             {
-                "LOGICAL_OR_EXPRESSION",
-                std::to_underlying(NodeTypes::LOGICAL_OR_EXPRESSION),
-            },
+             "LOGICAL_OR_EXPRESSION",                 std::to_underlying(NodeTypes::LOGICAL_OR_EXPRESSION),
+             },
             {
-                "ASSIGNMENT_EXPRESSION",
-                std::to_underlying(NodeTypes::ASSIGNMENT_EXPRESSION),
-            },
+             "ASSIGNMENT_EXPRESSION",                        std::to_underlying(NodeTypes::ASSIGNMENT_EXPRESSION),
+             },
             {
-                "\'+\'",
-                std::to_underlying(NodeTypes::PLUS),
-            },
+             "\'+\'",                   std::to_underlying(NodeTypes::PLUS),
+             },
             {
-                "\'-\'",
-                std::to_underlying(NodeTypes::MINUS),
-            },
+             "\'-\'",                        std::to_underlying(NodeTypes::MINUS),
+             },
             {
-                "\'*\'",
-                std::to_underlying(NodeTypes::MULTIPLY),
-            },
+             "\'*\'",             std::to_underlying(NodeTypes::MULTIPLY),
+             },
             {
-                "\'/\'",
-                std::to_underlying(NodeTypes::DIVIDE),
-            },
+             "\'/\'",                        std::to_underlying(NodeTypes::DIVIDE),
+             },
             {
-                "\'%\'",
-                std::to_underlying(NodeTypes::MODULUS),
-            },
+             "\'%\'",             std::to_underlying(NodeTypes::MODULUS),
+             },
             {
-                "\'<\'",
-                std::to_underlying(NodeTypes::LESS),
-            },
+             "\'<\'",                        std::to_underlying(NodeTypes::LESS),
+             },
             {
-                "\'<=\'",
-                std::to_underlying(NodeTypes::LESS_EQUAL),
-            },
+             "\'<=\'",               std::to_underlying(NodeTypes::LESS_EQUAL),
+             },
             {
-                "\'>\'",
-                std::to_underlying(NodeTypes::GREATER),
-            },
+             "\'>\'",                        std::to_underlying(NodeTypes::GREATER),
+             },
             {
-                "\'>=\'",
-                std::to_underlying(NodeTypes::GREATER_EQUAL),
-            },
+             "\'>=\'", std::to_underlying(NodeTypes::GREATER_EQUAL),
+             },
             {
-                "\'==\'",
-                std::to_underlying(NodeTypes::EQUAL),
-            },
+             "\'==\'",                        std::to_underlying(NodeTypes::EQUAL),
+             },
             {
-                "\'!=\'",
-                std::to_underlying(NodeTypes::NOT_EQUAL),
-            },
+             "\'!=\'", std::to_underlying(NodeTypes::NOT_EQUAL),
+             },
             {
-                "\'&&\'",
-                std::to_underlying(NodeTypes::LOGICAL_AND),
-            },
+             "\'&&\'",                        std::to_underlying(NodeTypes::LOGICAL_AND),
+             },
             {
-                "\'||\'",
-                std::to_underlying(NodeTypes::LOGICAL_OR),
-            },
+             "\'||\'",  std::to_underlying(NodeTypes::LOGICAL_OR),
+             },
             {
-                "\'&\'",
-                std::to_underlying(NodeTypes::BITWISE_AND),
-            },
+             "\'&\'",                        std::to_underlying(NodeTypes::BITWISE_AND),
+             },
             {
-                "\'|\'",
-                std::to_underlying(NodeTypes::BITWISE_OR),
-            },
+             "\'|\'", std::to_underlying(NodeTypes::BITWISE_OR),
+             },
             {
-                "\'^\'",
-                std::to_underlying(NodeTypes::BITWISE_XOR),
-            },
+             "\'^\'",                        std::to_underlying(NodeTypes::BITWISE_XOR),
+             },
             {
-                "\'~\''",
-                std::to_underlying(NodeTypes::BITWISE_NOT),
-            },
+             "\'~\''",  std::to_underlying(NodeTypes::BITWISE_NOT),
+             },
             {
-                "\'=\'",
-                std::to_underlying(NodeTypes::ASSIGN),
-            },
+             "\'=\'",                        std::to_underlying(NodeTypes::ASSIGN),
+             },
             {
-                "FIELD_ACCESS",
-                std::to_underlying(NodeTypes::FIELD_ACCESS),
-            },
+             "FIELD_ACCESS",  std::to_underlying(NodeTypes::FIELD_ACCESS),
+             },
         };
 
         return node_types_map;
     }
 
-    constinit isl::PoolAllocator<sizeof(detail::ObjectSharedPtrFrame), alignof(detail::ObjectSharedPtrFrame)>
+    constinit isl::PoolAllocator<
+        sizeof(detail::ObjectSharedPtrFrame), alignof(detail::ObjectSharedPtrFrame)>
         detail::ObjectAllocator;
-}// namespace astlang2
+} // namespace astlang2

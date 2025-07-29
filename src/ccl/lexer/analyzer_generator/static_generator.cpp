@@ -19,9 +19,10 @@ namespace ccl::lexer::gen
 
     constexpr static auto BuiltinRules =
         isl::StaticFlatmap<isl::string_view, SmallId, ReservedTokenMaxValue + 1>{
-            {"EOI", 0},
+            {"EOI",       0},
             {"BAD_TOKEN", 1},
-            {"CUT", 2}};
+            {"CUT",       2}
+    };
 
     StaticGenerator::StaticGenerator(Tokenizer &input_tokenizer)
       : tokenizer{input_tokenizer}
@@ -98,14 +99,13 @@ namespace ccl::lexer::gen
             codeGenerator << "enum " << enumName << " : ccl::SmallId;";
         }
 
-        codeGenerator
-            << fmt::format(
-                   "template<>\n"
-                   "CCL_DECL auto ccl::lexer::lexerEnumToString<{0}::{1}>(SmallId value) -> "
-                   "std::string;",
-                   nameSpace, enumName)
-            << endl
-            << endl;
+        codeGenerator << fmt::format(
+            "template<>\n"
+            "CCL_DECL auto ccl::lexer::lexerEnumToString<{0}::{1}>(SmallId value) -> "
+            "std::string;",
+            nameSpace,
+            enumName) << endl
+                      << endl;
     }
 
     auto StaticGenerator::generateNamespaceBegin() -> void
@@ -144,7 +144,8 @@ namespace ccl::lexer::gen
         codeGenerator << fmt::format(
             "inline constexpr isl::StaticFlatmap<ccl::SmallId, isl::string_view, {}> "
             "ToString{}Token\n",
-            BuiltinRules.size() + rules.size(), variableName);
+            BuiltinRules.size() + rules.size(),
+            variableName);
         codeGenerator << '{' << push_scope;
 
         for (const auto &rule : BuiltinRules | std::views::keys) {
@@ -237,7 +238,6 @@ namespace ccl::lexer::gen
         generateRules();
     }
 
-
     auto StaticGenerator::generateLexicalAnalyzer() -> void
     {
         generateFunctionDefinition();
@@ -276,16 +276,18 @@ namespace ccl::lexer::gen
         codeGenerator << fmt::format(
             "template<>\n"
             "CCL_DECL auto lexerEnumToString<{0}::{1}>(SmallId value) -> std::string ",
-            nameSpace, enumName);
+            nameSpace,
+            enumName);
 
         codeGenerator << "{" << endl << push_scope;
 
-        const auto function_scope = isl::Raii{[this] {
-            codeGenerator << pop_scope << endl << '}';
-        }};
+        const auto function_scope =
+            isl::Raii{[this] { codeGenerator << pop_scope << endl
+                                             << '}'; }};
 
         codeGenerator << fmt::format(
-            "return static_cast<std::string>({}::ToString{}Token[value]);", nameSpace,
+            "return static_cast<std::string>({}::ToString{}Token[value]);",
+            nameSpace,
             variableName);
     }
-}// namespace ccl::lexer::gen
+} // namespace ccl::lexer::gen

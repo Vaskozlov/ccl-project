@@ -16,8 +16,8 @@ namespace astlang2
 {
     enum class NodeTypes : ccl::SmallId
     {
-        TRUE = 128,
-        FALSE,
+        TRUE_VALUE = 128,
+        FALSE_VALUE,
         NUMBER,
         FLOAT,
         STRING,

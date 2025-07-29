@@ -1,3 +1,4 @@
+#include <ast-lang-2/ast-lang.hpp>
 #include <ast-lang-2/ast/expression/factor.hpp>
 #include <ast-lang-2/interpreter/interpreter.hpp>
 #include <ccl/text/remove_escaping.hpp>
@@ -75,11 +76,11 @@ namespace astlang2::ast::expression
             precomputedValue = constructFloatNode(node.get());
             break;
 
-        case TRUE:
+        case TRUE_VALUE:
             precomputedValue = constructBooleanNode(true);
             break;
 
-        case FALSE:
+        case FALSE_VALUE:
             precomputedValue = constructBooleanNode(false);
             break;
 
@@ -121,8 +122,8 @@ namespace astlang2::ast::expression
                     },
             };
 
-        case TRUE:
-        case FALSE:
+        case TRUE_VALUE:
+        case FALSE_VALUE:
             return ComputationResult{
                 .value =
                     astlang2::Value{
@@ -159,8 +160,8 @@ namespace astlang2::ast::expression
         case STRING:
         case FLOAT:
         case IDENTIFIER:
-        case TRUE:
-        case FALSE:
+        case TRUE_VALUE:
+        case FALSE_VALUE:
         case FIELD_ACCESS:
             return nullptr;
 

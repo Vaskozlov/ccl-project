@@ -18,8 +18,8 @@ namespace astlang2::interpreter
         std::back_insert_iterator<std::string> outputBuffer;
 
     public:
-        const SmallId TRUE = constructor.getRuleId("\"true\"");
-        const SmallId FALSE = constructor.getRuleId("\"false\"");
+        const SmallId TRUE_VALUE = constructor.getRuleId("\"true\"");
+        const SmallId FALSE_VALUE = constructor.getRuleId("\"false\"");
         const SmallId NUMBER = constructor.getRuleId("NUMBER");
         const SmallId FLOAT = constructor.getRuleId("FLOAT");
         const SmallId STRING = constructor.getRuleId("STRING");
