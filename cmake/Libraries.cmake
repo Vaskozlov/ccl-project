@@ -32,13 +32,7 @@ CPMFindPackage(
 CPMAddPackage(
         NAME isl
         GITHUB_REPOSITORY Vaskozlov/ISL
-        GIT_TAG 5bc4bc8b008be49cc46c9666bff9086ba1af085f
-)
-
-CPMAddPackage(
-        NAME tracy
-        GITHUB_REPOSITORY wolfpld/tracy
-        GIT_TAG v0.12.2
+        GIT_TAG 9490cb610c81440e8242ecdd95f66ab84b47b037
 )
 
 if (CCL_INCLUDE_BENCHMARK)
