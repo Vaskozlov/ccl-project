@@ -352,6 +352,9 @@ STRING:     ! ["] ("\\\"" | ["]^)* ["]
             {
              "FIELD_ACCESS",  std::to_underlying(NodeTypes::FIELD_ACCESS),
              },
+            {
+             "ARRAY",  std::to_underlying(NodeTypes::ARRAY),
+             },
         };
 
         return node_types_map;

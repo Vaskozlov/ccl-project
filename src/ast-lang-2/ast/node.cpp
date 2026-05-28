@@ -167,6 +167,14 @@ namespace astlang2::ast
                 constructor.getRuleId("FIELD_ACCESS"),
                 ccl::parser::ast::NonTerminal::reconstructNode<expression::FieldAccess>,
             },
+            {
+                constructor.getRuleId("ARRAY"),
+                ccl::parser::ast::NonTerminal::reconstructNode<ccl::parser::ast::NonTerminal>,
+            },
+            {
+                constructor.getRuleId("ARRAY_ELEMENTS"),
+                ccl::parser::ast::NonTerminal::reconstructNode<ccl::parser::ast::NonTerminal>,
+            },
         };
     }
 }// namespace astlang2::ast

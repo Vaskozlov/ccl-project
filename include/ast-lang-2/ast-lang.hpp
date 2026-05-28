@@ -54,7 +54,8 @@ namespace astlang2
         BITWISE_XOR,
         BITWISE_NOT,
         ASSIGN,
-        FIELD_ACCESS
+        FIELD_ACCESS,
+        ARRAY
     };
 
     using i8 = ccl::i8;

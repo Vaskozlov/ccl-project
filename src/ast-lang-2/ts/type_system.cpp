@@ -54,6 +54,9 @@ namespace astlang2
         vec3Type->addField(ts::Field{.name = "y", .type = doubleType});
         vec3Type->addField(ts::Field{.name = "z", .type = doubleType});
 
+        arrayType = createTypeAndGetPointer(
+            "array", std::make_unique<ts::Type>("array", typeIdGenerator.next()));
+
         auto list_type = std::make_unique<ts::TemplateType>("list", typeIdGenerator.next());
         templateTypes.emplace(list_type->getName(), std::move(list_type));
     }

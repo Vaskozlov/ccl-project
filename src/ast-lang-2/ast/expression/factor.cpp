@@ -4,9 +4,24 @@
 #include <ccl/text/remove_escaping.hpp>
 #include <cassert>
 #include <charconv>
+#include <vector>
 
 namespace astlang2::ast::expression
 {
+    static void collectArrayElements(
+        const ccl::parser::ast::NonTerminal *arrayElements,
+        std::vector<ccl::parser::ast::SharedNode<>> &out)
+    {
+        if (arrayElements->size() == 1) {
+            out.push_back(arrayElements->front());
+        } else {
+            out.push_back(arrayElements->front());
+            const auto *tail = static_cast<const ccl::parser::ast::NonTerminal *>(
+                arrayElements->back().get());
+            collectArrayElements(tail, out);
+        }
+    }
+
     static auto constructNumberNode(const ccl::parser::ast::Node *node) -> AstlangObject<>
     {
         const auto *token_node = static_cast<const ccl::parser::ast::Terminal *>(node);
@@ -152,6 +167,27 @@ namespace astlang2::ast::expression
                 .value = interpreter.read(*static_cast<std::string *>(precomputedValue.get())),
             };
 
+        case ARRAY: {
+            const auto *arrayNode =
+                static_cast<const ccl::parser::ast::NonTerminal *>(node.get());
+            const auto *arrayElements =
+                static_cast<const ccl::parser::ast::NonTerminal *>(arrayNode->at(1).get());
+            std::vector<ccl::parser::ast::SharedNode<>> rawElements;
+            collectArrayElements(arrayElements, rawElements);
+            std::vector<astlang2::Value> values;
+            for (const auto &rawElem : rawElements) {
+                auto typedElem = isl::staticPointerCast<AstlangNode>(rawElem);
+                auto result = typedElem->compute(interpreter);
+                values.push_back(std::move(result.value));
+            }
+            return ComputationResult{
+                .value = astlang2::Value{
+                    .object = AstlangObject<std::vector<astlang2::Value>>(std::move(values)),
+                    .type = interpreter.getArray(),
+                },
+            };
+        }
+
         default:
             return static_cast<AstlangNode *>(node.get())->compute(interpreter);
         }
@@ -174,6 +210,7 @@ namespace astlang2::ast::expression
         case TRUE_VALUE:
         case FALSE_VALUE:
         case FIELD_ACCESS:
+        case ARRAY:
             return nullptr;
 
         case ASSIGNMENT_EXPRESSION:

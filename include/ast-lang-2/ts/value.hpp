@@ -3,6 +3,8 @@
 
 #include <ast-lang-2/ast-lang.hpp>
 
+#include <vector>
+
 namespace astlang2
 {
     namespace ts
