@@ -1,0 +1,4 @@
+var arr = [1, 2, 3];
+println(arr);
+println([10, 20, 30]);
+println([1 + 2, 3 * 4, 10 - 5]);
