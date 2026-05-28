@@ -39,6 +39,8 @@ namespace astlang2::ast
 
         using ChildrenNodesGenerator = isl::SmallFunction<ccl::parser::ast::SharedNode<>()>;
 
+        inline static const ccl::parser::reader::ParserBuilder *parserBuilder{};
+
         virtual auto optimize() -> SharedNode<> = 0;
 
         virtual auto compute(interpreter::Interpreter & /*unused*/) const -> ComputationResult

@@ -1,4 +1,6 @@
 #include <ast-lang-2/ast/function_call/function_call.hpp>
+#include <ast-lang-2/ast/expression/factor.hpp>
+#include <ast-lang-2/ast/constant_evaluator.hpp>
 #include <ast-lang-2/interpreter/interpreter.hpp>
 
 namespace astlang2::ast::function::call
@@ -49,6 +51,34 @@ namespace astlang2::ast::function::call
     {
         for (auto &argument_node : functionArgumentsNode) {
             exchangeIfNotNull(argument_node, argument_node->optimize());
+        }
+
+        const auto &funcNameToken = functionNameNode->getToken();
+        std::string funcName{static_cast<std::string>(funcNameToken.getRepr())};
+
+        isl::SmallVector<ExtractedConstant, 4> args;
+        bool allConstants = true;
+        for (auto &argNode : functionArgumentsNode) {
+            auto argConst = ConstantEvaluator::tryExtractConstant(argNode);
+            if (!argConst) {
+                allConstants = false;
+                break;
+            }
+            args.emplace_back(*argConst);
+        }
+
+        if (allConstants) {
+            auto result = ConstantEvaluator::evaluateBuiltin(funcName, std::move(args));
+            if (result) {
+                // Store result in first argument's Factor (in-place modification)
+                if (!functionArgumentsNode.empty()) {
+                    auto *argFactor = dynamic_cast<expression::Factor *>(functionArgumentsNode[0].get());
+                    if (argFactor) {
+                        argFactor->updateConstant(result->resultType, std::move(result->value));
+                        return functionArgumentsNode[0];
+                    }
+                }
+            }
         }
 
         return nullptr;

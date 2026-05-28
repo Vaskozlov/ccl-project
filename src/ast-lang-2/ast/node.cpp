@@ -44,6 +44,8 @@ namespace astlang2::ast
     auto AstlangNode::buildConversionTable(const ccl::parser::reader::ParserBuilder &constructor)
         -> ConversionTable
     {
+        AstlangNode::parserBuilder = &constructor;
+
         return ConversionTable{
             {
                 constructor.getRuleId("GLOBAL_DECLARATIONS"),

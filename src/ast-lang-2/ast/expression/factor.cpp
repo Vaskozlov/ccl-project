@@ -2,6 +2,7 @@
 #include <ast-lang-2/ast/expression/factor.hpp>
 #include <ast-lang-2/interpreter/interpreter.hpp>
 #include <ccl/text/remove_escaping.hpp>
+#include <cassert>
 #include <charconv>
 
 namespace astlang2::ast::expression
@@ -56,6 +57,11 @@ namespace astlang2::ast::expression
     Factor::Factor(const SmallId id, const ccl::parser::ast::SmallVectorOfNodes &initial_nodes)
       : AstlangNode{id}
     {
+        if (initial_nodes.empty()) {
+            // Factory-created constant — members set by caller
+            return;
+        }
+
         if (initial_nodes.size() != 1) {
             node = initial_nodes.at(1);
             nodeType = NodeTypes::ASSIGNMENT_EXPRESSION;
@@ -153,6 +159,11 @@ namespace astlang2::ast::expression
 
     auto Factor::optimize() -> SharedNode<>
     {
+        if (isConstant || node == nullptr) {
+            // Constant-folded or factory-created constant node — nothing to optimize
+            return nullptr;
+        }
+
         switch (nodeType) {
             using enum NodeTypes;
 
@@ -176,17 +187,81 @@ namespace astlang2::ast::expression
         }
     }
 
+    auto Factor::print(
+        const std::string &prefix, const bool is_left,
+        const std::function<std::string(SmallId)> &id_converter) const -> void
+    {
+        const auto expanded_prefix = expandPrefix(prefix, is_left);
+        std::cout << fmt::format(
+                         "{}NodeSequence-{}", getPrintingPrefix(prefix, is_left),
+                         id_converter(getType()))
+                  << std::endl;
+
+        if (isConstant) {
+            // Print the folded constant value directly
+            std::string value_str;
+            switch (nodeType) {
+            case NodeTypes::NUMBER:
+                value_str = fmt::to_string(*isl::staticPointerCast<isl::ssize_t>(AstlangObject<>(precomputedValue)));
+                break;
+            case NodeTypes::FLOAT:
+                value_str = fmt::to_string(*isl::staticPointerCast<double>(AstlangObject<>(precomputedValue)));
+                break;
+            case NodeTypes::STRING:
+                value_str = "\"" + *isl::staticPointerCast<std::string>(AstlangObject<>(precomputedValue)) + "\"";
+                break;
+            case NodeTypes::TRUE_VALUE:
+                value_str = "true";
+                break;
+            case NodeTypes::FALSE_VALUE:
+                value_str = "false";
+                break;
+            default:
+                // Fallback: print child node
+                if (node != nullptr) {
+                    node->print(prefix, is_left, id_converter);
+                    return;
+                }
+                return;
+            }
+            std::cout << fmt::format("{}-CONSTANT: {}", getPrintingPrefix(expanded_prefix, false), value_str) << std::endl;
+            return;
+        }
+
+        // Delegate to child node for non-constant factors
+        auto generator = getChildrenNodes();
+        SharedNode<> next = generator();
+
+        while (next != nullptr) {
+            SharedNode<> child_node = std::move(next);
+            next = generator();
+
+            child_node->print(expanded_prefix, next != nullptr, id_converter);
+        }
+    }
+
     auto Factor::getChildrenNodes() const -> ChildrenNodesGenerator
     {
         return ChildrenNodesGenerator{
-            [index = 0, stored_node = node]() mutable -> ccl::parser::ast::SharedNode<> {
-                if (index > 0) {
+            [index = 0, stored_node = node, is_const = isConstant]() mutable -> ccl::parser::ast::SharedNode<> {
+                if (index > 0 || is_const || stored_node == nullptr) {
                     return nullptr;
                 }
 
                 ++index;
                 return stored_node;
             }};
+    }
+
+    auto Factor::createConstant(NodeTypes type, AstlangObject<> value) -> SharedNode<>
+    {
+        assert(AstlangNode::parserBuilder != nullptr);
+        const SmallId factorRuleId = AstlangNode::parserBuilder->getRuleId("FACTOR");
+        auto typed = SharedNode<Factor>(factorRuleId, ccl::parser::ast::SmallVectorOfNodes{});
+        typed->nodeType = type;
+        typed->precomputedValue = std::move(value);
+        typed->isConstant = true;
+        return typed;
     }
 
 }// namespace astlang2::ast::expression

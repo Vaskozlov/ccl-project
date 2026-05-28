@@ -16,3 +16,5 @@ if a > 3 {
 } else {
     println("a is less than 3");
 }
+
+println(5 + 5);

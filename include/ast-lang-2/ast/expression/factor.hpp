@@ -11,6 +11,7 @@ namespace astlang2::ast::expression
         SharedNode<> node;
         AstlangObject<> precomputedValue;
         NodeTypes nodeType;
+        bool isConstant{false};
 
     public:
         Factor(SmallId id, const ccl::parser::ast::SmallVectorOfNodes &initial_nodes);
@@ -19,7 +20,23 @@ namespace astlang2::ast::expression
 
         auto optimize() -> SharedNode<> override;
 
+        auto print(
+            const std::string &prefix, bool is_left,
+            const std::function<std::string(SmallId)> &id_converter) const -> void override;
+
         auto getChildrenNodes() const -> ChildrenNodesGenerator override;
+
+        static auto createConstant(NodeTypes type, AstlangObject<> value) -> SharedNode<>;
+
+        [[nodiscard]] auto getNodeType() const noexcept -> NodeTypes { return nodeType; }
+        [[nodiscard]] auto getPrecomputedValue() const noexcept -> const AstlangObject<> & { return precomputedValue; }
+
+        auto updateConstant(NodeTypes type, AstlangObject<> value) -> void
+        {
+            nodeType = type;
+            precomputedValue = std::move(value);
+            isConstant = true;
+        }
     };
 }// namespace astlang2::ast::expression
 

@@ -1,0 +1,36 @@
+var x = 2 + 3;
+println(x);
+
+var y = 10 < 5;
+println(y);
+
+var z = -42;
+println(z);
+
+var w = "hello" + " world";
+println(w);
+
+var a = true && false;
+println(a);
+
+var b = true || false;
+println(b);
+
+var c = 7 * 3;
+println(c);
+
+var d = 10 - 4;
+println(d);
+
+if true {
+    println("always true branch");
+}
+
+var e = int(3.14);
+println(e);
+
+var f = bool(1);
+println(f);
+
+var g = string(42);
+println(g);

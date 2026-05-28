@@ -1,4 +1,6 @@
 #include <ast-lang-2/ast/expression/value.hpp>
+#include <ast-lang-2/ast/expression/factor.hpp>
+#include <ast-lang-2/ast/constant_evaluator.hpp>
 #include <ast-lang-2/interpreter/interpreter.hpp>
 
 namespace astlang2::ast::expression
@@ -51,6 +53,18 @@ namespace astlang2::ast::expression
 
         if (functionName.empty()) {
             return node;
+        }
+
+        auto argConst = ConstantEvaluator::tryExtractConstant(node);
+        if (argConst) {
+            auto result = ConstantEvaluator::evaluateUnary(functionName, *argConst);
+            if (result) {
+                auto *factor = dynamic_cast<expression::Factor *>(node.get());
+                if (factor) {
+                    factor->updateConstant(result->resultType, std::move(result->value));
+                    return node;
+                }
+            }
         }
 
         return nullptr;

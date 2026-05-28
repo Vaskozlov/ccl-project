@@ -15,6 +15,19 @@ namespace astlang2::interpreter
         }
     };
 
+    template<typename T>
+    struct DoClampCast;
+
+    template<>
+    struct DoClampCast<std::size_t>
+    {
+        auto operator()(isl::ssize_t value) -> std::size_t
+        {
+            if (value < 0) return 0;
+            return static_cast<std::size_t>(value);
+        }
+    };
+
     struct DoToStr
     {
         template<typename U>
@@ -73,6 +86,12 @@ namespace astlang2::interpreter
     struct CastOperation : OnObjectOperation<T, DoCast<T>>
     {
         using OnObjectOperation<T, DoCast<T>>::OnObjectOperation;
+    };
+
+    template<typename T>
+    struct ClampCastOperation : OnObjectOperation<T, DoClampCast<T>>
+    {
+        using OnObjectOperation<T, DoClampCast<T>>::OnObjectOperation;
     };
 
     template<typename T>

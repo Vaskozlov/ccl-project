@@ -80,7 +80,7 @@ namespace astlang2::interpreter
             "uint",
             type_system.getInt(),
             type_system.getUint(),
-            CastOperation<std::size_t>{});
+            ClampCastOperation<std::size_t>{});
 
         createSingleArgumentFunction<isl::ssize_t>(
             functions_holder,

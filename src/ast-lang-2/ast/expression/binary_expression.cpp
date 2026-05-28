@@ -1,4 +1,6 @@
 #include <ast-lang-2/ast/expression/binary_expression.hpp>
+#include <ast-lang-2/ast/expression/factor.hpp>
+#include <ast-lang-2/ast/constant_evaluator.hpp>
 #include <ast-lang-2/interpreter/interpreter.hpp>
 
 namespace astlang2::ast::expression
@@ -190,6 +192,19 @@ namespace astlang2::ast::expression
         }
 
         exchangeIfNotNull(rhsNode, rhsNode->optimize());
+
+        auto lhsConst = ConstantEvaluator::tryExtractConstant(lhsNode);
+        auto rhsConst = ConstantEvaluator::tryExtractConstant(rhsNode);
+        if (lhsConst && rhsConst) {
+            auto result = ConstantEvaluator::evaluateBinary(functionName, *lhsConst, *rhsConst);
+            if (result) {
+                auto *factor = dynamic_cast<expression::Factor *>(lhsNode.get());
+                if (factor) {
+                    factor->updateConstant(result->resultType, std::move(result->value));
+                    return lhsNode;
+                }
+            }
+        }
 
         return nullptr;
     }
